@@ -1,0 +1,26 @@
+/* ===============================
+   ESTILOS DE LA PÁGINA DE CONTACTO
+   =============================== */
+
+/* Fondo de la página */
+body {
+    background: linear-gradient(135deg, #e8f0ff 0%, #b8ceff 100%);
+}
+
+/* Separación superior del contenedor */
+.container {
+    margin-top: 3rem;
+}
+
+/* Inputs del formulario de contacto */
+.cf-input {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+.cf-input:focus {
+    box-shadow: none;
+    border-color: #005587;
+    outline: none;
+}

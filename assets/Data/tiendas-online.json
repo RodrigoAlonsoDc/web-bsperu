@@ -1,0 +1,32 @@
+[
+  {
+    "nombre": "EM Ingeniería & Soluciones",
+    "logo": "https://via.placeholder.com/180x80?text=EM+Ing",
+    "link": "https://emingenieria.com",
+    "estilo": "default"
+  },
+  {
+    "nombre": "Bryg's",
+    "logo": "https://via.placeholder.com/180x80?text=Brygs",
+    "link": "https://brygs.com",
+    "estilo": "green"
+  },
+  {
+    "nombre": "Rappi",
+    "logo": "https://via.placeholder.com/180x80?text=Rappi",
+    "link": "https://rappi.com.pe",
+    "estilo": "red"
+  },
+  {
+    "nombre": "ANCLAF",
+    "logo": "https://via.placeholder.com/180x80?text=ANCLAF",
+    "link": "https://anclaf.com",
+    "estilo": "orange"
+  },
+  {
+    "nombre": "Sika Center Oficial",
+    "logo": "https://via.placeholder.com/180x80?text=Sika",
+    "link": "https://sika.com.pe",
+    "estilo": "red-dark"
+  }
+]

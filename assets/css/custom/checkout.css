@@ -1,0 +1,258 @@
+/* ===== CHECKOUT FORM STYLES ===== */
+
+/* ===== FIX PARA VISIBILIDAD DE SELECTS ===== */
+/* Soluciona problemas de visibilidad de texto en select en ciertos navegadores */
+.form-select {
+    color: #212529 !important;
+    background-color: #ffffff !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+}
+
+.form-select option {
+    color: #212529;
+    background-color: #ffffff;
+    padding: 8px;
+}
+
+.form-select option:checked {
+    background: linear-gradient(#0066cc, #0066cc) no-repeat;
+    background-color: #0066cc !important;
+    color: #ffffff;
+}
+
+.form-select option:hover {
+    background-color: #f0f0f0;
+}
+
+.form-select:focus {
+    color: #212529 !important;
+    background-color: #ffffff !important;
+    border-color: #005587;
+    box-shadow: 0 0 0 0.25rem rgba(0, 85, 135, 0.25);
+}
+
+#tipodoc,
+#metodoRecojo,
+#tiendaUbicacion,
+#metodoPago {
+    color: #212529 !important;
+    background-color: #ffffff !important;
+}
+
+#tipodoc option,
+#metodoRecojo option,
+#tiendaUbicacion option,
+#metodoPago option {
+    color: #212529;
+    background-color: #ffffff;
+    padding: 8px;
+}
+
+#tipodoc option:checked,
+#metodoRecojo option:checked,
+#tiendaUbicacion option:checked,
+#metodoPago option:checked {
+    background: linear-gradient(#0066cc, #0066cc) no-repeat;
+    background-color: #0066cc !important;
+    color: #ffffff;
+}
+
+/* Estilo para asteriscos de campos requeridos */
+.form-label .text-danger {
+    margin-left: 4px;
+    font-weight: 600;
+}
+
+/* Estilos para validación del formulario */
+#checkoutForm.was-validated .form-control:invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath fill='%23dc3545' d='M8 4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0 0 1h3A.5.5 0 0 0 8 4z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+#checkoutForm.was-validated .form-control:valid {
+    border-color: #198754;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+#checkoutForm.was-validated .form-select:invalid {
+    border-color: #dc3545;
+}
+
+#checkoutForm.was-validated .form-select:valid {
+    border-color: #198754;
+}
+
+#checkoutForm.was-validated .form-control:invalid:focus,
+#checkoutForm.was-validated .form-select:invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+#checkoutForm.was-validated .form-control:valid:focus,
+#checkoutForm.was-validated .form-select:valid:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Mensajes de error e información */
+.invalid-feedback,
+.valid-feedback {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+}
+
+.valid-feedback {
+    color: #198754;
+}
+
+/* Responsive: Ajustar en móviles */
+@media (max-width: 576px) {
+    #checkoutForm .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* ===== MODAL TÉRMINOS Y CONDICIONES ===== */
+#terminosCondicionesModal .modal-header {
+    background: linear-gradient(135deg, #005587 0%, #003d5c 100%);
+}
+
+#terminosCondicionesModal .modal-title {
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+}
+
+.terms-content {
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.terms-content h6 {
+    font-size: 1.1rem;
+    color: #005587;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.terms-content h6:first-child {
+    margin-top: 0;
+    color: #003d5c;
+    font-size: 1.2rem;
+}
+
+.terms-content p {
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: justify;
+}
+
+.terms-content strong {
+    color: #005587;
+    font-weight: 600;
+}
+
+.terms-content a {
+    color: #005587;
+    text-decoration: underline;
+}
+
+.terms-content a:hover {
+    color: #003d5c;
+}
+
+.terms-content ul {
+    margin: 1rem 0 1rem 1.5rem;
+    padding: 0;
+}
+
+.terms-content li {
+    margin-bottom: 0.5rem;
+    list-style-type: disc;
+}
+
+.terms-content .alert {
+    border-radius: 8px;
+    margin-top: 1.5rem;
+}
+
+/* Checkbox aceptar términos */
+#aceptarTerminosCondiciones {
+    margin-right: 0.5rem;
+}
+
+#aceptarTerminosCondiciones:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.form-check-label a {
+    color: #005587 !important;
+}
+
+/* ===== VALIDACIÓN DE DOCUMENTO ===== */
+#numerodoc {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+#numerodoc:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+#numerodoc:focus {
+    border-color: #005587;
+    box-shadow: 0 0 0 0.2rem rgba(0, 85, 135, 0.15);
+}
+
+#numerodoc.is-valid {
+    border-color: #198754;
+}
+
+#numerodoc.is-invalid {
+    border-color: #dc3545;
+}
+
+/* ===== VALIDACIÓN CHECKBOX TÉRMINOS ===== */
+#aceptarTerminosCondiciones {
+    cursor: pointer;
+}
+
+#aceptarTerminosCondiciones:required {
+    border-color: #dc3545 !important;
+}
+
+#aceptarTerminosCondiciones.is-invalid {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5;
+}
+
+#aceptarTerminosCondiciones.is-invalid:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.form-check:has(#aceptarTerminosCondiciones.is-invalid) {
+    border-left: 4px solid #dc3545;
+    padding-left: 10px;
+}

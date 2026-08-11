@@ -1,0 +1,110 @@
+﻿[
+  {
+    "key": "fali",
+    "nombre": "CALLAO",
+    "direccion": "Av. Elmer Faucett 1631 ",
+    "referencia": "",
+    "urlMap": "https://www.google.com/maps?q=WWQ2%2BMX+Bellavista&output=embed",
+    "telefono": "923 326 704",
+    "lat": -12.0632,
+    "lng": -77.1530,
+    "imagen": "/assets/img sucursales/faucett.svg",
+    "alt": "Sucursal Callao"
+  },
+  {
+    "key": "chorrillos",
+    "nombre": "CHORRILLOS",
+    "direccion": "Av. Los faisanes 675",
+    "referencia": "",
+    "urlMap": "https://www.google.com/maps?q=Av.+Los+Faisanes+675,+Chorrillos,+Peru&output=embed",
+    "telefono": "923 062 809",
+    "lat": -12.1928,
+    "lng": -77.1317,
+    "imagen": "/assets/img sucursales/chorrillos.svg",
+    "alt": "Sucursal Chorrillos"
+  },
+  {
+    "key": "lima",
+    "nombre": "SAN BORJA",
+    "direccion": "Av. San Luis 3051",
+    "referencia": "",
+    "urlMap": "https://www.google.com/maps?q=Av.+San+Luis+3051,+San+Borja,+Peru&output=embed",
+    "telefono": "981 288 456",
+    "lat": -12.0866,
+    "lng": -77.0581,
+    "imagen": "/assets/img sucursales/san borja.svg",
+    "alt": "Sucursal Lima"
+  },
+  {
+    "key": "sullana",
+    "nombre": "SULLANA",
+    "direccion": "Jose de Lama 244 ",
+    "referencia": "",
+    "urlMap": "https://www.google.com/maps?q=Jose+de+Lama+244,+Sullana,+Peru&output=embed",
+    "telefono": "923 065 280",
+    "lat": -4.9106,
+    "lng": -80.6769,
+    "imagen": "/assets/img sucursales/Sullana.svg",
+    "alt": "Sucursal Sullana"
+  },
+  {
+    "key": "piuraee",
+    "nombre": "PIURA",
+    "direccion": " HH Manuel Seone MZ H",
+    "referencia": "",
+    "urlMap": "https://www.google.com/maps?q=R8MW%2BVX+Piura&output=embed",
+    "telefono": "922 956 171",
+    "lat": -5.1946,
+    "lng": -80.6328,
+    "imagen": "/assets/img sucursales/piura.svg",
+    "alt": "Sucursal Piura"
+  },
+  {
+    "key": "trujillo",
+    "nombre": "TRUJILLO",
+    "direccion": "Av. América Oeste 531 ",
+    "referencia": "",
+    "urlMap": "https://www.google.com/maps?q=VXX4%2BWF+Trujillo&output=embed",
+    "telefono": "922 989 489",
+    "lat": -8.1109,
+    "lng": -79.0276,
+    "imagen": "/assets/img sucursales/trujillo.svg",
+    "alt": "Sucursal Trujillo"
+  },
+  {
+    "key": "chiclayo",
+    "nombre": "CHICLAYO",
+    "direccion": "Los Tumbos 505 ",
+    "referencia": " ",
+    "urlMap": "https://www.google.com/maps?q=6597%2BR3+Chiclayo&output=embed",
+    "telefono": "923 049 585",
+    "lat": -6.7735,
+    "lng": -79.8394,
+    "imagen": "/assets/img sucursales/chiclayo.svg",
+    "alt": "Sucursal Chiclayo"
+  },
+  {
+    "key": "tacna",
+    "nombre": "TACNA",
+    "direccion": "Ramón Copaja Mza L ",
+    "referencia": "(Frente del C.C 4 de Noviembre)",
+    "urlMap": "https://www.google.com/maps?q=2P2R%2BFF+Tacna&output=embed",
+    "telefono": "934 853 326",
+    "lat": -18.0196,
+    "lng": -70.2536,
+    "imagen": "/assets/img sucursales/Tacna.svg",
+    "alt": "Sucursal Tacna"
+  },
+  {
+    "key": "arequipa",
+    "nombre": "AREQUIPA",
+    "direccion": "Av. Jesús 600",
+    "referencia": "(Al costado del  Politécnico Rafael Loayza)",
+    "urlMap": "https://www.google.com/maps?q=HFQP%2BQP+Mariano+Melgar&output=embed",
+    "telefono": "934 110 454",
+    "lat": -16.3988,
+    "lng": -71.5350,
+    "imagen": "/assets/img sucursales/Arequipa.svg",
+    "alt": "Sucursal Arequipa"
+  }
+]

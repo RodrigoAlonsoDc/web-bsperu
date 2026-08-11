@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle de producto</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/imgWeb/logo-icon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 5.3.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/css/loyout/loyout.css" rel="stylesheet">
+  <link href="/assets/css/catalogo/Producto.css" rel="stylesheet">
+  <link href="/assets/css/custom/checkout.css" rel="stylesheet">
+</head>
+
+<body>
+<a href="https://wa.me/51914776669" target="_blank" class="whatsapp-btn" title="WhatsApp">
+        <i class="bi bi-whatsapp whatsapp-icon"></i>
+</a>
+
+
+
+  <!-- NAVBAR LAYOUT -->
+  <div class="barrera-menu"></div>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="container my-4">
+
+    <div class="producto-wrapper">
+      <div class="row g-4">
+
+        <!-- Galería -->
+        <div class="col-lg-5">
+          <div class="position-relative">
+            <span class="tag-oferta" id="tagOferta" style="display:none; position:absolute; top:10px; left:10px;">
+              ¡OFERTA!
+            </span>
+
+            <div class="galeria-main">
+              <button class="galeria-arrow left" id="btnPrevImg">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+
+              <img id="imgPrincipal" src="" alt="Producto">
+
+              <button class="galeria-arrow right" id="btnNextImg">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="thumbs-row mt-1" id="thumbsRow"></div>
+
+          <div class="mt-2 small text-muted" id="codigoYCategorias"></div>
+        </div>
+
+        <!-- Info derecha -->
+        <div class="col-lg-7">
+          <div class="d-flex flex-column h-100">
+            <div>
+
+              <!-- Título -->
+              <h1 class="producto-titulo mb-1" id="tituloProducto">Nombre producto</h1>
+
+              <!-- Estrellas -->
+              <div class="d-flex align-items-center mb-2">
+                <div class="me-2" id="ratingStars"></div>
+                <small class="text-muted" id="ratingLabel">(0 valoraciones)</small>
+              </div>
+
+              <p class="mb-2 text-secondary" id="descripcionCorta"></p>
+
+              <!-- Color -->
+              <div class="mb-3" id="colorWrapper" style="display:none;">
+                <label class="form-label text-uppercase small mb-1">Color</label>
+                <select id="selectColor" class="form-select form-select-sm"></select>
+              </div>
+
+              <!-- Cantidad -->
+              <div class="d-flex align-items-center mb-3">
+                <span class="text-uppercase small me-3">Cantidad</span>
+                <div class="input-group input-group-sm" style="width:140px;">
+                  <button class="btn btn-outline-secondary" id="btnMenosQty" type="button">-</button>
+                  <input type="number" class="form-control text-center" id="inputCantidad" value="1" min="1">
+                  <button class="btn btn-outline-secondary" id="btnMasQty" type="button">+</button>
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn btn-warning fw-semibold" id="btnAgregarCarrito">Añadir al carrito</button>
+
+                <!-- Volver al catálogo (verde) -->
+                <button class="btn btn-success fw-semibold" id="btnComprarAhora">Volver al catálogo</button>
+
+
+              </div>
+
+              <!-- Compra segura -->
+              <div class="border rounded-3 p-3 bg-light mb-3">
+                <h6 class="text-uppercase small text-muted mb-2">Compra segura con:</h6>
+                <div class="row g-3">
+                  <div class="col-4 col-md-4 seguridad-icono">
+                    <img src="/assets/icon/visa-master.png">
+                    <div>Visa / Mastercard</div>
+                  </div>
+                  <div class="col-4 col-md-4 seguridad-icono">
+                    <img src="/assets/icon/yape-plin.png">
+                    <div>Yape / Plin</div>
+                  </div>
+
+                  <div class="col-4 col-md-4 seguridad-icono">
+                    <img src="/assets/icon/transferencia.png">
+                    <div>Transferencias</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Compartir -->
+              <div class="mt-auto">
+                <span class="small text-muted me-2">SIGUENOS EN :</span>
+                <button class="btn btn-sm btn-primary me-1"
+                  onclick="window.open('https://www.facebook.com/people/Bsperu/100090456091171/#','_blank','noopener,noreferrer')">
+                  <i class="bi bi-facebook"></i>
+                </button>
+
+                <button class="btn btn-sm btn-danger me-1"
+                  onclick="window.open('https://www.instagram.com/bsp.peru/#','_blank','noopener,noreferrer')">
+                  <i class="bi bi-instagram"></i>
+                </button>
+
+                <button class="btn btn-sm btn-primary me-1"
+                  onclick="window.open('https://www.linkedin.com/company/bs-per%C3%BA/?viewAsMember=true','_blank','noopener,noreferrer')">
+                  <i class="bi bi-linkedin"></i>
+                </button>
+
+                <button class="btn btn-sm btn-dark"
+                  onclick="window.open('https://www.tiktok.com/@bs_peru?_t=ZS-90uDwonltem&_r=1','_blank','noopener,noreferrer')">
+                  <i class="bi bi-tiktok"></i>
+                </button>
+
+                <button class="btn btn-sm btn-danger ms-1"
+                  onclick="window.open('https://www.youtube.com/@bsperu-BSP','_blank','noopener,noreferrer')">
+                  <i class="bi bi-youtube"></i>
+                </button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fichas -->
+      <div class="mt-4"> 
+
+        <ul class="nav nav-tabs tabs-ficha" id="tabFicha" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active" id="tabDesc" data-bs-toggle="tab" data-bs-target="#paneDesc">
+              Descripción
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button class="nav-link" id="tabInfo" data-bs-toggle="tab" data-bs-target="#paneInfo">
+              Hoja de Seguridad
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content border-start border-end border-bottom p-3 bg-white">
+          <div class="tab-pane fade show active" id="paneDesc">
+            <div id="textoDescripcionLarga"></div>
+          </div>
+          <div class="tab-pane fade" id="paneInfo">
+            <div id="textoInfoAdicional"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS del detalle -->
+  <script src="/assets/js/loyout/loyout.js"></script>
+  <script src="/assets/js/catalogo/Producto.js"></script>
+  <script src="/assets/js/custom/terminos-condiciones.js"></script>
+  <script src="/assets/js/custom/whatsapp-draggable.js"></script>
+
+</body>
+
+</html>

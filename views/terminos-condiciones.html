@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/index/index.css">
+    <link rel="stylesheet" href="../assets/css/loyout/loyout.css">
+    <link rel="stylesheet" href="../assets/css/custom/checkout.css">
+    <link rel="stylesheet" href="../assets/css/custom/cookies.css">
+    <link rel="stylesheet" href="../assets/css/custom/terminos-condiciones-page.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- SWIPER -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/assets/imgWeb/logo-icon.svg" type="image/svg+xml">
+    <title>Términos y Condiciones - BS PERÚ</title>
+</head>
+
+<body>
+<a href="https://wa.me/51914776669" target="_blank" class="whatsapp-btn" title="WhatsApp">
+        <i class="bi bi-whatsapp whatsapp-icon"></i>
+</a>
+
+    <!-- MENÚ SUPERIOR FIJO Y BONITO -->
+    <nav class="navbar-bs">
+        <div class="navbar-bs__logo">
+            <a href="/index.html">
+                <img src="/assets/img principales/logo.png" alt="B S PERÚ" height="47">
+            </a>
+        </div>
+
+        <div style="display: flex;
+    flex-direction: row;
+    gap: 10px;">
+        <div class="navbar-bs__center">
+            <ul class="navbar-bs__links" id="navbar-bs-links">
+                
+                <li class="navbar-bs__item-with-submenu">
+                    <a href="/views/catalogo.html" class="navbar-bs__productos-link" id="productosLink">Productos</a>
+                    <div class="navbar-bs__submenu" id="productosSubmenu">
+                        <div class="navbar-bs__submenu-content">
+                            <div class="submenu-loading">Cargando categorías...</div>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="NuestrasMarcas.html">Nuestras Marcas</a></li>
+                <!-- <li><a href="ubicacion.html">Ubicación</a></li> -->
+                
+                <li><a href="ubicacion.html">Sucursales</a></li>
+                <li><a href="contacto.html">Contáctanos</a></li>
+            </ul>
+            
+        </div>
+        <div class="navbar-search-wrapper" style="position: relative; display: flex; align-items: center; margin-left: auto;">
+            <form class="navbar-bs__search-form" action="#" method="get">
+                <input type="text" placeholder="Buscar..." name="q" />
+                <button type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button>
+            </form>
+            <div id="layoutSearchSuggestions" class="list-group position-absolute layout-search-suggestions" style="display: none; position: absolute; background: white; max-height: 350px; overflow-y: auto; z-index: 1000; border-radius: 0 0 8px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"></div>
+        </div>
+        <button id="btnCarritoNav" class="navbar-bs__cart-btn" type="button" aria-label="Carrito">
+            <i class="bi bi-bag"></i>
+            <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none">0</span>
+        </button>
+        </div>
+        <button class="navbar-bs__toggle navbar-bs__toggle--mobile" id="navbar-bs-toggle-mobile" aria-label="Abrir menú">
+            <i class="bi bi-list"></i>
+        </button>
+ 
+        <button class="navbar-bs__toggle navbar-bs__toggle--desktop" id="navbar-bs-toggle-desktop" aria-label="Abrir menú">
+            <i class="bi bi-list"></i>
+        </button>
+    </nav>
+
+    <!-- MENÚ DRAWER MÓVIL (Panel deslizable desde la izquierda) -->
+    <div class="navbar-bs__drawer-overlay" id="drawerOverlay"></div>
+    <div class="navbar-bs__drawer" id="navbarDrawer">
+        <!-- Header del Drawer -->
+        <div class="navbar-bs__drawer-header">
+            <img src="/assets/img principales/logo.png" alt="B S PERÚ" class="navbar-bs__drawer-logo" style="height: 70px;"/>
+            <button type="button" class="navbar-bs__drawer-close" id="drawerCloseBtn" aria-label="Cerrar menú">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+
+        <!-- Búsqueda -->
+        <form class="navbar-bs__drawer-search" id="drawerSearchForm" role="search">
+            <input id="drawerProductSearch" class="navbar-bs__drawer-search-input" type="search" placeholder="Buscar producto o SKU..." autocomplete="off" aria-label="Buscar productos">
+            <div id="drawerSearchSuggestions" class="navbar-bs__drawer-search-suggestions" style="display: none;"></div>
+        </form>
+
+        <!-- Menú de navegación -->
+        <ul class="navbar-bs__drawer-nav">
+            <li><a href="NuestrasMarcas.html" class="navbar-bs__drawer-link">Nuestras Marcas</a></li>
+            <li><a href="ubicacion.html" class="navbar-bs__drawer-link">Sucursales</a></li>
+            
+            <!-- Productos con submenu -->
+            <li class="navbar-bs__drawer-submenu">
+                <button type="button" class="navbar-bs__drawer-link navbar-bs__drawer-submenu-toggle" id="drawerProductosToggle">
+                    Productos
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+                <div class="navbar-bs__drawer-submenu-panel" id="drawerProductosPanel">
+                    <a href="/views/catalogo.html" class="navbar-bs__drawer-submenu-item">Todos</a>
+                    <div class="navbar-bs__drawer-submenu-divider"></div>
+                    <a href="/views/catalogo.html?cat=ADHESIVO%20EPOXICO" class="navbar-bs__drawer-submenu-item">Adhesivo Epóxico</a>
+                    <a href="/views/catalogo.html?cat=CAPUCHONES" class="navbar-bs__drawer-submenu-item">Capuchones</a>
+                    <a href="/views/catalogo.html?cat=CURADORES" class="navbar-bs__drawer-submenu-item">Curadores</a>
+                    <a href="/views/catalogo.html?cat=DESMOLDANTES" class="navbar-bs__drawer-submenu-item">Desmoldantes</a>
+                    <a href="/views/catalogo.html?cat=FRAGUAS" class="navbar-bs__drawer-submenu-item">Fraguas</a>
+                    <a href="/views/catalogo.html?cat=IMPERMEABILIZANTES" class="navbar-bs__drawer-submenu-item">Impermeabilizantes</a>
+                    <a href="/views/catalogo.html?cat=INCORPORADOR%20DE%20AIRE" class="navbar-bs__drawer-submenu-item">Incorporador de Aire</a>
+                    <a href="/views/catalogo.html?cat=MORTEROS%20DE%20REPARACION" class="navbar-bs__drawer-submenu-item">Morteros de Reparación</a>
+                    <a href="/views/catalogo.html?cat=OTROS" class="navbar-bs__drawer-submenu-item">Otros</a>
+                    <a href="/views/catalogo.html?cat=PEGAMENTOS" class="navbar-bs__drawer-submenu-item">Pegamentos</a>
+                    <a href="/views/catalogo.html?cat=PLASTIFICANTES" class="navbar-bs__drawer-submenu-item">Plastificantes</a>
+                    <a href="/views/catalogo.html?cat=REMOVEDORES" class="navbar-bs__drawer-submenu-item">Removedores</a>
+                    <a href="/views/catalogo.html?cat=RESINAS" class="navbar-bs__drawer-submenu-item">Resinas</a>
+                    <a href="/views/catalogo.html?cat=SELLADOR" class="navbar-bs__drawer-submenu-item">Sellador</a>
+                    <a href="/views/catalogo.html?cat=SEPARADORES" class="navbar-bs__drawer-submenu-item">Separadores</a>
+                    <a href="/views/catalogo.html?cat=SOLVENTES" class="navbar-bs__drawer-submenu-item">Solventes</a>
+                    <a href="/views/catalogo.html?cat=WATER%20STOPS" class="navbar-bs__drawer-submenu-item">Water Stops</a>
+                </div>
+            </li>
+
+            <li><a href="contacto.html" class="navbar-bs__drawer-link">Contactanos</a></li>
+        </ul>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="terminos-page-container">
+        <div class="container">
+            <!-- Encabezado -->
+            <div class="terminos-header mb-5">
+                <h1 class="terminos-titulo">Políticas de Privacidad y Términos y Condiciones</h1>
+                <p class="terminos-subtitulo">Building Systems Perú S.A.C.</p>
+            </div>
+
+            <div class="row">
+                <!-- Índice/Tabla de Contenidos -->
+                <aside class="col-lg-3 mb-4">
+                    <div class="terminos-sidebar">
+                        <h5 class="terminos-sidebar-titulo">Contenido</h5>
+                        <nav class="terminos-nav" id="terminosNav">
+                            <ul class="list-unstyled">
+                                <li><a href="#aviso-legal" class="terminos-nav-link">Aviso Legal</a></li>
+                                <li><a href="#politica-privacidad" class="terminos-nav-link">Política de Privacidad</a></li>
+                                <li><a href="#terminos-condiciones-uso" class="terminos-nav-link">Términos y Condiciones</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Contenido Principal -->
+                <article class="col-lg-9">
+                    <div id="terminosContenido" class="terminos-contenido">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-3">Cargando contenido...</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="contactanos" class="text-white py-4">
+        <div class="container">
+            <div class="row">
+
+                <!-- Columna 1 -->
+                <div class="col-12 col-md-4 mb-4 mb-md-0 text-center text-md-start">
+                    <img src="/assets/img principales/logo.png" alt="BSP Logo" class="mb-2" style="max-width:250px;">
+                    <div> 
+                        <br>
+                        RAZÓN SOCIAL: BUILDING SYSTEMS PERÚ S.A.C.<br>
+                        RUC: 20609793806
+                    </div>
+                </div>
+
+                <!-- Columna 2 -->
+                <div class="col-12 col-md-4 mb-4 mb-md-0 text-center text-md-start">
+                    <div class="fw-bold mb-2">Contáctanos</div>
+                    <div>Teléfono: +51 914 776 669</div>
+                    <div>Correo electrónico: bs.peru.marketing@bsperu.pe </div>
+                </div>
+
+                <!-- Columna 3 -->
+                <div class="col-12 col-md-4 text-center text-md-start">
+                    <div class="fw-bold mb-2">Servicio al cliente</div>
+                    <a href="terminos-condiciones.html#aviso-legal" class="text-white d-block mb-1" >Aviso Legal</a>
+                    <a href="terminos-condiciones.html#politica-privacidad" class="text-white d-block mb-1" >Política de Privacidad</a>
+                    <a href="terminos-condiciones.html#terminos-condiciones-uso" class="text-white d-block mb-1" >Términos y condiciones</a>
+                    <a href="https://respondo.pe/libro/building-systems-peru-s-a-c" class="text-white d-block mb-3">Libro de reclamaciones</a>
+
+                    <div>
+                        <a href="https://www.instagram.com/bsp.peru/#" target="_blank" rel="noopener noreferrer" class="text-white me-2 fs-4"><i class="bi bi-instagram"></i></a>
+                        <a href="https://www.facebook.com/people/Bsperu/100090456091171/#" target="_blank" rel="noopener noreferrer" class="text-white me-2 fs-4"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.linkedin.com/company/bs-per%C3%BA/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="text-white fs-4"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://www.tiktok.com/@bs_peru?_t=ZS-90uDwonltem&_r=1" target="_blank" rel="noopener noreferrer" class="text-white fs-4" style="margin-left: 10px ;"><i class="bi bi-tiktok"></i></a>
+                        <a href="https://www.youtube.com/@bsperu-BSP" target="_blank" rel="noopener noreferrer" class="text-white fs-4" style="margin-left: 10px ;"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4 small">
+                &copy; B S PERÚ | Todos los Derechos Reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL TÉRMINOS Y CONDICIONES (para checkout) -->
+    <div id="terminosCondicionesModal" class="layout-cart-modal">
+        <div class="layout-cart-backdrop"></div>
+        <div class="layout-cart-panel" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+            <div style="padding: 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+                <h5 style="margin: 0;">Política de Privacidad y Uso de Datos</h5>
+                <button type="button" onclick="document.getElementById('terminosCondicionesModal').classList.remove('is-open')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">
+                    ×
+                </button>
+            </div>
+            <div style="padding: 20px;">
+                <h6 style="margin-top: 0;">Autorización para Emisión de Factura</h6>
+                <p>Al marcar esta casilla, usted autoriza a Building Systems Perú S.A.C. a utilizar sus datos personales para:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Emitir documentos tributarios (facturas, boletas, notas de crédito)</li>
+                    <li>Mantener registro de transacciones comerciales</li>
+                    <li>Cumplir con obligaciones fiscales y legales</li>
+                    <li>Enviarle documentación relacionada con su compra</li>
+                </ul>
+                
+                <h6>Protección de Datos</h6>
+                <p>Sus datos serán tratados conforme a la <strong>Ley de Protección de Datos Personales (Ley 29733)</strong> y serán mantenidos de forma segura. No serán compartidos con terceros sin su consentimiento, excepto cuando sea requerido por ley.</p>
+                
+                <h6>Derechos del Cliente</h6>
+                <p>Usted tiene derecho a:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Acceder a sus datos personales</li>
+                    <li>Solicitar la rectificación de datos inexactos</li>
+                    <li>Solicitar la eliminación de datos</li>
+                    <li>Revocar este consentimiento en cualquier momento</li>
+                </ul>
+                
+                <p style="font-size: 0.9em; color: #666; margin-top: 20px;">Para más información, consulte nuestra <a href="/views/terminos-condiciones.html#politica-privacidad" style="color: #0066cc;">Política de Privacidad completa</a></p>
+            </div>
+            <div style="padding: 15px; border-top: 1px solid #ddd; text-align: right;">
+                <button onclick="document.getElementById('terminosCondicionesModal').classList.remove('is-open')" class="btn btn-primary btn-sm">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SWIPER JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="/assets/js/loyout/loyout.js"></script>
+    <script src="/assets/js/custom/terminos-condiciones-page.js"></script>
+    <script src="/assets/js/custom/cookies.js"></script>
+    <script src="/assets/js/custom/whatsapp-draggable.js"></script>
+    
+    <!-- Script para cargar categorías en el submenu -->
+    <script>
+        function cargarCategoriasTerminos() {
+            fetch('/assets/Data/categorias.json')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error cargando categorías');
+                    return res.json();
+                })
+                .then(categorias => {
+                    const submenu = document.getElementById('productosSubmenu');
+                    if (!submenu) return;
+                    
+                    const categoriasHTML = categorias
+                        .map(cat => `<a href="/views/catalogo.html?cat=${encodeURIComponent(cat.nombre)}" class="dropdown-item">${cat.nombre}</a>`)
+                        .join('');
+                    
+                    submenu.innerHTML = `
+                        <div class="navbar-bs__submenu-content">
+                            ${categoriasHTML}
+                        </div>
+                    `;
+                })
+                .catch(err => {
+                    console.error('Error cargando categorías:', err);
+                    const submenu = document.getElementById('productosSubmenu');
+                    if (submenu) {
+                        submenu.innerHTML = `<div class="navbar-bs__submenu-content"><div class="text-muted px-3 py-2">Categorías no disponibles</div></div>`;
+                    }
+                });
+        }
+        
+        // Cargar categorías cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', cargarCategoriasTerminos);
+        } else {
+            cargarCategoriasTerminos();
+        }
+    </script>
+
+</body>
+
+</html>

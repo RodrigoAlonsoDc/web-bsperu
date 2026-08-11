@@ -1,0 +1,20 @@
+[
+  {
+    "icono": "bi-lock-fill",
+    "titulo": "COMPRA ONLINE SEGURA",
+    "descripcion": "Asegura por nuestros distribuidores autorizados",
+    "fondo": "naranja"
+  },
+  {
+    "icono": "bi-shield-check",
+    "titulo": "PRODUCTO ORIGINAL",
+    "descripcion": "Productos 100% originales y certificados",
+    "fondo": "blanco"
+  },
+  {
+    "icono": "bi-hourglass-split",
+    "titulo": "AHORRA TIEMPO",
+    "descripcion": "Recibe tu pedido en casa, obra o proyecto.",
+    "fondo": "naranja"
+  }
+]
