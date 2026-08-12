@@ -134,12 +134,15 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 <div class="modal-body">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Nombre del Cliente / Razón Social</label>
-                            <input type="text" name="cliente" required>
+                            <label>DNI / RUC (Presiona la lupa para buscar)</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" name="documento" id="input_documento" style="flex:1;" placeholder="Ej: 71234567 o 20123456789">
+                                <button type="button" class="btn-primary" onclick="buscarDocumento()" style="padding: 10px; margin: 0;"><i class="ph ph-magnifying-glass"></i></button>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>DNI / RUC</label>
-                            <input type="text" name="documento">
+                            <label>Nombre del Cliente / Razón Social</label>
+                            <input type="text" name="cliente" id="input_cliente" required>
                         </div>
                     </div>
 
@@ -367,6 +370,26 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 alert("Error de conexión");
             }
         });
+
+        async function buscarDocumento() {
+            const numero = document.getElementById('input_documento').value.trim();
+            if(!numero) {
+                alert("Por favor, ingresa un DNI o RUC válido.");
+                return;
+            }
+            
+            try {
+                const res = await fetch('api_reniec.php?numero=' + numero);
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById('input_cliente').value = data.nombre;
+                } else {
+                    alert("No se encontró el documento en RENIEC/SUNAT.");
+                }
+            } catch(e) {
+                alert("Error de conexión al consultar el documento.");
+            }
+        }
 
         // Init
         cargarCatalogo();
