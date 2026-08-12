@@ -67,7 +67,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         /* Modal ERP Formulario */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: flex-start; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s; z-index: 1000; padding: 20px; box-sizing: border-box; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-card { background: var(--bg-color); width: 100%; max-width: 1200px; border-radius: 4px; display: flex; flex-direction: column; max-height: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-card { background: var(--bg-color); width: 100%; max-width: 1200px; border-radius: 4px; display: flex; flex-direction: column; max-height: 95vh; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .modal-header { padding: 15px 20px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
         .modal-footer { padding: 15px 20px; background: white; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
@@ -281,31 +281,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <input type="text" name="comentario">
                             </div>
                         </div>
-                        
-                        <!-- Col 3 -->
-                        <div class="form-col">
-                            <div class="col-header"><i class="ph ph-file-text"></i></div>
-                            <div class="col-title">CRM</div>
-                            
-                            <div class="form-group">
-                                <label>Cuando lo usarán?</label>
-                                <input type="date" name="fecha_uso">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Cuando necesita comprarlo?</label>
-                                <input type="date" name="fecha_compra">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Llamar al cliente el:</label>
-                                <input type="date" name="fecha_llamada">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Otro Proveedor</label>
-                                <input type="text" name="otro_proveedor">
-                            </div>
                         </div>
                     </div>
                     
