@@ -1,212 +1,215 @@
+<?php
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: ../admin/login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Aplicaciones - CRM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>CRM - BS Peru</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --orange: #ff9800;
-            --pink: #e91e63;
-            --green-light: #4caf50;
-            --green-dark: #388e3c;
-            --text-dark: #333;
-            --text-gray: #999;
-        }
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-color);
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(60deg, rgb(1, 1, 1), rgb(10, 10, 10));
+            background-color: rgb(10, 10, 10);
             margin: 0;
-            padding: 40px;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
         }
-        
-        /* Encabezado */
-        .header {
-            margin-bottom: 50px;
-        }
-        .header h1 {
-            background-color: #3f51b5;
+
+        /* Top Bar flotante */
+        .topbar {
+            position: fixed;
+            top: 20px;
+            right: 40px;
             color: white;
-            display: inline-block;
-            padding: 5px 12px;
-            font-size: 20px;
-            font-weight: 400;
-            margin: 0;
-        }
-        
-        /* Contenedor de Tarjetas */
-        .cards-container {
+            z-index: 100;
             display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
         }
-        
-        /* Estilo de cada Tarjeta (Material Design) */
-        .card {
-            background: white;
-            border-radius: 4px;
-            box-shadow: 0 1px 4px 0 rgba(0,0,0,0.14);
-            width: 260px;
+        .topbar h1 { margin: 0; font-size: 20px; font-weight: 300; letter-spacing: 2px; }
+        .btn-logout { color: #d81b60; text-decoration: none; border: 1px solid #d81b60; padding: 8px 15px; border-radius: 20px; font-size: 12px; transition: 0.3s; }
+        .btn-logout:hover { background: #d81b60; color: white; }
+
+        #image_track {
+            display: flex;
+            gap: 4vmin;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(0%, -50%);
+            user-select: none;
+        }
+
+        .module-card {
             position: relative;
-            margin-top: 30px; /* Espacio para el icono flotante */
-            display: flex;
-            flex-direction: column;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            padding-top: 0;
+        .module-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px rgba(255,255,255,0.1);
         }
-        
-        /* Icono flotante */
-        .card-icon {
-            width: 85px;
-            height: 85px;
+
+        .module-card .image {
+            width: 45vmin;
+            height: 65vmin;
+            object-fit: cover;
+            object-position: 100% center;
+            -webkit-filter: brightness(0.75);
+            -o-filter: brightness(0.75);
+            -moz-filter: brightness(0.75);
+            -ms-filter: brightness(0.75);
+            filter: brightness(0.75);
+            display: block;
+            pointer-events: none; /* Para no interferir con el click del card */
+        }
+
+        .module-card:hover .image {
+            filter: brightness(1);
+        }
+
+        .module-title {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            border-radius: 3px;
-            box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(0,0,0,.4);
-            margin-top: -20px; /* Hace que flote hacia arriba */
+            font-size: 3vmin;
+            font-weight: 600;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+            pointer-events: none;
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #d81b60;
         }
-        
-        .card-title {
-            color: var(--text-gray);
-            font-size: 16px;
-            margin-top: 20px;
-            text-align: right;
-            flex: 1;
-            font-weight: 300;
-        }
-        
-        .card-divider {
-            height: 1px;
-            background: #eee;
-            margin: 0 15px;
-        }
-        
-        /* Pie de la tarjeta (Link) */
-        .card-footer {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+        .helper-text {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.3);
             font-size: 12px;
-            color: var(--text-gray);
-        }
-        
-        .card-footer a {
-            color: var(--text-gray);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        
-        .card-footer a:hover {
-            color: #333;
-        }
-        
-        .card-footer i {
-            font-size: 14px;
-        }
-        
-        /* Degradados y Colores Específicos */
-        .bg-orange { background: linear-gradient(60deg, #ffa726, #fb8c00); }
-        .bg-pink { background: linear-gradient(60deg, #ec407a, #d81b60); }
-        .bg-green-light { background: linear-gradient(60deg, #66bb6a, #43a047); }
-        .bg-green-dark { background: linear-gradient(60deg, #4caf50, #2e7d32); }
-        
-        .text-orange { color: #fb8c00; }
-        .text-pink { color: #d81b60; }
-        .text-green-light { color: #43a047; }
-        .text-green-dark { color: #2e7d32; }
-        
-        /* Footer Global */
-        .global-footer {
-            margin-top: 50px;
-            text-align: right;
-            color: var(--text-gray);
-            font-size: 14px;
+            letter-spacing: 3px;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Lista de Aplicaciones</h1>
+    <div class="topbar">
+        <h1>BS PERU</h1>
+        <a href="../admin/logout.php" class="btn-logout">Cerrar Sesión</a>
     </div>
 
-    <div class="cards-container">
-        <!-- Tarjeta: Comercial -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-icon bg-orange">
-                    <i class="ph ph-chart-bar"></i>
-                </div>
-                <div class="card-title">Comercial</div>
-            </div>
-            <div class="card-divider"></div>
-            <div class="card-footer">
-                <i class="ph ph-chart-bar text-orange"></i>
-                <a href="#">Ventas de Productos</a>
-            </div>
+    <div id="image_track" data-mouse-down-at="0" data-prev-percentage="0">
+        
+        <div class="module-card" data-url="#">
+            <img class="image" src="https://images.unsplash.com/photo-1504275107627-0c2ba7a43dba?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Comercial" draggable="false" />
+            <div class="module-title">COMERCIAL</div>
         </div>
 
-        <!-- Tarjeta: Pedidos -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-icon bg-pink">
-                    <i class="ph ph-squares-four"></i>
-                </div>
-                <div class="card-title">Pedidos</div>
-            </div>
-            <div class="card-divider"></div>
-            <div class="card-footer">
-                <i class="ph ph-browser text-pink"></i>
-                <a href="pedidos.php">Ventas (Ingresar al Módulo)</a>
-            </div>
+        <div class="module-card" data-url="pedidos.php">
+            <img class="image" src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Pedidos" draggable="false" />
+            <div class="module-title">PEDIDOS</div>
         </div>
 
-        <!-- Tarjeta: Despachos -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-icon bg-green-light">
-                    <i class="ph ph-forklift"></i>
-                </div>
-                <div class="card-title">Despachos</div>
-            </div>
-            <div class="card-divider"></div>
-            <div class="card-footer">
-                <i class="ph ph-package text-green-light"></i>
-                <a href="#">Despachos</a>
-            </div>
+        <div class="module-card" data-url="#">
+            <img class="image" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Despachos" draggable="false" />
+            <div class="module-title">DESPACHOS</div>
         </div>
 
-        <!-- Tarjeta: Reportes -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-icon bg-green-dark">
-                    <i class="ph ph-clipboard-text"></i>
-                </div>
-                <div class="card-title">Reportes</div>
-            </div>
-            <div class="card-divider"></div>
-            <div class="card-footer">
-                <i class="ph ph-file-text text-green-dark"></i>
-                <a href="#">Reportes</a>
-            </div>
+        <div class="module-card" data-url="#">
+            <img class="image" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Reportes" draggable="false" />
+            <div class="module-title">REPORTES</div>
         </div>
+
     </div>
 
-    <div class="global-footer">
-        &copy; 2026 , Hecho para BS Peru
-    </div>
+    <div class="helper-text">MANTÉN PRESIONADO Y ARRASTRA PARA NAVEGAR</div>
+
+    <script>
+        const track = document.getElementById("image_track");
+        let isDragging = false;
+        let startX = 0;
+
+        const handleOnDown = (e) => {
+            isDragging = false;
+            startX = e.clientX || (e.touches && e.touches[0].clientX);
+            track.dataset.mouseDownAt = startX;
+        };
+
+        const handleOnUp = (e) => {
+            track.dataset.mouseDownAt = "0";
+            track.dataset.prevPercentage = track.dataset.percentage;
+        };
+
+        const handleOnMove = (e) => {
+            if (track.dataset.mouseDownAt === "0") return;
+
+            const currentX = e.clientX || (e.touches && e.touches[0].clientX);
+            const mouseDelta = parseFloat(track.dataset.mouseDownAt) - currentX;
+            const maxDelta = window.innerWidth / 2;
+
+            if (Math.abs(mouseDelta) > 10) {
+                isDragging = true; // Si se movió más de 10px, es un arrastre, no un clic
+            }
+
+            const percentage = (mouseDelta / maxDelta) * -100,
+                  nextPercentageUnconstrained = parseFloat(track.dataset.prevPercentage) + percentage,
+                  nextPercentage = Math.max(Math.min(nextPercentageUnconstrained, 0), -100);
+
+            track.dataset.percentage = nextPercentage;
+
+            track.animate(
+                { transform: `translate(${nextPercentage}%, -50%)` },
+                { duration: 1200, fill: "forwards" }
+            );
+
+            for (const image of track.getElementsByClassName("image")) {
+                image.animate(
+                    { objectPosition: `${100 + nextPercentage}% center` },
+                    { duration: 1200, fill: "forwards" }
+                );
+            }
+        };
+
+        window.onmousedown = e => handleOnDown(e);
+        window.ontouchstart = e => handleOnDown(e.touches[0]);
+
+        window.onmouseup = e => handleOnUp(e);
+        window.ontouchend = e => handleOnUp(e.touches[0]);
+
+        window.onmousemove = e => handleOnMove(e);
+        window.ontouchmove = e => handleOnMove(e.touches[0]);
+
+        // Lógica de clics seguros (no se dispara si el usuario estaba arrastrando)
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!isDragging) {
+                    const url = card.getAttribute('data-url');
+                    if(url && url !== '#') {
+                        window.location.href = url;
+                    }
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
