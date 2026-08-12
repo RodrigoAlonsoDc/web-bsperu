@@ -211,7 +211,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     <td>${p.marca || '-'}</td>
                     <td>${p.precio || '-'}</td>
                     <td>
-                        <button class="btn-edit" onclick="editarProducto('${p.sku}')"><i class="ph ph-pencil-simple"></i></button>
+                        <button class="btn-edit" onclick="abrirModal('${p.sku}')"><i class="ph ph-pencil-simple"></i></button>
                         <button class="btn-danger" onclick="eliminarProducto('${p.sku}')"><i class="ph ph-trash"></i></button>
                     </td>
                 `;
