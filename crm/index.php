@@ -169,7 +169,7 @@
             <div class="card-divider"></div>
             <div class="card-footer">
                 <i class="ph ph-browser text-pink"></i>
-                <a href="#">Ventas</a>
+                <a href="pedidos.php">Ventas (Ingresar al Módulo)</a>
             </div>
         </div>
 
