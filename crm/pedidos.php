@@ -28,9 +28,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             --btn-purple: #6f42c1;
             
             --row-blue: #cce5ff;
+            --row-blue: #cce5ff;
             --row-gray: #e2e3e5;
         }
-        body { font-family: 'Roboto', sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; color: var(--text-dark); }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text-primary); transition: background 0.3s, color 0.3s; }
         
         /* Navbar Sidebar estilo ERP */
         .layout { display: flex; height: 100vh; overflow: hidden; }
@@ -38,9 +39,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         .sidebar a { color: white; text-decoration: none; font-size: 24px; opacity: 0.8; transition: 0.2s; }
         .sidebar a:hover, .sidebar a.active { opacity: 1; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px; }
         
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: white; }
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); }
         
-        .topbar { background: #343a40; height: 40px; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; color: white; }
+        .topbar { background: var(--border); height: 40px; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; color: var(--text-primary); }
         
         /* Contenido de la Tabla */
         .content { padding: 20px; flex: 1; overflow-y: auto; }
@@ -51,11 +52,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         .btn-green { background: var(--green); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         
         /* Tabla ERP */
-        table.erp-table { width: 100%; border-collapse: collapse; font-size: 11px; color: #555; }
-        table.erp-table th { padding: 10px 5px; text-align: left; border-bottom: 2px solid var(--border); color: #777; font-weight: 500; }
-        table.erp-table td { padding: 8px 5px; vertical-align: middle; }
-        table.erp-table tbody tr:nth-child(odd) { background-color: var(--row-blue); }
-        table.erp-table tbody tr:nth-child(even) { background-color: var(--row-gray); }
+        table.erp-table { width: 100%; border-collapse: collapse; font-size: 11px; color: var(--text-secondary); }
+        table.erp-table th { padding: 10px 5px; text-align: left; border-bottom: 2px solid var(--border); color: var(--text-primary); font-weight: 500; }
+        table.erp-table td { padding: 8px 5px; vertical-align: middle; border-bottom: 1px solid var(--border); }
+        table.erp-table tbody tr:hover { background-color: var(--bg); }
         
         .actions-col { display: flex; gap: 3px; }
         .btn-action { width: 24px; height: 24px; border: none; border-radius: 3px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
@@ -65,42 +65,44 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         .btn-action.purple { background: var(--btn-purple); }
         
         /* Modal ERP Formulario */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: flex-start; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s; z-index: 1000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: flex-start; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s; z-index: 1000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-card { background: var(--bg-color); width: 100%; max-width: 1200px; border-radius: 4px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 40px; }
-        .modal-header { padding: 15px 20px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-card { background: var(--bg); width: 100%; max-width: 1200px; border-radius: 4px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 40px; }
+        .modal-header { padding: 15px 20px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; color: var(--text-primary); }
         .modal-body { padding: 20px; flex: 1; }
-        .modal-footer { padding: 15px 20px; background: white; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-footer { padding: 15px 20px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
         
         /* Grid del Formulario */
         .form-row { display: flex; gap: 20px; margin-bottom: 20px; align-items: flex-start; }
-        .form-col { flex: 1; background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 20px; position: relative; }
+        .form-col { flex: 1; background: var(--surface); border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); padding: 20px; position: relative; }
         
-        .col-header { position: absolute; top: -15px; left: 20px; background: var(--pink); color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .col-title { font-size: 16px; color: #555; margin-left: 60px; margin-bottom: 20px; margin-top: -5px; font-weight: 300; }
+        .col-header { position: absolute; top: -15px; left: 20px; background: var(--primary); color: var(--text-inverse); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .col-title { font-size: 16px; color: var(--text-primary); margin-left: 60px; margin-bottom: 20px; margin-top: -5px; font-weight: 300; }
         
         .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 2px; font-size: 12px; outline: none; box-sizing: border-box; }
-        .form-group input[readonly] { background: #e9ecef; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-primary); border-radius: 2px; font-size: 12px; outline: none; box-sizing: border-box; }
+        .form-group input[readonly] { background: var(--border); }
         .form-group.inline { display: flex; gap: 10px; }
         .form-group.inline > div { flex: 1; }
         
-        .client-section { background: white; padding: 20px; border-left: 5px solid var(--green); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .client-section h3 { margin: 0 0 15px 0; font-weight: 300; font-size: 18px; color: #555; }
-        .client-grid { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: center; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
-        .client-grid label { color: #17a2b8; font-weight: 500; }
-        .client-grid span { color: #dc3545; font-weight: 500; }
-        .client-grid span.blue { color: blue; font-weight: bold; }
+        .client-section { background: var(--surface); padding: 20px; border-left: 5px solid var(--primary); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .client-section h3 { margin: 0 0 15px 0; font-weight: 300; font-size: 18px; color: var(--text-primary); }
+        .client-grid { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: center; font-size: 13px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
+        .client-grid label { color: var(--primary); font-weight: 500; }
+        .client-grid span { color: var(--text-secondary); font-weight: 500; }
+        .client-grid span.blue { color: var(--primary); font-weight: bold; }
         
-        .cart-section { background: white; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .cart-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
-        .cart-table th, .cart-table td { padding: 8px; border: 1px solid #ddd; }
-        .cart-table th { background: #f8f9fa; }
+        .cart-section { background: var(--surface); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .cart-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; color: var(--text-primary); }
+        .cart-table th, .cart-table td { padding: 8px; border: 1px solid var(--border); }
+        .cart-table th { background: var(--bg); }
         
     </style>
 </head>
 <body>
+    
+    <?php include 'theme_switcher.php'; ?>
 
     <div class="layout">
         <!-- Sidebar -->

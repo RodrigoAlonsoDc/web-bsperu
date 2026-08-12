@@ -17,11 +17,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         body {
             height: 100vh;
             width: 100vw;
-            background: linear-gradient(60deg, rgb(1, 1, 1), rgb(10, 10, 10));
-            background-color: rgb(10, 10, 10);
+            background: var(--bg);
+            color: var(--text-primary);
             margin: 0;
             overflow: hidden;
             font-family: 'Montserrat', sans-serif;
+            transition: background 0.3s;
         }
 
         /* Top Bar flotante */
@@ -36,8 +37,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             gap: 15px;
         }
         .topbar h1 { margin: 0; font-size: 20px; font-weight: 300; letter-spacing: 2px; }
-        .btn-logout { color: #d81b60; text-decoration: none; border: 1px solid #d81b60; padding: 8px 15px; border-radius: 20px; font-size: 12px; transition: 0.3s; }
-        .btn-logout:hover { background: #d81b60; color: white; }
+        .btn-logout { color: var(--primary); text-decoration: none; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 20px; font-size: 12px; transition: 0.3s; }
+        .btn-logout:hover { background: var(--primary); color: var(--text-inverse); }
 
         #image_track {
             display: flex;
@@ -95,7 +96,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             padding: 10px 20px;
             border-radius: 5px;
             backdrop-filter: blur(5px);
-            border-left: 4px solid #d81b60;
+            border-left: 4px solid var(--primary);
         }
 
         .helper-text {
@@ -103,7 +104,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255,255,255,0.3);
+            color: var(--text-secondary);
             font-size: 12px;
             letter-spacing: 3px;
             pointer-events: none;
@@ -111,6 +112,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     </style>
 </head>
 <body>
+
+    <?php include 'theme_switcher.php'; ?>
 
     <div class="topbar">
         <h1>BS PERU</h1>
