@@ -434,8 +434,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <button class="btn-action teal"><i class="ph ph-magnifying-glass"></i></button>
                             <button class="btn-action red" onclick="eliminarPedido('${p.id}')"><i class="ph ph-x"></i></button>
                             <button class="btn-action orange"><i class="ph ph-user"></i></button>
-                            <button class="btn-action purple"><i class="ph ph-printer"></i></button>
-                            <button class="btn-action purple"><i class="ph ph-printer"></i></button>
+                            <button class="btn-action purple" title="Imprimir PDF" onclick="window.open('imprimir.php?id=${p.id}', '_blank')"><i class="ph ph-printer"></i></button>
                         </td>
                     `;
                     tbody.appendChild(tr);
