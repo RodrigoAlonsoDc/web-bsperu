@@ -1,0 +1,7 @@
+# Ignorar la base de datos JSON para que GitHub no la sobreescriba en cPanel
+assets/Data/productos.json
+assets/Data/*.json
+
+# Ignorar la subida de nuevas imágenes de catálogo
+assets/img catalogo/
+assets/imgWeb/
