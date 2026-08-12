@@ -67,9 +67,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         /* Modal ERP Formulario */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: flex-start; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s; z-index: 1000; padding: 20px; box-sizing: border-box; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-card { background: var(--bg-color); width: 100%; max-width: 1200px; border-radius: 4px; display: flex; flex-direction: column; max-height: 95vh; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-card { background: var(--bg-color); width: 100%; max-width: 1200px; border-radius: 4px; display: flex; flex-direction: column; max-height: 90vh; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .modal-header { padding: 15px 20px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; min-height: 0; }
         .modal-footer { padding: 15px 20px; background: white; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
         
         /* Grid del Formulario */
