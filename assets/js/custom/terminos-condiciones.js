@@ -108,8 +108,17 @@ async function crearModalTerminos() {
     </div>
   `;
 
-  // Insertar en el DOM
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  // Insertar en el DOM de forma segura
+  const tempDiv = document.createElement('div');
+  if (typeof insertSafeHTML === 'function') {
+    insertSafeHTML(tempDiv, modalHTML);
+  } else {
+    tempDiv.innerHTML = modalHTML; // Fallback
+  }
+  
+  while (tempDiv.firstChild) {
+    document.body.appendChild(tempDiv.firstChild);
+  }
   
   // Configurar eventos para cerrar el modal
   setTimeout(() => {

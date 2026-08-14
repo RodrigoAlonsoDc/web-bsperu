@@ -45,12 +45,26 @@ async function cargarSucursales() {
             div.setAttribute("data-key", sucursal.key);
             div.setAttribute("data-map", sucursal.urlMap);
             
-            div.innerHTML = `
-                <b>${sucursal.nombre}</b><br>
-                ${sucursal.direccion}<br>
-                ${sucursal.referencia ? `<small style="font-style: italic; color: #666;">${sucursal.referencia}</small><br>` : ''}
-                <small>Teléfono: ${sucursal.telefono || 'N/A'}</small>
-            `;
+            const b = document.createElement('b');
+            b.textContent = sucursal.nombre;
+            div.appendChild(b);
+            div.appendChild(document.createElement('br'));
+            
+            div.appendChild(document.createTextNode(sucursal.direccion));
+            div.appendChild(document.createElement('br'));
+            
+            if (sucursal.referencia) {
+                const smallRef = document.createElement('small');
+                smallRef.style.fontStyle = 'italic';
+                smallRef.style.color = '#666';
+                smallRef.textContent = sucursal.referencia;
+                div.appendChild(smallRef);
+                div.appendChild(document.createElement('br'));
+            }
+            
+            const smallTel = document.createElement('small');
+            smallTel.textContent = `Teléfono: ${sucursal.telefono || 'N/A'}`;
+            div.appendChild(smallTel);
             
             sucursalesContainer.appendChild(div);
         });
@@ -113,7 +127,10 @@ function crearPuntosEnMapa(data) {
             punto.style.left = pos.x + "%";
             punto.style.top = pos.y + "%";
             
-            punto.innerHTML = `<div class="tooltip-ubicacion">${sucursal.nombre}</div>`;
+            const tooltipDiv = document.createElement('div');
+            tooltipDiv.className = 'tooltip-ubicacion';
+            tooltipDiv.textContent = sucursal.nombre;
+            punto.appendChild(tooltipDiv);
             
             // Click en el punto
             punto.addEventListener("click", function(e) {

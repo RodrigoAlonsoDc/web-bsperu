@@ -26,22 +26,45 @@ function renderizarMarcas() {
   const wrapper = document.getElementById('marcasWrapper');
   if (!wrapper) return;
   
-  wrapper.innerHTML = marcasData.map((marca, index) => {
-    const estiloClass = `marca-item estilo-${marca.estilo}`;
-    const logoHtml = marca.logo ? `<img src="${marca.logo}" alt="${marca.nombre}" onerror="this.style.display='none'">` : '';
-    
-    return `
-      <a href="${marca.link}" target="_blank" class="${estiloClass}" data-index="${index}" style="${marca.gradient ? `background: ${marca.gradient}` : ''}">
-        <div class="marca-item-logo">
-          ${logoHtml}
-        </div>
-        <div class="marca-item-text">
-          <strong>${marca.nombre}</strong>
-          ${marca.subtitulo ? `<small>${marca.subtitulo}</small>` : ''}
-        </div>
-      </a>
-    `;
-  }).join('');
+  wrapper.innerHTML = '';
+  marcasData.forEach((marca, index) => {
+    const a = document.createElement('a');
+    a.className = `marca-item estilo-${marca.estilo}`;
+    if (marca.link && (marca.link.startsWith('/') || marca.link.startsWith('http'))) {
+      a.href = marca.link;
+    }
+    a.target = '_blank';
+    a.setAttribute('data-index', index);
+    if (marca.gradient) {
+      a.style.background = marca.gradient;
+    }
+
+    const divLogo = document.createElement('div');
+    divLogo.className = 'marca-item-logo';
+    if (marca.logo) {
+      const img = document.createElement('img');
+      img.src = marca.logo;
+      img.alt = marca.nombre || '';
+      img.addEventListener('error', function() { this.style.display = 'none'; });
+      divLogo.appendChild(img);
+    }
+
+    const divText = document.createElement('div');
+    divText.className = 'marca-item-text';
+    const strong = document.createElement('strong');
+    strong.textContent = marca.nombre || '';
+    divText.appendChild(strong);
+
+    if (marca.subtitulo) {
+      const small = document.createElement('small');
+      small.textContent = marca.subtitulo;
+      divText.appendChild(small);
+    }
+
+    a.appendChild(divLogo);
+    a.appendChild(divText);
+    wrapper.appendChild(a);
+  });
 }
 
 /**

@@ -27,11 +27,13 @@ if (contactForm) {
         const mensajeCodificado = encodeURIComponent(whatsappMensaje);
         window.open(`https://wa.me/51914776669?text=${mensajeCodificado}`, '_blank');
         
-        formStatus.innerHTML = '<div class="alert alert-success mt-2">¡Se abrió WhatsApp! Envía el mensaje para contactarnos.</div>';
+        formStatus.textContent = '¡Se abrió WhatsApp! Envía el mensaje para contactarnos.';
+        formStatus.className = 'alert alert-success mt-2';
         
         setTimeout(() => {
             contactForm.reset();
-            formStatus.innerHTML = '';
+            formStatus.textContent = '';
+            formStatus.className = '';
         }, 1000);
     });
 }
