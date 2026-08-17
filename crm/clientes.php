@@ -1,10 +1,5 @@
-﻿<?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
+<?php
 session_start();
-// Temporalmente desactivamos la redireccion para poder ver si hay errores en la vista.
 // if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
 //     header("Location: ../admin/login.php");
 //     exit;
@@ -138,6 +133,8 @@ session_start();
             </form>
         </div>
     </div>
+
+    <?php include 'theme_switcher.php'; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', loadClients);

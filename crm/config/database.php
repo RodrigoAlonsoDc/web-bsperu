@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // crm/config/database.php
 
 define('DB_HOST', 'localhost');
