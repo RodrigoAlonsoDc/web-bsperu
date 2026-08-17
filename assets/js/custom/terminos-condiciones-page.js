@@ -46,7 +46,7 @@ async function cargarYRenderizarTerminos() {
     }
 
     const contenidoHTML = generarHTMLTerminosCompleto(datos);
-    document.getElementById('terminosContenido').innerHTML = contenidoHTML;
+    document.getElementById('terminosContenido').innerHTML = sanitizeHTML(contenidoHTML);
     
     console.log('Términos y condiciones cargados correctamente');
 }
