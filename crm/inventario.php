@@ -229,9 +229,9 @@ session_start();
                 const sel = document.getElementById('producto_id');
                 sel.innerHTML = '<option value="">Seleccione producto...</option>';
                 data.forEach(p => {
-                    sel.innerHTML += <option value="+p.id+">+p.nombre+ (+p.unidad_medida+)</option>;
+                    sel.innerHTML += `<option value="${p.id}">${p.nombre} (${p.unidad_medida})</option>`;
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error cargando productos:", e); }
         }
 
         async function loadLotes() {
@@ -244,21 +244,25 @@ session_start();
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay lotes registrados</td></tr>';
                 } else {
                     data.forEach(l => {
-                        tbody.innerHTML += 
+                        const estante = l.estante ? l.estante : '-';
+                        const venc = l.fecha_vencimiento ? l.fecha_vencimiento : '-';
+                        // Escapar comillas en el nombre del producto
+                        const nombreProd = l.producto_nombre.replace(/'/g, "\\'");
+                        tbody.innerHTML += `
                             <tr>
-                                <td><strong>+l.codigo_barras+</strong></td>
-                                <td>+l.producto_nombre+</td>
-                                <td>+l.cantidad+</td>
-                                <td>+(l.estante || '-')+</td>
-                                <td>+(l.fecha_vencimiento || '-')+</td>
+                                <td><strong>${l.codigo_barras}</strong></td>
+                                <td>${l.producto_nombre}</td>
+                                <td>${l.cantidad}</td>
+                                <td>${estante}</td>
+                                <td>${venc}</td>
                                 <td>
-                                    <button onclick="reprintBarcode('+l.codigo_barras+', '+l.producto_nombre+')" class="btn btn-primary" style="padding:4px 8px;" title="Imprimir"><i class="ph ph-printer"></i></button>
+                                    <button onclick="reprintBarcode('${l.codigo_barras}', '${nombreProd}')" class="btn btn-primary" style="padding:4px 8px;" title="Imprimir"><i class="ph ph-printer"></i></button>
                                 </td>
                             </tr>
-                        ;
+                        `;
                     });
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error cargando lotes:", e); }
         }
 
         async function saveIngreso(e) {
@@ -272,7 +276,6 @@ session_start();
                 if(result.success) {
                     document.getElementById('ingresoForm').reset();
                     const select = document.getElementById('producto_id');
-                    // Get product text without unit parenthesis if possible
                     const nombreProd = select.options[select.selectedIndex].text; 
                     reprintBarcode(result.codigo_barras, nombreProd);
                     loadLotes();
@@ -325,7 +328,7 @@ session_start();
                 if(r.success) {
                     closeProductModal();
                     await loadProductos();
-                    document.getElementById('producto_id').value = r.id; // Select the new product
+                    document.getElementById('producto_id').value = r.id;
                 } else {
                     alert(r.error || 'Error al guardar el producto');
                 }
