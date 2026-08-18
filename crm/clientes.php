@@ -1,9 +1,6 @@
 <?php
+// crm/clientes.php
 session_start();
-// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-//     header("Location: ../admin/login.php");
-//     exit;
-// }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -14,34 +11,29 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        :root {
-            --bg: #f4f6f9;
-            --surface: #ffffff;
-            --primary: #17a2b8;
-            --text-primary: #333;
-            --border: #dee2e6;
-            --green: #28a745;
-        }
+        :root { --bg: #f4f6f9; --surface: #ffffff; --primary: #17a2b8; --text-primary: #333; --border: #dee2e6; }
         body { font-family: 'Roboto', sans-serif; background-color: var(--bg); margin: 0; padding: 0; }
         .layout { display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 60px; background: #28a745; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 20px; }
+        .sidebar { width: 60px; background: #28a745; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 20px; z-index: 100; }
         .sidebar a { color: white; text-decoration: none; font-size: 24px; }
         .sidebar a:hover { background: rgba(0,0,0,0.1); border-radius: 8px; }
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); }
-        .topbar { background: var(--border); height: 40px; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; }
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); position: relative; }
+        .topbar { background: var(--border); height: 40px; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; flex-shrink: 0; }
         .content { padding: 20px; flex: 1; overflow-y: auto; }
-        .toolbar { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .btn { background: var(--green); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #f8f9fa; font-weight: 500; }
+        
+        .modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 500px; max-width: 90%; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
         .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; }
-        .flex-row { display: flex; gap: 10px; }
-        .flex-row > div { flex: 1; }
+        .flex-row { display: flex; gap: 15px; }
+        .flex-row .form-group { flex: 1; }
     </style>
 </head>
 <body>
@@ -49,13 +41,14 @@ session_start();
         <div class="sidebar">
             <a href="index.php" title="Dashboard"><i class="ph ph-squares-four"></i></a>
             <a href="clientes.php" title="Clientes" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;"><i class="ph ph-users"></i></a>
+            <a href="inventario.php" title="Inventario"><i class="ph ph-barcode"></i></a>
             <a href="pedidos.php" title="Cotizaciones"><i class="ph ph-file-text"></i></a>
         </div>
         <div class="main">
-            <div class="topbar">ERP BS Perú - Clientes</div>
+            <div class="topbar">ERP BS Peru - Clientes</div>
             <div class="content">
                 <div class="toolbar">
-                    <h2>Directorio de Clientes</h2>
+                    <h2 style="margin:0;">Directorio de Clientes</h2>
                     <button class="btn" onclick="openModal()"><i class="ph ph-plus"></i> Nuevo Cliente</button>
                 </div>
                 <table>
@@ -134,8 +127,6 @@ session_start();
         </div>
     </div>
 
-    <?php include 'theme_switcher.php'; ?>
-
     <script>
         document.addEventListener('DOMContentLoaded', loadClients);
 
@@ -146,17 +137,17 @@ session_start();
                 const tbody = document.getElementById('clientTableBody');
                 tbody.innerHTML = '';
                 data.forEach(c => {
-                    tbody.innerHTML += 
+                    tbody.innerHTML += `
                         <tr>
-                            <td> + c.ruc_dni + </td>
-                            <td> + c.razon_social + </td>
-                            <td> + c.categoria.replace('_', ' ') + </td>
-                            <td> + (c.telefono || '-') + </td>
+                            <td>${c.ruc_dni}</td>
+                            <td>${c.razon_social}</td>
+                            <td>${c.categoria.replace('_', ' ')}</td>
+                            <td>${c.telefono || '-'}</td>
                             <td>
-                                <button onclick='editClient( + JSON.stringify(c) + )' class="btn" style="background:#ffc107; color:#000; padding:4px 8px;"><i class="ph ph-pencil"></i></button>
+                                <button onclick='editClient(${JSON.stringify(c)})' class="btn" style="background:#ffc107; color:#000; padding:4px 8px; display:inline-block;"><i class="ph ph-pencil"></i></button>
                             </td>
                         </tr>
-                    ;
+                    `;
                 });
             } catch (error) {
                 console.error("Error", error);
@@ -167,7 +158,7 @@ session_start();
             const numero = document.getElementById('c_ruc_dni').value.trim();
             if(!numero) return;
             try {
-                const res = await fetch(pi_reniec.php?numero= + numero);
+                const res = await fetch(`api_reniec.php?numero=${numero}`);
                 const data = await res.json();
                 if(data.success && data.nombre) {
                     document.getElementById('c_razon_social').value = data.nombre;
