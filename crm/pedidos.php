@@ -1,10 +1,6 @@
 <?php
 // crm/pedidos.php
 session_start();
-// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-//     header("Location: ../admin/login.php");
-//     exit;
-// }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -51,13 +47,8 @@ session_start();
 
         /* Estilos especificos para el PDF Oculto */
         #pdf-template {
-            display: none; /* Oculto en la web, solo se clona para generar PDF */
-            width: 800px;
-            padding: 40px;
-            background: white;
-            color: #000;
-            font-family: Arial, sans-serif;
-            font-size: 11px;
+            display: none; width: 800px; padding: 40px; background: white; color: #000;
+            font-family: Arial, sans-serif; font-size: 11px;
         }
         .pdf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .pdf-logo { font-size: 24px; font-weight: bold; color: #004a99; }
@@ -86,6 +77,8 @@ session_start();
             <a href="clientes.php" title="Clientes"><i class="ph ph-users"></i></a>
             <a href="inventario.php" title="Inventario"><i class="ph ph-barcode"></i></a>
             <a href="pedidos.php" title="Cotizaciones" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;"><i class="ph ph-file-text"></i></a>
+            <a href="facturacion.php" title="Facturacion y Pagos"><i class="ph ph-receipt"></i></a>
+            <a href="operaciones.php" title="Operaciones y Despacho"><i class="ph ph-truck"></i></a>
         </div>
         <div class="main">
             <div class="topbar">ERP BS Peru - Modulo de Ventas</div>
@@ -93,14 +86,18 @@ session_start();
                 <h2 style="margin-top:0;">Cotizaciones</h2>
                 
                 <div class="tabs">
-                    <div class="tab active" onclick="switchTab('nueva')">1. Nueva Cotizacion</div>
+                    <div class="tab active" onclick="switchTab('nueva')" id="tabNuevaTitle">1. Nueva Cotizacion</div>
                     <div class="tab" onclick="switchTab('historial')">2. Historial de Cotizaciones</div>
                 </div>
 
                 <!-- TAB 1: NUEVA COTIZACION -->
                 <div id="nueva" class="tab-content active">
                     <div class="card">
-                        <h3>Datos del Cliente</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 id="formTitle">Nueva Cotizacion</h3>
+                            <button type="button" class="btn" style="background:#6c757d;" onclick="resetForm()">Nueva Cotizacion (Limpiar)</button>
+                        </div>
+                        <input type="hidden" id="c_edit_id" value="0">
                         <div class="flex-row">
                             <div class="form-group" style="flex:1;">
                                 <label>Seleccionar Cliente *</label>
@@ -148,7 +145,7 @@ session_start();
                         </div>
 
                         <div style="text-align:right; margin-top:20px;">
-                            <button class="btn btn-primary" onclick="saveQuotation()" style="font-size:16px; padding:12px 20px;"><i class="ph ph-floppy-disk"></i> Generar Cotizacion y PDF</button>
+                            <button class="btn btn-primary" onclick="saveQuotation()" style="font-size:16px; padding:12px 20px;"><i class="ph ph-floppy-disk"></i> Guardar y Generar PDF</button>
                         </div>
                     </div>
                 </div>
@@ -216,9 +213,7 @@ session_start();
                         <th>SubTotal</th>
                     </tr>
                 </thead>
-                <tbody id="pdf_items">
-                    <!-- Filas inyectadas por JS -->
-                </tbody>
+                <tbody id="pdf_items"></tbody>
             </table>
 
             <table class="pdf-totals">
@@ -238,12 +233,14 @@ session_start();
                 <p style="margin:5px 0 0 0;">CONSIDERACIONES PARA LA FABRICACIÓN DE PRODUCTOS HECHOS A PEDIDO:<br>
                 Los productos que se elaboran bajo pedido, garantizan disponibilidad y calidad idónea de un producto de complejidad técnica.<br>
                 Debido a este proceso, el tiempo de entrega puede variar entre 8 a 20 días útiles, dependiendo de la disponibilidad de la materia prima, stock y cantidad solicitada.<br>
-                El plazo exacto será confirmado por el vendedor al momento de contar con la OC y abono respectivo.</p>
+                El plazo exacto será confirmado por el vendedor al momento de contar con la OC y abono respectivo.<br>
+                Toda cancelación de dicho pedido puede ocasionar la perdida parcial o completa del abono realizado, dado que son productos que no pueden ser almacenados.</p>
                 
                 <p style="border-top:1px solid #000; margin:5px 0 0 0; padding-top:5px;">BUILDING SYSTEMS PERU S.A.C.<br>RUC: 20609793806</p>
                 <p style="margin:0;">Deposito en cuenta Corriente<br>
                 Cta. Cte. BCP Soles: 193-9902956-0-56 (CCI: 00219300990295605614)<br>
-                Cta. Cte. BBVA Soles: 0011-0152-0100100654 (CCI: 011-152-000100100654-61)</p>
+                Cta. Cte. BBVA Soles: 0011-0152-0100100654 (CCI: 011-152-000100100654-61)<br>
+                Cta. Cte. Interbank Soles: 200-3005486597 (CCI: 003-200-003005486597-34)</p>
                 <p style="margin:0;">SUCURSAL CHORRILLOS<br>AV. LOS FAISANES N° 675 URB. LA CAMPIÑA CHORRILLOS</p>
             </div>
 
@@ -267,13 +264,26 @@ session_start();
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            if(event) {
+                event.target.classList.add('active');
+            } else {
+                if(tabId === 'nueva') document.getElementById('tabNuevaTitle').classList.add('active');
+            }
             document.getElementById(tabId).classList.add('active');
+        }
+
+        function resetForm() {
+            document.getElementById('c_edit_id').value = '0';
+            document.getElementById('formTitle').innerText = 'Nueva Cotizacion';
+            document.getElementById('tabNuevaTitle').innerText = '1. Nueva Cotizacion';
+            document.getElementById('c_cliente').value = '';
+            document.getElementById('clientInfo').innerHTML = '';
+            carrito = [];
+            renderCart();
         }
 
         async function loadInitialData() {
             try {
-                // Load Clientes
                 let resC = await fetch('api/clientes.php?action=list');
                 clientesData = await resC.json();
                 let selC = document.getElementById('c_cliente');
@@ -282,7 +292,6 @@ session_start();
                     selC.innerHTML += `<option value="${c.id}">${c.ruc_dni} - ${c.razon_social}</option>`;
                 });
 
-                // Load Productos
                 let resP = await fetch('api/inventario.php?action=list_productos');
                 productosData = await resP.json();
                 let selP = document.getElementById('c_producto');
@@ -323,7 +332,6 @@ session_start();
                 precio: pUnit
             });
 
-            // Reset inputs
             document.getElementById('c_producto').value = '';
             document.getElementById('c_cantidad').value = '1';
             document.getElementById('c_precio').value = '';
@@ -364,10 +372,12 @@ session_start();
 
         async function saveQuotation() {
             const cliente_id = document.getElementById('c_cliente').value;
+            const edit_id = document.getElementById('c_edit_id').value;
             if(!cliente_id) { alert('Selecciona un cliente'); return; }
             if(carrito.length === 0) { alert('Agrega al menos un producto'); return; }
 
             const payload = {
+                edit_id: edit_id,
                 cliente_id: cliente_id,
                 detalles: carrito
             };
@@ -380,15 +390,9 @@ session_start();
                 });
                 const r = await res.json();
                 if(r.success) {
-                    alert('Cotizacion Generada: ' + r.codigo);
-                    // Generar PDF visualmente
+                    alert('Cotizacion Guardada: ' + r.codigo);
                     await generatePDF(r.cotizacion_id);
-                    
-                    // Limpiar
-                    document.getElementById('c_cliente').value = '';
-                    document.getElementById('clientInfo').innerHTML = '';
-                    carrito = [];
-                    renderCart();
+                    resetForm();
                     loadCotizaciones();
                 } else {
                     alert(r.error);
@@ -396,8 +400,32 @@ session_start();
             } catch(e) { alert("Error guardando cotizacion"); }
         }
 
+        async function editCotizacion(id) {
+            try {
+                const res = await fetch(`api/cotizaciones.php?action=get_details&id=${id}`);
+                const r = await res.json();
+                if(r.success) {
+                    const c = r.data;
+                    document.getElementById('c_edit_id').value = c.id;
+                    document.getElementById('formTitle').innerText = 'Editar Cotizacion: ' + c.codigo;
+                    document.getElementById('tabNuevaTitle').innerText = '1. Editar Cotizacion';
+                    document.getElementById('c_cliente').value = c.cliente_id;
+                    loadClientData();
+                    
+                    carrito = c.detalles.map(d => ({
+                        producto_id: d.producto_id,
+                        nombre: d.producto_nombre,
+                        unidad: d.unidad_medida,
+                        cantidad: parseInt(d.cantidad),
+                        precio: parseFloat(d.precio)
+                    }));
+                    renderCart();
+                    switchTab('nueva');
+                }
+            } catch(e) {}
+        }
+
         async function generatePDF(cotizacion_id) {
-            // Obtener info completa
             const res = await fetch('api/cotizaciones.php?action=get_details&id=' + cotizacion_id);
             const r = await res.json();
             if(!r.success) return;
@@ -405,7 +433,6 @@ session_start();
             const c = r.data;
             document.getElementById('pdf-container').style.display = 'block';
 
-            // Rellenar HTML
             document.getElementById('pdf_fecha').innerText = c.created_at.substring(0, 10);
             document.getElementById('pdf_codigo').innerText = c.codigo;
             
@@ -414,7 +441,7 @@ session_start();
             document.getElementById('pdf_ruc').innerText = c.ruc_dni;
             document.getElementById('pdf_email').innerText = c.correo || '';
             document.getElementById('pdf_tel').innerText = c.telefono || '';
-            document.getElementById('pdf_contacto').innerText = ''; // c.contacto if exists
+            document.getElementById('pdf_contacto').innerText = ''; 
 
             const tbody = document.getElementById('pdf_items');
             tbody.innerHTML = '';
@@ -427,9 +454,9 @@ session_start();
                         <td>${d.producto_nombre}</td>
                         <td>${d.cantidad}</td>
                         <td>${d.unidad_medida || 'UNI'}</td>
-                        <td>${d.precio_unitario}</td>
+                        <td>${d.precio}</td>
                         <td>0.00</td>
-                        <td>${d.precio_unitario}</td>
+                        <td>${d.precio}</td>
                         <td>${d.subtotal}</td>
                     </tr>
                 `;
@@ -464,9 +491,14 @@ session_start();
                 tbody.innerHTML = '';
                 data.forEach(c => {
                     let btnAceptar = '';
+                    let btnEditar = `<button onclick="editCotizacion(${c.id})" class="btn" style="background:#ffc107; color:#000; padding:4px 8px;" title="Editar"><i class="ph ph-pencil"></i></button>`;
+                    
                     if(c.estado === 'Evaluacion') {
                         btnAceptar = `<button onclick="cambiarEstado(${c.id}, 'Aceptada')" class="btn btn-primary" style="padding:4px 8px;">Aceptar</button>`;
+                    } else {
+                        // Si ya no es Evaluacion, tal vez no queramos que se edite, o tal vez sí. Le dejaremos el boton por si acaso pero idealmente no se debe.
                     }
+
                     tbody.innerHTML += `
                         <tr>
                             <td><strong>${c.codigo}</strong></td>
@@ -478,6 +510,7 @@ session_start();
                             </td>
                             <td>
                                 <button onclick="generatePDF(${c.id})" class="btn" style="background:#6c757d; padding:4px 8px;" title="Descargar PDF"><i class="ph ph-download-simple"></i></button>
+                                ${btnEditar}
                                 ${btnAceptar}
                             </td>
                         </tr>
