@@ -1,530 +1,506 @@
 <?php
+// crm/pedidos.php
 session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: ../admin/login.php");
-    exit;
-}
+// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+//     header("Location: ../admin/login.php");
+//     exit;
+// }
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos de Venta - ERP BS Peru</title>
+    <title>Cotizaciones - ERP BS Peru</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
-        :root {
-            --bg-color: #f4f6f9;
-            --primary: #17a2b8;
-            --pink: #d81b60;
-            --green: #28a745;
-            --text-dark: #333;
-            --border: #dee2e6;
-            
-            --btn-teal: #17a2b8;
-            --btn-red: #dc3545;
-            --btn-orange: #fd7e14;
-            --btn-purple: #6f42c1;
-            
-            --row-blue: #cce5ff;
-            --row-blue: #cce5ff;
-            --row-gray: #e2e3e5;
-        }
-        body { font-family: 'Roboto', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text-primary); transition: background 0.3s, color 0.3s; }
-        
-        /* Navbar Sidebar estilo ERP */
+        :root { --bg: #f4f6f9; --surface: #ffffff; --primary: #17a2b8; --text-primary: #333; --border: #dee2e6; --green: #28a745; }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg); margin: 0; padding: 0; }
         .layout { display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 60px; background: #28a745; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 20px; }
-        .sidebar a { color: white; text-decoration: none; font-size: 24px; opacity: 0.8; transition: 0.2s; }
-        .sidebar a:hover, .sidebar a.active { opacity: 1; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px; }
-        
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); }
-        
-        .topbar { background: var(--border); height: 40px; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; color: var(--text-primary); }
-        
-        /* Contenido de la Tabla */
+        .sidebar { width: 60px; background: #28a745; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 20px; z-index: 100; }
+        .sidebar a { color: white; text-decoration: none; font-size: 24px; }
+        .sidebar a:hover { background: rgba(0,0,0,0.1); border-radius: 8px; }
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); position: relative; }
+        .topbar { background: var(--border); height: 40px; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; flex-shrink: 0; }
         .content { padding: 20px; flex: 1; overflow-y: auto; }
-        .toolbar { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
-        .toolbar select { padding: 5px; border: 1px solid var(--border); }
-        .toolbar input { padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px; }
         
-        .btn-green { background: var(--green); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; font-weight: 500; }
+        .tab.active { border-bottom: 2px solid var(--primary); color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .btn { background: var(--green); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: var(--primary); }
+        .btn-danger { background: #dc3545; }
         
-        /* Tabla ERP */
-        table.erp-table { width: 100%; border-collapse: collapse; font-size: 11px; color: var(--text-secondary); }
-        table.erp-table th { padding: 10px 5px; text-align: left; border-bottom: 2px solid var(--border); color: var(--text-primary); font-weight: 500; }
-        table.erp-table td { padding: 8px 5px; vertical-align: middle; border-bottom: 1px solid var(--border); }
-        table.erp-table tbody tr:hover { background-color: var(--bg); }
+        table.ui-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom:15px; }
+        table.ui-table th, table.ui-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
         
-        .actions-col { display: flex; gap: 3px; }
-        .btn-action { width: 24px; height: 24px; border: none; border-radius: 3px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .btn-action.teal { background: var(--btn-teal); }
-        .btn-action.red { background: var(--btn-red); }
-        .btn-action.orange { background: var(--btn-orange); }
-        .btn-action.purple { background: var(--btn-purple); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; font-size: 14px;}
         
-        /* Modal ERP Formulario */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: flex-start; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s; z-index: 1000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-card { background: var(--bg); width: 100%; max-width: 1200px; border-radius: 4px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 40px; }
-        .modal-header { padding: 15px 20px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; color: var(--text-primary); }
-        .modal-body { padding: 20px; flex: 1; }
-        .modal-footer { padding: 15px 20px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+        .flex-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; }
         
-        /* Grid del Formulario */
-        .form-row { display: flex; gap: 20px; margin-bottom: 20px; align-items: flex-start; }
-        .form-col { flex: 1; background: var(--surface); border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); padding: 20px; position: relative; }
+        .card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .totals-box { text-align: right; margin-top: 15px; font-size: 16px; line-height: 1.6; }
+
+        /* Estilos especificos para el PDF Oculto */
+        #pdf-template {
+            display: none; /* Oculto en la web, solo se clona para generar PDF */
+            width: 800px;
+            padding: 40px;
+            background: white;
+            color: #000;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+        .pdf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .pdf-logo { font-size: 24px; font-weight: bold; color: #004a99; }
+        .pdf-title { text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 20px; }
+        .pdf-client-box { border: 1px solid #000; padding: 5px; margin-bottom: 15px; }
+        .pdf-client-box table { width: 100%; border-collapse: collapse; }
+        .pdf-client-box td { padding: 3px; vertical-align: top; }
+        .pdf-client-box td:first-child { font-weight: bold; width: 100px; }
         
-        .col-header { position: absolute; top: -15px; left: 20px; background: var(--primary); color: var(--text-inverse); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .col-title { font-size: 16px; color: var(--text-primary); margin-left: 60px; margin-bottom: 20px; margin-top: -5px; font-weight: 300; }
+        .pdf-items-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .pdf-items-table th { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 5px; text-align: left; }
+        .pdf-items-table td { padding: 5px; }
         
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-primary); border-radius: 2px; font-size: 12px; outline: none; box-sizing: border-box; }
-        .form-group input[readonly] { background: var(--border); }
-        .form-group.inline { display: flex; gap: 10px; }
-        .form-group.inline > div { flex: 1; }
+        .pdf-totals { width: 250px; float: right; border: 1px solid #000; border-collapse: collapse; margin-bottom: 15px; }
+        .pdf-totals td { padding: 5px; border: 1px solid #000; }
+        .pdf-totals td:first-child { font-weight: bold; }
         
-        .client-section { background: var(--surface); padding: 20px; border-left: 5px solid var(--primary); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        .client-section h3 { margin: 0 0 15px 0; font-weight: 300; font-size: 18px; color: var(--text-primary); }
-        .client-grid { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: center; font-size: 13px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
-        .client-grid label { color: var(--primary); font-weight: 500; }
-        .client-grid span { color: var(--text-secondary); font-weight: 500; }
-        .client-grid span.blue { color: var(--primary); font-weight: bold; }
-        
-        .cart-section { background: var(--surface); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        .cart-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; color: var(--text-primary); }
-        .cart-table th, .cart-table td { padding: 8px; border: 1px solid var(--border); }
-        .cart-table th { background: var(--bg); }
-        
+        .pdf-footer-box { border: 1px solid #000; padding: 5px; margin-top: 60px; clear: both; font-size: 10px;}
+        .pdf-signature { margin-top: 40px; text-align: center; font-size: 11px; }
     </style>
 </head>
 <body>
-    
-    <?php include 'theme_switcher.php'; ?>
-
     <div class="layout">
-        <!-- Sidebar -->
         <div class="sidebar">
-            <a href="index.php" title="Volver al Menú"><i class="ph ph-squares-four"></i></a>
-            <a href="#" class="active" title="Pedidos"><i class="ph ph-browser"></i></a>
-            <a href="#" title="Despachos"><i class="ph ph-forklift"></i></a>
-            <a href="#" title="Reportes"><i class="ph ph-clipboard-text"></i></a>
+            <a href="index.php" title="Dashboard"><i class="ph ph-squares-four"></i></a>
+            <a href="clientes.php" title="Clientes"><i class="ph ph-users"></i></a>
+            <a href="inventario.php" title="Inventario"><i class="ph ph-barcode"></i></a>
+            <a href="pedidos.php" title="Cotizaciones" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;"><i class="ph ph-file-text"></i></a>
         </div>
-
         <div class="main">
-            <!-- Topbar -->
-            <div class="topbar">
-                <i class="ph ph-user"></i>&nbsp; Administrador
-            </div>
-
-            <!-- Content -->
+            <div class="topbar">ERP BS Peru - Modulo de Ventas</div>
             <div class="content">
-                <div class="toolbar">
-                    <div>
-                        Show <select><option>10</option><option>50</option><option>100</option></select> entries
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" placeholder="Buscar Registros">
-                        <button class="btn-green" onclick="abrirModal()"><i class="ph ph-plus"></i> Nuevo Pedido</button>
+                <h2 style="margin-top:0;">Cotizaciones</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('nueva')">1. Nueva Cotizacion</div>
+                    <div class="tab" onclick="switchTab('historial')">2. Historial de Cotizaciones</div>
+                </div>
+
+                <!-- TAB 1: NUEVA COTIZACION -->
+                <div id="nueva" class="tab-content active">
+                    <div class="card">
+                        <h3>Datos del Cliente</h3>
+                        <div class="flex-row">
+                            <div class="form-group" style="flex:1;">
+                                <label>Seleccionar Cliente *</label>
+                                <select id="c_cliente" required onchange="loadClientData()"></select>
+                            </div>
+                        </div>
+                        <div id="clientInfo" style="font-size:13px; color:#555; margin-bottom:20px;"></div>
+
+                        <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+                        <h3>Productos</h3>
+                        <div class="flex-row">
+                            <div class="form-group" style="flex:2;">
+                                <label>Producto</label>
+                                <select id="c_producto"></select>
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label>Cantidad</label>
+                                <input type="number" id="c_cantidad" min="1" value="1">
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label>Precio Unit. (S/)</label>
+                                <input type="number" id="c_precio" step="0.01" min="0">
+                            </div>
+                            <button type="button" class="btn btn-primary" style="margin-bottom:15px;" onclick="addProduct()"><i class="ph ph-plus"></i> Agregar</button>
+                        </div>
+
+                        <table class="ui-table" id="cartTable">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cant.</th>
+                                    <th>P. Unit</th>
+                                    <th>Subtotal</th>
+                                    <th>Accion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartBody"></tbody>
+                        </table>
+                        
+                        <div class="totals-box">
+                            <p>Subtotal: S/ <span id="cartSubtotal">0.00</span></p>
+                            <p>IGV (18%): S/ <span id="cartIgv">0.00</span></p>
+                            <h3>Total: S/ <span id="cartTotal">0.00</span></h3>
+                        </div>
+
+                        <div style="text-align:right; margin-top:20px;">
+                            <button class="btn btn-primary" onclick="saveQuotation()" style="font-size:16px; padding:12px 20px;"><i class="ph ph-floppy-disk"></i> Generar Cotizacion y PDF</button>
+                        </div>
                     </div>
                 </div>
 
-                <table class="erp-table" id="pedidosTable">
-                    <thead>
-                        <tr>
-                            <th>ID ↑↓</th>
-                            <th>Fecha Doc ↑↓</th>
-                            <th>Cliente ↑↓</th>
-                            <th>Importe ↑↓</th>
-                            <th>Usuario ↑↓</th>
-                            <th>Doc STS ↑↓</th>
-                            <th>Despacho ↑↓</th>
-                            <th>Detalle ↑↓</th>
-                            <th>Estado ↑↓</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Llenado por JS -->
-                    </tbody>
-                </table>
+                <!-- TAB 2: HISTORIAL -->
+                <div id="historial" class="tab-content">
+                    <button class="btn" onclick="loadCotizaciones()" style="margin-bottom:15px;"><i class="ph ph-arrows-clockwise"></i> Actualizar</button>
+                    <div style="overflow-x:auto;">
+                        <table class="ui-table">
+                            <thead>
+                                <tr>
+                                    <th>Codigo</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Total (S/)</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cotizacionesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Modal ERP: Nuevo Pedido -->
-    <div class="modal-overlay" id="pedidoModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3 style="margin:0; font-weight:400;">Registro de Pedido Venta</h3>
-                <button style="background:none;border:none;font-size:20px;cursor:pointer;" onclick="cerrarModal()">&times;</button>
+    <!-- ESTRUCTURA OCULTA PARA EL PDF -->
+    <div id="pdf-container" style="display:none;">
+        <div id="pdf-template">
+            <div class="pdf-header">
+                <div class="pdf-logo">BS PERÚ<br><span style="font-size:10px; font-weight:normal; color:#666;">Building Systems Peru</span></div>
+                <div style="text-align:right; font-size:12px;">
+                    <span id="pdf_fecha"></span>
+                </div>
             </div>
             
-            <form id="pedidoForm">
-                <input type="hidden" name="action" value="save">
-                <input type="hidden" id="h_subtotal" name="subtotal" value="0">
-                <input type="hidden" id="h_igv" name="igv" value="0">
-                <input type="hidden" id="h_total" name="total" value="0">
-                <input type="hidden" id="h_productos" name="productos" value="[]">
+            <div class="pdf-title">COTIZACIONES: <span id="pdf_codigo"></span></div>
+            
+            <div class="pdf-client-box">
+                <table>
+                    <tr><td>Razon Social:</td><td id="pdf_rsocial"></td></tr>
+                    <tr><td>Dirección:</td><td id="pdf_dir"></td></tr>
+                    <tr><td>RUC:</td><td id="pdf_ruc"></td></tr>
+                    <tr><td>E mail:</td><td id="pdf_email"></td></tr>
+                    <tr><td>Telefono:</td><td id="pdf_tel"></td></tr>
+                    <tr><td>Contacto:</td><td id="pdf_contacto"></td></tr>
+                </table>
+            </div>
 
-                <div class="modal-body">
-                    
-                    <!-- 3 Columnas Cabecera -->
-                    <div class="form-row">
-                        <!-- Col 1 -->
-                        <div class="form-col">
-                            <div class="col-header"><i class="ph ph-file-text"></i></div>
-                            <div class="col-title">Cabecera</div>
-                            
-                            <div class="form-group inline">
-                                <div>
-                                    <label>Fecha</label>
-                                    <input type="date" name="fecha_doc" id="f_fecha_doc" required>
-                                </div>
-                                <div>
-                                    <label>&nbsp;</label>
-                                    <select name="sucursal">
-                                        <option value="SUCURSAL CHORRILLOS">SUCURSAL CHORRILLOS</option>
-                                        <option value="SUCURSAL LIMA">SUCURSAL LIMA</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group inline">
-                                <div>
-                                    <select name="forma_pago">
-                                        <option value="CONTADO CONTRAENTREGA">CONTADO CONTRAENTREGA</option>
-                                        <option value="CREDITO 30 DIAS">CREDITO 30 DIAS</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <select name="gestor_campo">
-                                        <option value="02-PATRICIA GAMBOA">02-PATRICIA GAMBOA</option>
-                                        <option value="04-KAREN RIVERA">04-KAREN RIVERA</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label style="margin-top:-15px;">gestor de tienda</label>
-                                    <input type="text" name="gestor_tienda" value="HELEN REYES" readonly>
-                                </div>
-                            </div>
+            <p>De acuerdo con su amable solicitud, tenemos el agrado de cotizarle lo siguiente:</p>
 
-                            <div class="form-group inline">
-                                <div style="flex: 2;">
-                                    <label>Cliente (RUC)</label>
-                                    <div style="display:flex;">
-                                        <input type="text" name="documento" id="input_documento" placeholder="RUC">
-                                        <button type="button" onclick="buscarDocumento()" style="background:#17a2b8; color:white; border:none; padding:0 10px; cursor:pointer;"><i class="ph ph-magnifying-glass"></i></button>
-                                    </div>
-                                </div>
-                                <div style="flex: 1;">
-                                    <label>% Descuento Global</label>
-                                    <input type="number" name="descuento" value="0">
-                                </div>
-                            </div>
+            <table class="pdf-items-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Codigo</th>
+                        <th>Descripcion</th>
+                        <th>Cantidad</th>
+                        <th>UMed</th>
+                        <th>Pre.Orig</th>
+                        <th>Descto %</th>
+                        <th>Prec.Total</th>
+                        <th>SubTotal</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf_items">
+                    <!-- Filas inyectadas por JS -->
+                </tbody>
+            </table>
 
-                            <div class="form-group">
-                                <label>Razon Social</label>
-                                <input type="text" name="cliente" id="input_cliente" readonly required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Dirección</label>
-                                <input type="text" name="direccion" id="input_direccion" readonly>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Lugar de Entrega</label>
-                                <input type="text" name="lugar_entrega">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Departamento</label>
-                                <input type="text" name="departamento">
-                            </div>
-                        </div>
-                        
-                        <!-- Col 2 -->
-                        <div class="form-col">
-                            <div class="col-header"><i class="ph ph-file-text"></i></div>
-                            <div class="col-title">Cabecera</div>
-                            
-                            <div class="form-group">
-                                <label>&nbsp;</label>
-                                <select name="lugar_compra">
-                                    <option value="Lugar Compra">Lugar Compra</option>
-                                    <option value="TIENDA FISICA">TIENDA FISICA</option>
-                                    <option value="ONLINE">ONLINE</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Tiempo Entrega (Días)</label>
-                                <input type="number" name="tiempo_entrega" value="3" style="background:#e8f0fe;">
-                            </div>
-                            
-                            <div class="form-group">
-                                <select name="tipo_despacho">
-                                    <option value="RECOJO EN PLANTA">RECOJO EN PLANTA</option>
-                                    <option value="RECOJO EN TIENDA">RECOJO EN TIENDA</option>
-                                    <option value="DELIVERY">DELIVERY</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Glosa</label>
-                                <input type="text" name="glosa">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Comentario</label>
-                                <input type="text" name="comentario">
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Datos de Cliente -->
-                    <div class="client-section">
-                        <h3>Datos de Cliente:</h3>
-                        <div class="form-group">
-                            <select id="clienteSelectVisual">
-                                <option>Seleccione o busque arriba...</option>
-                            </select>
-                        </div>
-                        
-                        <div class="client-grid">
-                            <label>RUC:</label>
-                            <span class="blue" id="lbl_ruc">-</span>
-                            
-                            <label>Cliente:</label>
-                            <span id="lbl_razon_social">-</span>
-                            
-                            <label>Telefono (Verificar):</label>
-                            <input type="text" name="telefono" style="border:none; border-bottom:1px solid #ccc; outline:none; color:red; font-weight:bold; padding:2px;">
-                            
-                            <label>Contacto:</label>
-                            <input type="text" name="contacto" style="border:none; border-bottom:1px solid #ccc; outline:none; color:red; font-weight:bold; padding:2px;">
-                            
-                            <label>Tipo Control:</label>
-                            <div style="border:1px solid #ccc; padding:5px; display:inline-flex; gap:10px;">
-                                <label style="color:#555; font-weight:normal;"><input type="radio" name="tipo_control" value="Visita"> Visita</label>
-                                <label style="color:#555; font-weight:normal;"><input type="radio" name="tipo_control" value="Llamada"> Llamada</label>
-                                <label style="color:#555; font-weight:normal;"><input type="radio" name="tipo_control" value="whatsapp" checked> whatsapp</label>
-                            </div>
-                        </div>
-                        
-                        <h3 style="margin-top:20px;">¿Va a registrar un pedido?</h3>
-                        <div style="display:flex; gap:10px;">
-                            <button type="button" class="btn-green" style="width:60px; justify-content:center;">SI</button>
-                            <button type="button" style="background:#dc3545; color:white; border:none; border-radius:4px; width:60px; cursor:pointer;">NO</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Carrito de Compras Original (Para añadir productos) -->
-                    <div class="cart-section">
-                        <h3>Productos del Pedido</h3>
-                        <div style="display:flex; gap:10px;">
-                            <select id="productoSelect" style="padding:8px; flex:1; border:1px solid #ccc;">
-                                <option value="">-- Buscar Producto --</option>
-                            </select>
-                            <button type="button" class="btn-green" onclick="agregarAlCarrito()"><i class="ph ph-plus"></i> Añadir</button>
-                        </div>
-                        
-                        <table class="cart-table" id="cartTable">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Precio</th>
-                                    <th>Cant.</th>
-                                    <th>Subtotal</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                        
-                        <div style="text-align:right; margin-top:15px; font-size:14px;">
-                            <div>Subtotal: <span id="lbl_subtotal">S/ 0.00</span></div>
-                            <div>IGV (18%): <span id="lbl_igv">S/ 0.00</span></div>
-                            <div style="font-size:18px; font-weight:bold; color:var(--primary); margin-top:5px;">
-                                Total: <span id="lbl_total">S/ 0.00</span>
-                            </div>
-                        </div>
-                    </div>
+            <table class="pdf-totals">
+                <tr><td>Subtotal</td><td id="pdf_subtotal">S/.0.00</td></tr>
+                <tr><td>IGV</td><td id="pdf_igv">S/.0.00</td></tr>
+                <tr><td>Total Neto</td><td id="pdf_total">S/.0.00</td></tr>
+            </table>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" style="padding:8px 20px; background:#e2e3e5; border:none; cursor:pointer;" onclick="cerrarModal()">Cerrar</button>
-                    <button type="submit" class="btn-green">Guardar Pedido</button>
-                </div>
-            </form>
+            <div class="pdf-footer-box">
+                <p style="border-bottom:1px solid #000; margin:0 0 5px 0;">Observaciones -</p>
+                <p style="margin:0;">CONDICIONES COMERCIALES<br>
+                Forma de Pago: CONTADO CONTRA ENTREGA<br>
+                Vigencia: 7 dias<br>
+                El Horario de atención de las oficinas es de Lunes a Viernes 8:00 a 17:30 y Sábados 8:00 a 12:00 Horas<br>
+                Entregamos certificados de calidad, hojas de seguridad (MSDS) y especificaciones técnicas de todos nuestros productos a solicitud del cliente</p>
+                
+                <p style="margin:5px 0 0 0;">CONSIDERACIONES PARA LA FABRICACIÓN DE PRODUCTOS HECHOS A PEDIDO:<br>
+                Los productos que se elaboran bajo pedido, garantizan disponibilidad y calidad idónea de un producto de complejidad técnica.<br>
+                Debido a este proceso, el tiempo de entrega puede variar entre 8 a 20 días útiles, dependiendo de la disponibilidad de la materia prima, stock y cantidad solicitada.<br>
+                El plazo exacto será confirmado por el vendedor al momento de contar con la OC y abono respectivo.</p>
+                
+                <p style="border-top:1px solid #000; margin:5px 0 0 0; padding-top:5px;">BUILDING SYSTEMS PERU S.A.C.<br>RUC: 20609793806</p>
+                <p style="margin:0;">Deposito en cuenta Corriente<br>
+                Cta. Cte. BCP Soles: 193-9902956-0-56 (CCI: 00219300990295605614)<br>
+                Cta. Cte. BBVA Soles: 0011-0152-0100100654 (CCI: 011-152-000100100654-61)</p>
+                <p style="margin:0;">SUCURSAL CHORRILLOS<br>AV. LOS FAISANES N° 675 URB. LA CAMPIÑA CHORRILLOS</p>
+            </div>
+
+            <div class="pdf-signature">
+                <p style="margin:0; font-weight:bold;">ASESOR DE VENTAS</p>
+                <p style="margin:0;">Asesor de ventas - CHORRILLOS</p>
+            </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('f_fecha_doc').valueAsDate = new Date();
-        
-        let catalogoProductos = [];
+        let clientesData = [];
+        let productosData = [];
         let carrito = [];
 
-        // BUSCADOR RUC/DNI (API)
-        async function buscarDocumento() {
-            const numero = document.getElementById('input_documento').value.trim();
-            if(!numero) { alert("Ingresa un DNI/RUC"); return; }
-            
-            try {
-                const res = await fetch('api_reniec.php?numero=' + numero);
-                const data = await res.json();
-                if(data.success) {
-                    document.getElementById('input_cliente').value = data.nombre;
-                    
-                    // Llenar abajo también
-                    document.getElementById('lbl_ruc').innerText = numero;
-                    document.getElementById('lbl_razon_social').innerText = data.nombre;
-                    document.getElementById('clienteSelectVisual').innerHTML = `<option>${data.nombre}</option>`;
-                    
-                } else {
-                    alert("Documento no encontrado");
-                }
-            } catch(e) { alert("Error de conexión"); }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadInitialData();
+            loadCotizaciones();
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
         }
 
-        // CARGAR CATÁLOGO
-        async function cargarCatalogo() {
+        async function loadInitialData() {
             try {
-                const res = await fetch('../assets/Data/productos.json');
-                catalogoProductos = await res.json();
-                const select = document.getElementById('productoSelect');
-                catalogoProductos.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.sku;
-                    opt.textContent = `${p.sku} - ${p.nombre} (S/ ${p.precio || '0.00'})`;
-                    select.appendChild(opt);
+                // Load Clientes
+                let resC = await fetch('api/clientes.php?action=list');
+                clientesData = await resC.json();
+                let selC = document.getElementById('c_cliente');
+                selC.innerHTML = '<option value="">-- Seleccionar Cliente --</option>';
+                clientesData.forEach(c => {
+                    selC.innerHTML += `<option value="${c.id}">${c.ruc_dni} - ${c.razon_social}</option>`;
                 });
-            } catch(e) { console.log(e); }
-        }
 
-        // CARGAR TABLA ERP
-        async function cargarPedidos() {
-            try {
-                const res = await fetch('api_pedidos.php?action=list');
-                const pedidos = await res.json();
-                
-                const tbody = document.querySelector('#pedidosTable tbody');
-                tbody.innerHTML = '';
-                
-                pedidos.forEach(p => {
-                    // Limpiar strings
-                    const clienteSplit = p.cliente.substring(0, 35) + "...";
-                    const gestorSplit = (p.gestor_campo || '').split('-')[1] || p.gestor_campo;
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${p.id}</td>
-                        <td>${p.fecha_doc} <br><span style="color:#999">00:00:00</span></td>
-                        <td>${clienteSplit}</td>
-                        <td>${parseFloat(p.total).toFixed(6)}</td>
-                        <td style="color:#17a2b8;">${gestorSplit}</td>
-                        <td>${p.doc_sts}</td>
-                        <td>${p.tipo_despacho}</td>
-                        <td>${p.detalle}</td>
-                        <td>${p.estado}</td>
-                        <td class="actions-col">
-                            <button class="btn-action teal"><i class="ph ph-magnifying-glass"></i></button>
-                            <button class="btn-action red" onclick="eliminarPedido('${p.id}')"><i class="ph ph-x"></i></button>
-                            <button class="btn-action orange"><i class="ph ph-user"></i></button>
-                            <button class="btn-action purple" title="Imprimir PDF" onclick="window.open('imprimir.php?id=${p.id}', '_blank')"><i class="ph ph-printer"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+                // Load Productos
+                let resP = await fetch('api/inventario.php?action=list_productos');
+                productosData = await resP.json();
+                let selP = document.getElementById('c_producto');
+                selP.innerHTML = '<option value="">-- Seleccionar Producto --</option>';
+                productosData.forEach(p => {
+                    selP.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
                 });
-            } catch(e) { console.log(e); }
+            } catch(e) { console.error("Error loading data", e); }
         }
 
-        async function eliminarPedido(id) {
-            if(!confirm("¿Eliminar pedido " + id + "?")) return;
-            const formData = new FormData();
-            formData.append('action', 'delete');
-            formData.append('id', id);
-            await fetch('api_pedidos.php', { method: 'POST', body: formData });
-            cargarPedidos();
-        }
-
-        // CARRITO LOGIC
-        function agregarAlCarrito() {
-            const sku = document.getElementById('productoSelect').value;
-            if(!sku) return;
-            const producto = catalogoProductos.find(p => p.sku === sku);
-            if(!producto) return;
-            
-            const existe = carrito.find(item => item.sku === sku);
-            if(existe) { existe.cantidad += 1; } 
-            else {
-                carrito.push({ sku: producto.sku, nombre: producto.nombre, precio: parseFloat(producto.precio || 0), cantidad: 1 });
+        function loadClientData() {
+            const id = document.getElementById('c_cliente').value;
+            const c = clientesData.find(x => x.id == id);
+            if(c) {
+                document.getElementById('clientInfo').innerHTML = 
+                    `<strong>RUC/DNI:</strong> ${c.ruc_dni} | <strong>Direccion:</strong> ${c.direccion || '-'} | <strong>Tel:</strong> ${c.telefono || '-'}`;
+            } else {
+                document.getElementById('clientInfo').innerHTML = '';
             }
-            actualizarTablaCarrito();
         }
 
-        function actualizarTablaCarrito() {
-            const tbody = document.querySelector('#cartTable tbody');
+        function addProduct() {
+            const pid = document.getElementById('c_producto').value;
+            const cant = parseFloat(document.getElementById('c_cantidad').value);
+            const pUnit = parseFloat(document.getElementById('c_precio').value);
+
+            if(!pid || cant <= 0 || isNaN(pUnit)) {
+                alert("Completa correctamente el producto, cantidad y precio.");
+                return;
+            }
+
+            const prod = productosData.find(x => x.id == pid);
+            carrito.push({
+                producto_id: prod.id,
+                nombre: prod.nombre,
+                unidad: prod.unidad_medida,
+                cantidad: cant,
+                precio: pUnit
+            });
+
+            // Reset inputs
+            document.getElementById('c_producto').value = '';
+            document.getElementById('c_cantidad').value = '1';
+            document.getElementById('c_precio').value = '';
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cartBody');
             tbody.innerHTML = '';
             let subtotal = 0;
-            carrito.forEach((item, i) => {
-                const subt = item.precio * item.cantidad;
-                subtotal += subt;
+
+            carrito.forEach((item, index) => {
+                let st = item.cantidad * item.precio;
+                subtotal += st;
                 tbody.innerHTML += `
                     <tr>
                         <td>${item.nombre}</td>
+                        <td>${item.cantidad}</td>
                         <td>S/ ${item.precio.toFixed(2)}</td>
-                        <td><input type="number" value="${item.cantidad}" min="1" onchange="carrito[${i}].cantidad=this.value; actualizarTablaCarrito()" style="width:50px;"></td>
-                        <td>S/ ${subt.toFixed(2)}</td>
-                        <td><button type="button" style="color:red;border:none;background:none;cursor:pointer;" onclick="carrito.splice(${i},1); actualizarTablaCarrito()">X</button></td>
+                        <td>S/ ${st.toFixed(2)}</td>
+                        <td><button onclick="removeProduct(${index})" class="btn btn-danger" style="padding:2px 6px;">X</button></td>
                     </tr>
                 `;
             });
-            const igv = subtotal * 0.18;
-            const total = subtotal + igv;
-            document.getElementById('lbl_subtotal').innerText = 'S/ ' + subtotal.toFixed(2);
-            document.getElementById('lbl_igv').innerText = 'S/ ' + igv.toFixed(2);
-            document.getElementById('lbl_total').innerText = 'S/ ' + total.toFixed(2);
-            
-            document.getElementById('h_subtotal').value = subtotal;
-            document.getElementById('h_igv').value = igv;
-            document.getElementById('h_total').value = total;
-            document.getElementById('h_productos').value = JSON.stringify(carrito);
+
+            let igv = subtotal * 0.18;
+            let total = subtotal + igv;
+
+            document.getElementById('cartSubtotal').innerText = subtotal.toFixed(2);
+            document.getElementById('cartIgv').innerText = igv.toFixed(2);
+            document.getElementById('cartTotal').innerText = total.toFixed(2);
         }
 
-        // MODAL
-        function abrirModal() {
-            document.getElementById('pedidoForm').reset();
-            document.getElementById('f_fecha_doc').valueAsDate = new Date();
-            document.getElementById('lbl_ruc').innerText = '-';
-            document.getElementById('lbl_razon_social').innerText = '-';
-            carrito = []; actualizarTablaCarrito();
-            document.getElementById('pedidoModal').classList.add('active');
+        function removeProduct(index) {
+            carrito.splice(index, 1);
+            renderCart();
         }
-        function cerrarModal() { document.getElementById('pedidoModal').classList.remove('active'); }
 
-        // SUBMIT
-        document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if(carrito.length === 0) { alert("Agrega al menos un producto"); return; }
-            const formData = new FormData(e.target);
+        async function saveQuotation() {
+            const cliente_id = document.getElementById('c_cliente').value;
+            if(!cliente_id) { alert('Selecciona un cliente'); return; }
+            if(carrito.length === 0) { alert('Agrega al menos un producto'); return; }
+
+            const payload = {
+                cliente_id: cliente_id,
+                detalles: carrito
+            };
+
             try {
-                const res = await fetch('api_pedidos.php', { method: 'POST', body: formData });
-                const data = await res.json();
-                if(data.success) {
-                    cerrarModal(); cargarPedidos();
-                } else { alert("Error: " + data.error); }
-            } catch(e) { alert("Error de conexión"); }
-        });
+                const res = await fetch('api/cotizaciones.php?action=save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const r = await res.json();
+                if(r.success) {
+                    alert('Cotizacion Generada: ' + r.codigo);
+                    // Generar PDF visualmente
+                    await generatePDF(r.cotizacion_id);
+                    
+                    // Limpiar
+                    document.getElementById('c_cliente').value = '';
+                    document.getElementById('clientInfo').innerHTML = '';
+                    carrito = [];
+                    renderCart();
+                    loadCotizaciones();
+                } else {
+                    alert(r.error);
+                }
+            } catch(e) { alert("Error guardando cotizacion"); }
+        }
 
-        // INIT
-        cargarCatalogo();
-        cargarPedidos();
+        async function generatePDF(cotizacion_id) {
+            // Obtener info completa
+            const res = await fetch('api/cotizaciones.php?action=get_details&id=' + cotizacion_id);
+            const r = await res.json();
+            if(!r.success) return;
+
+            const c = r.data;
+            document.getElementById('pdf-container').style.display = 'block';
+
+            // Rellenar HTML
+            document.getElementById('pdf_fecha').innerText = c.created_at.substring(0, 10);
+            document.getElementById('pdf_codigo').innerText = c.codigo;
+            
+            document.getElementById('pdf_rsocial').innerText = c.razon_social;
+            document.getElementById('pdf_dir').innerText = c.direccion || '';
+            document.getElementById('pdf_ruc').innerText = c.ruc_dni;
+            document.getElementById('pdf_email').innerText = c.correo || '';
+            document.getElementById('pdf_tel').innerText = c.telefono || '';
+            document.getElementById('pdf_contacto').innerText = ''; // c.contacto if exists
+
+            const tbody = document.getElementById('pdf_items');
+            tbody.innerHTML = '';
+            let itemNum = 1;
+            c.detalles.forEach(d => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${itemNum++}</td>
+                        <td>${d.producto_id}</td>
+                        <td>${d.producto_nombre}</td>
+                        <td>${d.cantidad}</td>
+                        <td>${d.unidad_medida || 'UNI'}</td>
+                        <td>${d.precio_unitario}</td>
+                        <td>0.00</td>
+                        <td>${d.precio_unitario}</td>
+                        <td>${d.subtotal}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('pdf_subtotal').innerText = 'S/.' + c.subtotal;
+            document.getElementById('pdf_igv').innerText = 'S/.' + c.igv;
+            document.getElementById('pdf_total').innerText = 'S/.' + c.total;
+
+            const element = document.getElementById('pdf-template');
+            element.style.display = 'block';
+            
+            const opt = {
+                margin:       5,
+                filename:     c.codigo + '.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            await html2pdf().set(opt).from(element).save();
+            
+            element.style.display = 'none';
+            document.getElementById('pdf-container').style.display = 'none';
+        }
+
+        async function loadCotizaciones() {
+            try {
+                const res = await fetch('api/cotizaciones.php?action=list');
+                const data = await res.json();
+                const tbody = document.getElementById('cotizacionesBody');
+                tbody.innerHTML = '';
+                data.forEach(c => {
+                    let btnAceptar = '';
+                    if(c.estado === 'Evaluacion') {
+                        btnAceptar = `<button onclick="cambiarEstado(${c.id}, 'Aceptada')" class="btn btn-primary" style="padding:4px 8px;">Aceptar</button>`;
+                    }
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${c.codigo}</strong></td>
+                            <td>${c.created_at.substring(0, 10)}</td>
+                            <td>${c.cliente_nombre}</td>
+                            <td>S/ ${c.total}</td>
+                            <td>
+                                <span style="background:#eee; padding:3px 6px; border-radius:4px; font-size:12px;">${c.estado}</span>
+                            </td>
+                            <td>
+                                <button onclick="generatePDF(${c.id})" class="btn" style="background:#6c757d; padding:4px 8px;" title="Descargar PDF"><i class="ph ph-download-simple"></i></button>
+                                ${btnAceptar}
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch(e) {}
+        }
+
+        async function cambiarEstado(id, nuevoEstado) {
+            if(!confirm(`¿Marcar cotizacion como ${nuevoEstado}?`)) return;
+            const fd = new FormData();
+            fd.append('action', 'update_status');
+            fd.append('id', id);
+            fd.append('estado', nuevoEstado);
+
+            try {
+                const res = await fetch('api/cotizaciones.php', { method: 'POST', body: fd });
+                const r = await res.json();
+                if(r.success) {
+                    loadCotizaciones();
+                }
+            } catch(e) {}
+        }
     </script>
 </body>
 </html>
