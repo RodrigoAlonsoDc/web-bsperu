@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLEX - Step Into Greatness</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- TOP PROMO BAR -->
+    <div class="top-promo-bar">
+        <p>Free shipping on all orders over $100 &nbsp;|&nbsp; Easy 30-day returns</p>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                BS<span>PERU</span>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#" class="active">Inicio</a></li>
+                <li><a href="#">Tienda</a></li>
+                <li><a href="#">Construcción</a></li>
+                <li><a href="#">Industria</a></li>
+                <li><a href="#">Ferretería</a></li>
+                <li><a href="#">Marcas</a></li>
+                <li><a href="#" class="sale-link">Ofertas</a></li>
+            </ul>
+
+            <div class="nav-icons">
+                <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
+                <a href="#"><i class="fa-regular fa-heart"></i></a>
+                <a href="#" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i><span class="cart-badge">2</span></a>
+                <a href="#"><i class="fa-regular fa-user"></i></a>
+            </div>
+            
+            <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" style="background-image: url('img/hero_construccion.jpg'); background-size: cover; background-position: center; position: relative;">
+        <!-- Overlay -->
+        <div style="position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.4); z-index: 1;"></div>
+        
+        <div class="hero-content" style="position: relative; z-index: 2;">
+            <h1>Soluciones<br>Químicas</h1>
+            <p>Especialistas en aditivos para la construcción<br>y el mantenimiento industrial.</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-dark">Ver Catálogo &nbsp;<i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#" class="btn btn-light">Nuestros Productos</a>
+            </div>
+        </div>
+        <!-- Right side floating item -->
+        <div class="hero-product-float" style="position: relative; z-index: 2;">
+            <img src="img/z2000_bucket.png" alt="Featured Product" class="floating-img">
+            <div class="hero-product-info">
+                <p class="new-arrival">Producto Destacado</p>
+                <p class="product-name">Z 2000 Membrana</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOP BRANDS -->
+    <section class="top-brands container">
+        <div class="section-header">
+            <h2>TOP BRANDS</h2>
+            <a href="#" class="view-all">View all</a>
+        </div>
+        <div class="brands-row">
+            <!-- Using text/icons instead of actual logos since we don't have shoe brand logos -->
+            <div class="brand-item"><h3>NIKE</h3></div>
+            <div class="brand-item"><h3>ADIDAS</h3></div>
+            <div class="brand-item"><h3>PUMA</h3></div>
+            <div class="brand-item"><h3>NEW BALANCE</h3></div>
+            <div class="brand-item"><h3>CONVERSE</h3></div>
+            <div class="brand-item"><h3>VANS</h3></div>
+        </div>
+    </section>
+
+    <!-- SHOP BY CATEGORY -->
+    <section class="categories container">
+        <div class="section-header">
+            <h2>SHOP BY CATEGORY</h2>
+        </div>
+        <div class="categories-grid">
+            <a href="#" class="category-card">
+                <div class="cat-img-wrapper"><img src="img/impermeabilizantes.jpg" alt="Running"></div>
+                <p>Impermeabilizantes</p>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-img-wrapper"><img src="img/adhesivo_epoxico.jpg" alt="Lifestyle"></div>
+                <p>Adhesivos</p>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-img-wrapper"><img src="img/resinas.jpg" alt="Basketball"></div>
+                <p>Resinas</p>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-img-wrapper"><img src="img/pegamentos.jpg" alt="Training"></div>
+                <p>Pegamentos</p>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-img-wrapper"><img src="img/sellador.jpg" alt="Sneakers"></div>
+                <p>Selladores</p>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-img-wrapper"><img src="img/solventes.jpg" alt="Slides"></div>
+                <p>Solventes</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- BEST SELLERS -->
+    <section class="best-sellers container">
+        <div class="section-header">
+            <h2>BEST SELLERS</h2>
+            <a href="#" class="view-all">View all</a>
+        </div>
+        <div class="products-grid">
+            <!-- Product 1 -->
+            <div class="product-card">
+                <button class="heart-btn"><i class="fa-regular fa-heart"></i></button>
+                <div class="product-img">
+                    <img src="img/impermeabilizantes.jpg" alt="Product">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Impermeabilizante Z 2000</h3>
+                    <p class="product-cat">Industrial</p>
+                    <div class="product-bottom">
+                        <span class="price">$115.00</span>
+                        <span class="rating"><i class="fa-solid fa-star"></i> 4.8 (2.4k)</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Product 2 -->
+            <div class="product-card">
+                <button class="heart-btn"><i class="fa-regular fa-heart"></i></button>
+                <div class="product-img">
+                    <img src="img/adhesivo_epoxico.jpg" alt="Product">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Adhesivo Epóxico Plus</h3>
+                    <p class="product-cat">Construcción</p>
+                    <div class="product-bottom">
+                        <span class="price">$90.00</span>
+                        <span class="rating"><i class="fa-solid fa-star"></i> 4.7 (1.8k)</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Product 3 -->
+            <div class="product-card">
+                <button class="heart-btn"><i class="fa-regular fa-heart"></i></button>
+                <div class="product-img">
+                    <img src="img/resinas.jpg" alt="Product">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Resina Acrílica Pro</h3>
+                    <p class="product-cat">Acabados</p>
+                    <div class="product-bottom">
+                        <span class="price">$210.00</span>
+                        <span class="rating"><i class="fa-solid fa-star"></i> 4.9 (3.2k)</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Product 4 -->
+            <div class="product-card">
+                <button class="heart-btn"><i class="fa-regular fa-heart"></i></button>
+                <div class="product-img">
+                    <img src="img/pegamentos.jpg" alt="Product">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Pegamento Extra Fuerte</h3>
+                    <p class="product-cat">Ferretería</p>
+                    <div class="product-bottom">
+                        <span class="price">$120.00</span>
+                        <span class="rating"><i class="fa-solid fa-star"></i> 4.6 (980)</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Product 5 -->
+            <div class="product-card">
+                <button class="heart-btn"><i class="fa-regular fa-heart"></i></button>
+                <div class="product-img">
+                    <img src="img/sellador.jpg" alt="Product">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Sellador Poliuretano</h3>
+                    <p class="product-cat">Industrial</p>
+                    <div class="product-bottom">
+                        <span class="price">$70.00</span>
+                        <span class="rating"><i class="fa-solid fa-star"></i> 4.7 (1.2k)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROMO BANNER -->
+    <section class="promo-banner container">
+        <div class="promo-content">
+            <p class="promo-subtitle">LIMITED TIME ONLY</p>
+            <h2>Summer Sale</h2>
+            <p class="promo-desc">Up to 40% off on selected items</p>
+            <a href="#" class="btn btn-light promo-btn">Shop the Sale &nbsp;<i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="promo-visual">
+            <img src="img/banner_1.jpg" alt="Sale Image" class="promo-img">
+            <div class="promo-discount">
+                <span class="number">40<span class="percent">%</span></span>
+                <span class="off">OFF</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features container">
+        <div class="feature-item">
+            <i class="fa-solid fa-truck-fast"></i>
+            <div>
+                <h4>Free Shipping</h4>
+                <p>On orders over $100</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <i class="fa-solid fa-rotate-left"></i>
+            <div>
+                <h4>30-Day Returns</h4>
+                <p>Hassle-free returns</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <i class="fa-solid fa-check-double"></i>
+            <div>
+                <h4>100% Authentic</h4>
+                <p>Genuine branded products</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+                <h4>Secure Payments</h4>
+                <p>Safe & encrypted checkout</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container container">
+            <div class="footer-col brand-col">
+                <a href="#" class="footer-logo">SOLE<span>X</span></a>
+                <p class="footer-desc">Your destination for authentic branded products. Quality, style, and comfort — all in one place.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>SHOP</h4>
+                <ul>
+                    <li><a href="#">All Shoes</a></li>
+                    <li><a href="#">Men</a></li>
+                    <li><a href="#">Women</a></li>
+                    <li><a href="#">Kids</a></li>
+                    <li><a href="#">Sale</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>CUSTOMER CARE</h4>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Size Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>COMPANY</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Sustainability</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Store Locator</a></li>
+                </ul>
+            </div>
+            <div class="footer-col newsletter-col">
+                <h4>NEWSLETTER</h4>
+                <p>Get updates on new arrivals, exclusive offers and more.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit"><i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2026 SOLEX. All Rights Reserved.</p>
+            <div class="footer-links">
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

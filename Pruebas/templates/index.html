@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Declaración Jurada</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Phosphor Icons para iconos modernos -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .container {
+            max-width: 900px;
+        }
+
+        .section-title {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-wrapper input {
+            flex: 1;
+        }
+
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-search:hover {
+            background: var(--primary-hover);
+        }
+
+        .type-select {
+            padding: 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: white;
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="app-header">
+            <div class="logo-container">
+                <i class="ph ph-file-text header-icon"></i>
+            </div>
+            <h1>Declaración Jurada</h1>
+            <p>Complete los datos requeridos para generar el documento oficial.</p>
+        </header>
+
+        <section class="card">
+            <form id="declaracionForm">
+
+                <!-- SECCIÓN 1: DATOS DEL SOLICITANTE -->
+                <h2 class="section-title"><i class="ph ph-user-circle"></i> I. Datos del Solicitante</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoDoc">Tipo de Documento</label>
+                        <select id="tipoDoc" class="type-select">
+                            <option value="dni">DNI</option>
+                            <option value="ruc">RUC</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dniRuc">Número DNI / RUC</label>
+                        <div class="search-wrapper">
+                            <input type="text" id="dniRuc" placeholder="Ej. 12345678" style="padding-left: 1rem;"
+                                required>
+                            <button type="button" id="btnBuscar" class="btn-search" title="Buscar Nombre/Razón Social">
+                                <i class="ph ph-magnifying-glass"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="nombreRazonSocial">Nombre / Razón Social</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-buildings"></i>
+                        <input type="text" id="nombreRazonSocial" placeholder="Nombre completo o Empresa" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="personaFirma">Persona que firma</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-pencil-line"></i>
+                            <input type="text" id="personaFirma" placeholder="Nombre del firmante">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dniFirma">DNI de quien firma</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-identification-card"></i>
+                            <input type="text" id="dniFirma" placeholder="DNI del firmante">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="cargoRepresentacion">Cargo / vínculo / autorización</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-briefcase"></i>
+                        <input type="text" id="cargoRepresentacion" placeholder="Ej. Gerente General">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="domicilio">Domicilio</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-map-pin"></i>
+                        <input type="text" id="domicilio" placeholder="Dirección completa">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="correo">Correo electrónico</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-envelope"></i>
+                            <input type="email" id="correo" placeholder="ejemplo@correo.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-phone"></i>
+                            <input type="tel" id="telefono" placeholder="Número de contacto">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: DATOS DEL ENVÍO -->
+                <h2 class="section-title"><i class="ph ph-package"></i> II. Datos del Envío</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cantidadBultos">Cantidad de bultos</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-stack"></i>
+                            <input type="text" id="cantidadBultos" placeholder="Ej. 3">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="valorDeclarado">Valor declarado</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-currency-dollar"></i>
+                            <input type="text" id="valorDeclarado" placeholder="Ej. S/ 1000.00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="destinoCiudad">Destino / ciudad</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-map-trifold"></i>
+                            <input type="text" id="destinoCiudad" placeholder="Ej. Lima">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="direccionDestino">Dirección o agencia destino</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-buildings"></i>
+                            <input type="text" id="direccionDestino" placeholder="Dirección de entrega">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoDocDestinatario">Tipo Doc. Destinatario</label>
+                        <select id="tipoDocDestinatario" class="type-select">
+                            <option value="dni">DNI</option>
+                            <option value="ruc">RUC</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dniRucDestinatario">N° Doc. Destinatario</label>
+                        <div class="search-wrapper">
+                            <input type="text" id="dniRucDestinatario" placeholder="Ej. 12345678"
+                                style="padding-left: 1rem;">
+                            <button type="button" id="btnBuscarDestinatario" class="btn-search"
+                                title="Buscar Destinatario">
+                                <i class="ph ph-magnifying-glass"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="destinatario">Destinatario / receptor indicado</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-user"></i>
+                        <input type="text" id="destinatario" placeholder="Persona o empresa que recibe">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefonoContacto">Teléfono de contacto</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-phone"></i>
+                            <input type="text" id="telefonoContacto" placeholder="Teléfono del receptor">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaTransporte">Empresa de transporte</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-truck"></i>
+                            <input type="text" id="empresaTransporte" placeholder="Ej. Shalom, Marvisur...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="agenciaOrigen">Agencia de origen</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-storefront"></i>
+                            <input type="text" id="agenciaOrigen" placeholder="Agencia de envío">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="agenciaDestino">Agencia de destino</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-storefront"></i>
+                            <input type="text" id="agenciaDestino" placeholder="Agencia de recepción">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem; width: 50%;">
+                    <label for="nGuia">N° Guía</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-barcode"></i>
+                        <input type="text" id="nGuia" placeholder="Número de guía">
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: FIRMA -->
+                <h2 class="section-title"><i class="ph ph-signature"></i> III. Firma del Solicitante</h2>
+
+                <div class="signature-section">
+                    <div class="signature-tabs">
+                        <button type="button" class="tab-btn active" data-target="draw-tab">
+                            <i class="ph ph-pencil-simple"></i> Dibujar Firma
+                        </button>
+                        <button type="button" class="tab-btn" data-target="upload-tab">
+                            <i class="ph ph-upload-simple"></i> Subir Imagen
+                        </button>
+                    </div>
+
+                    <div class="tab-content">
+                        <!-- Pestaña: Dibujar -->
+                        <div id="draw-tab" class="tab-pane active">
+                            <div class="canvas-container">
+                                <canvas id="signatureCanvas" width="500" height="200"></canvas>
+                            </div>
+                            <button type="button" id="clearCanvasBtn" class="btn-secondary">
+                                <i class="ph ph-eraser"></i> Limpiar Pizarra
+                            </button>
+                        </div>
+
+                        <!-- Pestaña: Subir -->
+                        <div id="upload-tab" class="tab-pane">
+                            <div class="upload-container">
+                                <i class="ph ph-image upload-icon"></i>
+                                <p>Haz clic o arrastra una imagen aquí</p>
+                                <input type="file" id="signatureFile" accept="image/png, image/jpeg" class="file-input">
+                            </div>
+                            <div id="previewContainer" class="preview-container hidden">
+                                <img id="imagePreview" src="" alt="Vista previa de firma">
+                                <button type="button" id="removeImageBtn" class="btn-icon">
+                                    <i class="ph ph-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="generateBtn" class="btn-primary">
+                        <i class="ph ph-file-arrow-down"></i>
+                        <span>Generar Documento</span>
+                        <div class="spinner hidden"></div>
+                    </button>
+                </div>
+
+                <div id="messageBox" class="message-box hidden"></div>
+            </form>
+        </section>
+    </main>
+
+    <!-- App Logic -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
