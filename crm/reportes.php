@@ -42,9 +42,9 @@
 
         .app-container {
             background: var(--app-bg);
-            width: 95%;
-            max-width: 1800px;
-            height: 95vh;
+            width: 98%;
+            max-width: 2560px;
+            height: 96vh;
             min-height: 800px;
             border-radius: 40px;
             box-shadow: var(--shadow);
