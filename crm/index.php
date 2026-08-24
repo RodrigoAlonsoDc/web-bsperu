@@ -137,7 +137,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             <div class="module-title">DESPACHOS</div>
         </div>
 
-        <div class="module-card" data-url="#">
+        <div class="module-card" data-url="reportes.php">
             <img class="image" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Reportes" draggable="false" />
             <div class="module-title">REPORTES</div>
         </div>
