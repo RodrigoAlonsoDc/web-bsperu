@@ -788,6 +788,58 @@
         </div>
     </section>
 
+    <!-- CONSULTATION BANNER -->
+    <section class="consultation-banner" style="background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-medium) 100%); padding: 60px 20px; text-align: center; color: var(--text); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); position: relative; z-index: 10;">
+        <div class="container" style="max-width: 800px; margin: 0 auto;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; color: var(--title-color); text-transform: uppercase;">¿Tiene problemas en su obra? <br><span style="color: var(--accent); transition: color 0.4s;">Cuéntenos su problema</span></h2>
+            <p style="margin-bottom: 25px; font-size: 1.1rem; color: var(--text-muted);">Nuestros expertos técnicos le asesorarán inmediatamente con la mejor solución en productos químicos para la construcción.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                <textarea id="userQuestion" rows="4" placeholder="Escriba su consulta detallada aquí (ej. Problemas de humedad, fisuras, tipo de concreto...)" style="width: 100%; max-width: 600px; padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text); font-family: inherit; font-size: 1rem; resize: vertical; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border-color)'"></textarea>
+                
+                <button onclick="sendToWhatsApp()" style="background-color: var(--accent); color: var(--bg-dark); border: none; padding: 15px 35px; border-radius: var(--radius-lg); font-size: 1.2rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background-color 0.4s, color 0.4s; box-shadow: 0 4px 15px var(--accent-glow);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="ph-fill ph-whatsapp-logo" style="font-size: 1.6rem;"></i> Enviar a WhatsApp
+                </button>
+            </div>
+            <p id="feedbackMsg" style="display: none; margin-top: 20px; color: #4caf50; font-size: 1.1rem; font-weight: bold;">
+                <i class="ph-fill ph-check-circle"></i> ¡Su consulta ha sido registrada! Abriendo WhatsApp...
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function sendToWhatsApp() {
+            const question = document.getElementById('userQuestion').value.trim();
+            if(!question) {
+                alert('Por favor, cuéntenos su problema antes de enviar.');
+                return;
+            }
+
+            const phone = '51999999999'; // Cambiar por el número real
+
+            fetch('guardar_consulta.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'consulta=' + encodeURIComponent(question)
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('feedbackMsg').style.display = 'block';
+                const message = encodeURIComponent('Hola BS Perú, necesito ayuda con lo siguiente: ' + question);
+                setTimeout(() => {
+                    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+                    document.getElementById('userQuestion').value = '';
+                    document.getElementById('feedbackMsg').style.display = 'none';
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error guardando:', error);
+                const message = encodeURIComponent('Hola BS Perú, necesito ayuda con lo siguiente: ' + question);
+                window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+            });
+        }
+    </script>
+
     <!-- 3D ADVERTISEMENT SECTION -->
     <section class="ad-section">
         <h2 class="ad-title">Producto <span>Estrella</span></h2>
