@@ -11,7 +11,7 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/nutreko_style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -81,6 +81,65 @@
             <div class="hero-bottle box-3" style="background-image: url('img/z2000_bucket.png');"></div>
         </div>
     </section>
+
+    <!-- CONSULTATION BANNER -->
+    <section class="consultation-banner" style="background: linear-gradient(135deg, #1e1e1e 0%, #3a3a3a 100%); padding: 60px 20px; text-align: center; color: white; margin-top: -30px; position: relative; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div class="container" style="max-width: 800px; margin: 0 auto;">
+            <h2 style="font-family: 'Oswald', sans-serif; font-size: 2.8rem; margin-bottom: 10px; letter-spacing: 1px;">¿Tiene problemas en su obra? <span style="color: #e53935;">Cuéntenos su problema</span></h2>
+            <p style="margin-bottom: 25px; font-size: 1.1rem; opacity: 0.9;">Nuestros expertos técnicos le asesorarán inmediatamente con la mejor solución en aditivos y asfaltos.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                <textarea id="userQuestion" rows="4" placeholder="Escriba su consulta detallada aquí (ej. Problemas de humedad, fisuras, tipo de concreto...)" style="width: 100%; max-width: 600px; padding: 15px; border-radius: 8px; border: 2px solid transparent; font-family: 'Inter', sans-serif; font-size: 1rem; resize: vertical; transition: border 0.3s;" onfocus="this.style.border='2px solid #e53935'" onblur="this.style.border='2px solid transparent'"></textarea>
+                
+                <button onclick="sendToWhatsApp()" style="background-color: #25D366; color: white; border: none; padding: 15px 35px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.6rem;"></i> Enviar a WhatsApp
+                </button>
+            </div>
+            <p id="feedbackMsg" style="display: none; margin-top: 20px; color: #4caf50; font-size: 1.1rem; font-weight: bold;">
+                <i class="fa-solid fa-circle-check"></i> ¡Su consulta ha sido registrada! Abriendo WhatsApp...
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function sendToWhatsApp() {
+            const question = document.getElementById('userQuestion').value.trim();
+            if(!question) {
+                alert('Por favor, cuéntenos su problema antes de enviar.');
+                return;
+            }
+
+            // Cambia este número por el número real de ventas/soporte de Z Aditivos
+            const phone = '51999999999'; 
+
+            // Guardar en la base de datos/archivo (backend)
+            fetch('guardar_consulta.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'consulta=' + encodeURIComponent(question)
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('feedbackMsg').style.display = 'block';
+                
+                const message = encodeURIComponent('Hola Z Aditivos, necesito ayuda con lo siguiente: ' + question);
+                
+                setTimeout(() => {
+                    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+                    document.getElementById('userQuestion').value = '';
+                    document.getElementById('feedbackMsg').style.display = 'none';
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error guardando:', error);
+                // Si falla el guardado, igual lo enviamos a WhatsApp para no perder el prospecto
+                const message = encodeURIComponent('Hola Z Aditivos, necesito ayuda con lo siguiente: ' + question);
+                window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+            });
+        }
+    </script>
 
     <!-- SHOP BY GOALS -->
     <section class="shop-by-goals container">
