@@ -166,10 +166,10 @@
         .nav-logo .logo-sub { font-size: 9px; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; }
 
         .nav-links {
-            display: flex; gap: 32px; list-style: none;
+            display: flex; gap: 30px; list-style: none; flex-wrap: wrap; justify-content: center;
         }
         .nav-links a {
-            color: var(--text-muted); text-decoration: none; font-size: 13px;
+            color: var(--text-muted); text-decoration: none; font-size: 13.5px;
             font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
             transition: color 0.3s;
         }
@@ -678,12 +678,44 @@
             font-weight: 800;
         }
         .ad-title span { color: var(--primary-color); }
-        .tilt-container {
-            perspective: 1200px;
+        .slider-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 20px;
+            padding: 20px 0;
             width: 100%;
-            max-width: 450px;
-            margin: 0 auto;
+            max-width: 100%;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
+        .slider-container::-webkit-scrollbar { display: none; }
+        .slider-item {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            display: flex;
+            justify-content: center;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .slider-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .indicator.active {
+            background: var(--primary-color);
+            transform: scale(1.2);
+        }
+        .tilt-container {
         .tilt-card {
             width: 100%;
             border-radius: 20px;
@@ -717,9 +749,68 @@
             transition: opacity 0.6s ease, transform 0.6s ease;
         }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
+        /* ============ PROMO MODAL ============ */
+        .promo-modal {
+            display: none; position: fixed; z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center; align-items: center;
+        }
+        .promo-modal-content {
+            background-color: #fff; position: relative;
+            width: 90%; max-width: 450px; border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5); text-align: center;
+            font-family: 'Inter', sans-serif; animation: slideDown 0.4s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .promo-close {
+            position: absolute; top: -15px; right: -15px;
+            background: #fff; border-radius: 50%; width: 30px; height: 30px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); color: #333;
+            border: 2px solid #0056b3;
+        }
+        .promo-form-container { padding: 20px; color: #333; }
+        .promo-form-container h3 { font-size: 16px; margin-bottom: 15px; color: #333; font-weight: 600; }
+        .promo-form-container input[type="email"] {
+            width: 100%; padding: 12px; border: 1px solid #ccc;
+            border-radius: 4px; margin-bottom: 15px; font-size: 14px; box-sizing: border-box;
+        }
+        .promo-checkbox-label {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 11px; text-align: left; margin-bottom: 20px; color: #555; line-height: 1.4;
+        }
+        .promo-checkbox-label a { color: #0056b3; text-decoration: underline; }
+        .promo-btn {
+            width: 100%; background-color: #f44336; color: white; border: none;
+            padding: 15px; font-size: 18px; font-weight: bold; border-radius: 6px;
+            cursor: pointer; transition: background 0.3s;
+        }
+        .promo-btn:hover { background-color: #d32f2f; }
     </style>
 </head>
 <body>
+
+    <!-- PROMO MODAL -->
+    <div id="promoModal" class="promo-modal">
+        <div class="promo-modal-content">
+            <span class="promo-close" onclick="closePromo()">&times;</span>
+            <img src="img/promo_discount_banner.jpg" alt="10% Descuento" style="width: 100%; border-radius: 8px 8px 0 0;">
+            <div class="promo-form-container">
+                <h3>Indica tu email y te lo enviamos ahora</h3>
+                <input type="email" id="promoEmail" placeholder="Email">
+                <label class="promo-checkbox-label">
+                    <input type="checkbox" id="promoCheck">
+                    <span>Deseo recibir comunicaciones de BS Perú, ofertas y beneficios exclusivos. He leído y aceptado las políticas de privacidad. <a href="#">Políticas de privacidad.</a></span>
+                </label>
+                <button class="promo-btn" onclick="submitPromo()">¡Quiero mi 10% de descuento!</button>
+            </div>
+        </div>
+    </div>
 
     <!-- THEME SWITCHER -->
     <div class="theme-switcher">
@@ -753,15 +844,18 @@
 
     <!-- NAVBAR -->
     <nav class="navbar" id="mainNav">
-        <a href="#" class="nav-logo">
-            <div class="logo-icon">BS</div>
-            <div>
-                <div class="logo-name">BS PERÚ</div>
-                <div class="logo-sub">Building Systems</div>
-            </div>
+        <a href="#" class="nav-logo" style="display: flex; align-items: center; gap: 10px;">
+            <img src="img/logo_bs.png" alt="BS Peru Logo" style="height: 50px; width: auto; max-width: 200px; object-fit: contain;">
         </a>
         <ul class="nav-links">
-            <li><a href="#" class="active">Productos</a></li>
+            <li><a href="#adhesivos">Adhesivos</a></li>
+            <li><a href="#impermeabilizantes">Impermeabilizantes</a></li>
+            <li><a href="#selladores">Selladores</a></li>
+            <li><a href="#morteros">Morteros</a></li>
+            <li><a href="#pegamentos">Pegamentos</a></li>
+            <li><a href="#resinas">Resinas</a></li>
+            <li><a href="#solventes">Solventes</a></li>
+            <li><a href="#curadores">Curadores</a></li>
         </ul>
         <a href="#cotizar" class="nav-cta">Cotizar Ahora</a>
         <button class="nav-hamburger" onclick="document.querySelector('.nav-links').style.display = document.querySelector('.nav-links').style.display === 'flex' ? 'none' : 'flex';">
@@ -835,14 +929,46 @@
         }
     </script>
 
-    <!-- 3D ADVERTISEMENT SECTION -->
+    <!-- 3D ADVERTISEMENT SECTION (SLIDER) -->
     <section class="ad-section">
-        <h2 class="ad-title">Producto <span>Estrella</span></h2>
-        <div class="tilt-container">
-            <div class="tilt-card" id="tiltCard">
-                <img src="img/z2000_ad.jpg" alt="Z 2000 Impermeabilizante">
-                <div class="glare"></div>
+        <h2 class="ad-title">Productos <span>Estrella</span></h2>
+        
+        <div class="slider-container" id="promoSlider">
+            <!-- Slide 1 -->
+            <div class="slider-item">
+                <div class="tilt-container" style="perspective:1200px; width:100%; max-width:450px;">
+                    <div class="tilt-card tilt-js">
+                        <img src="img/z2000_ad.jpg" alt="Z 2000 Impermeabilizante">
+                        <div class="glare"></div>
+                    </div>
+                </div>
             </div>
+            
+            <!-- Slide 2 -->
+            <div class="slider-item">
+                <div class="tilt-container" style="perspective:1200px; width:100%; max-width:450px;">
+                    <div class="tilt-card tilt-js">
+                        <img src="img/z_grout_ad.png" alt="Z Grout Ad">
+                        <div class="glare"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="slider-item">
+                <div class="tilt-container" style="perspective:1200px; width:100%; max-width:450px;">
+                    <div class="tilt-card tilt-js">
+                        <img src="img/z_lluvia_ad.png" alt="Protección Contra Lluvia">
+                        <div class="glare"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slider-indicators">
+            <span class="indicator active"></span>
+            <span class="indicator"></span>
+            <span class="indicator"></span>
         </div>
     </section>
 
@@ -1140,40 +1266,80 @@
 
         document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-        // 3D TILT EFFECT LOGIC
-        const tiltContainer = document.querySelector('.tilt-container');
-        const tiltCard = document.querySelector('.tilt-card');
-        const glare = document.querySelector('.glare');
-
-        if(tiltContainer && tiltCard) {
-            tiltContainer.addEventListener('mousemove', (e) => {
-                const rect = tiltContainer.getBoundingClientRect();
+        // 3D Tilt Effect for multiple cards
+        const tiltCards = document.querySelectorAll('.tilt-js');
+        tiltCards.forEach(card => {
+            const glare = card.querySelector('.glare');
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                
                 const rotateX = -((y - centerY) / centerY) * 15;
                 const rotateY = ((x - centerX) / centerX) * 15;
                 
-                tiltCard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
                 
                 const glareX = (x / rect.width) * 100;
                 const glareY = (y / rect.height) * 100;
                 glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.3) 0%, transparent 60%)`;
             });
 
-            tiltContainer.addEventListener('mouseleave', () => {
-                tiltCard.style.transform = `rotateX(0deg) rotateY(0deg)`;
-                tiltCard.style.transition = `transform 0.5s ease-out`;
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+                card.style.transition = `transform 0.5s ease-out`;
                 glare.style.opacity = '0';
             });
 
-            tiltContainer.addEventListener('mouseenter', () => {
-                tiltCard.style.transition = `transform 0.1s ease-out`;
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = `transform 0.1s ease-out`;
                 glare.style.opacity = '1';
             });
+        });
+
+        // Slider Indicators Logic
+        const promoSlider = document.getElementById('promoSlider');
+        const indicators = document.querySelectorAll('.indicator');
+        if(promoSlider && indicators.length) {
+            promoSlider.addEventListener('scroll', () => {
+                let index = Math.round(promoSlider.scrollLeft / promoSlider.clientWidth);
+                indicators.forEach(ind => ind.classList.remove('active'));
+                if(indicators[index]) indicators[index].classList.add('active');
+            });
+        }
+
+        // Promo Modal Logic (Disabled temporarily)
+        /*
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!sessionStorage.getItem('promoShown')) {
+                setTimeout(() => {
+                    document.getElementById('promoModal').style.display = 'flex';
+                }, 1500);
+            }
+        });
+        */
+
+        function closePromo() {
+            document.getElementById('promoModal').style.display = 'none';
+            sessionStorage.setItem('promoShown', 'true');
+        }
+
+        function submitPromo() {
+            const email = document.getElementById('promoEmail').value;
+            const check = document.getElementById('promoCheck').checked;
+            
+            if(!email) {
+                alert('Por favor, ingresa tu email.');
+                return;
+            }
+            if(!check) {
+                alert('Debes aceptar las políticas de privacidad para continuar.');
+                return;
+            }
+            
+            alert('¡Gracias! Hemos enviado tu cupón de descuento a ' + email);
+            closePromo();
         }
     </script>
 </body>
