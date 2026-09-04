@@ -1,0 +1,19 @@
+# Las consultas de clientes que registra guardar_consulta.php NO deben ser
+# descargables desde la web. Sin esto, el .txt queda publico en
+# https://bsperu.pe/Pruebas/consultas_registradas.txt
+<FilesMatch "\.(txt|log|bak|sql)$">
+    Require all denied
+</FilesMatch>
+
+# Apache 2.2 (por si el hosting aun no usa 2.4)
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.(txt|log|bak|sql)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# Maqueta en pruebas: que no la indexen los buscadores
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>

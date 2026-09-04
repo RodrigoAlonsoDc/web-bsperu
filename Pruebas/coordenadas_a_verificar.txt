@@ -1,0 +1,67 @@
+# Verificacion de coordenadas - sucursales BS Peru
+
+Abre cada enlace, ubica el local exacto, clic derecho sobre el punto ->
+la primera opcion del menu copia 'lat, lng'. Pega el valor en la columna CORRECTA.
+
+## CALLAO  (key: fali)
+   Direccion en el JSON : Av. Elmer Faucett 1631
+   Coordenada ACTUAL    : -12.0632, -77.153
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-12.0632%2C-77.153
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Av.+Elmer+Faucett+1631%2C+CALLAO%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## CHORRILLOS  (key: chorrillos)
+   Direccion en el JSON : Av. Los faisanes 675
+   Coordenada ACTUAL    : -12.1928, -77.1317
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-12.1928%2C-77.1317
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Av.+Los+faisanes+675%2C+CHORRILLOS%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## SAN BORJA  (key: lima)
+   Direccion en el JSON : Av. San Luis 3051
+   Coordenada ACTUAL    : -12.0866, -77.0581
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-12.0866%2C-77.0581
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Av.+San+Luis+3051%2C+SAN+BORJA%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## SULLANA  (key: sullana)
+   Direccion en el JSON : Jose de Lama 244
+   Coordenada ACTUAL    : -4.9106, -80.6769
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-4.9106%2C-80.6769
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Jose+de+Lama+244%2C+SULLANA%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## PIURA  (key: piuraee)
+   Direccion en el JSON : HH Manuel Seone MZ H
+   Coordenada ACTUAL    : -5.1946, -80.6328
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-5.1946%2C-80.6328
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=HH+Manuel+Seone+MZ+H%2C+PIURA%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## TRUJILLO  (key: trujillo)
+   Direccion en el JSON : Av. América Oeste 531
+   Coordenada ACTUAL    : -8.1109, -79.0276
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-8.1109%2C-79.0276
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Av.+Am%C3%A9rica+Oeste+531%2C+TRUJILLO%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## CHICLAYO  (key: chiclayo)
+   Direccion en el JSON : Los Tumbos 505
+   Coordenada ACTUAL    : -6.7735, -79.8394
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-6.7735%2C-79.8394
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Los+Tumbos+505%2C+CHICLAYO%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## TACNA  (key: tacna)
+   Direccion en el JSON : Ramón Copaja Mza L
+   Coordenada ACTUAL    : -18.0196, -70.2536
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-18.0196%2C-70.2536
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Ram%C3%B3n+Copaja+Mza+L%2C+TACNA%2C+Peru
+   Coordenada CORRECTA  : ______________________
+
+## AREQUIPA  (key: arequipa)
+   Direccion en el JSON : Av. Jesús 600
+   Coordenada ACTUAL    : -16.3988, -71.535
+   Ver donde cae ahora  : https://www.google.com/maps/search/?api=1&query=-16.3988%2C-71.535
+   Buscar la direccion  : https://www.google.com/maps/search/?api=1&query=Av.+Jes%C3%BAs+600%2C+AREQUIPA%2C+Peru
+   Coordenada CORRECTA  : ______________________
