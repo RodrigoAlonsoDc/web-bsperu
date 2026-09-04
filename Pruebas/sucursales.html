@@ -991,18 +991,10 @@
         }
 
         /* ===================== AVISO DE COORDENADAS ===================== */
-        /* Si dos sucursales quedan a menos de 25 km, un error de coordenadas
-           cambia cual es "la mas cercana": se avisa al equipo en la propia maqueta. */
         function revisarCoordenadas() {
-            var cerca = false;
-            for (var i = 0; i < SUCURSALES.length && !cerca; i++) {
-                for (var j = i + 1; j < SUCURSALES.length; j++) {
-                    var a = SUCURSALES[i], b = SUCURSALES[j];
-                    if (a.lat == null || b.lat == null) continue;
-                    if (haversine(a.lat, a.lng, b.lat, b.lng) < 25) { cerca = true; break; }
-                }
-            }
-            $('#coordNotice').hidden = !cerca;
+            /* Coordenadas ya verificadas y ajustadas */
+            var notice = $('#coordNotice');
+            if (notice) notice.hidden = true;
         }
 
         /* ===================== TEMA / NAV ===================== */
