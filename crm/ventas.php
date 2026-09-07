@@ -167,41 +167,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         body {
-            background-color: var(--outer-bg);
-            min-height: 100vh;
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
             transition: var(--transition);
         }
 
-        /* CONTENEDOR PRINCIPAL TIPO TABLET / APP */
+        /* CONTENEDOR PRINCIPAL EXPANDIDO A PANTALLA COMPLETA */
         .app-container {
             background: var(--app-frame);
-            width: 100%;
-            max-width: 1360px;
-            height: 94vh;
-            min-height: 820px;
-            border-radius: 42px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+            width: 100vw;
+            max-width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
             display: flex;
             overflow: hidden;
             position: relative;
-            padding: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.04);
+            padding: 0;
+            border: none;
         }
 
         /* ================= SIDEBAR IZQUIERDA ================= */
         .sidebar {
-            width: 220px;
+            width: 250px;
             background: var(--sidebar-bg);
-            border-radius: 34px 0 0 34px;
+            border-radius: 0;
             display: flex;
             flex-direction: column;
-            padding: 24px 18px;
+            padding: 26px 18px;
             gap: 16px;
             flex-shrink: 0;
+            height: 100vh;
         }
 
         .brand-logo {
@@ -373,14 +375,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         /* ================= ÁREA CENTRAL (BLANCA) ================= */
         .main-content {
-            flex: 1.8;
+            flex: 1;
             background: var(--main-bg);
             border-radius: 36px 0 0 36px;
-            padding: 30px 36px;
+            padding: 34px 44px;
             display: flex;
             flex-direction: column;
-            gap: 22px;
+            gap: 26px;
             overflow-y: auto;
+            height: 100vh;
             transition: var(--transition);
         }
 
@@ -391,7 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         .main-header h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.85rem;
+            font-size: 1.95rem;
             font-weight: 700;
             color: var(--text-dark);
             letter-spacing: -0.5px;
@@ -404,9 +407,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         .btn-link-reporteria {
             background: rgba(109, 93, 211, 0.1);
             color: #6D5DD3;
-            padding: 8px 16px;
+            padding: 9px 18px;
             border-radius: var(--pill-radius);
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             font-weight: 600;
             text-decoration: none;
             display: inline-flex;
@@ -425,7 +428,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         .welcome-card {
             background: var(--accent-tan);
             border-radius: var(--card-radius);
-            padding: 28px 32px;
+            padding: 32px 42px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -435,34 +438,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             overflow: hidden;
         }
         .welcome-content {
-            max-width: 65%;
+            max-width: 72%;
             z-index: 2;
         }
         .welcome-content h2 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.85rem;
             font-weight: 700;
             line-height: 1.25;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #FFF;
         }
         .welcome-content p {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 20px;
-            line-height: 1.45;
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.92);
+            margin-bottom: 22px;
+            line-height: 1.5;
         }
         .welcome-actions {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             flex-wrap: wrap;
         }
         .btn-pill-white {
             background: #FFF;
             color: #2D2418;
-            padding: 10px 20px;
+            padding: 11px 22px;
             border-radius: var(--pill-radius);
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             font-weight: 700;
             border: none;
             cursor: pointer;
@@ -490,9 +493,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             z-index: 2;
         }
         .welcome-avatar-frame {
-            width: 105px;
-            height: 115px;
-            border-radius: 40px 40px 30px 30px;
+            width: 120px;
+            height: 130px;
+            border-radius: 44px 44px 34px 34px;
             border: 3px solid rgba(255, 255, 255, 0.4);
             overflow: hidden;
             background: rgba(255, 255, 255, 0.2);
@@ -508,15 +511,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
+            gap: 18px;
         }
         .stat-card-mini {
             background: var(--accent-tan-soft);
-            border-radius: 20px;
-            padding: 14px 16px;
+            border-radius: 22px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             border: 1px solid var(--border-soft);
             transition: var(--transition);
             cursor: pointer;
@@ -527,41 +530,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             border-color: var(--accent-tan);
         }
         .stat-mini-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
             background: #FFF;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             color: var(--accent-tan);
             box-shadow: 0 4px 10px rgba(199, 155, 88, 0.15);
         }
         .stat-mini-info h4 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.45rem;
+            font-size: 1.65rem;
             font-weight: 700;
             color: var(--text-dark);
             line-height: 1;
         }
         .stat-mini-info p {
-            font-size: 0.72rem;
+            font-size: 0.76rem;
             color: var(--text-muted);
             font-weight: 500;
-            margin-top: 3px;
+            margin-top: 4px;
         }
 
         /* SECCIÓN TEAM EXECUTIVE / RENDIMIENTO POR CATEGORÍAS */
         .executive-section {
             background: #FFF;
             border-radius: var(--card-radius);
-            padding: 24px 28px;
+            padding: 28px 34px;
             border: 1px solid var(--border-soft);
             box-shadow: 0 10px 25px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 20px;
             flex: 1;
         }
         body.dark-mode .executive-section {
@@ -574,12 +577,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         .executive-header h3 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-dark);
         }
         .executive-header span {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--text-dark);
         }
@@ -587,14 +590,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         .executive-content {
             display: flex;
             align-items: center;
-            gap: 36px;
+            gap: 48px;
         }
 
         /* DONUT CHART SVG */
         .donut-chart-container {
             position: relative;
-            width: 170px;
-            height: 170px;
+            width: 185px;
+            height: 185px;
             flex-shrink: 0;
             display: flex;
             justify-content: center;
@@ -611,13 +614,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         .donut-center-text h4 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
+            font-size: 2.1rem;
             font-weight: 800;
             color: var(--text-dark);
             line-height: 1;
         }
         .donut-center-text span {
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
@@ -628,29 +631,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 18px;
         }
         .category-item {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
         .category-item-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.82rem;
+            font-size: 0.86rem;
             font-weight: 600;
             color: var(--text-dark);
         }
         .category-name-tag {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .category-progress-bar {
             width: 100%;
-            height: 6px;
+            height: 7px;
             background: var(--border-soft);
             border-radius: 10px;
             overflow: hidden;
@@ -664,15 +667,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         /* ================= PANEL DERECHO: MY ACTIVITY ================= */
         .right-sidebar {
-            width: 320px;
+            width: 380px;
             background: var(--right-bg);
-            border-radius: 0 34px 34px 0;
-            padding: 30px 24px;
+            border-radius: 0;
+            padding: 34px 28px;
             display: flex;
             flex-direction: column;
-            gap: 22px;
+            gap: 26px;
             overflow-y: auto;
+            height: 100vh;
             border-left: 1px solid var(--border-soft);
+            flex-shrink: 0;
             transition: var(--transition);
         }
 
