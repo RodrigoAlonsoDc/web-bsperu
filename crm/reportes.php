@@ -1,9 +1,67 @@
+<?php
+// crm/reportes.php - BS Perú CRM & Módulo de Reportería
+// Conexión opcional a base de datos con fallback automático
+$db = null;
+if (file_exists(__DIR__ . '/config/database.php')) {
+    require_once __DIR__ . '/config/database.php';
+    if (function_exists('getDB')) {
+        try {
+            $db = getDB();
+        } catch (Exception $e) {
+            $db = null;
+        }
+    }
+}
+
+// Procesar acciones AJAX de validación de pago desde Reportería si se envían por POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    header('Content-Type: application/json');
+    $action = $_POST['action'];
+
+    if ($action === 'confirmar_pago') {
+        $pago_id = $_POST['pago_id'] ?? 0;
+        $monto = floatval($_POST['monto'] ?? 0);
+        $validador = $_POST['validador'] ?? 'Área de Reportería';
+        $fecha = date('Y-m-d H:i:s');
+
+        // Si hay BD activa, actualizar
+        if ($db) {
+            try {
+                $stmt = $db->prepare("UPDATE pagos SET validador_id = 1, fecha_pago = ? WHERE id = ?");
+                $stmt->execute([$fecha, $pago_id]);
+                $stmt2 = $db->prepare("UPDATE cotizaciones SET estado = 'Pagada' WHERE id = (SELECT cotizacion_id FROM pagos WHERE id = ?)");
+                $stmt2->execute([$pago_id]);
+            } catch(Exception $ex) {}
+        }
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => 'Pago confirmado y aceptado exitosamente por Reportería.',
+            'fecha' => $fecha,
+            'validador' => $validador,
+            'monto' => $monto
+        ]);
+        exit;
+    }
+
+    if ($action === 'observar_pago') {
+        $pago_id = $_POST['pago_id'] ?? 0;
+        $motivo = $_POST['motivo'] ?? 'Comprobante no coincide con extracto bancario';
+        echo json_encode([
+            'success' => true,
+            'mensaje' => 'Pago marcado como Observado. Se ha notificado al asesor de ventas.',
+            'motivo' => $motivo
+        ]);
+        exit;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM - BS Perú | Panel de Control</title>
+    <title>CRM - BS Perú | Panel de Reportería & Ventas</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -130,7 +188,6 @@
             background: rgba(255, 126, 159, 0.2);
         }
 
-        /* Tooltip sencillo para los iconos */
         .sidebar .icon[data-tooltip]::before {
             content: attr(data-tooltip);
             position: absolute;
@@ -194,34 +251,16 @@
             gap: 20px;
         }
 
-        .search-bar {
-            background: #F4F7FE;
-            border-radius: 20px;
-            padding: 10px 20px;
+        .badge-reporteria-role {
+            background: rgba(109, 93, 211, 0.12);
+            color: var(--primary);
+            padding: 7px 16px;
+            border-radius: 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
-            border: 1px solid transparent;
-            transition: 0.3s;
-        }
-        .search-bar:focus-within {
-            border-color: var(--primary-light);
-            background: #FFF;
-            box-shadow: 0 4px 12px rgba(109, 93, 211, 0.08);
-        }
-
-        .search-bar i {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .search-bar input {
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            width: 190px;
+            gap: 8px;
         }
 
         .user-avatar {
@@ -251,7 +290,7 @@
             font-size: 0.72rem;
         }
 
-        /* ================= VISTAS / SECCIONES DEL CRM ================= */
+        /* ================= VISTAS / SECCIONES ================= */
         .crm-view {
             display: none;
             animation: fadeInView 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -268,7 +307,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ================= APARTADO 1: INICIO / DASHBOARD ================= */
+        /* ================= KPI ROW ================= */
         .kpi-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -376,10 +415,6 @@
             border: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .btn-action.btn-white:hover {
-            background: #F4F7FE;
-            transform: translateY(-2px);
-        }
 
         /* Tabla estilizada */
         .table-card {
@@ -428,6 +463,7 @@
             color: var(--text-dark);
             font-size: 0.88rem;
             border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
         }
         .custom-table tr:hover td {
             background: #FAFBFD;
@@ -445,58 +481,82 @@
         .badge.badge-danger { background: rgba(239, 68, 68, 0.12); color: #EF4444; }
         .badge.badge-purple { background: rgba(109, 93, 211, 0.12); color: var(--primary); }
 
-        /* ================= APARTADO 2: FACTURACIÓN ================= */
-        .fact-filters-bar {
+        /* ================= BANDEJA DE CONFIRMACIÓN DE PAGOS ================= */
+        .payments-validation-card {
+            background: #FFF;
+            border-radius: 28px;
+            padding: 26px;
+            box-shadow: 0 12px 30px rgba(109, 93, 211, 0.08);
+            border: 2px solid rgba(109, 93, 211, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .payments-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
             flex-wrap: wrap;
+            gap: 12px;
         }
-        .filter-pills {
+        .payments-header h3 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            font-weight: 700;
             display: flex;
-            gap: 8px;
+            align-items: center;
+            gap: 10px;
         }
-        .filter-pill {
-            padding: 8px 16px;
-            border-radius: 14px;
-            background: #F4F7FE;
-            color: var(--text-light);
-            font-size: 0.82rem;
-            font-weight: 600;
+        .voucher-thumb {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid var(--border-light);
             cursor: pointer;
-            border: 1px solid transparent;
             transition: 0.2s;
         }
-        .filter-pill.active, .filter-pill:hover {
-            background: var(--primary);
+        .voucher-thumb:hover {
+            transform: scale(1.08);
+            border-color: var(--primary);
+        }
+        .btn-confirm-pay {
+            background: var(--accent-green);
             color: #FFF;
-        }
-        .fact-stats-summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-        .fact-stat-card {
-            background: #FFF;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--border-light);
-            box-shadow: var(--card-shadow);
-        }
-        .fact-stat-card p {
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
             font-size: 0.8rem;
-            color: var(--text-light);
-            font-weight: 500;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
         }
-        .fact-stat-card h3 {
-            font-size: 1.6rem;
-            color: var(--text-dark);
-            margin: 4px 0;
-            font-weight: 700;
+        .btn-confirm-pay:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        .btn-reject-pay {
+            background: #FFF;
+            color: #EF4444;
+            border: 1px solid #FECACA;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn-reject-pay:hover {
+            background: #FEF2F2;
         }
 
-        /* ================= APARTADO 3: REPORTES ORIGINAL ================= */
+        /* ================= REPORTES ORIGINAL WIDGETS ================= */
         .top-widgets {
             display: flex;
             gap: 25px;
@@ -642,19 +702,9 @@
             justify-content: space-between;
             align-items: flex-end;
         }
-        .mini-card.pink h4 {
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-        .mini-card.pink h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1;
-        }
-        .mini-card.pink p {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
+        .mini-card.pink h4 { font-size: 1.05rem; font-weight: 600; }
+        .mini-card.pink h2 { font-size: 2rem; font-weight: 700; line-height: 1; }
+        .mini-card.pink p { font-size: 0.8rem; opacity: 0.8; }
         .mini-card.pink .arrow-btn {
             width: 40px;
             height: 40px;
@@ -680,13 +730,6 @@
             border: 1px solid var(--border-light);
             position: relative;
         }
-        .branch-card .more-btn {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            color: var(--text-light);
-            cursor: pointer;
-        }
         .branch-card .icon-box {
             width: 45px;
             height: 45px;
@@ -699,43 +742,83 @@
             font-size: 1.1rem;
             margin-bottom: 15px;
         }
-        .branch-card h4 {
-            font-size: 1.05rem;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-        .branch-card p {
-            color: var(--text-light);
-            font-size: 0.8rem;
-            margin-bottom: 20px;
-        }
-        .progress-container {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .progress-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
-        }
+        .branch-card h4 { font-size: 1.05rem; color: var(--text-dark); font-weight: 600; }
+        .branch-card p { color: var(--text-light); font-size: 0.8rem; margin-bottom: 20px; }
+        .progress-container { display: flex; flex-direction: column; gap: 6px; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 0.78rem; }
         .progress-labels .left-val { color: var(--text-dark); font-weight: 500; }
         .progress-labels .right-val { color: var(--text-light); font-weight: 600; }
-        .progress-bar-bg {
-            height: 8px;
-            background: #F4F7FE;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            height: 100%;
-            border-radius: 4px;
-        }
+        .progress-bar-bg { height: 8px; background: #F4F7FE; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 4px; }
         .progress-bar.green { width: 45%; background: #10B981; }
         .progress-bar.green-light { width: 13%; background: #34D399; }
         .progress-bar.green-full { width: 90%; background: #059669; }
 
-        /* ================= APARTADO 4: MENSAJES & CONSULTAS ================= */
+        /* ================= FACTURACIÓN ================= */
+        .fact-filters-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-pills { display: flex; gap: 8px; }
+        .filter-pill {
+            padding: 8px 16px;
+            border-radius: 14px;
+            background: #F4F7FE;
+            color: var(--text-light);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+        .filter-pill.active, .filter-pill:hover {
+            background: var(--primary);
+            color: #FFF;
+        }
+        .fact-stats-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .fact-stat-card {
+            background: #FFF;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--card-shadow);
+        }
+        .fact-stat-card p { font-size: 0.8rem; color: var(--text-light); font-weight: 500; }
+        .fact-stat-card h3 { font-size: 1.6rem; color: var(--text-dark); margin: 4px 0; font-weight: 700; }
+
+        /* ================= CHAT VENTAS & MENSAJES ================= */
+        .chat-tabs-nav {
+            display: flex;
+            gap: 10px;
+            background: #F4F7FE;
+            padding: 6px;
+            border-radius: 18px;
+            width: fit-content;
+        }
+        .chat-tab-btn {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-tab-btn.active {
+            background: #FFF;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
         .chat-split-container {
             display: flex;
             gap: 20px;
@@ -774,15 +857,8 @@
             align-items: center;
             margin-bottom: 6px;
         }
-        .inbox-item-top h5 {
-            font-size: 0.92rem;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-        .inbox-item-top small {
-            font-size: 0.74rem;
-            color: var(--text-light);
-        }
+        .inbox-item-top h5 { font-size: 0.92rem; color: var(--text-dark); font-weight: 600; }
+        .inbox-item-top small { font-size: 0.74rem; color: var(--text-light); }
         .inbox-item p {
             font-size: 0.8rem;
             color: #4A5568;
@@ -855,12 +931,9 @@
             transition: 0.2s;
             text-decoration: none;
         }
-        .btn-wa:hover {
-            background: #20BA5A;
-            transform: translateY(-1px);
-        }
+        .btn-wa:hover { background: #20BA5A; transform: translateY(-1px); }
 
-        /* ================= APARTADO 5: CAPACITACIÓN / VIDEOS ================= */
+        /* ================= VIDEOS ================= */
         .video-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -876,10 +949,7 @@
             display: flex;
             flex-direction: column;
         }
-        .video-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 30px rgba(109, 93, 211, 0.1);
-        }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(109, 93, 211, 0.1); }
         .video-thumbnail {
             position: relative;
             height: 170px;
@@ -890,17 +960,8 @@
             cursor: pointer;
             overflow: hidden;
         }
-        .video-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.6;
-            transition: 0.3s;
-        }
-        .video-card:hover .video-thumbnail img {
-            transform: scale(1.05);
-            opacity: 0.75;
-        }
+        .video-thumbnail img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.3s; }
+        .video-card:hover .video-thumbnail img { transform: scale(1.05); opacity: 0.75; }
         .video-play-btn {
             position: absolute;
             width: 52px;
@@ -915,11 +976,6 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             transition: 0.2s;
         }
-        .video-card:hover .video-play-btn {
-            transform: scale(1.1);
-            background: #FFF;
-            color: var(--accent);
-        }
         .video-duration {
             position: absolute;
             bottom: 12px;
@@ -931,34 +987,10 @@
             padding: 3px 8px;
             border-radius: 6px;
         }
-        .video-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex: 1;
-            justify-content: space-between;
-        }
-        .video-content h4 {
-            font-size: 1.02rem;
-            color: var(--text-dark);
-            font-weight: 600;
-            line-height: 1.35;
-        }
-        .video-content p {
-            color: var(--text-light);
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
-        .video-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.78rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-top: 6px;
-        }
+        .video-content { padding: 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: space-between; }
+        .video-content h4 { font-size: 1.02rem; color: var(--text-dark); font-weight: 600; line-height: 1.35; }
+        .video-content p { color: var(--text-light); font-size: 0.8rem; line-height: 1.4; }
+        .video-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: var(--primary); font-weight: 600; margin-top: 6px; }
 
         /* ================= RIGHT SIDEBAR ================= */
         .right-sidebar {
@@ -968,41 +1000,26 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            gap: 20px;
         }
-
         .right-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
         }
-
         .right-header h3 {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             color: var(--text-dark);
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .right-header .view-all {
-            color: var(--text-light);
-            font-size: 0.8rem;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .right-header .view-all:hover {
-            color: var(--primary);
-        }
-
         .tabs {
             display: flex;
             background: #F4F7FE;
             border-radius: 20px;
             padding: 5px;
-            margin-bottom: 25px;
         }
-
         .tab {
             flex: 1;
             text-align: center;
@@ -1014,53 +1031,35 @@
             border-radius: 15px;
             transition: 0.3s;
         }
-
         .tab.active {
             background: white;
             color: var(--text-dark);
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             font-weight: 600;
         }
-
         .user-list {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            margin-bottom: auto;
+            gap: 16px;
         }
-
         .user-item {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
-
         .user-item img {
-            width: 45px;
-            height: 45px;
-            border-radius: 15px;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
             object-fit: cover;
         }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-info h5 {
-            color: var(--text-dark);
-            font-size: 0.92rem;
-            font-weight: 600;
-        }
-
-        .user-info p {
-            color: var(--text-light);
-            font-size: 0.78rem;
-        }
-
+        .user-info { flex: 1; }
+        .user-info h5 { color: var(--text-dark); font-size: 0.9rem; font-weight: 600; }
+        .user-info p { color: var(--text-light); font-size: 0.75rem; }
         .user-action {
             color: var(--text-light);
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border: 1px solid #E2E8F0;
             border-radius: 10px;
             display: flex;
@@ -1069,143 +1068,90 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .user-action:hover {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
+        .user-action:hover { color: var(--primary); border-color: var(--primary); }
 
-        .map-widget {
-            margin-top: 25px;
+        /* WIDGET LATERAL DE PAGOS PENDIENTES (REEMPLAZO DEL MAPA) */
+        .pending-payments-widget {
+            background: #FAFBFD;
+            border-radius: 24px;
+            padding: 18px;
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: auto;
         }
-        
-        .map-header {
+        .pending-widget-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
         }
-        
-        .map-header h3 {
-            font-size: 1.05rem;
+        .pending-widget-header h4 {
+            font-size: 0.95rem;
             color: var(--text-dark);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
-        
-        .map-header .view {
+        .pending-item-sidebar {
+            background: #FFF;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pending-item-sidebar:hover {
+            border-color: var(--primary);
+            transform: translateX(2px);
+        }
+        .pending-item-info h5 {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+        .pending-item-info span {
+            font-size: 0.72rem;
             color: var(--text-light);
-            font-size: 0.8rem;
-            text-decoration: none;
-        }
-        
-        .map-img {
-            background: #E8EBF5;
-            height: 130px;
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .map-img::before {
-            content: '';
-            position: absolute;
-            width: 150%;
-            height: 150%;
-            background-image: linear-gradient(#FFF 2px, transparent 2px),
-            linear-gradient(90deg, #FFF 2px, transparent 2px),
-            linear-gradient(#FFF 1px, transparent 1px),
-            linear-gradient(90deg, #FFF 1px, transparent 1px);
-            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
-            background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
-            opacity: 0.5;
-            transform: rotate(15deg);
         }
 
-        .map-pin {
-            width: 30px;
-            height: 30px;
-            background: var(--accent);
-            border: 3px solid #FFF;
-            border-radius: 50%;
-            position: absolute;
-            box-shadow: 0 5px 10px rgba(255,126,159,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 0.7rem;
-        }
-        
-        .pin-1 { top: 30%; left: 20%; background: #FFF; color: var(--text-dark); }
-        .pin-2 { top: 50%; left: 60%; }
-        .pin-3 { top: 70%; left: 40%; background: #FFF; color: var(--text-dark); }
-
-        /* ================= MODAL DIALOGS ================= */
+        /* ================= MODALES ================= */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(5px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             animation: fadeInView 0.2s ease;
         }
-        .modal-overlay.open {
-            display: flex;
-        }
+        .modal-overlay.open { display: flex; }
         .modal-box {
             background: #FFF;
             border-radius: 28px;
             padding: 32px;
             width: 90%;
-            max-width: 480px;
+            max-width: 520px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            text-align: center;
             position: relative;
-        }
-        .modal-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 22px;
-            background: rgba(109, 93, 211, 0.1);
-            color: var(--primary);
-            font-size: 1.8rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 20px;
-        }
-        .modal-icon.pink {
-            background: rgba(255, 126, 159, 0.15);
-            color: var(--accent);
-        }
-        .modal-box h3 {
-            font-size: 1.35rem;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-        }
-        .modal-box p {
-            font-size: 0.88rem;
-            color: var(--text-light);
-            margin-bottom: 24px;
-            line-height: 1.45;
         }
         .modal-buttons {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            margin-top: 20px;
         }
         .btn-modal {
-            padding: 13px;
+            flex: 1;
+            padding: 12px;
             border-radius: 14px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -1218,20 +1164,36 @@
             align-items: center;
             gap: 8px;
         }
-        .btn-modal.primary {
-            background: var(--primary);
-            color: #FFF;
+        .btn-modal.primary { background: var(--primary); color: #FFF; }
+        .btn-modal.primary:hover { background: var(--primary-light); }
+        .btn-modal.secondary { background: #F4F7FE; color: var(--text-dark); }
+        .btn-modal.secondary:hover { background: #E2E8F0; }
+
+        /* ESTILOS VISOR DE VOUCHER */
+        .voucher-preview-box {
+            background: #F8FAFC;
+            border: 2px dashed #CBD5E1;
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+            margin: 15px 0;
         }
-        .btn-modal.primary:hover {
-            background: var(--primary-light);
+        .voucher-img-large {
+            max-width: 100%;
+            max-height: 280px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .btn-modal.secondary {
-            background: #F4F7FE;
-            color: var(--text-dark);
+        .voucher-data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            text-align: left;
+            margin-top: 14px;
+            font-size: 0.82rem;
         }
-        .btn-modal.secondary:hover {
-            background: #E2E8F0;
-        }
+        .voucher-data-item strong { display: block; color: var(--text-dark); font-size: 0.88rem; }
+        .voucher-data-item span { color: var(--text-light); }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -1249,7 +1211,7 @@
                 <i class="fa-solid fa-shapes"></i>
             </div>
             
-            <div class="icon active" onclick="switchSection('inicio')" data-section="inicio" data-tooltip="Dashboard Principal">
+            <div class="icon" onclick="switchSection('inicio')" data-section="inicio" data-tooltip="Dashboard Principal">
                 <i class="fa-solid fa-house"></i>
             </div>
 
@@ -1257,11 +1219,11 @@
                 <i class="fa-solid fa-file-invoice-dollar"></i>
             </div>
 
-            <div class="icon" onclick="switchSection('reportes')" data-section="reportes" data-tooltip="Reportes & Gráficos">
+            <div class="icon active" onclick="switchSection('reportes')" data-section="reportes" data-tooltip="Reportería & Pagos">
                 <i class="fa-solid fa-chart-column"></i>
             </div>
 
-            <div class="icon" onclick="switchSection('mensajes')" data-section="mensajes" data-tooltip="Consultas Web / WhatsApp">
+            <div class="icon" onclick="switchSection('mensajes')" data-section="mensajes" data-tooltip="Chat Ventas & Consultas">
                 <i class="fa-regular fa-comment-dots"></i>
             </div>
 
@@ -1277,38 +1239,35 @@
         <!-- MAIN CONTENT -->
         <div class="main-content">
             
-            <!-- HEADER GLOBAL -->
+            <!-- HEADER GLOBAL (SIN BARRA DE BÚSQUEDA) -->
             <div class="header">
                 <div class="header-title">
-                    <span id="headerSectionSubtitle">Principal</span>
-                    <h2 id="headerSectionTitle">Dashboard General</h2>
+                    <span id="headerSectionSubtitle">Área de Reportería</span>
+                    <h2 id="headerSectionTitle">Dashboard de Reportes & Validación de Pagos</h2>
                 </div>
                 
                 <div class="header-right">
-                    <div class="search-bar">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="globalSearchInput" placeholder="Buscar en CRM...">
+                    <div class="badge-reporteria-role">
+                        <i class="fa-solid fa-shield-check"></i> Modo: Validador Reportería
                     </div>
-                    <div class="user-avatar" onclick="alert('Sesión activa: Administrador BS Perú')">
+                    <div class="user-avatar" onclick="alert('Sesión activa: Especialista en Reportería & Finanzas BS Perú')">
                         <div class="user-meta">
                             <strong>Rodrigo Alonso</strong>
-                            <small>Admin Comercial</small>
+                            <small>Reportería & Cierre</small>
                         </div>
                         <img src="https://ui-avatars.com/api/?name=Rodrigo+Alonso&background=6D5DD3&color=fff" alt="User">
                     </div>
                 </div>
             </div>
 
-            <!-- ================= SECCIÓN 1: INICIO / DASHBOARD ================= -->
-            <div id="section-inicio" class="crm-view active">
-                
-                <!-- KPI CARDS -->
+            <!-- ================= SECCIÓN 1: INICIO ================= -->
+            <div id="section-inicio" class="crm-view">
                 <div class="kpi-row">
                     <div class="kpi-card">
                         <div class="kpi-icon purple"><i class="fa-solid fa-wallet"></i></div>
                         <div class="kpi-data">
                             <p>Ventas del Mes</p>
-                            <h3>S/ 94,178</h3>
+                            <h3 id="dashTotalVentas">S/ 94,178</h3>
                             <span class="kpi-badge up"><i class="fa-solid fa-arrow-trend-up"></i> +26% vs mes ant.</span>
                         </div>
                     </div>
@@ -1323,127 +1282,108 @@
                     </div>
 
                     <div class="kpi-card">
-                        <div class="kpi-icon orange"><i class="fa-solid fa-building-circle-check"></i></div>
+                        <div class="kpi-icon orange"><i class="fa-solid fa-bell"></i></div>
                         <div class="kpi-data">
-                            <p>Clientes Activos</p>
-                            <h3>38 constructoras</h3>
-                            <span class="kpi-badge info"><i class="fa-solid fa-plus"></i> 6 nuevas</span>
+                            <p>Pagos por Validar</p>
+                            <h3 id="dashPendingCount" style="color:var(--accent-orange);">3 pedidos</h3>
+                            <span class="kpi-badge info"><i class="fa-solid fa-clock"></i> Pendiente Reportería</span>
                         </div>
                     </div>
 
                     <div class="kpi-card">
-                        <div class="kpi-icon blue"><i class="fa-solid fa-headset"></i></div>
+                        <div class="kpi-icon blue"><i class="fa-solid fa-comments"></i></div>
                         <div class="kpi-data">
-                            <p>Consultas Web</p>
-                            <h3>24 hoy</h3>
-                            <span class="kpi-badge up"><i class="fa-solid fa-bolt"></i> 4 min resp.</span>
+                            <p>Chat Ventas</p>
+                            <h3>4 asesores</h3>
+                            <span class="kpi-badge up"><i class="fa-solid fa-bolt"></i> En línea</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- BANNER DE ACCIONES RÁPIDAS -->
+                <!-- BANNER RÁPIDO -->
                 <div class="quick-actions-bar">
                     <div>
-                        <h4>Centro de Operaciones Rápidas</h4>
-                        <p>Atiende cotizaciones prioritarias y despachos de aditivos para construcción.</p>
+                        <h4>Recepción y Confirmación de Ventas del Día</h4>
+                        <p>Los asesores comerciales cargan las facturas y comprobantes para validación inmediata de Reportería.</p>
                     </div>
                     <div class="actions-btns">
-                        <button class="btn-action btn-white" onclick="switchSection('facturacion')">
-                            <i class="fa-solid fa-file-circle-plus"></i> Nueva Cotización
+                        <button class="btn-action btn-white" onclick="switchSection('reportes')">
+                            <i class="fa-solid fa-clipboard-check"></i> Validar Pagos Pendientes
                         </button>
-                        <a class="btn-action" href="https://bsperu.pe/Pruebas/sucursales.html" target="_blank">
-                            <i class="fa-solid fa-map-location-dot"></i> Ver Sucursales
-                        </a>
-                        <a class="btn-action" href="https://bsperu.pe/Pruebas/productos.html" target="_blank">
-                            <i class="fa-solid fa-box-open"></i> Catálogo Web
-                        </a>
+                        <button class="btn-action" onclick="switchSection('mensajes')">
+                            <i class="fa-solid fa-comments"></i> Chat con Asesores
+                        </button>
                     </div>
                 </div>
 
-                <!-- TABLA DE DESPACHOS RECIENTES -->
+                <!-- TABLA DE ÚLTIMAS OPERACIONES -->
                 <div class="table-card">
                     <div class="table-card-header">
-                        <h3><i class="fa-solid fa-dolly"></i> Despachos Recientes a Obras</h3>
-                        <button class="btn-action" style="background: var(--primary-soft); color: var(--primary); border:none;" onclick="switchSection('facturacion')">
-                            Ver todas las órdenes <i class="fa-solid fa-arrow-right"></i>
+                        <h3><i class="fa-solid fa-receipt"></i> Movimientos Comerciales Confirmados</h3>
+                        <button class="btn-action" style="background: var(--primary-soft); color: var(--primary); border:none;" onclick="switchSection('reportes')">
+                            Ir a Validación <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
-
                     <div class="table-responsive">
                         <table class="custom-table">
                             <thead>
                                 <tr>
-                                    <th>N° Orden</th>
-                                    <th>Constructora / Cliente</th>
-                                    <th>Proyecto / Destino</th>
-                                    <th>Material Despachado</th>
+                                    <th>N° Pedido</th>
+                                    <th>Asesor Comercial</th>
+                                    <th>Cliente / Obra</th>
+                                    <th>Material / Producto</th>
                                     <th>Monto</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
+                                    <th>Estado en Reportería</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><strong>#ORD-9021</strong></td>
+                                    <td>Maria Gomez (Lima)</td>
                                     <td>Cosapi S.A.</td>
-                                    <td>Línea 2 Metro de Lima - Est. 14</td>
                                     <td>120 baldes Z 2000 (Membrana Líquida)</td>
                                     <td><strong>S/ 14,400.00</strong></td>
-                                    <td><span class="badge badge-purple"><i class="fa-solid fa-truck"></i> En Tránsito</span></td>
-                                    <td><a href="https://wa.me/51923326704?text=Hola%20Cosapi,%20su%20despacho%20Z2000%20va%20en%20camino." target="_blank" class="badge badge-success"><i class="fa-brands fa-whatsapp"></i> Notificar</a></td>
+                                    <td><span class="badge badge-success"><i class="fa-solid fa-check-double"></i> Pago Aceptado</span></td>
                                 </tr>
                                 <tr>
                                     <td><strong>#ORD-9020</strong></td>
+                                    <td>Ana Torres (San Borja)</td>
                                     <td>Besco Constructora</td>
-                                    <td>Residencial Los Álamos, Chorrillos</td>
-                                    <td>50 bolsas Z Grout (Alta Resistencia)</td>
+                                    <td>50 bolsas Z Grout Alta Resistencia</td>
                                     <td><strong>S/ 4,250.00</strong></td>
-                                    <td><span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Entregado</span></td>
-                                    <td><span class="badge badge-purple">Comprobante F001</span></td>
+                                    <td><span class="badge badge-success"><i class="fa-solid fa-check-double"></i> Pago Aceptado</span></td>
                                 </tr>
                                 <tr>
                                     <td><strong>#ORD-9019</strong></td>
+                                    <td>Carlos Ruiz (Ventas)</td>
                                     <td>Consorcio Vial Piura</td>
-                                    <td>Puente Grau, Piura</td>
                                     <td>80 galones Curador Químico</td>
                                     <td><strong>S/ 6,800.00</strong></td>
-                                    <td><span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Preparando</span></td>
-                                    <td><a href="https://wa.me/51922956171" target="_blank" class="badge badge-success"><i class="fa-brands fa-whatsapp"></i> Coordinar</a></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>#ORD-9018</strong></td>
-                                    <td>JJC Contratistas Generales</td>
-                                    <td>Edificio Corporativo San Borja</td>
-                                    <td>30 kits Adhesivo Epóxico</td>
-                                    <td><strong>S/ 7,100.00</strong></td>
-                                    <td><span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Entregado</span></td>
-                                    <td><span class="badge badge-purple">Comprobante F001</span></td>
+                                    <td><span class="badge badge-warning"><i class="fa-solid fa-hourglass-half"></i> Pendiente de Confirmar</span></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
 
             <!-- ================= SECCIÓN 2: FACTURACIÓN ================= -->
             <div id="section-facturacion" class="crm-view">
-                
                 <div class="fact-stats-summary">
                     <div class="fact-stat-card">
-                        <p>Total Facturado (Mes Actual)</p>
-                        <h3>S/ 94,178.00</h3>
-                        <span class="badge badge-success">+18% respecto a meta</span>
+                        <p>Total Facturado (Mes)</p>
+                        <h3 id="factTotalMes">S/ 94,178.00</h3>
+                        <span class="badge badge-success">+18% meta mensual</span>
                     </div>
                     <div class="fact-stat-card">
-                        <p>Monto Cobrado / Transferido</p>
-                        <h3 style="color: var(--accent-green);">S/ 82,450.00</h3>
-                        <span class="badge badge-success">87.5% efectividad</span>
+                        <p>Pagos Confirmados por Reportería</p>
+                        <h3 style="color: var(--accent-green);" id="factTotalCobrado">S/ 82,450.00</h3>
+                        <span class="badge badge-success">87.5% verificado en banco</span>
                     </div>
                     <div class="fact-stat-card">
-                        <p>Pendiente por Cobrar</p>
-                        <h3 style="color: var(--accent-orange);">S/ 11,728.00</h3>
-                        <span class="badge badge-warning">6 comprobantes por vencer</span>
+                        <p>Pagos por Validar / Pendientes</p>
+                        <h3 style="color: var(--accent-orange);" id="factTotalPendiente">S/ 11,728.00</h3>
+                        <span class="badge badge-warning">En revisión de Reportería</span>
                     </div>
                 </div>
 
@@ -1451,13 +1391,10 @@
                     <div class="fact-filters-bar">
                         <div class="filter-pills">
                             <div class="filter-pill active" onclick="filtrarFacturas('todos', this)">Todos (24)</div>
-                            <div class="filter-pill" onclick="filtrarFacturas('pagado', this)">Pagados (16)</div>
-                            <div class="filter-pill" onclick="filtrarFacturas('pendiente', this)">Pendientes (6)</div>
+                            <div class="filter-pill" onclick="filtrarFacturas('pagado', this)">Pagados Aceptados (16)</div>
+                            <div class="filter-pill" onclick="filtrarFacturas('pendiente', this)">Pendientes por Reportería (6)</div>
                             <div class="filter-pill" onclick="filtrarFacturas('anulado', this)">Anulados (2)</div>
                         </div>
-                        <button class="btn-action" style="background: var(--primary); color: white; border: none;" onclick="alert('Generando nueva factura electrónica...')">
-                            <i class="fa-solid fa-file-invoice"></i> + Emitir Comprobante
-                        </button>
                     </div>
 
                     <div class="table-responsive">
@@ -1465,87 +1402,57 @@
                             <thead>
                                 <tr>
                                     <th>N° Comprobante</th>
-                                    <th>Tipo</th>
+                                    <th>Asesor</th>
                                     <th>Cliente / Razón Social</th>
                                     <th>Fecha</th>
-                                    <th>Monto Total</th>
-                                    <th>Método</th>
+                                    <th>Monto</th>
+                                    <th>Método / Op.</th>
                                     <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th>Comprobante</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr data-estado="pagado">
                                     <td><strong>F001-00892</strong></td>
-                                    <td>Factura</td>
+                                    <td>Maria Gomez</td>
                                     <td>Constructora San Martín S.A.C.</td>
                                     <td>06/09/2026</td>
                                     <td><strong>S/ 18,250.00</strong></td>
-                                    <td>Transf. BCP</td>
-                                    <td><span class="badge badge-success">Pagado</span></td>
-                                    <td>
-                                        <button class="btn-action" style="padding:4px 8px; font-size:0.75rem; background:#F4F7FE; color:#333; border:none;" onclick="alert('Descargando PDF de F001-00892')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-                                    </td>
+                                    <td>BCP #849201</td>
+                                    <td><span class="badge badge-success">Pago Aceptado</span></td>
+                                    <td><button class="btn-action" style="padding:4px 10px; font-size:0.75rem; background:#F4F7FE; color:#333; border:none;" onclick="verVoucherDemo('BCP #849201', 'Constructora San Martín S.A.C.', '18,250.00', 'Maria Gomez')"><i class="fa-solid fa-file-invoice"></i> Ver Voucher</button></td>
                                 </tr>
                                 <tr data-estado="pendiente">
                                     <td><strong>F001-00891</strong></td>
-                                    <td>Factura</td>
+                                    <td>Carlos Ruiz</td>
                                     <td>Graña & Montero Ingeniería</td>
                                     <td>05/09/2026</td>
                                     <td><strong>S/ 8,420.00</strong></td>
-                                    <td>Crédito 15d</td>
-                                    <td><span class="badge badge-warning">Pendiente</span></td>
-                                    <td>
-                                        <a href="https://wa.me/51981288456?text=Hola,%20adjunto%20recordatorio%20del%20comprobante%20F001-00891." target="_blank" class="badge badge-success"><i class="fa-brands fa-whatsapp"></i> Cobranza</a>
-                                    </td>
+                                    <td>BBVA #902184</td>
+                                    <td><span class="badge badge-warning">Pendiente Reportería</span></td>
+                                    <td><button class="btn-confirm-pay" onclick="switchSection('reportes')"><i class="fa-solid fa-check"></i> Validar</button></td>
                                 </tr>
                                 <tr data-estado="pagado">
                                     <td><strong>B001-00431</strong></td>
-                                    <td>Boleta</td>
-                                    <td>Ing. Manuel Zevallos (Obra Chorrillos)</td>
+                                    <td>Ana Torres</td>
+                                    <td>Ing. Manuel Zevallos</td>
                                     <td>04/09/2026</td>
                                     <td><strong>S/ 1,350.00</strong></td>
-                                    <td>Yape / Plin</td>
-                                    <td><span class="badge badge-success">Pagado</span></td>
-                                    <td>
-                                        <button class="btn-action" style="padding:4px 8px; font-size:0.75rem; background:#F4F7FE; color:#333; border:none;" onclick="alert('Descargando PDF de B001-00431')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-                                    </td>
-                                </tr>
-                                <tr data-estado="pendiente">
-                                    <td><strong>F001-00890</strong></td>
-                                    <td>Factura</td>
-                                    <td>Edificaciones del Pacífico E.I.R.L.</td>
-                                    <td>03/09/2026</td>
-                                    <td><strong>S/ 3,308.00</strong></td>
-                                    <td>Transf. BBVA</td>
-                                    <td><span class="badge badge-warning">Pendiente</span></td>
-                                    <td>
-                                        <a href="https://wa.me/51981288456" target="_blank" class="badge badge-success"><i class="fa-brands fa-whatsapp"></i> Cobranza</a>
-                                    </td>
-                                </tr>
-                                <tr data-estado="anulado">
-                                    <td><strong>F001-00889</strong></td>
-                                    <td>Factura</td>
-                                    <td>Inversiones del Sur S.A.</td>
-                                    <td>01/09/2026</td>
-                                    <td><strong>S/ 2,400.00</strong></td>
-                                    <td>Error en RUC</td>
-                                    <td><span class="badge badge-danger">Anulado</span></td>
-                                    <td><span style="color:#A0AEC0; font-size:0.75rem;">Reemplazado</span></td>
+                                    <td>Yape Op #104</td>
+                                    <td><span class="badge badge-success">Pago Aceptado</span></td>
+                                    <td><button class="btn-action" style="padding:4px 10px; font-size:0.75rem; background:#F4F7FE; color:#333; border:none;" onclick="verVoucherDemo('Yape #104', 'Ing. Manuel Zevallos', '1,350.00', 'Ana Torres')"><i class="fa-solid fa-file-invoice"></i> Ver Voucher</button></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
 
-            <!-- ================= SECCIÓN 3: REPORTES & GRÁFICOS (ORIGINAL) ================= -->
-            <div id="section-reportes" class="crm-view">
+            <!-- ================= SECCIÓN 3: REPORTES & CONFIRMACIÓN DE PAGOS ================= -->
+            <div id="section-reportes" class="crm-view active">
                 
-                <!-- TOP WIDGETS -->
+                <!-- TOP WIDGETS CON RESUMEN -->
                 <div class="top-widgets">
-                    <!-- Overview Graph -->
                     <div class="overview-card">
                         <div class="overview-header">
                             <h3>Resumen de Operaciones Comerciales</h3>
@@ -1563,7 +1470,7 @@
                             
                             <div class="chart-point"></div>
                             <div class="chart-point-label" id="chartPointLabel">
-                                <strong>S/ 94,178</strong><br>Ingresos
+                                <strong>S/ 94,178</strong><br>Ingresos Verificados
                             </div>
                         </div>
                         
@@ -1573,7 +1480,7 @@
                                 <h3 id="statMesAnt">S/ 74,800</h3>
                             </div>
                             <div class="stat-block active">
-                                <p>Mes Actual</p>
+                                <p>Mes Actual Verificado</p>
                                 <h3 id="statMesAct">S/ 94,178</h3>
                             </div>
                             <div class="stat-block">
@@ -1585,52 +1492,155 @@
 
                     <!-- Right Side Cards -->
                     <div class="side-cards">
-                        <div class="mini-card" onclick="switchSection('facturacion')" style="cursor: pointer;">
-                            <div class="icon-box">
-                                <i class="fa-solid fa-file-invoice"></i>
+                        <div class="mini-card" onclick="scrollHaciaValidacion()" style="cursor: pointer; border-left: 5px solid var(--accent-orange);">
+                            <div class="icon-box" style="color: var(--accent-orange);">
+                                <i class="fa-solid fa-receipt"></i>
                             </div>
                             <div class="card-info">
                                 <h4>Confirmaciones de<br>pago Pendientes</h4>
-                                <p>12 comprobantes nuevos</p>
+                                <p id="badgePendingMini" style="color: var(--accent-orange); font-weight:600;">3 comprobantes por validar</p>
                             </div>
                         </div>
                         
-                        <div class="mini-card pink" onclick="switchSection('facturacion')" style="cursor: pointer;">
+                        <div class="mini-card pink">
                             <div class="top-row">
                                 <div class="icon-box">
-                                    <i class="fa-solid fa-rectangle-xmark"></i>
+                                    <i class="fa-solid fa-circle-check"></i>
                                 </div>
-                                <h4>Cancelaciones<br>Pendientes</h4>
+                                <h4>Pagos Aceptados<br>Hoy por Reportería</h4>
                             </div>
                             <div class="bottom-row">
                                 <div>
-                                    <p>Por procesar</p>
-                                    <h2>8 ped.</h2>
+                                    <p>Confirmados en Banco</p>
+                                    <h2 id="acceptedCountToday">5 pagos</h2>
                                 </div>
-                                <div class="arrow-btn"><i class="fa-solid fa-chevron-right"></i></div>
+                                <div class="arrow-btn" onclick="scrollHaciaValidacion()" style="cursor:pointer;"><i class="fa-solid fa-arrow-down"></i></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- BOTTOM WIDGETS -->
+                <!-- BANDEJA DE VALIDACIÓN Y CONFIRMACIÓN DE PAGOS (ÁREA DE REPORTERÍA) -->
+                <div class="payments-validation-card" id="bandejaValidacion">
+                    <div class="payments-header">
+                        <div>
+                            <h3><i class="fa-solid fa-money-bill-transfer" style="color:var(--primary);"></i> Bandeja de Pagos Enviados por Ventas para Confirmación</h3>
+                            <p style="color:var(--text-light); font-size:0.85rem;">Revise el comprobante/voucher de la transferencia bancaria. Al confirmar, el estado pasará a <strong>"Pago Aceptado"</strong> y se sumará a los ingresos.</p>
+                        </div>
+                        <span class="badge badge-warning" id="pendingCounterBadge" style="font-size:0.85rem; padding:6px 14px;">
+                            <i class="fa-solid fa-clock"></i> <span id="numPending">3</span> pagos pendientes
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="custom-table" id="tablaValidacionPagos">
+                            <thead>
+                                <tr>
+                                    <th>N° Cotiz. / Pedido</th>
+                                    <th>Asesor de Ventas</th>
+                                    <th>Cliente / Constructora</th>
+                                    <th>Monto Pagado</th>
+                                    <th>Banco / Operación</th>
+                                    <th>Voucher Adjunto</th>
+                                    <th>Estado</th>
+                                    <th>Acción de Reportería</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- PAGO 1 -->
+                                <tr id="row-pago-1">
+                                    <td><strong>#COT-2026-084</strong></td>
+                                    <td><i class="fa-solid fa-user-tie"></i> Maria Gomez</td>
+                                    <td>Cosapi S.A.</td>
+                                    <td><strong style="color:var(--text-dark); font-size:0.95rem;">S/ 14,400.00</strong></td>
+                                    <td><span class="badge badge-purple">BCP Op. #4829104</span></td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=150&q=80" class="voucher-thumb" onclick="verVoucherModal('COT-2026-084', 'Cosapi S.A.', '14,400.00', 'BCP Op. #4829104', 'Maria Gomez', 1)" alt="Voucher">
+                                            <span style="font-size:0.75rem; color:var(--primary); cursor:pointer; font-weight:600;" onclick="verVoucherModal('COT-2026-084', 'Cosapi S.A.', '14,400.00', 'BCP Op. #4829104', 'Maria Gomez', 1)">Ver Voucher</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-warning status-badge"><i class="fa-solid fa-hourglass-start"></i> Por Confirmar</span></td>
+                                    <td>
+                                        <div style="display:flex; gap:6px;">
+                                            <button class="btn-confirm-pay" onclick="confirmarPagoAction(1, 14400, 'COT-2026-084')">
+                                                <i class="fa-solid fa-check-circle"></i> Aceptar Pago
+                                            </button>
+                                            <button class="btn-reject-pay" onclick="observarPagoAction(1, 'COT-2026-084')">
+                                                <i class="fa-solid fa-circle-exclamation"></i> Observar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- PAGO 2 -->
+                                <tr id="row-pago-2">
+                                    <td><strong>#COT-2026-085</strong></td>
+                                    <td><i class="fa-solid fa-user-tie"></i> Carlos Ruiz</td>
+                                    <td>Consorcio Vial Piura</td>
+                                    <td><strong style="color:var(--text-dark); font-size:0.95rem;">S/ 6,800.00</strong></td>
+                                    <td><span class="badge badge-purple">BBVA Op. #910245</span></td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=150&q=80" class="voucher-thumb" onclick="verVoucherModal('COT-2026-085', 'Consorcio Vial Piura', '6,800.00', 'BBVA Op. #910245', 'Carlos Ruiz', 2)" alt="Voucher">
+                                            <span style="font-size:0.75rem; color:var(--primary); cursor:pointer; font-weight:600;" onclick="verVoucherModal('COT-2026-085', 'Consorcio Vial Piura', '6,800.00', 'BBVA Op. #910245', 'Carlos Ruiz', 2)">Ver Voucher</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-warning status-badge"><i class="fa-solid fa-hourglass-start"></i> Por Confirmar</span></td>
+                                    <td>
+                                        <div style="display:flex; gap:6px;">
+                                            <button class="btn-confirm-pay" onclick="confirmarPagoAction(2, 6800, 'COT-2026-085')">
+                                                <i class="fa-solid fa-check-circle"></i> Aceptar Pago
+                                            </button>
+                                            <button class="btn-reject-pay" onclick="observarPagoAction(2, 'COT-2026-085')">
+                                                <i class="fa-solid fa-circle-exclamation"></i> Observar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- PAGO 3 -->
+                                <tr id="row-pago-3">
+                                    <td><strong>#COT-2026-086</strong></td>
+                                    <td><i class="fa-solid fa-user-tie"></i> Ana Torres</td>
+                                    <td>Edificaciones Pacífico E.I.R.L.</td>
+                                    <td><strong style="color:var(--text-dark); font-size:0.95rem;">S/ 3,308.00</strong></td>
+                                    <td><span class="badge badge-purple">Interbank Op. #3019</span></td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=150&q=80" class="voucher-thumb" onclick="verVoucherModal('COT-2026-086', 'Edificaciones Pacífico', '3,308.00', 'Interbank Op. #3019', 'Ana Torres', 3)" alt="Voucher">
+                                            <span style="font-size:0.75rem; color:var(--primary); cursor:pointer; font-weight:600;" onclick="verVoucherModal('COT-2026-086', 'Edificaciones Pacífico', '3,308.00', 'Interbank Op. #3019', 'Ana Torres', 3)">Ver Voucher</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-warning status-badge"><i class="fa-solid fa-hourglass-start"></i> Por Confirmar</span></td>
+                                    <td>
+                                        <div style="display:flex; gap:6px;">
+                                            <button class="btn-confirm-pay" onclick="confirmarPagoAction(3, 3308, 'COT-2026-086')">
+                                                <i class="fa-solid fa-check-circle"></i> Aceptar Pago
+                                            </button>
+                                            <button class="btn-reject-pay" onclick="observarPagoAction(3, 'COT-2026-086')">
+                                                <i class="fa-solid fa-circle-exclamation"></i> Observar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- METAS POR SUCURSALES -->
                 <div class="bottom-widgets">
                     <div class="branch-card">
-                        <i class="fa-solid fa-ellipsis-vertical more-btn"></i>
-                        <div class="icon-box">
-                            <i class="fa-solid fa-building"></i>
-                        </div>
+                        <div class="icon-box"><i class="fa-solid fa-building"></i></div>
                         <h4>Sucursal Lima</h4>
                         <p>Meta: S/ 50,000 / mes</p>
-                        
                         <div class="progress-container">
                             <div class="progress-labels">
                                 <span class="left-val">Progreso</span>
                                 <span class="right-val">45%</span>
                             </div>
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar green"></div>
-                            </div>
+                            <div class="progress-bar-bg"><div class="progress-bar green"></div></div>
                             <div class="progress-labels">
                                 <span class="left-val">22,500 / 50,000</span>
                                 <span class="right-val">Faltan 14 días</span>
@@ -1639,21 +1649,15 @@
                     </div>
                     
                     <div class="branch-card">
-                        <i class="fa-solid fa-ellipsis-vertical more-btn"></i>
-                        <div class="icon-box">
-                            <i class="fa-solid fa-city"></i>
-                        </div>
+                        <div class="icon-box"><i class="fa-solid fa-city"></i></div>
                         <h4>Sucursal Arequipa</h4>
                         <p>Meta: S/ 30,000 / mes</p>
-                        
                         <div class="progress-container">
                             <div class="progress-labels">
                                 <span class="left-val">Progreso</span>
                                 <span class="right-val">13%</span>
                             </div>
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar green-light"></div>
-                            </div>
+                            <div class="progress-bar-bg"><div class="progress-bar green-light"></div></div>
                             <div class="progress-labels">
                                 <span class="left-val">3,900 / 30,000</span>
                                 <span class="right-val">Faltan 14 días</span>
@@ -1662,21 +1666,15 @@
                     </div>
 
                     <div class="branch-card">
-                        <i class="fa-solid fa-ellipsis-vertical more-btn"></i>
-                        <div class="icon-box">
-                            <i class="fa-solid fa-store"></i>
-                        </div>
+                        <div class="icon-box"><i class="fa-solid fa-store"></i></div>
                         <h4>Sucursal Piura</h4>
                         <p>Meta: S/ 20,000 / mes</p>
-                        
                         <div class="progress-container">
                             <div class="progress-labels">
                                 <span class="left-val">Progreso</span>
                                 <span class="right-val">90%</span>
                             </div>
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar green-full"></div>
-                            </div>
+                            <div class="progress-bar-bg"><div class="progress-bar green-full"></div></div>
                             <div class="progress-labels">
                                 <span class="left-val">18,000 / 20,000</span>
                                 <span class="right-val">Meta alcanzada</span>
@@ -1687,16 +1685,107 @@
 
             </div>
 
-            <!-- ================= SECCIÓN 4: MENSAJES & CONSULTAS WEB ================= -->
+            <!-- ================= SECCIÓN 4: CHAT VENTAS & CONSULTAS ================= -->
             <div id="section-mensajes" class="crm-view">
                 
-                <div class="chat-split-container">
-                    
-                    <!-- Lista de Consultas -->
+                <!-- Selector de Pestañas: Chat con Ventas vs Consultas Web -->
+                <div class="chat-tabs-nav">
+                    <div class="chat-tab-btn active" onclick="cambiarCanalChat('ventas', this)">
+                        <i class="fa-solid fa-user-tie"></i> Chat Interno con Asesores de Ventas
+                    </div>
+                    <div class="chat-tab-btn" onclick="cambiarCanalChat('web', this)">
+                        <i class="fa-brands fa-whatsapp"></i> Consultas Web de Clientes
+                    </div>
+                </div>
+
+                <!-- CANAL 1: CHAT CON ASESORES DE VENTAS -->
+                <div id="chat-canal-ventas" class="chat-split-container">
+                    <!-- Lista de Asesores -->
                     <div class="inbox-list">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <h4 style="color:var(--text-dark); font-size:1.05rem;">Bandeja de Entrada</h4>
-                            <span class="badge badge-purple" id="countConsultas">4 mensajes</span>
+                            <h4 style="color:var(--text-dark); font-size:1.05rem;">Asesores Comerciales</h4>
+                            <span class="badge badge-purple">4 activos</span>
+                        </div>
+
+                        <div class="inbox-item active" onclick="seleccionarAsesorChat('asesor-maria', this)">
+                            <div class="inbox-item-top">
+                                <h5>Maria Gomez (Lima)</h5>
+                                <small>11:35 AM</small>
+                            </div>
+                            <p><strong>Cierre de hoy:</strong> Subí el comprobante de Cosapi por S/ 14,400. Por favor confirmarlo en el sistema para que almacén despache.</p>
+                        </div>
+
+                        <div class="inbox-item" onclick="seleccionarAsesorChat('asesor-carlos', this)">
+                            <div class="inbox-item-top">
+                                <h5>Carlos Ruiz (Logística/Ventas)</h5>
+                                <small>10:15 AM</small>
+                            </div>
+                            <p>Envié reporte de ventas de la mañana para Consorcio Vial Piura. El cliente depositó en la cuenta BBVA.</p>
+                        </div>
+
+                        <div class="inbox-item" onclick="seleccionarAsesorChat('asesor-ana', this)">
+                            <div class="inbox-item-top">
+                                <h5>Ana Torres (San Borja)</h5>
+                                <small>09:50 AM</small>
+                            </div>
+                            <p>Ing. Zevallos transfirió por Yape S/ 1,350. Adjunto comprobante para validación de Reportería.</p>
+                        </div>
+
+                        <div class="inbox-item" onclick="seleccionarAsesorChat('asesor-luis', this)">
+                            <div class="inbox-item-top">
+                                <h5>Luis Paz (Arequipa)</h5>
+                                <small>Ayer</small>
+                            </div>
+                            <p>Cierre diario Arequipa: S/ 8,200 facturados en 2 pedidos de Z Grout. Vouchers cargados.</p>
+                        </div>
+                    </div>
+
+                    <!-- Conversación activa con el Asesor -->
+                    <div class="chat-detail-card">
+                        <div>
+                            <div class="chat-detail-header">
+                                <div>
+                                    <h3 id="asesorChatNombre">Maria Gomez</h3>
+                                    <p style="color:var(--text-light); font-size:0.8rem;" id="asesorChatCargo">Asesora de Ventas Corporativas | Sede Lima</p>
+                                </div>
+                                <span class="badge badge-success"><i class="fa-solid fa-circle" style="font-size:0.6rem;"></i> En Línea</span>
+                            </div>
+
+                            <div class="chat-body-msg" id="asesorChatHistorial" style="max-height: 280px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;">
+                                <div style="background:#F4F7FE; padding:12px 16px; border-radius:14px; max-width:85%; align-self:flex-start;">
+                                    <strong>Maria Gomez:</strong><br>
+                                    Hola equipo de Reportería. Acabo de ingresar la cotización #COT-2026-084 para Cosapi S.A. por un monto de S/ 14,400.00 (120 baldes Z 2000). Ya cargué el voucher BCP para su confirmación.
+                                </div>
+                                <div style="background:rgba(109, 93, 211, 0.1); padding:12px 16px; border-radius:14px; max-width:85%; align-self:flex-end; color:var(--primary);">
+                                    <strong>Tú (Reportería):</strong><br>
+                                    Recibido Maria. Procedemos a verificar el depósito en el extracto bancario BCP y confirmamos el pago.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-reply-box">
+                            <div style="display:flex; gap:8px;">
+                                <button class="filter-pill" style="font-size:0.75rem; padding:4px 10px;" onclick="insertarChatVentas('Pago confirmado y verificado en cuenta bancaria. Procede con el despacho.')">Confirmar Pago en Chat</button>
+                                <button class="filter-pill" style="font-size:0.75rem; padding:4px 10px;" onclick="insertarChatVentas('Por favor enviar voucher más legible o verificar el número de operación.')">Observar Voucher</button>
+                                <button class="filter-pill" style="font-size:0.75rem; padding:4px 10px;" onclick="insertarChatVentas('Reporte diario de ventas del asesor recibido conforme.')">Reporte Recibido</button>
+                            </div>
+                            <textarea id="asesorReplyText" placeholder="Escribir mensaje de coordinación a la asesora de ventas..."></textarea>
+                            <div class="chat-actions-row">
+                                <small style="color:var(--text-light);"><i class="fa-solid fa-shield"></i> Canal interno Ventas - Reportería</small>
+                                <button class="btn-action btn-white" style="background:var(--primary); color:#FFF; border:none;" onclick="enviarMensajeAsesor()">
+                                    <i class="fa-solid fa-paper-plane"></i> Enviar Mensaje
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CANAL 2: CONSULTAS DE CLIENTES WEB -->
+                <div id="chat-canal-web" class="chat-split-container" style="display:none;">
+                    <div class="inbox-list">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <h4 style="color:var(--text-dark); font-size:1.05rem;">Clientes Web / WhatsApp</h4>
+                            <span class="badge badge-purple">4 consultas</span>
                         </div>
 
                         <div class="inbox-item active" onclick="seleccionarConsulta('c1', this)">
@@ -1714,25 +1803,8 @@
                             </div>
                             <p>Hola BS Perú, ¿el impermeabilizante Z 2000 viene en presentación de cilindro de 55 galones o solo balde? Necesitamos para techado...</p>
                         </div>
-
-                        <div class="inbox-item" onclick="seleccionarConsulta('c3', this)">
-                            <div class="inbox-item-top">
-                                <h5>Maestro Roberto Quispe</h5>
-                                <small>Ayer 16:30 PM</small>
-                            </div>
-                            <p>Quisiera saber si tienen stock de Z Imperoof en la sucursal de San Borja para recoger hoy mismo por la tarde...</p>
-                        </div>
-
-                        <div class="inbox-item" onclick="seleccionarConsulta('c4', this)">
-                            <div class="inbox-item-top">
-                                <h5>Constructora Graña</h5>
-                                <small>Ayer 11:15 AM</small>
-                            </div>
-                            <p>Solicitamos envío de la ficha técnica y certificado de ensayo de laboratorio del Adhesivo Epóxico para supervisión...</p>
-                        </div>
                     </div>
 
-                    <!-- Detalle de la Consulta -->
                     <div class="chat-detail-card">
                         <div>
                             <div class="chat-detail-header">
@@ -1749,28 +1821,21 @@
                         </div>
 
                         <div class="chat-reply-box">
-                            <div style="display:flex; gap:8px;">
-                                <button class="filter-pill" style="font-size:0.75rem; padding:4px 10px;" onclick="cargarPlantilla('stock')">Plantilla Stock</button>
-                                <button class="filter-pill" style="font-size:0.75rem; padding:4px 10px;" onclick="cargarPlantilla('cotizacion')">Plantilla Cotización</button>
-                                <button class="filter-pill" style="font-size:0.75rem; padding:4px 10px;" onclick="cargarPlantilla('ficha')">Plantilla Ficha Técnica</button>
-                            </div>
                             <textarea id="replyText" placeholder="Escribe tu respuesta personalizada aquí..."></textarea>
                             <div class="chat-actions-row">
                                 <small style="color:var(--text-light);"><i class="fa-solid fa-lock"></i> Canal seguro BS Perú</small>
-                                <a id="btnReplyWhatsapp" href="https://wa.me/51987654321?text=Hola%20Ing.%20Carlos%20Mendoza,%20le%20escribimos%20de%20BS%20Per%C3%BA%20respecto%20a%20su%20solicitud%20de%20Z%20Grout." target="_blank" class="btn-wa">
+                                <a id="btnReplyWhatsapp" href="https://wa.me/51987654321" target="_blank" class="btn-wa">
                                     <i class="fa-brands fa-whatsapp"></i> Responder vía WhatsApp
                                 </a>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
             </div>
 
-            <!-- ================= SECCIÓN 5: CAPACITACIÓN / VIDEOS ================= -->
+            <!-- ================= SECCIÓN 5: CAPACITACIÓN ================= -->
             <div id="section-capacitacion" class="crm-view">
-                
                 <div class="quick-actions-bar" style="background: linear-gradient(135deg, #1E1B4B 0%, #4338CA 100%);">
                     <div>
                         <h4>Centro de Capacitación Técnica y Videoteca</h4>
@@ -1784,7 +1849,6 @@
                 </div>
 
                 <div class="video-grid">
-                    
                     <div class="video-card">
                         <div class="video-thumbnail" onclick="verVideo('Z 2000 - Membrana Líquida', 'Aprende el método correcto de preparación de superficie y aplicación de 2 capas cruzadas para impermeabilización total de losas y techos frente a lluvias intensas.')">
                             <img src="https://images.unsplash.com/photo-1541888946425-d0fbb186c5f8?auto=format&fit=crop&w=600&q=80" alt="Video 1">
@@ -1796,7 +1860,7 @@
                             <p>Impermeabilización elástica continua frente al Fenómeno de El Niño y lluvias en el norte.</p>
                             <div class="video-meta">
                                 <span><i class="fa-solid fa-tag"></i> Impermeabilizantes</span>
-                                <span style="cursor:pointer;" onclick="verVideo('Z 2000 - Membrana Líquida', 'Detalle técnico')"><i class="fa-solid fa-circle-info"></i> Ver Guía</span>
+                                <span style="cursor:pointer;" onclick="verVideo('Z 2000', 'Detalle')"><i class="fa-solid fa-circle-info"></i> Ver Guía</span>
                             </div>
                         </div>
                     </div>
@@ -1812,156 +1876,151 @@
                             <p>Mortero autonivelante de alta resistencia mecánica para anclajes industriales en obra.</p>
                             <div class="video-meta">
                                 <span><i class="fa-solid fa-tag"></i> Morteros & Grout</span>
-                                <span style="cursor:pointer;" onclick="verVideo('Z Grout - Mortero', 'Detalle')"><i class="fa-solid fa-circle-info"></i> Ver Guía</span>
+                                <span style="cursor:pointer;" onclick="verVideo('Z Grout', 'Detalle')"><i class="fa-solid fa-circle-info"></i> Ver Guía</span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="video-card">
-                        <div class="video-thumbnail" onclick="verVideo('Z Imperoof - Sellador Elastomérico', 'Sellado de fisuras vivas y juntas de dilatación en reservorios y cubiertas de concreto con alta elasticidad.')">
-                            <img src="https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=600&q=80" alt="Video 3">
-                            <div class="video-play-btn"><i class="fa-solid fa-play"></i></div>
-                            <span class="video-duration">3:50 min</span>
-                        </div>
-                        <div class="video-content">
-                            <h4>Sellado de juntas y fisuras vivas con Z Imperoof</h4>
-                            <p>Membrana elastomérica de rápido secado con excelente puenteo de fisuras estructurales.</p>
-                            <div class="video-meta">
-                                <span><i class="fa-solid fa-tag"></i> Selladores</span>
-                                <span style="cursor:pointer;" onclick="verVideo('Z Imperoof', 'Detalle')"><i class="fa-solid fa-circle-info"></i> Ver Guía</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card">
-                        <div class="video-thumbnail" onclick="verVideo('Curadores y Desmoldantes BS Perú', 'Uso óptimo de curador químico base agua para evitar agrietamiento por retracción plástica en losas de pavimento.')">
-                            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&q=80" alt="Video 4">
-                            <div class="video-play-btn"><i class="fa-solid fa-play"></i></div>
-                            <span class="video-duration">4:30 min</span>
-                        </div>
-                        <div class="video-content">
-                            <h4>Uso Eficiente de Curadores y Desmoldantes</h4>
-                            <p>Retención de humedad para resistencia máxima del concreto en climas cálidos y ventosos.</p>
-                            <div class="video-meta">
-                                <span><i class="fa-solid fa-tag"></i> Aditivos para Concreto</span>
-                                <span style="cursor:pointer;" onclick="verVideo('Curadores', 'Detalle')"><i class="fa-solid fa-circle-info"></i> Ver Guía</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
 
         </div>
 
-        <!-- RIGHT SIDEBAR (EQUIPO & MAPA EN VIVO) -->
+        <!-- RIGHT SIDEBAR (SIN MAPA - CON PAGOS POR VALIDAR EN VIVO) -->
         <div class="right-sidebar">
             <div class="right-header">
-                <h3><i class="fa-solid fa-users"></i> Equipo Comercial</h3>
-                <a href="#" class="view-all" onclick="alert('Equipo de ventas BS Perú: 14 asesores comerciales en 9 sucursales.'); return false;">Ver Todos</a>
+                <h3><i class="fa-solid fa-users"></i> Equipo Asesores</h3>
+                <span class="badge badge-purple">4 asesores</span>
             </div>
             
             <div class="tabs">
-                <div class="tab active" onclick="cambiarTabEquipo(this, 'actividades')">Actividades</div>
-                <div class="tab" onclick="cambiarTabEquipo(this, 'enlinea')">En línea (9)</div>
+                <div class="tab active">Activos en Línea</div>
             </div>
             
-            <div class="user-list" id="teamUserList">
-                <div class="user-item">
+            <div class="user-list">
+                <div class="user-item" onclick="abrirChatConAsesor('Maria Gomez')">
                     <img src="https://ui-avatars.com/api/?name=Maria+Gomez&background=F5E6E8&color=D85C7B" alt="User">
                     <div class="user-info">
                         <h5>Maria Gomez</h5>
                         <p>Ventas Corporativas Lima</p>
                     </div>
-                    <div class="user-action" onclick="alert('Chat con Maria Gomez')"><i class="fa-regular fa-comment"></i></div>
+                    <div class="user-action"><i class="fa-solid fa-comment-dots"></i></div>
                 </div>
                 
-                <div class="user-item">
+                <div class="user-item" onclick="abrirChatConAsesor('Carlos Ruiz')">
                     <img src="https://ui-avatars.com/api/?name=Carlos+Ruiz&background=E6F5E8&color=5CBA7B" alt="User">
                     <div class="user-info">
                         <h5>Carlos Ruiz</h5>
                         <p>Despachos & Logística</p>
                     </div>
-                    <div class="user-action" onclick="alert('Chat con Carlos Ruiz')"><i class="fa-regular fa-comment"></i></div>
+                    <div class="user-action"><i class="fa-solid fa-comment-dots"></i></div>
                 </div>
                 
-                <div class="user-item">
+                <div class="user-item" onclick="abrirChatConAsesor('Ana Torres')">
                     <img src="https://ui-avatars.com/api/?name=Ana+Torres&background=E6EBF5&color=5C7BBA" alt="User">
                     <div class="user-info">
                         <h5>Ana Torres</h5>
-                        <p>Asesora Sucursal San Borja</p>
+                        <p>Asesora San Borja</p>
                     </div>
-                    <div class="user-action" onclick="alert('Chat con Ana Torres')"><i class="fa-regular fa-comment"></i></div>
+                    <div class="user-action"><i class="fa-solid fa-comment-dots"></i></div>
                 </div>
                 
-                <div class="user-item">
+                <div class="user-item" onclick="abrirChatConAsesor('Luis Paz')">
                     <img src="https://ui-avatars.com/api/?name=Luis+Paz&background=F5F0E6&color=BA9A5C" alt="User">
                     <div class="user-info">
                         <h5>Luis Paz</h5>
                         <p>Sede Arequipa / Sur</p>
                     </div>
-                    <div class="user-action" onclick="alert('Chat con Luis Paz')"><i class="fa-regular fa-comment"></i></div>
+                    <div class="user-action"><i class="fa-solid fa-comment-dots"></i></div>
                 </div>
             </div>
             
-            <div class="map-widget">
-                <div class="map-header">
-                    <h3><i class="fa-solid fa-location-dot"></i> Entregas en vivo</h3>
-                    <a href="https://bsperu.pe/Pruebas/sucursales.html" target="_blank" class="view">Ver mapa</a>
+            <!-- WIDGET LATERAL DE NOTIFICACIONES DE PAGOS EN VIVO -->
+            <div class="pending-payments-widget">
+                <div class="pending-widget-header">
+                    <h4><i class="fa-solid fa-bell" style="color:var(--accent-orange);"></i> Pagos por Validar</h4>
+                    <span class="badge badge-warning" id="sideBadgeCount">3 pendientes</span>
                 </div>
-                <div class="map-img">
-                    <div class="map-pin pin-1" title="Camión 1 - Lima Norte"><i class="fa-solid fa-truck"></i></div>
-                    <div class="map-pin pin-2" title="Camión 2 - Chorrillos"><i class="fa-solid fa-location-crosshairs"></i></div>
-                    <div class="map-pin pin-3" title="Camión 3 - Piura"><i class="fa-solid fa-truck"></i></div>
+                <div class="pending-item-sidebar" onclick="scrollHaciaValidacion()">
+                    <div class="pending-item-info">
+                        <h5>Cosapi S.A.</h5>
+                        <span>S/ 14,400.00 • BCP Op. #4829104</span>
+                    </div>
+                    <button class="btn-confirm-pay" style="padding:4px 8px; font-size:0.7rem;">Ver</button>
+                </div>
+                <div class="pending-item-sidebar" onclick="scrollHaciaValidacion()">
+                    <div class="pending-item-info">
+                        <h5>Consorcio Vial Piura</h5>
+                        <span>S/ 6,800.00 • BBVA Op. #910245</span>
+                    </div>
+                    <button class="btn-confirm-pay" style="padding:4px 8px; font-size:0.7rem;">Ver</button>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL DE SALIR / LOGOUT -->
-    <div class="modal-overlay" id="logoutModal">
+    <!-- MODAL VISOR DE VOUCHER / COMPROBANTE DE PAGO -->
+    <div class="modal-overlay" id="voucherModal">
         <div class="modal-box">
-            <div class="modal-icon pink">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="margin:0; font-size:1.25rem;"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--primary);"></i> Comprobante de Pago</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem; color:var(--text-light);" onclick="closeVoucherModal()"></i>
             </div>
-            <h3>¿Cerrar Sesión del CRM?</h3>
-            <p>Puedes regresar al catálogo público de productos o salir de la plataforma de administración.</p>
-            <div class="modal-buttons">
-                <a href="https://bsperu.pe/Pruebas/productos.html" class="btn-modal primary">
-                    <i class="fa-solid fa-arrow-left"></i> Ir a Productos (`productos.html`)
-                </a>
-                <a href="https://bsperu.pe/Pruebas/sucursales.html" class="btn-modal secondary">
-                    <i class="fa-solid fa-map-location-dot"></i> Ir a Sucursales (`sucursales.html`)
-                </a>
-                <button class="btn-modal secondary" onclick="closeLogoutModal()">
-                    Cancelar y permanecer en CRM
+            
+            <div class="voucher-preview-box">
+                <img id="modalVoucherImg" src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=500&q=80" class="voucher-img-large" alt="Comprobante Bancario">
+            </div>
+
+            <div class="voucher-data-grid">
+                <div class="voucher-data-item">
+                    <span>Pedido / Cotización:</span>
+                    <strong id="modalVoucherCotiz">#COT-2026-084</strong>
+                </div>
+                <div class="voucher-data-item">
+                    <span>Cliente / Empresa:</span>
+                    <strong id="modalVoucherCliente">Cosapi S.A.</strong>
+                </div>
+                <div class="voucher-data-item">
+                    <span>Monto Transferido:</span>
+                    <strong id="modalVoucherMonto" style="color:var(--accent-green); font-size:1.05rem;">S/ 14,400.00</strong>
+                </div>
+                <div class="voucher-data-item">
+                    <span>Banco / Operación:</span>
+                    <strong id="modalVoucherOp">BCP Op. #4829104</strong>
+                </div>
+                <div class="voucher-data-item">
+                    <span>Asesor Comercial:</span>
+                    <strong id="modalVoucherAsesor">Maria Gomez</strong>
+                </div>
+                <div class="voucher-data-item">
+                    <span>Cuenta Destino:</span>
+                    <strong>BS Perú S.A.C. (Cta Cte BCP)</strong>
+                </div>
+            </div>
+
+            <div class="modal-buttons" id="modalVoucherActions">
+                <button class="btn-modal secondary" onclick="closeVoucherModal()">Cerrar</button>
+                <button class="btn-modal primary" id="btnModalConfirmar" onclick="confirmarDesdeModal()">
+                    <i class="fa-solid fa-check-double"></i> Confirmar & Aceptar Pago
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE DETALLE DE VIDEO -->
-    <div class="modal-overlay" id="videoModal">
-        <div class="modal-box" style="max-width: 580px; text-align: left;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h3 id="videoModalTitle" style="margin:0; font-size:1.2rem;">Detalle del Video</h3>
-                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem; color:var(--text-light);" onclick="closeVideoModal()"></i>
+    <!-- MODAL DE SALIR / LOGOUT -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box" style="text-align:center;">
+            <div style="width:65px; height:65px; background:rgba(255,126,159,0.15); color:var(--accent); border-radius:20px; display:flex; justify-content:center; align-items:center; font-size:1.8rem; margin:0 auto 16px;">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </div>
-            <div style="background:#000; border-radius:16px; height:240px; display:flex; justify-content:center; align-items:center; color:#FFF; margin-bottom:16px;">
-                <div style="text-align:center;">
-                    <i class="fa-solid fa-circle-play" style="font-size:3.5rem; color:var(--accent); cursor:pointer;"></i>
-                    <p style="margin-top:10px; font-size:0.85rem; opacity:0.8;">Haga clic para reproducir en pantalla completa</p>
-                </div>
-            </div>
-            <p id="videoModalDesc" style="font-size:0.88rem; color:var(--text-dark); margin-bottom:20px; line-height:1.5;">
-                Descripción del procedimiento de aplicación en obra.
-            </p>
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button class="btn-modal secondary" onclick="closeVideoModal()">Cerrar</button>
-                <button class="btn-modal primary" onclick="alert('Descargando ficha técnica oficial en PDF...'); closeVideoModal();">
-                    <i class="fa-solid fa-file-pdf"></i> Descargar Ficha PDF
+            <h3>¿Cerrar Sesión del CRM?</h3>
+            <p style="color:var(--text-light); font-size:0.88rem; margin:10px 0 20px;">Puedes regresar al catálogo público de productos o salir de la plataforma.</p>
+            <div class="modal-buttons" style="flex-direction:column;">
+                <a href="https://bsperu.pe/Pruebas/productos.html" class="btn-modal primary">
+                    <i class="fa-solid fa-arrow-left"></i> Ir a Productos (`productos.html`)
+                </a>
+                <button class="btn-modal secondary" onclick="closeLogoutModal()">
+                    Permanecer en CRM
                 </button>
             </div>
         </div>
@@ -1969,188 +2028,220 @@
 
     <!-- JAVASCRIPT DE INTERACTIVIDAD -->
     <script>
-        // Metadatos de cada sección para actualizar header
         const SECCIONES = {
-            'inicio': {
-                sub: 'Principal',
-                title: 'Dashboard General'
-            },
-            'facturacion': {
-                sub: 'Gestión Comercial',
-                title: 'Facturación y Comprobantes'
-            },
-            'reportes': {
-                sub: 'Estadísticas & Métricas',
-                title: 'Dashboard Reportes'
-            },
-            'mensajes': {
-                sub: 'Atención al Cliente',
-                title: 'Consultas Web y WhatsApp'
-            },
-            'capacitacion': {
-                sub: 'Recursos de Obra',
-                title: 'Capacitación y Videoteca'
-            }
+            'inicio': { sub: 'Principal', title: 'Dashboard General' },
+            'facturacion': { sub: 'Gestión Comercial', title: 'Facturación y Comprobantes' },
+            'reportes': { sub: 'Área de Reportería', title: 'Dashboard de Reportes & Validación de Pagos' },
+            'mensajes': { sub: 'Coordinación Comercial', title: 'Chat con Asesores de Ventas & Consultas' },
+            'capacitacion': { sub: 'Recursos de Obra', title: 'Capacitación y Videoteca' }
         };
 
-        // Función para cambiar de sección
+        let currentModalPagoId = 0;
+        let currentModalMonto = 0;
+        let currentModalCotiz = '';
+        let totalPagosVerificadosMes = 94178.00;
+        let pagosPendientesCount = 3;
+
         function switchSection(sectionId) {
             if (!SECCIONES[sectionId]) return;
 
-            // 1. Quitar clase active a todos los botones del sidebar
-            document.querySelectorAll('.sidebar .icon').forEach(icon => {
-                icon.classList.remove('active');
-            });
-
-            // 2. Activar el botón correspondiente
+            document.querySelectorAll('.sidebar .icon').forEach(icon => icon.classList.remove('active'));
             const targetIcon = document.querySelector(`.sidebar .icon[data-section="${sectionId}"]`);
-            if (targetIcon) {
-                targetIcon.classList.add('active');
-            }
+            if (targetIcon) targetIcon.classList.add('active');
 
-            // 3. Ocultar todas las vistas y mostrar la seleccionada
-            document.querySelectorAll('.crm-view').forEach(view => {
-                view.classList.remove('active');
-            });
+            document.querySelectorAll('.crm-view').forEach(view => view.classList.remove('active'));
             const targetView = document.getElementById(`section-${sectionId}`);
-            if (targetView) {
-                targetView.classList.add('active');
-            }
+            if (targetView) targetView.classList.add('active');
 
-            // 4. Actualizar textos del header
             document.getElementById('headerSectionSubtitle').textContent = SECCIONES[sectionId].sub;
             document.getElementById('headerSectionTitle').textContent = SECCIONES[sectionId].title;
 
-            // 5. Guardar estado en memoria
             localStorage.setItem('crm_active_section', sectionId);
         }
 
-        // Cargar sección guardada o por defecto
         window.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('crm_active_section');
             if (saved && SECCIONES[saved]) {
                 switchSection(saved);
             } else {
-                switchSection('inicio');
+                switchSection('reportes');
             }
         });
 
-        // Filtro de Facturas
-        function filtrarFacturas(tipo, el) {
-            document.querySelectorAll('.filter-pill').forEach(pill => pill.classList.remove('active'));
-            el.classList.add('active');
+        // Desplazar suavemente a la bandeja de validación
+        function scrollHaciaValidacion() {
+            switchSection('reportes');
+            setTimeout(() => {
+                const el = document.getElementById('bandejaValidacion');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
 
-            const filas = document.querySelectorAll('#tablaFacturas tbody tr');
-            filas.forEach(fila => {
-                if (tipo === 'todos') {
-                    fila.style.display = '';
-                } else {
-                    const estado = fila.getAttribute('data-estado');
-                    fila.style.display = (estado === tipo) ? '' : 'none';
+        // ACCIÓN: CONFIRMAR / ACEPTAR PAGO EN REPORTERÍA
+        function confirmarPagoAction(pagoId, monto, cotiz) {
+            const row = document.getElementById(`row-pago-${pagoId}`);
+            if (!row) return;
+
+            // Enviar petición POST a PHP
+            fetch('reportes.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=confirmar_pago&pago_id=${pagoId}&monto=${monto}&validador=Reportería BS Perú`
+            }).catch(() => {});
+
+            // Actualizar fila visualmente
+            const badge = row.querySelector('.status-badge');
+            if (badge) {
+                badge.className = 'badge badge-success status-badge';
+                badge.innerHTML = '<i class="fa-solid fa-check-double"></i> Pago Aceptado';
+            }
+
+            // Cambiar botones por confirmación permanente
+            const cellAction = row.cells[7];
+            if (cellAction) {
+                cellAction.innerHTML = '<span style="color:var(--accent-green); font-size:0.82rem; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Verificado y Registrado</span>';
+            }
+
+            // Actualizar métricas en pantalla
+            pagosPendientesCount = Math.max(0, pagosPendientesCount - 1);
+            totalPagosVerificadosMes += monto;
+
+            // Actualizar badges y contadores
+            document.getElementById('numPending').textContent = pagosPendientesCount;
+            document.getElementById('sideBadgeCount').textContent = `${pagosPendientesCount} pendientes`;
+            document.getElementById('badgePendingMini').textContent = `${pagosPendientesCount} comprobantes por validar`;
+            document.getElementById('pendingCounterBadge').className = pagosPendientesCount > 0 ? 'badge badge-warning' : 'badge badge-success';
+            
+            document.getElementById('statMesAct').textContent = `S/ ${totalPagosVerificadosMes.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('chartPointLabel').innerHTML = `<strong>S/ ${totalPagosVerificadosMes.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong><br>Ingresos Verificados`;
+
+            alert(`✅ ¡Pago de ${cotiz} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} CONFIRMADO Y ACEPTADO!\n\nSe ha guardado en la base de datos como pago verificado y se actualizó el acumulado del mes.`);
+        }
+
+        // ACCIÓN: OBSERVAR / RECHAZAR PAGO
+        function observarPagoAction(pagoId, cotiz) {
+            const motivo = prompt(`Ingrese el motivo de la observación para ${cotiz}:`, "Monto depositado no coincide con factura");
+            if (!motivo) return;
+
+            fetch('reportes.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=observar_pago&pago_id=${pagoId}&motivo=${encodeURIComponent(motivo)}`
+            }).catch(() => {});
+
+            const row = document.getElementById(`row-pago-${pagoId}`);
+            if (row) {
+                const badge = row.querySelector('.status-badge');
+                if (badge) {
+                    badge.className = 'badge badge-danger status-badge';
+                    badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Observado';
                 }
-            });
+                row.cells[7].innerHTML = `<span style="color:#EF4444; font-size:0.78rem;">Observación enviada al asesor</span>`;
+            }
+
+            alert(`⚠️ El pago de ${cotiz} ha sido marcado como OBSERVADO.\nSe notificó al asesor para corregir el comprobante.`);
         }
 
-        // Datos de consultas para chat
-        const CONSULTAS = {
-            'c1': {
-                nombre: 'Ing. Carlos Mendoza',
-                empresa: 'Constructora Andina | Cel: +51 987 654 321',
-                estado: 'Nuevo Mensaje',
-                mensaje: '"Buenas tardes, requiero cotización formal por 60 bolsas de Z Grout para anclaje de maquinaria y columnas en nuestra obra de Santiago de Surco. Por favor indicar si tienen entrega directa en obra y tiempo estimado de entrega."',
-                waLink: 'https://wa.me/51987654321?text=Estimado%20Ing.%20Carlos%20Mendoza,%20le%20saluda%20BS%20Per%C3%BA.%20Con%20gusto%20le%20enviamos%20la%20cotizaci%C3%B3n%20por%20las%2060%20bolsas%20de%20Z%20Grout.'
-            },
-            'c2': {
-                nombre: 'Arq. Patricia Vega',
-                empresa: 'Edificaciones del Norte | Cel: +51 922 956 171',
-                estado: 'En Proceso',
-                mensaje: '"Hola BS Perú, ¿el impermeabilizante Z 2000 viene en presentación de cilindro de 55 galones o solo en balde? Necesitamos impermeabilizar 1,200 m2 de techo en Piura antes de las lluvias."',
-                waLink: 'https://wa.me/51922956171?text=Hola%20Arq.%20Patricia,%20en%20BS%20Per%C3%BA%20disponemos%20de%20Z%202000%20tanto%20en%20balde%20como%20en%20cilindro%20para%20grandes%20obras.'
-            },
-            'c3': {
-                nombre: 'Maestro Roberto Quispe',
-                empresa: 'Contratista Independiente | Cel: +51 981 288 456',
-                estado: 'Pendiente',
-                mensaje: '"Quisiera saber si tienen stock disponible de Z Imperoof en la sucursal de San Borja (Av. San Luis 3051) para recoger hoy mismo por la tarde."',
-                waLink: 'https://wa.me/51981288456?text=Hola%20Maestro%20Roberto,%20s%C3%AD%20tenemos%20stock%20de%20Z%20Imperoof%20en%20nuestra%20sede%20de%20San%20Borja.'
-            },
-            'c4': {
-                nombre: 'Supervisión Consorcio Graña',
-                empresa: 'Proyecto Vial | Cel: +51 923 062 809',
-                estado: 'Atendido',
-                mensaje: '"Solicitamos el envío inmediato de la ficha técnica y certificado de ensayo de laboratorio del Adhesivo Epóxico para aprobación de supervisión."',
-                waLink: 'https://wa.me/51923062809?text=Hola,%20adjuntamos%20la%20ficha%20t%C3%A9cnica%20y%20certificados%20del%20Adhesivo%20Ep%C3%B3xico%20BS%20Per%C3%BA.'
-            }
-        };
+        // MODAL VISOR DE VOUCHER
+        function verVoucherModal(cotiz, cliente, monto, op, asesor, pagoId) {
+            currentModalPagoId = pagoId;
+            currentModalMonto = parseFloat(monto.replace(/,/g, ''));
+            currentModalCotiz = cotiz;
 
-        function seleccionarConsulta(id, el) {
-            document.querySelectorAll('.inbox-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('modalVoucherCotiz').textContent = cotiz;
+            document.getElementById('modalVoucherCliente').textContent = cliente;
+            document.getElementById('modalVoucherMonto').textContent = `S/ ${monto}`;
+            document.getElementById('modalVoucherOp').textContent = op;
+            document.getElementById('modalVoucherAsesor').textContent = asesor;
+
+            document.getElementById('voucherModal').classList.add('open');
+        }
+
+        function verVoucherDemo(op, cliente, monto, asesor) {
+            verVoucherModal('F001-00892', cliente, monto, op, asesor, 0);
+        }
+
+        function closeVoucherModal() {
+            document.getElementById('voucherModal').classList.remove('open');
+        }
+
+        function confirmarDesdeModal() {
+            if (currentModalPagoId > 0) {
+                confirmarPagoAction(currentModalPagoId, currentModalMonto, currentModalCotiz);
+            }
+            closeVoucherModal();
+        }
+
+        // CANALES DE CHAT (VENTAS VS WEB)
+        function cambiarCanalChat(canal, el) {
+            document.querySelectorAll('.chat-tab-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
 
-            const c = CONSULTAS[id];
-            if (!c) return;
-
-            document.getElementById('chatNombre').textContent = c.nombre;
-            document.getElementById('chatEmpresa').textContent = c.empresa;
-            document.getElementById('chatEstado').textContent = c.estado;
-            document.getElementById('chatMensaje').textContent = c.mensaje;
-            document.getElementById('btnReplyWhatsapp').href = c.waLink;
-            document.getElementById('replyText').value = '';
-        }
-
-        function cargarPlantilla(tipo) {
-            const ta = document.getElementById('replyText');
-            if (tipo === 'stock') {
-                ta.value = 'Estimado cliente, contamos con stock inmediato en nuestras sucursales de Lima, Piura y Arequipa. Podemos despachar hoy mismo.';
-            } else if (tipo === 'cotizacion') {
-                ta.value = 'Le adjuntamos la propuesta comercial con descuento por volumen para su obra, válida por 7 días calendario.';
-            } else if (tipo === 'ficha') {
-                ta.value = 'Le enviamos la Ficha Técnica oficial y el Certificado de Calidad de Laboratorio avalado por normas ASTM.';
-            }
-        }
-
-        // Selector mensual/semanal de reportes
-        function cambiarPeriodoReportes(periodo) {
-            const label = document.getElementById('chartPointLabel');
-            const path = document.getElementById('svgCurvePath');
-            const mesAct = document.getElementById('statMesAct');
-            const mesAnt = document.getElementById('statMesAnt');
-
-            if (periodo === 'semanal') {
-                label.innerHTML = '<strong>S/ 24,650</strong><br>Esta semana';
-                mesAct.textContent = 'S/ 24,650';
-                mesAnt.textContent = 'S/ 19,200';
-                path.setAttribute('d', 'M0,120 C100,70 180,90 250,50 C320,20 420,80 500,40');
+            if (canal === 'ventas') {
+                document.getElementById('chat-canal-ventas').style.display = 'flex';
+                document.getElementById('chat-canal-web').style.display = 'none';
             } else {
-                label.innerHTML = '<strong>S/ 94,178</strong><br>Ingresos';
-                mesAct.textContent = 'S/ 94,178';
-                mesAnt.textContent = 'S/ 74,800';
-                path.setAttribute('d', 'M0,100 C100,50 150,150 250,80 C350,10 400,120 500,60');
+                document.getElementById('chat-canal-ventas').style.display = 'none';
+                document.getElementById('chat-canal-web').style.display = 'flex';
             }
         }
 
-        // Modales
-        function openLogoutModal() {
-            document.getElementById('logoutModal').classList.add('open');
-        }
-        function closeLogoutModal() {
-            document.getElementById('logoutModal').classList.remove('open');
-        }
-
-        function verVideo(titulo, desc) {
-            document.getElementById('videoModalTitle').textContent = titulo;
-            document.getElementById('videoModalDesc').textContent = desc;
-            document.getElementById('videoModal').classList.add('open');
-        }
-        function closeVideoModal() {
-            document.getElementById('videoModal').classList.remove('open');
+        function abrirChatConAsesor(nombre) {
+            switchSection('mensajes');
+            cambiarCanalChat('ventas', document.querySelectorAll('.chat-tab-btn')[0]);
+            document.getElementById('asesorChatNombre').textContent = nombre;
+            document.getElementById('asesorChatCargo').textContent = `Asesor(a) Comercial BS Perú - Canal Directo`;
         }
 
-        function cambiarTabEquipo(el, tab) {
-            document.querySelectorAll('.right-sidebar .tab').forEach(t => t.classList.remove('active'));
+        function seleccionarAsesorChat(id, el) {
+            document.querySelectorAll('#chat-canal-ventas .inbox-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
+            const nombre = el.querySelector('h5').textContent;
+            document.getElementById('asesorChatNombre').textContent = nombre;
+        }
+
+        function insertarChatVentas(texto) {
+            document.getElementById('asesorReplyText').value = texto;
+        }
+
+        function enviarMensajeAsesor() {
+            const ta = document.getElementById('asesorReplyText');
+            const texto = ta.value.trim();
+            if (!texto) {
+                alert('Por favor escribe un mensaje.');
+                return;
+            }
+
+            const historial = document.getElementById('asesorChatHistorial');
+            const nuevoMsg = document.createElement('div');
+            nuevoMsg.style = "background:rgba(109, 93, 211, 0.1); padding:12px 16px; border-radius:14px; max-width:85%; align-self:flex-end; color:var(--primary);";
+            nuevoMsg.innerHTML = `<strong>Tú (Reportería):</strong><br>${texto}`;
+            historial.appendChild(nuevoMsg);
+            historial.scrollTop = historial.scrollHeight;
+
+            ta.value = '';
+            alert('Mensaje enviado al asesor de ventas exitosamente.');
+        }
+
+        // Modal Logout
+        function openLogoutModal() { document.getElementById('logoutModal').classList.add('open'); }
+        function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('open'); }
+
+        // Periodo reportes
+        function cambiarPeriodoReportes(p) {
+            const label = document.getElementById('chartPointLabel');
+            const act = document.getElementById('statMesAct');
+            const ant = document.getElementById('statMesAnt');
+            if (p === 'semanal') {
+                label.innerHTML = '<strong>S/ 24,650</strong><br>Esta Semana';
+                act.textContent = 'S/ 24,650';
+                ant.textContent = 'S/ 19,200';
+            } else {
+                label.innerHTML = `<strong>S/ ${totalPagosVerificadosMes.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong><br>Ingresos Verificados`;
+                act.textContent = `S/ ${totalPagosVerificadosMes.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                ant.textContent = 'S/ 74,800';
+            }
         }
     </script>
-
 </body>
 </html>
