@@ -1219,6 +1219,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <i class="fa-solid fa-file-invoice-dollar"></i>
             </div>
 
+            <div class="icon" onclick="location.href='ventas.php'" data-tooltip="Panel de Ventas">
+                <i class="fa-solid fa-table-cells-large" style="color:#E5C38C;"></i>
+            </div>
+
             <div class="icon active" onclick="switchSection('reportes')" data-section="reportes" data-tooltip="Reportería & Pagos">
                 <i class="fa-solid fa-chart-column"></i>
             </div>
@@ -1247,6 +1251,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
                 
                 <div class="header-right">
+                    <a href="ventas.php" style="background:#C79B58; color:#161719; text-decoration:none; padding:8px 16px; border-radius:14px; font-weight:700; font-size:0.82rem; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(199,155,88,0.3); transition:0.2s;">
+                        <i class="fa-solid fa-table-cells-large"></i> Panel de Ventas
+                    </a>
                     <div class="badge-reporteria-role">
                         <i class="fa-solid fa-shield-check"></i> Modo: Validador Reportería
                     </div>
