@@ -987,6 +987,256 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             transform: translateY(-2px);
         }
 
+        /* ================= ESTILOS CARTERA DE CLIENTES ================= */
+        .cartera-modal-card {
+            max-width: 1060px !important;
+            width: 95% !important;
+            max-height: 90vh;
+        }
+        .cartera-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+        .cartera-search-box {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+        }
+        .cartera-search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .cartera-search-box input {
+            width: 100%;
+            padding: 11px 18px 11px 42px;
+            border-radius: var(--pill-radius);
+            border: 1px solid var(--border-soft);
+            background: #FAF7F2;
+            font-size: 0.85rem;
+            outline: none;
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+        body.dark-mode .cartera-search-box input {
+            background: #23252B;
+            border-color: #2F323A;
+            color: #FFF;
+        }
+        .cartera-filter-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+        .cartera-pill {
+            padding: 8px 16px;
+            border-radius: var(--pill-radius);
+            background: #FAF7F2;
+            border: 1px solid var(--border-soft);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        body.dark-mode .cartera-pill {
+            background: #23252B;
+            border-color: #2F323A;
+            color: #9CA3AF;
+        }
+        .cartera-pill:hover, .cartera-pill.active {
+            background: var(--accent-tan);
+            color: #161719;
+            border-color: var(--accent-tan);
+        }
+        .btn-add-cliente {
+            background: #161719;
+            color: #FFF;
+            padding: 10px 20px;
+            border-radius: var(--pill-radius);
+            font-size: 0.82rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        .btn-add-cliente:hover {
+            background: #2B2E35;
+            transform: translateY(-2px);
+        }
+        .cartera-table-wrapper {
+            background: #FFF;
+            border-radius: 20px;
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+            max-height: 480px;
+            overflow-y: auto;
+        }
+        body.dark-mode .cartera-table-wrapper {
+            background: #18191D;
+            border-color: #2F323A;
+        }
+        .cartera-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.84rem;
+        }
+        .cartera-table th {
+            background: #FAF7F2;
+            padding: 14px 18px;
+            color: var(--text-muted);
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-soft);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        body.dark-mode .cartera-table th {
+            background: #202227;
+            border-color: #2F323A;
+            color: #A0AEC0;
+        }
+        .cartera-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-soft);
+            color: var(--text-dark);
+            vertical-align: middle;
+        }
+        body.dark-mode .cartera-table td {
+            border-color: #24272E;
+            color: #E2E8F0;
+        }
+        .cartera-table tr:hover td {
+            background: rgba(199, 155, 88, 0.05);
+        }
+        .cliente-item-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cliente-avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: var(--accent-tan-soft);
+            color: var(--accent-tan);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-soft);
+            flex-shrink: 0;
+        }
+        .cliente-meta h5 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+        body.dark-mode .cliente-meta h5 {
+            color: #FFF;
+        }
+        .cliente-meta span {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+        }
+        .badge-tag-vip {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-tag-activo {
+            background: #DCFCE7;
+            color: #166534;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+        .badge-tag-seguimiento {
+            background: #E0E7FF;
+            color: #3730A3;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+        .btn-facturar-mini {
+            background: var(--accent-tan);
+            color: #161719;
+            border: none;
+            padding: 7px 14px;
+            border-radius: var(--pill-radius);
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+        .btn-facturar-mini:hover {
+            background: #B68B48;
+            transform: translateY(-1px);
+        }
+        .btn-wa-mini {
+            background: #25D366;
+            color: #FFF;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .btn-wa-mini:hover {
+            background: #1EBE5D;
+            transform: scale(1.1);
+        }
+        .form-new-cliente-box {
+            display: none;
+            background: #FAF7F2;
+            border: 1px solid var(--border-soft);
+            border-radius: 22px;
+            padding: 22px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+        body.dark-mode .form-new-cliente-box {
+            background: #202227;
+            border-color: #2F323A;
+        }
+
         /* CHAT MODAL INTERNO CON REPORTERÍA */
         .chat-box-modal {
             display: flex;
@@ -1093,6 +1343,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <span>Ventas del Día</span>
                 </div>
 
+                <div class="nav-item" id="navCarteraItem" onclick="openCarteraClientesModal()">
+                    <i class="fa-solid fa-address-book"></i>
+                    <span>Cartera de Clientes</span>
+                    <span class="nav-badge" id="badgeCarteraTotal" style="background:var(--accent-tan); color:#161719; font-weight:700;">45</span>
+                </div>
+
                 <div class="nav-item" onclick="openChatReporteriaModal()">
                     <i class="fa-solid fa-comments"></i>
                     <span>Chat Reportería</span>
@@ -1178,11 +1434,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                 </div>
 
-                <div class="stat-card-mini">
-                    <div class="stat-mini-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-card-mini" onclick="openCarteraClientesModal()" title="Ver Mi Cartera de Clientes">
+                    <div class="stat-mini-icon"><i class="fa-solid fa-address-book"></i></div>
                     <div class="stat-mini-info">
-                        <h4>45</h4>
-                        <p>Clientes Activos</p>
+                        <h4 id="statClientesActivos">45</h4>
+                        <p>Cartera de Clientes</p>
                     </div>
                 </div>
 
@@ -1593,11 +1849,343 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- ================= MODAL 5: CARTERA DE CLIENTES DEL ASESOR ================= -->
+    <div class="modal-overlay" id="modalCarteraClientes">
+        <div class="modal-card cartera-modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3 style="display:flex; align-items:center; gap:10px;">
+                        <i class="fa-solid fa-address-book" style="color:var(--accent-tan);"></i> Mi Cartera de Clientes
+                    </h3>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                        Clientes y constructoras asignados a Elizabeth Addams • Facturación y contacto directo
+                    </p>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button class="btn-add-cliente" onclick="toggleFormNuevoCliente()">
+                        <i class="fa-solid fa-user-plus"></i> <span id="btnTextNuevoCli">+ Nuevo Cliente</span>
+                    </button>
+                    <button class="modal-close-btn" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- FORMULARIO DESPLEGABLE: REGISTRAR CLIENTE EN CARTERA -->
+            <div class="form-new-cliente-box" id="boxFormNuevoCliente">
+                <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-dark); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-building-circle-check" style="color:var(--accent-tan);"></i> Registrar Nuevo Cliente a mi Cartera
+                </h4>
+                <form onsubmit="guardarNuevoCliente(event)">
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Razón Social / Empresa *</label>
+                                <input type="text" id="newCliEmpresa" required placeholder="Ej: Constructora San Jerónimo S.A.C.">
+                            </div>
+                            <div class="form-group">
+                                <label>RUC / DNI (11 u 8 dígitos) *</label>
+                                <input type="text" id="newCliRuc" required maxlength="11" placeholder="Ej: 20601928471">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contacto / Residente de Obra</label>
+                                <input type="text" id="newCliContacto" placeholder="Ej: Ing. Jorge Ramirez">
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono / WhatsApp *</label>
+                                <input type="tel" id="newCliTelefono" required placeholder="Ej: 987654321">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="newCliEmail" placeholder="compras@empresa.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Categoría de Cliente</label>
+                                <select id="newCliCategoria">
+                                    <option value="VIP">🏆 VIP / Grandes Obras</option>
+                                    <option value="Activo" selected>🏢 Activo este Mes</option>
+                                    <option value="Seguimiento">⏳ En Seguimiento / Cotización</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Dirección de Obra / Oficina Principal</label>
+                            <input type="text" id="newCliDireccion" placeholder="Ej: Av. Javier Prado Este 2450, San Borja, Lima">
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
+                            <button type="button" class="btn-pill-white" onclick="toggleFormNuevoCliente()">Cancelar</button>
+                            <button type="submit" class="btn-pill-white primary">
+                                <i class="fa-solid fa-save"></i> Guardar en mi Cartera
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+            <div class="cartera-toolbar">
+                <div class="cartera-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="inputBuscarCliente" placeholder="Buscar por empresa, RUC, contacto o teléfono..." onkeyup="filtrarCarteraClientes(this.value)">
+                </div>
+
+                <div class="cartera-filter-pills">
+                    <div class="cartera-pill active" onclick="filtrarCarteraPorTipo('todos', this)">Todos (<span id="countFiltroTodos">45</span>)</div>
+                    <div class="cartera-pill" onclick="filtrarCarteraPorTipo('VIP', this)">🏆 VIP (12)</div>
+                    <div class="cartera-pill" onclick="filtrarCarteraPorTipo('Activo', this)">🏢 Activos (18)</div>
+                    <div class="cartera-pill" onclick="filtrarCarteraPorTipo('Seguimiento', this)">⏳ En Seguimiento (15)</div>
+                </div>
+            </div>
+
+            <!-- TABLA DE CARTERA DE CLIENTES -->
+            <div class="cartera-table-wrapper">
+                <table class="cartera-table" id="tablaCarteraClientes">
+                    <thead>
+                        <tr>
+                            <th>Cliente / Razón Social</th>
+                            <th>Contacto Principal</th>
+                            <th>WhatsApp / Teléfono</th>
+                            <th>Compras del Mes</th>
+                            <th>Categoría</th>
+                            <th style="text-align:center;">Acción Inmediata</th>
+                        </tr>
+                    </thead>
+                    <tbody id="carteraTbody">
+                        <!-- Clientes precargados dinámicos -->
+                        <tr data-tipo="VIP">
+                            <td>
+                                <div class="cliente-item-cell">
+                                    <div class="cliente-avatar-circle">CS</div>
+                                    <div class="cliente-meta">
+                                        <h5>Cosapi S.A.</h5>
+                                        <span>RUC: 20100038146 • Lima</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>Ing. Mary Rose</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">Residente Torre Real</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>984 129 384</span>
+                                    <a href="https://wa.me/51984129384?text=Hola%20Ing.%20Mary%20Rose,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><strong style="color:#10B981;">S/ 32,650.00</strong></td>
+                            <td><span class="badge-tag-vip">🏆 VIP</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn-facturar-mini" onclick="facturarACliente('Cosapi S.A.', '20100038146')">
+                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr data-tipo="VIP">
+                            <td>
+                                <div class="cliente-item-cell">
+                                    <div class="cliente-avatar-circle" style="background:#E0E7FF; color:#4338CA;">GM</div>
+                                    <div class="cliente-meta">
+                                        <h5>Graña & Montero Ingeniería</h5>
+                                        <span>RUC: 20100109850 • Callao</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>Arq. Carlos Mendoza</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">Jefe de Abastecimiento</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>991 482 103</span>
+                                    <a href="https://wa.me/51991482103?text=Hola%20Arq.%20Carlos%20Mendoza,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><strong style="color:#10B981;">S/ 28,500.00</strong></td>
+                            <td><span class="badge-tag-vip">🏆 VIP</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn-facturar-mini" onclick="facturarACliente('Graña & Montero Ingeniería', '20100109850')">
+                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr data-tipo="Activo">
+                            <td>
+                                <div class="cliente-item-cell">
+                                    <div class="cliente-avatar-circle" style="background:#FEF3C7; color:#B45309;">CV</div>
+                                    <div class="cliente-meta">
+                                        <h5>Consorcio Vial Piura</h5>
+                                        <span>RUC: 20601849201 • Piura</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>Jerome Brown</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">Logística de Materiales</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>972 384 192</span>
+                                    <a href="https://wa.me/51972384192?text=Hola%20Jerome%20Brown,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><strong style="color:var(--text-dark);">S/ 14,800.00</strong></td>
+                            <td><span class="badge-tag-activo">🏢 Activo</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn-facturar-mini" onclick="facturarACliente('Consorcio Vial Piura', '20601849201')">
+                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr data-tipo="Activo">
+                            <td>
+                                <div class="cliente-item-cell">
+                                    <div class="cliente-avatar-circle" style="background:#DCFCE7; color:#15803D;">EP</div>
+                                    <div class="cliente-meta">
+                                        <h5>Edificaciones Pacífico S.A.C.</h5>
+                                        <span>RUC: 20554189012 • Miraflores</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>Ing. Roberto Salcedo</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">Supervisor de Acabados</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>987 654 321</span>
+                                    <a href="https://wa.me/51987654321?text=Hola%20Ing.%20Roberto%20Salcedo,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><strong style="color:var(--text-dark);">S/ 19,200.00</strong></td>
+                            <td><span class="badge-tag-activo">🏢 Activo</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn-facturar-mini" onclick="facturarACliente('Edificaciones Pacífico S.A.C.', '20554189012')">
+                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr data-tipo="VIP">
+                            <td>
+                                <div class="cliente-item-cell">
+                                    <div class="cliente-avatar-circle" style="background:#FCE7F3; color:#BE185D;">JC</div>
+                                    <div class="cliente-meta">
+                                        <h5>JJC Contratistas Generales</h5>
+                                        <span>RUC: 20100142806 • Surco</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>Ing. Walter Palacios</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">Gerente de Proyecto</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>963 852 741</span>
+                                    <a href="https://wa.me/51963852741?text=Hola%20Ing.%20Walter%20Palacios,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><strong style="color:#10B981;">S/ 34,100.00</strong></td>
+                            <td><span class="badge-tag-vip">🏆 VIP</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn-facturar-mini" onclick="facturarACliente('JJC Contratistas Generales', '20100142806')">
+                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr data-tipo="Seguimiento">
+                            <td>
+                                <div class="cliente-item-cell">
+                                    <div class="cliente-avatar-circle" style="background:#F3E8FF; color:#7E22CE;">BE</div>
+                                    <div class="cliente-meta">
+                                        <h5>Besco Inmobiliaria & Construcción</h5>
+                                        <span>RUC: 20419283011 • San Isidro</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>Arq. Lucía Ramos</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">Cotizaciones Obra Condominio</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>951 753 852</span>
+                                    <a href="https://wa.me/51951753852?text=Hola%20Arq.%20Luc%C3%ADa%20Ramos,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><strong style="color:var(--text-muted);">S/ 12,300.00</strong></td>
+                            <td><span class="badge-tag-seguimiento">⏳ En Cotización</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn-facturar-mini" onclick="facturarACliente('Besco Inmobiliaria & Construcción', '20419283011')">
+                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr data-tipo="Activo">
+                            <td>
+                                <div class="cliente-item-cell">
+                                    <div class="cliente-avatar-circle" style="background:#E0F2FE; color:#0369A1;">LA</div>
+                                    <div class="cliente-meta">
+                                        <h5>Constructora Los Andes S.A.C.</h5>
+                                        <span>RUC: 20604819204 • Arequipa</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>Lic. Elena Morales</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">Compras y Suministros</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>998 123 456</span>
+                                    <a href="https://wa.me/51998123456?text=Hola%20Lic.%20Elena%20Morales,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><strong style="color:var(--text-dark);">S/ 7,850.00</strong></td>
+                            <td><span class="badge-tag-activo">🏢 Activo</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn-facturar-mini" onclick="facturarACliente('Constructora Los Andes S.A.C.', '20604819204')">
+                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT LOGIC & INTERACTION -->
     <script>
         let pendientesCount = 3;
         let ventasHoyCount = 4;
         let aceptadosCount = 15;
+        let totalClientesCartera = 45;
 
         // TEMA CLARO / OSCURO
         function setAppTheme(theme) {
@@ -1632,6 +2220,122 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.getElementById('modalChatReporteria').classList.add('open');
             const scroll = document.getElementById('chatScrollContainer');
             scroll.scrollTop = scroll.scrollHeight;
+        }
+
+        // MODAL CARTERA DE CLIENTES
+        function openCarteraClientesModal() {
+            closeModals();
+            document.getElementById('modalCarteraClientes').classList.add('open');
+        }
+
+        function toggleFormNuevoCliente() {
+            const box = document.getElementById('boxFormNuevoCliente');
+            const btnText = document.getElementById('btnTextNuevoCli');
+            if (box.style.display === 'block') {
+                box.style.display = 'none';
+                btnText.textContent = '+ Nuevo Cliente';
+            } else {
+                box.style.display = 'block';
+                btnText.textContent = 'Ocultar Formulario';
+                document.getElementById('newCliEmpresa').focus();
+            }
+        }
+
+        function guardarNuevoCliente(e) {
+            e.preventDefault();
+            const empresa = document.getElementById('newCliEmpresa').value.trim();
+            const ruc = document.getElementById('newCliRuc').value.trim();
+            const contacto = document.getElementById('newCliContacto').value.trim() || 'Encargado de Compras';
+            const tel = document.getElementById('newCliTelefono').value.trim();
+            const cat = document.getElementById('newCliCategoria').value;
+
+            const initials = empresa.substring(0, 2).toUpperCase();
+            let badgeHtml = '';
+            if (cat === 'VIP') badgeHtml = '<span class="badge-tag-vip">🏆 VIP</span>';
+            else if (cat === 'Activo') badgeHtml = '<span class="badge-tag-activo">🏢 Activo</span>';
+            else badgeHtml = '<span class="badge-tag-seguimiento">⏳ En Cotización</span>';
+
+            const tbody = document.getElementById('carteraTbody');
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-tipo', cat);
+            tr.innerHTML = `
+                <td>
+                    <div class="cliente-item-cell">
+                        <div class="cliente-avatar-circle" style="background:var(--accent-tan); color:#161719;">${initials}</div>
+                        <div class="cliente-meta">
+                            <h5>${empresa}</h5>
+                            <span>RUC: ${ruc} • Registrado hoy</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <strong>${contacto}</strong><br>
+                    <span style="font-size:0.72rem; color:var(--text-muted);">Contacto Comercial</span>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span>${tel}</span>
+                        <a href="https://wa.me/51${tel.replace(/\D/g,'')}?text=Hola%20${encodeURIComponent(contacto)},%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </td>
+                <td><strong style="color:var(--text-dark);">S/ 0.00</strong></td>
+                <td>${badgeHtml}</td>
+                <td style="text-align:center;">
+                    <button class="btn-facturar-mini" onclick="facturarACliente('${empresa.replace(/'/g, "\\'")}', '${ruc}')">
+                        <i class="fa-solid fa-file-invoice"></i> Facturar
+                    </button>
+                </td>
+            `;
+
+            tbody.insertBefore(tr, tbody.firstChild);
+
+            // Actualizar contadores
+            totalClientesCartera++;
+            document.getElementById('badgeCarteraTotal').textContent = totalClientesCartera;
+            document.getElementById('statClientesActivos').textContent = totalClientesCartera;
+            document.getElementById('countFiltroTodos').textContent = totalClientesCartera;
+
+            // Resetear y ocultar form
+            e.target.reset();
+            toggleFormNuevoCliente();
+
+            alert(`✅ ¡Cliente "${empresa}" registrado exitosamente en tu cartera de clientes!\nYa puedes contactarlo por WhatsApp o emitirle facturas directamente.`);
+        }
+
+        // BÚSQUEDA EN TIEMPO REAL EN CARTERA
+        function filtrarCarteraClientes(termino) {
+            const val = termino.toLowerCase().trim();
+            const filas = document.querySelectorAll('#carteraTbody tr');
+            filas.forEach(fila => {
+                const textoFila = fila.innerText.toLowerCase();
+                fila.style.display = textoFila.includes(val) ? '' : 'none';
+            });
+        }
+
+        // FILTROS POR CATEGORÍA
+        function filtrarCarteraPorTipo(tipo, el) {
+            document.querySelectorAll('.cartera-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+
+            const filas = document.querySelectorAll('#carteraTbody tr');
+            filas.forEach(fila => {
+                if (tipo === 'todos' || fila.getAttribute('data-tipo') === tipo) {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+        }
+
+        // FACTURAR DIRECTAMENTE A UN CLIENTE DE LA CARTERA
+        function facturarACliente(nombre, ruc) {
+            closeModals();
+            openFacturacionModal();
+            document.getElementById('facCliente').value = nombre;
+            document.getElementById('facRuc').value = ruc;
+            document.getElementById('facMonto').focus();
         }
 
         function verComprobantesGaleria() {
