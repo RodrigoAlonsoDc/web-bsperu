@@ -2278,16 +2278,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         // VISOR DE VOUCHER
-        function abrirVisorVoucher(cotiz, cliente, monto, op, asesor, pagoId) {
+        function abrirVisorVoucher(cotiz, cliente, monto, op, asesor, pagoId, imgUrl) {
             currentModalPagoId = pagoId;
-            currentModalMonto = parseFloat(monto.replace(/,/g, ''));
+            currentModalMonto = typeof monto === 'number' ? monto : parseFloat(String(monto).replace(/,/g, ''));
             currentModalCotiz = cotiz;
 
             document.getElementById('modalVoucherCotiz').textContent = cotiz;
             document.getElementById('modalVoucherCliente').textContent = cliente;
-            document.getElementById('modalVoucherMonto').textContent = 'S/ ' + monto;
+            document.getElementById('modalVoucherMonto').textContent = 'S/ ' + currentModalMonto.toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('modalVoucherOp').textContent = op;
             document.getElementById('modalVoucherAsesor').textContent = asesor;
+
+            if (imgUrl) {
+                document.getElementById('modalVoucherImg').src = imgUrl;
+            }
 
             // Si es un pago ya aprobado (id = 0), ocultar botones de acción
             const actionsBox = document.getElementById('modalVoucherActions');
@@ -2300,9 +2304,122 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.getElementById('modalVisorVoucher').classList.add('open');
         }
 
+        // CARGAR BANDEJA DE PAGOS EN TIEMPO REAL DESDE EL BACKEND
+        function cargarPagosReporteria() {
+            fetch('crm_backend.php?action=listar_pagos')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.pagos) return;
+                const tbody = document.getElementById('valTableTbody');
+                const tbodyHist = document.getElementById('historialValidadosTbody');
+                const rightAlertsBox = document.getElementById('boxRightAlerts');
+
+                if (tbody) tbody.innerHTML = '';
+                if (tbodyHist) tbodyHist.innerHTML = '';
+                if (rightAlertsBox) rightAlertsBox.innerHTML = '';
+
+                data.pagos.forEach(p => {
+                    const isAceptado = (p.estado === 'Aceptado');
+                    const isObservado = (p.estado === 'Observado');
+                    const montoFmt = parseFloat(p.monto).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+                    // Si está aceptado, agregarlo al historial de aceptados
+                    if (isAceptado && tbodyHist) {
+                        const trHist = document.createElement('tr');
+                        trHist.innerHTML = `
+                            <td><strong>${p.nro_factura}</strong></td>
+                            <td>${p.cliente}</td>
+                            <td><strong>S/ ${montoFmt}</strong></td>
+                            <td>${p.banco} #${p.nro_operacion}</td>
+                            <td>${p.validador || 'Rodrigo Alonso'}</td>
+                            <td>${p.fecha_validacion || p.fecha}</td>
+                            <td><span class="badge-status-accepted">✅ Pago Aceptado</span></td>
+                            <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.asesor}', 0, '${p.voucher_url}')">Ver</button></td>
+                        `;
+                        tbodyHist.appendChild(trHist);
+                    }
+
+                    // Bandeja de validación
+                    if (tbody) {
+                        let badge = `<span class="badge-status-pending" id="badge-pago-${p.id}"><i class="fa-solid fa-hourglass-start"></i> Por Confirmar</span>`;
+                        let actions = `
+                            <div style="display:flex; gap:6px; justify-content:center;">
+                                <button class="btn-confirm-direct" onclick="confirmarPagoEnFila(${p.id}, ${p.monto}, '${p.nro_factura}')">
+                                    <i class="fa-solid fa-check"></i> Aceptar
+                                </button>
+                                <button class="btn-observe-direct" onclick="observarPagoEnFila(${p.id}, '${p.nro_factura}')">
+                                    <i class="fa-solid fa-circle-exclamation"></i> Observar
+                                </button>
+                            </div>
+                        `;
+
+                        if (isAceptado) {
+                            badge = '<span class="badge-status-accepted"><i class="fa-solid fa-check-circle"></i> Aceptado</span>';
+                            actions = '<span style="color:#059669; font-weight:700; font-size:0.75rem;"><i class="fa-solid fa-check-double"></i> Pago Aprobado</span>';
+                        } else if (isObservado) {
+                            badge = '<span class="badge-status-observed"><i class="fa-solid fa-triangle-exclamation"></i> Observado</span>';
+                            actions = `<span style="color:#DC2626; font-size:0.72rem; font-weight:600;"><i class="fa-solid fa-circle-exclamation"></i> ${p.motivo_observacion || 'Observado'}</span>`;
+                        }
+
+                        const tr = document.createElement('tr');
+                        tr.id = `row-pago-${p.id}`;
+                        tr.setAttribute('data-banco', p.banco);
+                        tr.innerHTML = `
+                            <td><strong>${p.nro_factura}</strong></td>
+                            <td><i class="fa-solid fa-user-tie" style="color:var(--accent-green);"></i> ${p.asesor}</td>
+                            <td>
+                                <strong>${p.cliente}</strong><br>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">${p.ruc ? 'RUC: ' + p.ruc : 'Sin RUC'}</span>
+                            </td>
+                            <td><strong style="color:var(--text-dark); font-size:0.95rem;">S/ ${montoFmt}</strong></td>
+                            <td><span style="background:#002A8F; color:#FFF; padding:3px 8px; border-radius:8px; font-size:0.72rem; font-weight:700;">${p.banco} #${p.nro_operacion}</span></td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <img src="${p.voucher_url}" class="voucher-thumb-small" onerror="this.src='https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=150&q=80'" onclick="abrirVisorVoucher('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.asesor}', ${isAceptado ? 0 : p.id}, '${p.voucher_url}')" alt="Voucher">
+                                    <span style="font-size:0.75rem; color:var(--accent-green-dark); cursor:pointer; font-weight:600;" onclick="abrirVisorVoucher('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.asesor}', ${isAceptado ? 0 : p.id}, '${p.voucher_url}')">Ver Voucher</span>
+                                </div>
+                            </td>
+                            <td>${badge}</td>
+                            <td>${actions}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+
+                    // Si está pendiente, agregar a la barra lateral derecha
+                    if (!isAceptado && rightAlertsBox) {
+                        const alertItem = document.createElement('div');
+                        alertItem.className = 'pending-urgent-card';
+                        alertItem.onclick = () => cambiarVistaReporteria('validacion');
+                        alertItem.innerHTML = `
+                            <div class="pending-urgent-meta">
+                                <h5>${p.cliente}</h5>
+                                <p>S/ ${montoFmt} • ${p.banco} #${p.nro_operacion}</p>
+                            </div>
+                            <span style="color:var(--accent-green-dark); font-size:0.75rem; font-weight:700;">Revisar →</span>
+                        `;
+                        rightAlertsBox.appendChild(alertItem);
+                    }
+                });
+
+                // Actualizar métricas y contadores
+                if (data.stats) {
+                    pagosPendientesCount = data.stats.pendientes;
+                    totalValidadasMes = data.stats.total_mes;
+                    totalValidadasHoy = data.stats.validado_hoy;
+
+                    document.getElementById('badgeSidePending').textContent = pagosPendientesCount;
+                    document.getElementById('badgeRightPending').textContent = `${pagosPendientesCount} pendientes`;
+                    document.getElementById('kpiPagosPendientes').textContent = pagosPendientesCount;
+                    document.getElementById('kpiTotalVentas').textContent = 'S/ ' + totalValidadasMes.toLocaleString('es-PE', {minimumFractionDigits: 0});
+                    document.getElementById('kpiTotalHoy').textContent = 'S/ ' + totalValidadasHoy.toLocaleString('es-PE', {minimumFractionDigits: 0});
+                }
+            })
+            .catch(err => console.log('Error listar reporteria:', err));
+        }
+
         // ACEPTAR PAGO DIRECTO
         function confirmarPagoEnFila(id, monto, cotiz) {
-            if (!confirm(`¿Confirmar y conciliar el pago de S/ ${monto.toLocaleString()} para la cotización ${cotiz}?`)) return;
+            if (!confirm(`¿Confirmar y conciliar el pago de S/ ${parseFloat(monto).toLocaleString()} para la factura ${cotiz}?`)) return;
 
             ejecutarAprobacionPago(id, monto, cotiz);
         }
@@ -2315,7 +2432,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         function ejecutarAprobacionPago(id, monto, cotiz) {
-            // Llamada AJAX al backend de reportes.php
             const formData = new FormData();
             formData.append('action', 'confirmar_pago');
             formData.append('pago_id', id);
@@ -2323,63 +2439,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formData.append('cotizacion', cotiz);
             formData.append('validador', 'Rodrigo Alonso (Reportería)');
 
-            fetch('reportes.php', {
+            fetch('crm_backend.php', {
                 method: 'POST',
                 body: formData
             })
             .then(res => res.json())
             .then(data => {
-                // Actualizar fila
-                const row = document.getElementById(`row-pago-${id}`);
-                if (row) {
-                    const badge = document.getElementById(`badge-pago-${id}`);
-                    if (badge) {
-                        badge.className = 'badge-status-accepted';
-                        badge.innerHTML = '<i class="fa-solid fa-check-circle"></i> Aceptado';
-                    }
-                    const actionCell = row.cells[row.cells.length - 1];
-                    actionCell.innerHTML = '<span style="color:#059669; font-weight:700; font-size:0.75rem;"><i class="fa-solid fa-check-double"></i> Pago Aprobado</span>';
-                }
-
-                // Reducir contador pendientes
-                pagosPendientesCount = Math.max(0, pagosPendientesCount - 1);
-                document.getElementById('badgeSidePending').textContent = pagosPendientesCount;
-                document.getElementById('badgeRightPending').textContent = `${pagosPendientesCount} pendientes`;
-                document.getElementById('kpiPagosPendientes').textContent = pagosPendientesCount;
-
-                // Sumar al total
-                totalValidadasMes += monto;
-                totalValidadasHoy += monto;
-                document.getElementById('kpiTotalVentas').textContent = 'S/ ' + totalValidadasMes.toLocaleString('es-PE', {minimumFractionDigits: 0});
-                document.getElementById('kpiTotalHoy').textContent = 'S/ ' + totalValidadasHoy.toLocaleString('es-PE', {minimumFractionDigits: 0});
-
-                // Agregar al historial de aceptados
-                const tbodyHist = document.getElementById('historialValidadosTbody');
-                if (tbodyHist) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>${cotiz}</strong></td>
-                        <td>Cliente Validado</td>
-                        <td><strong>S/ ${monto.toLocaleString('es-PE', {minimumFractionDigits: 2})}</strong></td>
-                        <td>Conciliado</td>
-                        <td>Rodrigo Alonso</td>
-                        <td>Hoy (Hace un momento)</td>
-                        <td><span class="badge-status-accepted">✅ Pago Aceptado</span></td>
-                        <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('${cotiz}', 'Cliente Validado', '${monto}', 'Conciliado', 'Ventas', 0)">Ver</button></td>
-                    `;
-                    tbodyHist.insertBefore(tr, tbodyHist.firstChild);
-                }
-
                 alert(`✅ ¡Pago de ${cotiz} confirmado exitosamente!\nSe actualizó la base de datos y se notificó al área de ventas para el despacho.`);
+                cargarPagosReporteria();
             })
             .catch(err => {
-                alert('Pago aceptado en vista local.');
+                alert('Pago aceptado localmente.');
+                cargarPagosReporteria();
             });
         }
 
         // OBSERVAR PAGO
         function observarPagoEnFila(id, cotiz) {
-            const motivo = prompt(`Ingrese el motivo de observación para la cotización ${cotiz}:`, 'Comprobante no coincide con extracto bancario');
+            const motivo = prompt(`Ingrese el motivo de observación para ${cotiz}:`, 'Comprobante no coincide con extracto bancario');
             if (!motivo) return;
 
             const formData = new FormData();
@@ -2388,23 +2465,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formData.append('cotizacion', cotiz);
             formData.append('motivo', motivo);
 
-            fetch('reportes.php', {
+            fetch('crm_backend.php', {
                 method: 'POST',
                 body: formData
             })
             .then(res => res.json())
             .then(data => {
-                const row = document.getElementById(`row-pago-${id}`);
-                if (row) {
-                    const badge = document.getElementById(`badge-pago-${id}`);
-                    if (badge) {
-                        badge.className = 'badge-status-observed';
-                        badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Observado';
-                    }
-                    const actionCell = row.cells[row.cells.length - 1];
-                    actionCell.innerHTML = `<span style="color:#DC2626; font-size:0.72rem; font-weight:600;"><i class="fa-solid fa-circle-exclamation"></i> Observado: ${motivo}</span>`;
-                }
                 alert(`⚠️ Se marcó el pago como Observado. Se envió la notificación de corrección al asesor de ventas.`);
+                cargarPagosReporteria();
+            })
+            .catch(err => {
+                alert('Pago marcado como observado.');
+                cargarPagosReporteria();
             });
         }
 
@@ -2510,6 +2582,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             link.click();
             document.body.removeChild(link);
         }
+
+        // Cargar pagos de reportería al iniciar y cada 5 segundos
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarPagosReporteria();
+            setInterval(cargarPagosReporteria, 5000);
+        });
     </script>
 </body>
 </html>

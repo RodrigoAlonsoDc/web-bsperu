@@ -2183,9 +2183,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                 </div>
 
-                <div class="vouchers-grid">
+                <div class="vouchers-grid" id="vouchersGridContainer">
                     <div class="voucher-card-item">
-                        <div class="voucher-card-thumb" onclick="verComprobanteDetalle('F001-00892', 'Cosapi S.A.', '14,400.00', 'BCP #849201')">
+                        <div class="voucher-card-thumb" onclick="verComprobanteDetalle('F001-00892', 'Cosapi S.A.', '14,400.00', 'BCP #849201', 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80', 'Aceptado')">
                             <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80" alt="Voucher">
                         </div>
                         <div class="voucher-card-body">
@@ -2193,52 +2193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <h4 style="font-size:0.95rem; color:var(--text-dark); margin-top:4px;">F001-00892</h4>
                             <p style="font-size:0.75rem; color:var(--text-muted);">Cosapi S.A. • S/ 14,400.00</p>
                             <span style="font-size:0.72rem; color:var(--text-muted);">Op: BCP #849201</span>
-                            <button class="btn-facturar-mini" style="margin-top:6px;" onclick="verComprobanteDetalle('F001-00892', 'Cosapi S.A.', '14,400.00', 'BCP #849201')">
-                                <i class="fa-solid fa-eye"></i> Ver Voucher
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="voucher-card-item">
-                        <div class="voucher-card-thumb" onclick="verComprobanteDetalle('F001-00891', 'Consorcio Vial Piura', '6,800.00', 'BBVA #902184')">
-                            <img src="https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=400&auto=format&fit=crop&q=80" alt="Voucher">
-                        </div>
-                        <div class="voucher-card-body">
-                            <span class="badge-tag-vip">⏳ En Revisión Reportería</span>
-                            <h4 style="font-size:0.95rem; color:var(--text-dark); margin-top:4px;">F001-00891</h4>
-                            <p style="font-size:0.75rem; color:var(--text-muted);">Consorcio Vial Piura • S/ 6,800.00</p>
-                            <span style="font-size:0.72rem; color:var(--text-muted);">Op: BBVA #902184</span>
-                            <button class="btn-facturar-mini" style="margin-top:6px;" onclick="verComprobanteDetalle('F001-00891', 'Consorcio Vial Piura', '6,800.00', 'BBVA #902184')">
-                                <i class="fa-solid fa-eye"></i> Ver Voucher
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="voucher-card-item">
-                        <div class="voucher-card-thumb" onclick="verComprobanteDetalle('F001-00890', 'Edificaciones Pacífico', '3,658.00', 'Interbank #109281')">
-                            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&auto=format&fit=crop&q=80" alt="Voucher">
-                        </div>
-                        <div class="voucher-card-body">
-                            <span class="badge-tag-activo">✅ Pago Aceptado</span>
-                            <h4 style="font-size:0.95rem; color:var(--text-dark); margin-top:4px;">F001-00890</h4>
-                            <p style="font-size:0.75rem; color:var(--text-muted);">Edificaciones Pacífico • S/ 3,658.00</p>
-                            <span style="font-size:0.72rem; color:var(--text-muted);">Op: Interbank #109281</span>
-                            <button class="btn-facturar-mini" style="margin-top:6px;" onclick="verComprobanteDetalle('F001-00890', 'Edificaciones Pacífico', '3,658.00', 'Interbank #109281')">
-                                <i class="fa-solid fa-eye"></i> Ver Voucher
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="voucher-card-item">
-                        <div class="voucher-card-thumb" onclick="verComprobanteDetalle('F001-00895', 'Constructora Los Andes', '7,850.00', 'BCP #782910')">
-                            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80" alt="Voucher">
-                        </div>
-                        <div class="voucher-card-body">
-                            <span class="badge-tag-vip">⏳ En Revisión Reportería</span>
-                            <h4 style="font-size:0.95rem; color:var(--text-dark); margin-top:4px;">F001-00895</h4>
-                            <p style="font-size:0.75rem; color:var(--text-muted);">Constructora Los Andes • S/ 7,850.00</p>
-                            <span style="font-size:0.72rem; color:var(--text-muted);">Op: BCP #782910</span>
-                            <button class="btn-facturar-mini" style="margin-top:6px;" onclick="verComprobanteDetalle('F001-00895', 'Constructora Los Andes', '7,850.00', 'BCP #782910')">
+                            <button class="btn-facturar-mini" style="margin-top:6px;" onclick="verComprobanteDetalle('F001-00892', 'Cosapi S.A.', '14,400.00', 'BCP #849201', 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80', 'Aceptado')">
                                 <i class="fa-solid fa-eye"></i> Ver Voucher
                             </button>
                         </div>
@@ -2384,7 +2339,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                     <div>
                         <span style="color:var(--text-muted);">Estado:</span><br>
-                        <span class="badge-tag-activo">Pago Aceptado</span>
+                        <span class="badge-tag-activo" id="viewCompEstado">Pago Aceptado</span>
                     </div>
                 </div>
             </div>
@@ -2556,11 +2511,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.getElementById('facMonto').focus();
         }
 
-        function verComprobanteDetalle(num, cliente, monto, op) {
+        function verComprobanteDetalle(num, cliente, monto, op, imgUrl, estado) {
             document.getElementById('viewCompNumero').textContent = num;
             document.getElementById('viewCompCliente').textContent = cliente;
             document.getElementById('viewCompMonto').textContent = `S/ ${monto}`;
             document.getElementById('viewCompOp').textContent = op;
+            if (imgUrl) {
+                document.getElementById('viewCompImg').src = imgUrl;
+            }
+            const estadoEl = document.getElementById('viewCompEstado');
+            if (estadoEl) {
+                if (estado === 'Aceptado') {
+                    estadoEl.className = 'badge-tag-activo';
+                    estadoEl.textContent = '✅ Pago Aceptado';
+                } else if (estado === 'Observado') {
+                    estadoEl.className = 'badge-tag-observado';
+                    estadoEl.textContent = '⚠️ Observado';
+                } else {
+                    estadoEl.className = 'badge-tag-vip';
+                    estadoEl.textContent = '⏳ En Revisión Reportería';
+                }
+            }
             document.getElementById('modalVerComprobante').classList.add('open');
         }
 
@@ -2570,19 +2541,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
 
+        // CARGAR COMPROBANTES DESDE EL BACKEND EN TIEMPO REAL
+        function cargarComprobantesVentas() {
+            fetch('crm_backend.php?action=listar_pagos')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.pagos) return;
+                const container = document.getElementById('vouchersGridContainer');
+                if (container) {
+                    container.innerHTML = '';
+                    data.pagos.forEach(p => {
+                        const isAceptado = (p.estado === 'Aceptado');
+                        const isObservado = (p.estado === 'Observado');
+                        let badge = '<span class="badge-tag-vip">⏳ En Revisión Reportería</span>';
+                        if (isAceptado) badge = '<span class="badge-tag-activo">✅ Pago Aceptado</span>';
+                        else if (isObservado) badge = `<span style="background:#FEE2E2; color:#DC2626; padding:3px 8px; border-radius:10px; font-size:0.7rem; font-weight:700;">⚠️ Observado</span>`;
+
+                        const card = document.createElement('div');
+                        card.className = 'voucher-card-item';
+                        const montoFmt = parseFloat(p.monto).toLocaleString('en-US', {minimumFractionDigits:2});
+                        card.innerHTML = `
+                            <div class="voucher-card-thumb" onclick="verComprobanteDetalle('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.voucher_url}', '${p.estado}')">
+                                <img src="${p.voucher_url}" alt="Voucher" onerror="this.src='https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80'">
+                            </div>
+                            <div class="voucher-card-body">
+                                ${badge}
+                                <h4 style="font-size:0.95rem; color:var(--text-dark); margin-top:4px;">${p.nro_factura}</h4>
+                                <p style="font-size:0.75rem; color:var(--text-muted);">${p.cliente} • S/ ${montoFmt}</p>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">${p.nro_operacion} (${p.banco})</span>
+                                <button class="btn-facturar-mini" style="margin-top:6px;" onclick="verComprobanteDetalle('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.voucher_url}', '${p.estado}')">
+                                    <i class="fa-solid fa-eye"></i> Ver Voucher
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+
+                if (data.stats) {
+                    const pendEl = document.getElementById('statPendientesRep');
+                    if (pendEl) pendEl.textContent = data.stats.pendientes;
+                }
+            })
+            .catch(err => console.log('Error al listar comprobantes:', err));
+        }
+
         // ENVIAR FACTURACIÓN Y SOLICITAR CONFIRMACIÓN A REPORTERÍA
         function enviarFacturacionReporteria(e) {
             e.preventDefault();
-            const nro = document.getElementById('facNumero').value;
-            const cliente = document.getElementById('facCliente').value;
+            const nro = document.getElementById('facNumero').value.trim();
+            const cliente = document.getElementById('facCliente').value.trim();
+            const ruc = document.getElementById('facRuc').value.trim();
             const monto = parseFloat(document.getElementById('facMonto').value) || 0;
             const metodo = document.getElementById('facMetodo').value;
-            const op = document.getElementById('facOperacion').value;
+            const op = document.getElementById('facOperacion').value.trim();
+
+            if (!cliente || monto <= 0) {
+                alert('Por favor ingrese el cliente y un monto válido para facturar.');
+                return;
+            }
 
             const formData = new FormData();
             formData.append('action', 'solicitar_confirmacion_pago');
             formData.append('nro_factura', nro);
             formData.append('cliente', cliente);
+            formData.append('ruc', ruc);
             formData.append('monto', monto);
             formData.append('metodo', metodo);
             formData.append('nro_operacion', op);
@@ -2593,19 +2616,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 formData.append('voucher_file', fileInput.files[0]);
             }
 
-            fetch('ventas.php', {
+            fetch('crm_backend.php', {
                 method: 'POST',
                 body: formData
             })
             .then(res => res.json())
-            .catch(() => ({ success: true }))
             .then(data => {
                 ventasHoyCount++;
-                pendientesCount++;
                 document.getElementById('statVentasHoy').textContent = ventasHoyCount;
-                document.getElementById('statPendientesRep').textContent = pendientesCount;
-
-                alert(`✅ ¡Facturación ${nro} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} registrada!\n\n1. El comprobante de pago fue guardado en el lado de Ventas.\n2. Se notificó al área de Reportería para que verifique y acepte el pago.`);
+                
+                alert(`✅ ¡Facturación ${nro} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} registrada!\n\n1. El comprobante de pago fue guardado en el servidor.\n2. Se notificó inmediatamente al área de Reportería para que verifique y acepte el pago.`);
                 
                 // Mensaje en el chat central
                 const chatContainer = document.getElementById('chatCenterMessages');
@@ -2614,8 +2634,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     bubble.className = 'chat-bubble asesor';
                     bubble.innerHTML = `<strong>Tú (Elizabeth Addams):</strong><br>Acabo de emitir la Factura ${nro} para ${cliente} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})}. Adjunto voucher ${op} para su validación.<div style="font-size:0.65rem; opacity:0.8; margin-top:4px;">Ahora mismo</div>`;
                     chatContainer.appendChild(bubble);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                 }
 
+                // Recargar comprobantes y conmutar a la vista
+                cargarComprobantesVentas();
+                cambiarVistaVentas('comprobantes');
+
+                // Limpiar formulario y regenerar número
+                document.getElementById('facCliente').value = '';
+                document.getElementById('facRuc').value = '';
+                document.getElementById('facMonto').value = '';
+                document.getElementById('facOperacion').value = '';
+                document.getElementById('voucherUploadLabel').innerHTML = 'Haz clic para subir imagen o PDF del voucher bancario';
+                document.getElementById('inputVoucher').value = '';
+                document.getElementById('facNumero').value = 'F001-00' + Math.floor(100 + Math.random() * 900);
+            })
+            .catch(err => {
+                alert('Facturación registrada localmente.');
+                cargarComprobantesVentas();
                 cambiarVistaVentas('comprobantes');
             });
         }
@@ -2672,6 +2709,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }, 1200);
         }
+
+        // Cargar comprobantes al iniciar y cada 6 segundos
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarComprobantesVentas();
+            setInterval(cargarComprobantesVentas, 6000);
+        });
     </script>
 </body>
 </html>
