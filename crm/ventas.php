@@ -2384,19 +2384,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
                 <!-- FORMULARIO DESPLEGABLE: REGISTRAR NUEVO CLIENTE -->
                 <div class="form-new-cliente-box" id="boxFormNuevoCliente">
-                    <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-dark); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                        <i class="fa-solid fa-building-circle-check" style="color:var(--accent-tan);"></i> Registrar Nuevo Cliente a mi Cartera
-                    </h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                        <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-dark); margin:0; display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-building-circle-check" style="color:var(--accent-tan);"></i> Registrar Nuevo Cliente a mi Cartera
+                        </h4>
+                        <span style="font-size:0.75rem; color:var(--accent-tan); font-weight:600;">
+                            ⚡ Ingresa DNI o RUC y haz clic en la lupa para jalar Razón Social y Dirección desde SUNAT / RENIEC
+                        </span>
+                    </div>
                     <form onsubmit="guardarNuevoCliente(event)">
                         <div class="form-grid">
                             <div class="form-row">
-                                <div class="form-group">
+                                <div class="form-group" style="flex:1;">
+                                    <label>RUC / DNI (11 u 8 dígitos) *</label>
+                                    <div style="display:flex; gap:8px;">
+                                        <input type="text" id="newCliRuc" required maxlength="11" placeholder="Ej: 20601928471 o DNI"
+                                               style="flex:1;"
+                                               onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarClienteNuevoPorDocumento(); }">
+                                        <button type="button" id="btnLupaNuevoCliente" class="btn-pill-white primary"
+                                                onclick="buscarClienteNuevoPorDocumento()"
+                                                style="background:var(--accent-tan); border-color:var(--accent-tan); color:#161719; font-weight:700; padding:0 16px; display:flex; align-items:center; gap:6px; cursor:pointer;"
+                                                title="Buscar y jalar datos de SUNAT / RENIEC">
+                                            <i class="fa-solid fa-magnifying-glass" id="iconLupaNuevoCliente"></i>
+                                            <span>Buscar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="flex:2;">
                                     <label>Razón Social / Empresa *</label>
                                     <input type="text" id="newCliEmpresa" required placeholder="Ej: Constructora San Jerónimo S.A.C.">
-                                </div>
-                                <div class="form-group">
-                                    <label>RUC / DNI (11 u 8 dígitos) *</label>
-                                    <input type="text" id="newCliRuc" required maxlength="11" placeholder="Ej: 20601928471">
                                 </div>
                             </div>
 
@@ -3856,8 +3872,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             } else {
                 box.style.display = 'block';
                 btnText.textContent = 'Ocultar Formulario';
-                document.getElementById('newCliEmpresa').focus();
+                document.getElementById('newCliRuc').focus();
             }
+        }
+
+        // BÚSQUEDA Y JALADO EN FORMULARIO "REGISTRAR NUEVO CLIENTE" (LUPA SUNAT / RENIEC)
+        function buscarClienteNuevoPorDocumento() {
+            const inputRuc = document.getElementById('newCliRuc');
+            const doc = inputRuc.value.trim().replace(/[^0-9]/g, '');
+
+            if (!doc) {
+                mostrarToast('warning', 'DNI o RUC Requerido', 'Por favor ingresa un número de DNI (8 dígitos) o RUC (11 dígitos).');
+                inputRuc.focus();
+                return;
+            }
+
+            const btn = document.getElementById('btnLupaNuevoCliente');
+            const icon = document.getElementById('iconLupaNuevoCliente');
+            if (icon) icon.className = 'fa-solid fa-spinner fa-spin';
+            if (btn) btn.disabled = true;
+
+            const resetBtn = () => {
+                if (icon) icon.className = 'fa-solid fa-magnifying-glass';
+                if (btn) btn.disabled = false;
+            };
+
+            // 1. Revisar si ya existe en Cartera local
+            const existe = CARTERA_CLIENTES.find(c => (c.ruc || '').replace(/[^0-9]/g, '') === doc);
+            if (existe) {
+                document.getElementById('newCliEmpresa').value = existe.razon || '';
+                if (existe.contacto) document.getElementById('newCliContacto').value = existe.contacto;
+                if (existe.telefono) document.getElementById('newCliTelefono').value = existe.telefono;
+                if (existe.email) document.getElementById('newCliEmail').value = existe.email;
+                if (existe.direccion) document.getElementById('newCliDireccion').value = existe.direccion;
+                resetBtn();
+                mostrarToast('info', 'Cliente ya registrado', `Este cliente ya se encuentra en tu cartera como "${existe.razon}".`);
+                return;
+            }
+
+            // 2. Consultar al backend (SUNAT / RENIEC)
+            fetch(`crm_backend.php?action=consultar_documento&numero=${encodeURIComponent(doc)}`)
+                .then(res => res.json())
+                .then(data => {
+                    resetBtn();
+                    if (data.success && data.cliente) {
+                        const cl = data.cliente;
+                        document.getElementById('newCliEmpresa').value = cl.razon || '';
+                        if (cl.direccion) document.getElementById('newCliDireccion').value = cl.direccion;
+                        if (cl.contacto && cl.contacto !== 'Encargado de Compras') document.getElementById('newCliContacto').value = cl.contacto;
+                        
+                        const fuente = data.fuente === 'sunat' ? 'SUNAT' : (data.fuente === 'reniec' ? 'RENIEC' : 'Base de datos');
+                        mostrarToast('success', `Datos Jalados (${fuente})`, `Se obtuvo automáticamente: ${cl.razon}`);
+                        document.getElementById('newCliTelefono').focus();
+                    } else {
+                        mostrarToast('warning', 'Sin resultados automáticos', data.error || 'No se encontraron datos automáticos. Puedes completarlos manualmente.');
+                        document.getElementById('newCliEmpresa').focus();
+                    }
+                })
+                .catch(err => {
+                    resetBtn();
+                    console.error(err);
+                    mostrarToast('warning', 'Aviso de Conexión', 'No se pudo consultar el servicio externo. Puedes completar los datos manualmente.');
+                    document.getElementById('newCliEmpresa').focus();
+                });
         }
 
         // GUARDAR NUEVO CLIENTE EN CARTERA
@@ -3917,6 +3994,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.getElementById('countFiltroTodos').textContent = totalClientesCartera;
 
             // Persistir permanentemente en el servidor
+            const dir = document.getElementById('newCliDireccion').value.trim();
+            const email = document.getElementById('newCliEmail').value.trim();
+
             const formDataCli = new FormData();
             formDataCli.append('action', 'guardar_cliente');
             formDataCli.append('razon', empresa);
@@ -3924,6 +4004,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formDataCli.append('contacto', contacto);
             formDataCli.append('telefono', tel);
             formDataCli.append('categoria', cat);
+            formDataCli.append('direccion', dir);
+            formDataCli.append('email', email);
 
             fetch('crm_backend.php', {
                 method: 'POST',
