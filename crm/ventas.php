@@ -1932,24 +1932,9 @@ if (file_exists($fileCotizPath)) {
                 <div id="panelNuevaCotizacion">
                     <div class="cotiz-sheet">
                         
-                        <!-- ENCABEZADO DE LA HOJA OFICIAL -->
-                        <div class="cotiz-card-header">
-                            <div style="display:flex; align-items:center; gap:16px;">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <div style="width:44px; height:44px; border-radius:12px; background:#161719; display:flex; align-items:center; justify-content:center; color:var(--accent-tan); font-weight:800; font-size:1.1rem; border:1px solid var(--accent-tan);">
-                                        BSP
-                                    </div>
-                                    <div>
-                                        <h3 style="font-family:'Outfit',sans-serif; font-size:1.2rem; font-weight:800; margin:0; color:var(--text-dark);">BUILDING SYSTEMS PERÚ</h3>
-                                        <span style="font-size:0.72rem; color:var(--text-muted);">RUC: 20609793806 • Sucursal Chorrillos</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Correlativo y Fecha automáticos del sistema (ocultos de la interfaz visual) -->
-                            <input type="hidden" id="cotizCodigo" value="<?php echo htmlspecialchars($siguienteCodigoCotiz); ?>">
-                            <input type="hidden" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>">
-                        </div>
+                        <!-- Campos del sistema internos (ocultos) -->
+                        <input type="hidden" id="cotizCodigo" value="<?php echo htmlspecialchars($siguienteCodigoCotiz); ?>">
+                        <input type="hidden" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>">
 
                         <!-- BUSCADOR EXCLUSIVO EN CARTERA POR DNI O RUC -->
                         <div>
