@@ -92,17 +92,17 @@ if (!file_exists($chatFile)) {
     $initialChat = [
         [
             'id' => 1,
-            'remitente' => 'Elizabeth Addams',
+            'remitente' => 'Endrina',
             'rol' => 'Ventas',
-            'mensaje' => 'Hola Rodrigo, envié las facturas del día para su validación bancaria.',
+            'mensaje' => 'Hola Nayeli, envié las facturas del día para su validación bancaria.',
             'hora' => '11:42 AM',
             'tipo' => 'texto'
         ],
         [
             'id' => 2,
-            'remitente' => 'Rodrigo Alonso',
+            'remitente' => 'Nayeli',
             'rol' => 'Reportería',
-            'mensaje' => 'Recibido Elizabeth, estamos revisando los extractos bancarios en BCP y BBVA. Te confirmamos por este medio.',
+            'mensaje' => 'Recibido Endrina, estamos revisando los extractos bancarios en BCP y BBVA. Te confirmamos por este medio.',
             'hora' => '11:45 AM',
             'tipo' => 'texto'
         ]
@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $monto = floatval($_POST['monto'] ?? 0);
         $metodo = trim($_POST['metodo'] ?? 'Transferencia BCP');
         $nro_operacion = trim($_POST['nro_operacion'] ?? ('Op-' . rand(100000, 999999)));
-        $asesor = trim($_POST['asesor'] ?? 'Elizabeth Addams');
+        $asesor = trim($_POST['asesor'] ?? 'Endrina');
         $fecha = date('Y-m-d H:i:s');
         
         // Detectar banco del método
@@ -295,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
     if ($action === 'confirmar_pago') {
         header('Content-Type: application/json');
         $pago_id = intval($_POST['pago_id'] ?? 0);
-        $validador = $_POST['validador'] ?? 'Rodrigo Alonso (Reportería)';
+        $validador = $_POST['validador'] ?? 'Nayeli (Reportería)';
         $fecha = date('Y-m-d H:i:s');
 
         // Actualizar MySQL si existe
@@ -325,7 +325,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         // Notificación automática en el chat para el vendedor
         if ($pagoActualizado) {
             agregarMensajeChat([
-                'remitente' => 'Rodrigo Alonso',
+                'remitente' => 'Nayeli',
                 'rol' => 'Reportería',
                 'mensaje' => "✅ PAGO ACEPTADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) por S/ " . number_format($pagoActualizado['monto'], 2) . " ha sido verificada en {$pagoActualizado['banco']}. Pedido liberado para despacho.",
                 'hora' => date('H:i'),
@@ -346,7 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         header('Content-Type: application/json');
         $pago_id = intval($_POST['pago_id'] ?? 0);
         $motivo = trim($_POST['motivo'] ?? 'Comprobante no coincide con extracto bancario');
-        $validador = $_POST['validador'] ?? 'Rodrigo Alonso (Reportería)';
+        $validador = $_POST['validador'] ?? 'Nayeli (Reportería)';
         $fecha = date('Y-m-d H:i:s');
 
         if ($db && $pago_id > 0) {
@@ -373,7 +373,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         // Notificación automática en el chat de observación
         if ($pagoActualizado) {
             agregarMensajeChat([
-                'remitente' => 'Rodrigo Alonso',
+                'remitente' => 'Nayeli',
                 'rol' => 'Reportería',
                 'mensaje' => "⚠️ PAGO OBSERVADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) tiene la siguiente observación: \"{$motivo}\". Por favor rectificar con el cliente.",
                 'hora' => date('H:i'),

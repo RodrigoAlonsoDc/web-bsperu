@@ -122,9 +122,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
     <div id="image_track" data-mouse-down-at="0" data-prev-percentage="0">
         
-        <div class="module-card" data-url="#">
-            <img class="image" src="https://images.unsplash.com/photo-1504275107627-0c2ba7a43dba?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Comercial" draggable="false" />
-            <div class="module-title">COMERCIAL</div>
+        <div class="module-card" data-url="ventas.php">
+            <img class="image" src="https://images.unsplash.com/photo-1504275107627-0c2ba7a43dba?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Ventas - Endrina" draggable="false" />
+            <div class="module-title">VENTAS (ENDRINA)</div>
         </div>
 
         <div class="module-card" data-url="pedidos.php">
@@ -138,8 +138,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         </div>
 
         <div class="module-card" data-url="reportes.php">
-            <img class="image" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Reportes" draggable="false" />
-            <div class="module-title">REPORTES</div>
+            <img class="image" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Reportería - Nayeli" draggable="false" />
+            <div class="module-title">REPORTERÍA (NAYELI)</div>
         </div>
 
     </div>

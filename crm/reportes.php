@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $pago_id = $_POST['pago_id'] ?? 0;
         $monto = floatval($_POST['monto'] ?? 0);
         $cotizacion = $_POST['cotizacion'] ?? '';
-        $validador = $_POST['validador'] ?? 'Rodrigo Alonso (Reportería)';
+        $validador = $_POST['validador'] ?? 'Nayeli (Reportería)';
         $fecha = date('Y-m-d H:i:s');
 
         // Si hay BD activa, actualizar
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($action === 'enviar_chat_asesor') {
         $mensaje = $_POST['mensaje'] ?? '';
         $asesor = $_POST['asesor'] ?? 'Asesor Comercial';
-        $remitente = 'Rodrigo Alonso (Reportería)';
+        $remitente = 'Nayeli (Reportería)';
         $hora = date('H:i');
 
         echo json_encode([
@@ -1315,18 +1315,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <i class="fa-solid fa-building-columns"></i>
                     <span>Metas de Sucursal</span>
                 </div>
-
-                <a href="ventas.php" class="nav-item" style="color:var(--accent-tan);">
-                    <i class="fa-solid fa-table-cells-large"></i>
-                    <span>Ir a Ventas</span>
-                </a>
             </div>
 
             <!-- PERFIL USUARIO -->
-            <div class="user-pill" onclick="alert('Sesión Activa: Rodrigo Alonso\nRol: Especialista de Reportería & Conciliación Financiera BS Perú')">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="user-pill-avatar">
+            <div class="user-pill" onclick="alert('Sesión Activa: Nayeli\nRol: Especialista de Reportería & Conciliación Financiera BS Perú')">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Nayeli" class="user-pill-avatar">
                 <div class="user-pill-info">
-                    <div class="user-pill-name">Rodrigo Alonso</div>
+                    <div class="user-pill-name">Nayeli</div>
                     <div class="user-pill-status">
                         <div class="status-dot"></div>
                         <span>Reportería / En línea</span>
@@ -1356,9 +1351,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <h1 id="pageMainTitle">Dashboard de Reportes & Validación</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-link-ventas" onclick="location.href='ventas.php'">
-                        <i class="fa-solid fa-table-cells-large"></i> Módulo de Ventas
-                    </button>
                     <button class="btn-pill-white" style="background:#FEE2E2; color:#B91C1C; font-size:0.8rem; padding:8px 16px;" onclick="abrirLogoutModal()">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir
                     </button>
@@ -1695,13 +1687,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Elizabeth Addams</strong></td>
+                                <td><strong>Endrina</strong></td>
                                 <td>Sede Lima Central</td>
                                 <td><strong style="color:var(--text-dark);">S/ 18,200.00</strong></td>
                                 <td>5 ventas</td>
                                 <td>18:30 hrs</td>
                                 <td><span class="badge-status-accepted">✅ Cuadre Aprobado</span></td>
-                                <td><button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem;" onclick="alert('Cierre de Elizabeth Addams auditado y conforme sin diferencias.')">Ver Detalle</button></td>
+                                <td><button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem;" onclick="alert('Cierre de Endrina auditado y conforme sin diferencias.')">Ver Detalle</button></td>
                             </tr>
                             <tr>
                                 <td><strong>Maria Gomez</strong></td>
@@ -1769,7 +1761,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>Cosapi S.A.</td>
                                 <td><strong>S/ 14,400.00</strong></td>
                                 <td>BCP #849201</td>
-                                <td>Rodrigo Alonso</td>
+                                <td>Nayeli</td>
                                 <td>Hoy 14:20</td>
                                 <td><span class="badge-status-accepted">✅ Pago Aceptado</span></td>
                                 <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('F001-00892', 'Cosapi S.A.', '14,400.00', 'BCP #849201', 'Maria Gomez', 0)">Ver</button></td>
@@ -1779,17 +1771,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>Graña y Montero S.A.</td>
                                 <td><strong>S/ 28,950.00</strong></td>
                                 <td>BBVA #771920</td>
-                                <td>Rodrigo Alonso</td>
+                                <td>Nayeli</td>
                                 <td>Ayer 16:45</td>
                                 <td><span class="badge-status-accepted">✅ Pago Aceptado</span></td>
-                                <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('F001-00891', 'Graña y Montero S.A.', '28,950.00', 'BBVA #771920', 'Elizabeth Addams', 0)">Ver</button></td>
+                                <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('F001-00891', 'Graña y Montero S.A.', '28,950.00', 'BBVA #771920', 'Endrina', 0)">Ver</button></td>
                             </tr>
                             <tr>
                                 <td><strong>F001-00890</strong></td>
                                 <td>Obrascón Huarte Lain</td>
                                 <td><strong>S/ 9,450.00</strong></td>
                                 <td>Interbank #30198</td>
-                                <td>Rodrigo Alonso</td>
+                                <td>Nayeli</td>
                                 <td>Ayer 11:30</td>
                                 <td><span class="badge-status-accepted">✅ Pago Aceptado</span></td>
                                 <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('F001-00890', 'Obrascón Huarte Lain', '9,450.00', 'Interbank #30198', 'Carlos Ruiz', 0)">Ver</button></td>
@@ -1842,13 +1834,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                         </div>
 
-                        <div class="chat-user-item" onclick="seleccionarAsesorChat('Elizabeth Addams', 'Sede Lima Central', this)">
+                        <div class="chat-user-item" onclick="seleccionarAsesorChat('Endrina', 'Sede Lima Central', this)">
                             <div class="chat-user-avatar">
                                 <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="User">
                                 <div class="chat-user-dot"></div>
                             </div>
                             <div class="chat-user-meta">
-                                <h5>Elizabeth Addams</h5>
+                                <h5>Endrina</h5>
                                 <p>Cierre del día enviado</p>
                             </div>
                         </div>
@@ -1869,12 +1861,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <div class="chat-messages-scroll" id="chatMessagesScroll">
                             <div class="msg-bubble received">
                                 <strong>Maria Gomez:</strong><br>
-                                Hola Rodrigo, acabo de subir el voucher del cliente Cosapi S.A. por S/ 14,400.00 en BCP. ¿Me confirmas por favor para que el almacén empiece a preparar el despacho de los aditivos?
+                                Hola Nayeli, acabo de subir el voucher del cliente Cosapi S.A. por S/ 14,400.00 en BCP. ¿Me confirmas por favor para que el almacén empiece a preparar el despacho de los aditivos?
                                 <span class="msg-time">14:15 hrs</span>
                             </div>
 
                             <div class="msg-bubble sent">
-                                <strong>Rodrigo Alonso (Reportería):</strong><br>
+                                <strong>Nayeli (Reportería):</strong><br>
                                 Hola María, lo tengo en pantalla. Estoy revisando el extracto bancario del BCP con el N° de operación #4829104. En un par de minutos lo confirmo.
                                 <span class="msg-time">14:17 hrs</span>
                             </div>
@@ -1940,7 +1932,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </div>
 
                         <div style="font-size:0.8rem; color:var(--text-muted);">
-                            <strong>Top Asesor:</strong> Elizabeth Addams (S/ 18,200)
+                            <strong>Top Asesor:</strong> Endrina (S/ 18,200)
                         </div>
                     </div>
 
@@ -2124,13 +2116,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <i class="fa-solid fa-comment-dots" style="color:var(--accent-green);"></i>
                     </div>
 
-                    <div class="advisor-online-item" onclick="abrirChatConAsesor('Elizabeth Addams')">
+                    <div class="advisor-online-item" onclick="abrirChatConAsesor('Endrina')">
                         <div class="advisor-avatar-box">
                             <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="User">
                             <div class="advisor-online-dot"></div>
                         </div>
                         <div class="advisor-content">
-                            <h5>Elizabeth Addams</h5>
+                            <h5>Endrina</h5>
                             <p>Lima Central • Activa</p>
                         </div>
                         <i class="fa-solid fa-comment-dots" style="color:var(--accent-green);"></i>
@@ -2194,10 +2186,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </div>
             <h3 style="font-size:1.25rem;">¿Cerrar Sesión de Reportería?</h3>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 20px;">Puedes volver al módulo de ventas o regresar a la tienda de productos.</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 20px;">Sesión activa de Nayeli (Finanzas & Reportería BS Perú).</p>
             <div style="display:flex; flex-direction:column; gap:10px;">
-                <a href="ventas.php" class="btn-pill-white primary" style="justify-content:center; text-decoration:none;">
-                    <i class="fa-solid fa-table-cells-large"></i> Ir al Panel de Ventas (`ventas.php`)
+                <a href="../admin/logout.php" class="btn-pill-white primary" style="justify-content:center; text-decoration:none; background:#DC2626; color:#FFF;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir del Sistema
                 </a>
                 <button class="btn-pill-white" style="justify-content:center;" onclick="cerrarModales()">
                     Permanecer en Reportería
@@ -2379,7 +2371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <td>${p.cliente}</td>
                             <td><strong>S/ ${montoFmt}</strong></td>
                             <td>${p.banco} #${p.nro_operacion}</td>
-                            <td>${p.validador || 'Rodrigo Alonso'}</td>
+                            <td>${p.validador || 'Nayeli'}</td>
                             <td>${p.fecha_validacion || p.fecha}</td>
                             <td><span class="badge-status-accepted">✅ Pago Aceptado</span></td>
                             <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.asesor}', 0, '${p.voucher_url}')">Ver</button></td>
@@ -2485,7 +2477,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formData.append('pago_id', id);
             formData.append('monto', monto);
             formData.append('cotizacion', cotiz);
-            formData.append('validador', 'Rodrigo Alonso (Reportería)');
+            formData.append('validador', 'Nayeli (Reportería)');
 
             fetch('crm_backend.php', {
                 method: 'POST',
@@ -2547,7 +2539,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formData.append('pago_id', currentObsPagoId);
             formData.append('cotizacion', currentObsCotiz);
             formData.append('motivo', motivo);
-            formData.append('validador', 'Rodrigo Alonso (Reportería)');
+            formData.append('validador', 'Nayeli (Reportería)');
 
             fetch('crm_backend.php', {
                 method: 'POST',
@@ -2625,7 +2617,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if (!scrollBox) return;
                 scrollBox.innerHTML = '';
                 data.mensajes.forEach(m => {
-                    const isMio = (m.rol === 'Reportería' || m.remitente.includes('Rodrigo'));
+                    const isMio = (m.rol === 'Reportería' || m.remitente.includes('Nayeli'));
                     const div = document.createElement('div');
                     div.className = `msg-bubble ${isMio ? 'sent' : 'received'}`;
                     div.innerHTML = `
@@ -2647,7 +2639,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             const formData = new FormData();
             formData.append('action', 'enviar_chat');
-            formData.append('remitente', 'Rodrigo Alonso');
+            formData.append('remitente', 'Nayeli');
             formData.append('rol', 'Reportería');
             formData.append('mensaje', msg);
 
@@ -2670,9 +2662,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         function exportarReporteExcel() {
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Cotizacion,Cliente,Monto,Banco,Validador,Estado\n";
-            csvContent += "COT-2026-084,Cosapi S.A.,14400.00,BCP,Rodrigo Alonso,Aceptado\n";
-            csvContent += "COT-2026-085,Consorcio Vial Piura,6800.00,BBVA,Rodrigo Alonso,Aceptado\n";
-            csvContent += "COT-2026-086,Edificaciones Pacifico,3308.00,Interbank,Rodrigo Alonso,Aceptado\n";
+            csvContent += "COT-2026-084,Cosapi S.A.,14400.00,BCP,Nayeli,Aceptado\n";
+            csvContent += "COT-2026-085,Consorcio Vial Piura,6800.00,BBVA,Nayeli,Aceptado\n";
+            csvContent += "COT-2026-086,Edificaciones Pacifico,3308.00,Interbank,Nayeli,Aceptado\n";
 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");

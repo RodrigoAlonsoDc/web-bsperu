@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $monto = floatval($_POST['monto'] ?? 0);
         $metodo = $_POST['metodo'] ?? 'Transferencia BCP';
         $nro_operacion = $_POST['nro_operacion'] ?? '';
-        $asesor = $_POST['asesor'] ?? 'Elizabeth Addams';
+        $asesor = $_POST['asesor'] ?? 'Endrina';
         $fecha = date('Y-m-d H:i:s');
         $voucher_url = $_POST['voucher_url'] ?? 'img/voucher_sample.jpg';
 
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
     // 2. ENVIAR REPORTE DE VENTAS DEL DÍA A REPORTERÍA
     if ($action === 'enviar_ventas_del_dia') {
-        $asesor = $_POST['asesor'] ?? 'Elizabeth Addams';
+        $asesor = $_POST['asesor'] ?? 'Endrina';
         $total_ventas = $_POST['total_ventas'] ?? 0;
         $monto_acumulado = $_POST['monto_acumulado'] ?? '0.00';
         $nota = $_POST['nota'] ?? 'Reporte de ventas del día adjunto con comprobantes validados.';
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     // 3. ENVIAR MENSAJE AL CHAT CON REPORTERÍA
     if ($action === 'enviar_chat_reporteria') {
         $mensaje = $_POST['mensaje'] ?? '';
-        $asesor = $_POST['asesor'] ?? 'Elizabeth Addams';
+        $asesor = $_POST['asesor'] ?? 'Endrina';
         $fecha = date('H:i');
 
         echo json_encode([
@@ -1458,22 +1458,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <i class="fa-solid fa-receipt"></i>
                     <span>Comprobantes</span>
                 </div>
-
-                <!-- ENLACE DIRECTO AL MÓDULO DE REPORTERÍA -->
-                <a href="reportes.php" class="nav-item" style="margin-top: 10px; border: 1px dashed rgba(199, 155, 88, 0.4);" title="Ir al Panel de Reportería & Finanzas">
-                    <i class="fa-solid fa-chart-line" style="color:var(--accent-tan);"></i>
-                    <span style="color:#FFF;">Reportería</span>
-                    <span class="nav-badge" style="background:var(--accent-tan); color:#161719;">Sync</span>
-                </a>
             </div>
 
             <!-- USER CARD BOTTOM -->
-            <div class="user-pill" onclick="alert('Sesión activa: Elizabeth Addams\nAsesora Comercial - BS Perú')">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" alt="Elizabeth" class="user-pill-avatar">
+            <div class="user-pill" onclick="alert('Sesión activa: Endrina\nAsesora Comercial - BS Perú')">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" alt="Endrina" class="user-pill-avatar">
                 <div class="user-pill-info">
-                    <div class="user-pill-name">Elizabeth Addams</div>
+                    <div class="user-pill-name">Endrina</div>
                     <div class="user-pill-status">
-                        <div class="status-dot"></div> Active
+                        <div class="status-dot"></div> Asesora de Ventas
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-right user-pill-chevron"></i>
@@ -1497,19 +1490,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div id="vista-dashboard" class="vista-seccion">
                 <div class="main-header">
                     <div>
-                        <h1 id="viewMainTitle">Dashboard</h1>
+                        <h1 id="viewMainTitle">Dashboard de Ventas</h1>
                     </div>
                     <div class="header-actions">
-                        <a href="reportes.php" class="btn-link-reporteria">
-                            <i class="fa-solid fa-shield-check"></i> Ir a Reportería & Pagos
-                        </a>
+                        <button class="btn-pill-white primary" onclick="cambiarVistaVentas('facturacion')">
+                            <i class="fa-solid fa-plus"></i> Nueva Facturación
+                        </button>
                     </div>
                 </div>
 
                 <!-- WELCOME / HERO CARD (CARAMELO) -->
                 <div class="welcome-card">
                     <div class="welcome-content">
-                        <h2>Welcome back, Elizabeth Addams!</h2>
+                        <h2>Welcome back, Endrina!</h2>
                         <p>Tu meta comercial del mes está al 85% completada. Emite facturaciones, adjunta los comprobantes de pago y solicita confirmación inmediata a Reportería.</p>
                         <div class="welcome-actions">
                             <button class="btn-pill-white primary" onclick="cambiarVistaVentas('facturacion')">
@@ -1522,7 +1515,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                     <div class="welcome-avatar-wrapper">
                         <div class="welcome-avatar-frame">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80" alt="Elizabeth Addams">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80" alt="Endrina">
                         </div>
                     </div>
                 </div>
@@ -1955,7 +1948,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         <span>984 129 384</span>
-                                        <a href="https://wa.me/51984129384?text=Hola%20Ing.%20Mary%20Rose,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <a href="https://wa.me/51984129384?text=Hola%20Ing.%20Mary%20Rose,%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </a>
                                     </div>
@@ -1986,7 +1979,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         <span>991 482 103</span>
-                                        <a href="https://wa.me/51991482103?text=Hola%20Arq.%20Carlos%20Mendoza,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <a href="https://wa.me/51991482103?text=Hola%20Arq.%20Carlos%20Mendoza,%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </a>
                                     </div>
@@ -2017,7 +2010,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         <span>972 384 192</span>
-                                        <a href="https://wa.me/51972384192?text=Hola%20Jerome%20Brown,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <a href="https://wa.me/51972384192?text=Hola%20Jerome%20Brown,%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </a>
                                     </div>
@@ -2048,7 +2041,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         <span>987 654 321</span>
-                                        <a href="https://wa.me/51987654321?text=Hola%20Ing.%20Roberto%20Salcedo,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <a href="https://wa.me/51987654321?text=Hola%20Ing.%20Roberto%20Salcedo,%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </a>
                                     </div>
@@ -2079,7 +2072,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         <span>963 852 741</span>
-                                        <a href="https://wa.me/51963852741?text=Hola%20Ing.%20Walter%20Palacios,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <a href="https://wa.me/51963852741?text=Hola%20Ing.%20Walter%20Palacios,%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </a>
                                     </div>
@@ -2110,7 +2103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         <span>951 753 852</span>
-                                        <a href="https://wa.me/51951753852?text=Hola%20Arq.%20Luc%C3%ADa%20Ramos,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <a href="https://wa.me/51951753852?text=Hola%20Arq.%20Luc%C3%ADa%20Ramos,%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </a>
                                     </div>
@@ -2141,7 +2134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <td>
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         <span>998 123 456</span>
-                                        <a href="https://wa.me/51998123456?text=Hola%20Lic.%20Elena%20Morales,%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                        <a href="https://wa.me/51998123456?text=Hola%20Lic.%20Elena%20Morales,%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                                             <i class="fa-brands fa-whatsapp"></i>
                                         </a>
                                     </div>
@@ -2188,12 +2181,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <div class="chat-center-messages" id="chatCenterMessages">
                         <div class="chat-bubble reporteria">
                             <strong>Área de Reportería:</strong><br>
-                            Hola Elizabeth, recibimos la Factura F001-00892 por S/ 14,400.00 de Cosapi S.A. El comprobante BCP #849201 ha sido <strong>ACEPTADO Y REGISTRADO</strong> exitosamente en banco. ✅
+                            Hola Endrina, recibimos la Factura F001-00892 por S/ 14,400.00 de Cosapi S.A. El comprobante BCP #849201 ha sido <strong>ACEPTADO Y REGISTRADO</strong> exitosamente en banco. ✅
                             <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">11:42 AM</div>
                         </div>
 
                         <div class="chat-bubble asesor">
-                            <strong>Tú (Elizabeth Addams):</strong><br>
+                            <strong>Tú (Endrina):</strong><br>
                             Excelente equipo, acabo de emitir la Factura F001-00891 de Consorcio Vial Piura por S/ 6,800.00 con voucher BBVA. ¿Podrían confirmarme apenas esté validado?
                             <div style="font-size:0.65rem; opacity:0.8; margin-top:4px;">11:45 AM</div>
                         </div>
@@ -2291,21 +2284,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
             </div>
 
-            <!-- BLOQUE 2: ESTADO EN REPORTERÍA -->
+            <!-- BLOQUE 2: COMPROBANTES Y VALIDACIÓN -->
             <div class="activity-block">
                 <div class="activity-block-header">
-                    <h4>Upcoming meetings</h4>
-                    <a onclick="location.href='reportes.php'">View all</a>
+                    <h4>Comprobantes recientes</h4>
+                    <a onclick="cambiarVistaVentas('comprobantes')">Ver todos</a>
                 </div>
 
-                <div class="activity-card" onclick="location.href='reportes.php'">
+                <div class="activity-card" onclick="cambiarVistaVentas('comprobantes')">
                     <div class="date-badge">
                         <span class="day">10</span>
                         <span class="month">MAR</span>
                     </div>
                     <div class="activity-card-info">
-                        <h5>Weekly design meeting</h5>
-                        <p>3:00 PM – 3:30 PM</p>
+                        <h5>Facturas en validación</h5>
+                        <p>Estado de conciliación</p>
                     </div>
                 </div>
 
@@ -2503,7 +2496,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <td>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <span>${tel}</span>
-                        <a href="https://wa.me/51${tel.replace(/\D/g,'')}?text=Hola%20${encodeURIComponent(contacto)},%20le%20escribe%20Elizabeth%20Addams%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                        <a href="https://wa.me/51${tel.replace(/\D/g,'')}?text=Hola%20${encodeURIComponent(contacto)},%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
                     </div>
@@ -2696,7 +2689,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formData.append('monto', monto);
             formData.append('metodo', metodo);
             formData.append('nro_operacion', op);
-            formData.append('asesor', 'Elizabeth Addams');
+            formData.append('asesor', 'Endrina');
 
             const fileInput = document.getElementById('inputVoucher');
             if (fileInput.files[0]) {
@@ -2740,7 +2733,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const nota = document.getElementById('notaVentasDia').value;
             const params = new URLSearchParams({
                 action: 'enviar_ventas_del_dia',
-                asesor: 'Elizabeth Addams',
+                asesor: 'Endrina',
                 total_ventas: ventasHoyCount,
                 monto_acumulado: '32,708.00',
                 nota: nota
@@ -2752,9 +2745,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 body: params.toString()
             })
             .then(res => res.json())
+            .then(data => {
+                alert(`📤 ¡Ventas del día enviadas exitosamente a Reportería!\n\nSe ha enviado el consolidado con los comprobantes del día. El área de reportería podrá revisarlos en su bandeja.`);
+                cambiarVistaVentas('chat');
+            })
             .catch(() => ({ success: true }))
             .then(() => {
-                alert(`📤 ¡Ventas del día enviadas exitosamente a Reportería!\n\nSe ha enviado el consolidado con los comprobantes del día. El área de reportería podrá revisarlos en su bandeja.`);
                 cambiarVistaVentas('chat');
             });
         }
@@ -2769,7 +2765,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if (!container) return;
                 container.innerHTML = '';
                 data.mensajes.forEach(m => {
-                    const isMio = (m.rol === 'Ventas' || m.remitente.includes('Elizabeth'));
+                    const isMio = (m.rol === 'Ventas' || m.remitente.includes('Endrina'));
                     const bubble = document.createElement('div');
                     bubble.className = `chat-bubble ${isMio ? 'asesor' : 'reporteria'}`;
                     bubble.innerHTML = `
@@ -2796,7 +2792,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             const formData = new FormData();
             formData.append('action', 'enviar_chat');
-            formData.append('remitente', 'Elizabeth Addams');
+            formData.append('remitente', 'Endrina');
             formData.append('rol', 'Ventas');
             formData.append('mensaje', texto);
 
