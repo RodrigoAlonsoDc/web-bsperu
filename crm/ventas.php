@@ -1936,7 +1936,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                         </div>
 
-                        <!-- BUSCADO                        <div>
+                        <!-- BUSCADOR INTELIGENTE DE CLIENTE (LUPA DNI / RUC) -->
+                        <div>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                                 <label style="font-size:0.84rem; font-weight:700; color:var(--text-dark);">
                                     <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i> Buscar Cliente por DNI / RUC o Razón Social
