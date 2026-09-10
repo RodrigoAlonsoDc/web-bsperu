@@ -1936,23 +1936,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                         </div>
 
-                        <!-- BUSCADOR INTELIGENTE DE CLIENTE (AUTOCOMPLETADO POR DNI O RAZÓN SOCIAL) -->
-                        <div>
+                        <!-- BUSCADO                        <div>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                                 <label style="font-size:0.84rem; font-weight:700; color:var(--text-dark);">
-                                    <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i> Buscar Cliente por RUC / DNI o Razón Social
+                                    <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i> Buscar Cliente por DNI / RUC o Razón Social
                                 </label>
                                 <span style="font-size:0.74rem; color:var(--accent-tan); font-weight:600;">
-                                    ⚡ Al tipear o seleccionar, jala automáticamente todos los datos del cliente
+                                    🔍 Ingresa el DNI o RUC y haz clic en la lupa para jalar los datos al instante
                                 </span>
                             </div>
-                            <div style="position:relative;">
-                                <input type="text" id="inputBuscarClienteCotiz" placeholder="Escribe RUC (ej. 20602591990), DNI o nombre (ej. Multinegocios, Cosapi, Besco...)" 
-                                       class="cotiz-input-cell" style="padding:12px 16px; font-size:0.9rem; border-color:var(--accent-tan);" 
-                                       oninput="filtrarSugerenciasClientesCotiz(this.value)" autocomplete="off">
-                                <div id="sugerenciasClientesBox" style="display:none; position:absolute; top:100%; left:0; right:0; background:#FFF; border:1px solid var(--border-soft); border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.15); z-index:1000; max-height:220px; overflow-y:auto; margin-top:4px;">
-                                    <!-- Lista de sugerencias inyectada por JS -->
+                            <div style="display:flex; gap:8px; position:relative;">
+                                <div style="position:relative; flex:1;">
+                                    <input type="text" id="inputBuscarClienteCotiz" 
+                                           placeholder="Escribe DNI (8 dígitos), RUC (11 dígitos) o Razón Social..." 
+                                           class="cotiz-input-cell" style="padding:12px 16px; font-size:0.9rem; border-color:var(--accent-tan); width:100%;" 
+                                           oninput="filtrarSugerenciasClientesCotiz(this.value)" 
+                                           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarYJalarClientePorDocumento(); }"
+                                           autocomplete="off">
+                                    <div id="sugerenciasClientesBox" style="display:none; position:absolute; top:100%; left:0; right:0; background:#FFF; border:1px solid var(--border-soft); border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.15); z-index:1000; max-height:220px; overflow-y:auto; margin-top:4px;">
+                                        <!-- Lista de sugerencias inyectada por JS -->
+                                    </div>
                                 </div>
+                                <button type="button" id="btnLupaBuscarDoc" class="btn-pill-white primary" 
+                                        onclick="buscarYJalarClientePorDocumento()" 
+                                        style="background:var(--accent-tan); border-color:var(--accent-tan); color:#161719; font-weight:700; padding:0 20px; display:flex; align-items:center; gap:8px; white-space:nowrap; cursor:pointer;"
+                                        title="Buscar y jalar datos del cliente">
+                                    <i class="fa-solid fa-magnifying-glass" id="iconLupaBuscar"></i>
+                                    <span>Buscar y Jalar</span>
+                                </button>
                             </div>
                         </div>
 
@@ -1964,7 +1975,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                             <div class="form-group">
                                 <label>RUC / DNI *</label>
-                                <input type="text" id="cotizRucDni" required placeholder="20602591990" class="cotiz-input-cell">
+                                <div style="display:flex; gap:6px;">
+                                    <input type="text" id="cotizRucDni" required placeholder="20602591990 o DNI" class="cotiz-input-cell" style="flex:1;"
+                                           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarYJalarClientePorDocumento(this.value); }">
+                                    <button type="button" id="btnLupaRucDni" onclick="buscarYJalarClientePorDocumento(document.getElementById('cotizRucDni').value)"
+                                            title="Jalar datos con este DNI/RUC"
+                                            style="background:var(--accent-tan); color:#161719; border:none; border-radius:12px; padding:0 16px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
+                                        <i class="fa-solid fa-magnifying-glass" id="iconLupaRucDni"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Contacto / Residente</label>
@@ -3177,6 +3196,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.getElementById('sugerenciasClientesBox').style.display = 'none';
 
             mostrarToast('success', 'Cliente Cargado', `Se autocompletaron los datos de ${cliente.razon}.`);
+        }
+
+        // BÚSQUEDA Y JALADO AUTOMÁTICO DE DATOS DE CLIENTE (LUPA DNI / RUC)
+        function buscarYJalarClientePorDocumento(valorDoc = null) {
+            let doc = valorDoc !== null ? valorDoc.toString().trim() : document.getElementById('inputBuscarClienteCotiz').value.trim();
+            if (!doc) {
+                doc = document.getElementById('cotizRucDni').value.trim();
+            }
+
+            if (!doc) {
+                mostrarToast('warning', 'DNI o RUC Requerido', 'Por favor ingresa un número de DNI o RUC en la casilla para jalar los datos.');
+                const input = document.getElementById('inputBuscarClienteCotiz');
+                if (input) input.focus();
+                return;
+            }
+
+            const cleanDoc = doc.replace(/[^0-9]/g, '');
+            const queryNorm = doc.toLowerCase();
+
+            // Animación en botones de lupa
+            const btnMain = document.getElementById('btnLupaBuscarDoc');
+            const iconMain = document.getElementById('iconLupaBuscar');
+            const iconMini = document.getElementById('iconLupaRucDni');
+            if (iconMain) iconMain.className = 'fa-solid fa-spinner fa-spin';
+            if (iconMini) iconMini.className = 'fa-solid fa-spinner fa-spin';
+            if (btnMain) btnMain.disabled = true;
+
+            const resetIconos = () => {
+                if (iconMain) iconMain.className = 'fa-solid fa-magnifying-glass';
+                if (iconMini) iconMini.className = 'fa-solid fa-magnifying-glass';
+                if (btnMain) btnMain.disabled = false;
+            };
+
+            // 1. Buscar primero en la cartera local cargada
+            const matchLocal = CARTERA_CLIENTES.find(c => {
+                const rucClean = (c.ruc || '').replace(/[^0-9]/g, '');
+                return (cleanDoc && rucClean === cleanDoc) || 
+                       (c.razon && c.razon.toLowerCase().includes(queryNorm)) ||
+                       (c.contacto && c.contacto.toLowerCase().includes(queryNorm));
+            });
+
+            if (matchLocal) {
+                seleccionarClienteCotiz(matchLocal.ruc);
+                resetIconos();
+                mostrarToast('success', 'Cliente Encontrado', `Datos cargados desde Cartera: ${matchLocal.razon}`);
+                return;
+            }
+
+            // 2. Si no se encuentra en memoria o es un DNI/RUC numérico, consultar backend (base de datos + RENIEC/SUNAT)
+            const targetNumero = cleanDoc || doc;
+            fetch(`crm_backend.php?action=consultar_documento&numero=${encodeURIComponent(targetNumero)}`)
+                .then(res => res.json())
+                .then(data => {
+                    resetIconos();
+                    if (data.success && data.cliente) {
+                        const cl = data.cliente;
+                        document.getElementById('cotizRazonSocial').value = cl.razon || '';
+                        document.getElementById('cotizRucDni').value = cl.ruc || cleanDoc;
+                        if (cl.direccion) document.getElementById('cotizDireccion').value = cl.direccion;
+                        if (cl.contacto) document.getElementById('cotizContacto').value = cl.contacto;
+                        if (cl.telefono) document.getElementById('cotizTelefono').value = cl.telefono;
+                        if (cl.email) document.getElementById('cotizEmail').value = cl.email;
+
+                        document.getElementById('inputBuscarClienteCotiz').value = cl.razon || cl.ruc;
+                        const sugerencias = document.getElementById('sugerenciasClientesBox');
+                        if (sugerencias) sugerencias.style.display = 'none';
+
+                        // Guardar en la cartera local para acceso instantáneo posterior
+                        if (!CARTERA_CLIENTES.some(c => c.ruc === cl.ruc)) {
+                            CARTERA_CLIENTES.unshift(cl);
+                        }
+
+                        const origen = data.fuente === 'sunat' ? 'SUNAT' : (data.fuente === 'reniec' ? 'RENIEC' : 'Cartera BS Perú');
+                        mostrarToast('success', `Datos Jalados (${origen})`, `Se cargó automáticamente: ${cl.razon}`);
+                    } else {
+                        mostrarToast('warning', 'Documento no registrado', data.error || 'No se encontraron datos automáticos. Puedes ingresarlos manualmente.');
+                    }
+                })
+                .catch(err => {
+                    resetIconos();
+                    console.error(err);
+                    mostrarToast('warning', 'Aviso', 'No se pudo conectar con el servicio de consulta. Puedes completar los datos manualmente.');
+                });
         }
 
         // AGREGAR FILA DE PRODUCTO EN LA COTIZACIÓN

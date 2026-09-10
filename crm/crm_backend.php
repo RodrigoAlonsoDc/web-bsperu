@@ -834,4 +834,122 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         echo json_encode(['success' => false, 'error' => 'Datos de cliente incompletos']);
         exit;
     }
+
+    // 12. CONSULTAR Y JALAR DATOS POR DNI O RUC (LUPA)
+    if ($action === 'consultar_documento') {
+        header('Content-Type: application/json');
+        $doc = preg_replace('/[^0-9]/', '', $_GET['numero'] ?? ($_POST['numero'] ?? ''));
+        if (empty($doc)) {
+            echo json_encode(['success' => false, 'error' => 'Por favor ingrese un número de DNI o RUC']);
+            exit;
+        }
+
+        // 1. Buscar primero en la base de datos permanente de clientes (clientes.json)
+        $clientes = obtenerClientes();
+        foreach ($clientes as $cl) {
+            if (($cl['ruc'] ?? '') === $doc) {
+                echo json_encode([
+                    'success' => true,
+                    'fuente' => 'cartera',
+                    'cliente' => $cl
+                ]);
+                exit;
+            }
+        }
+
+        // 2. Buscar en cotizaciones archivadas
+        $cotizaciones = obtenerCotizaciones();
+        foreach ($cotizaciones as $c) {
+            if (($c['ruc_dni'] ?? '') === $doc) {
+                echo json_encode([
+                    'success' => true,
+                    'fuente' => 'cotizaciones',
+                    'cliente' => [
+                        'razon' => $c['cliente_nombre'] ?? '',
+                        'ruc' => $doc,
+                        'direccion' => $c['direccion'] ?? '',
+                        'email' => $c['email'] ?? '',
+                        'telefono' => $c['telefono'] ?? '',
+                        'contacto' => $c['contacto'] ?? ''
+                    ]
+                ]);
+                exit;
+            }
+        }
+
+        // 3. Consulta externa a RENIEC (8 dígitos) o SUNAT (11 dígitos)
+        $tipo = (strlen($doc) === 8) ? 'dni' : ((strlen($doc) === 11) ? 'ruc' : '');
+        if ($tipo) {
+            $url = "https://api.apis.net.pe/v1/{$tipo}?numero={$doc}";
+            $ctx = stream_context_create([
+                'http' => [
+                    'timeout' => 4,
+                    'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n"
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false
+                ]
+            ]);
+            $res = @file_get_contents($url, false, $ctx);
+            if ($res) {
+                $info = json_decode($res, true);
+                if ($info && !empty($info)) {
+                    if ($tipo === 'dni') {
+                        $nombreCompleto = trim(($info['nombres'] ?? '') . ' ' . ($info['apellidoPaterno'] ?? '') . ' ' . ($info['apellidoMaterno'] ?? ''));
+                        if (!empty($nombreCompleto)) {
+                            $nuevoCli = [
+                                'razon' => $nombreCompleto,
+                                'ruc' => $doc,
+                                'direccion' => $info['direccion'] ?? '',
+                                'contacto' => $nombreCompleto,
+                                'telefono' => '',
+                                'email' => '',
+                                'categoria' => 'Activo'
+                            ];
+                            echo json_encode([
+                                'success' => true,
+                                'fuente' => 'reniec',
+                                'cliente' => $nuevoCli
+                            ]);
+                            exit;
+                        }
+                    } elseif ($tipo === 'ruc') {
+                        $razonSunat = trim($info['nombre'] ?? '');
+                        if (!empty($razonSunat)) {
+                            $dirPartes = array_filter([
+                                $info['direccion'] ?? '',
+                                $info['distrito'] ?? '',
+                                $info['provincia'] ?? '',
+                                $info['departamento'] ?? ''
+                            ]);
+                            $direccionCompleta = implode(' - ', $dirPartes);
+                            $nuevoCli = [
+                                'razon' => $razonSunat,
+                                'ruc' => $doc,
+                                'direccion' => $direccionCompleta,
+                                'contacto' => 'Encargado de Compras',
+                                'telefono' => '',
+                                'email' => '',
+                                'categoria' => 'Activo'
+                            ];
+                            echo json_encode([
+                                'success' => true,
+                                'fuente' => 'sunat',
+                                'cliente' => $nuevoCli
+                            ]);
+                            exit;
+                        }
+                    }
+                }
+            }
+        }
+
+        echo json_encode([
+            'success' => false,
+            'error' => 'No se encontraron datos automáticos para el DNI/RUC: ' . $doc . '. Puedes registrarlos manualmente en el formulario.'
+        ]);
+        exit;
+    }
 }
+
