@@ -114,6 +114,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     }
 }
+
+// Obtener siguiente correlativo oficial de cotización automáticamente
+$siguienteCodigoCotiz = '0052456';
+$fileCotizPath = __DIR__ . '/crm_data/cotizaciones.json';
+if (file_exists($fileCotizPath)) {
+    $rawCotiz = json_decode(file_get_contents($fileCotizPath), true) ?: [];
+    if (!empty($rawCotiz)) {
+        $codigosNums = array_map(function($c) {
+            return intval($c['codigo'] ?? 0);
+        }, $rawCotiz);
+        $maxNum = max($codigosNums);
+        if ($maxNum > 0) {
+            $siguienteCodigoCotiz = str_pad($maxNum + 1, 7, '0', STR_PAD_LEFT);
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -1933,80 +1949,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
                                 <div style="display:flex; align-items:center; gap:8px;">
                                     <label style="font-size:0.85rem; font-weight:700; color:var(--text-dark); text-transform:uppercase;">COTIZACIONES:</label>
-                                    <input type="text" id="cotizCodigo" value="0052459" style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem; width:130px; padding:6px 12px; border-radius:10px; border:1px solid var(--accent-tan); background:var(--bg-main); color:var(--text-dark); text-align:center;">
+                                    <input type="text" id="cotizCodigo" value="<?php echo htmlspecialchars($siguienteCodigoCotiz); ?>" readonly style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem; width:130px; padding:6px 12px; border-radius:10px; border:1.5px solid var(--accent-tan); background:#F3F4F6; color:var(--text-dark); text-align:center; cursor:not-allowed;" title="Número correlativo generado automáticamente por el sistema">
                                 </div>
                                 <div style="display:flex; align-items:center; gap:8px;">
                                     <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Fecha:</label>
-                                    <input type="date" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>" style="padding:6px 12px; border-radius:10px; border:1px solid var(--border-soft); background:var(--bg-main); color:var(--text-dark); font-size:0.82rem;">
+                                    <input type="date" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>" readonly style="padding:6px 12px; border-radius:10px; border:1px solid var(--border-soft); background:#F3F4F6; color:var(--text-dark); font-size:0.82rem; cursor:not-allowed; pointer-events:none;" title="Fecha automática de emisión del día">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- BUSCADOR INTELIGENTE DE CLIENTE (LUPA DNI / RUC) -->
+                        <!-- BUSCADOR EXCLUSIVO EN CARTERA POR DNI O RUC -->
                         <div>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                                 <label style="font-size:0.84rem; font-weight:700; color:var(--text-dark);">
-                                    <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i> Buscar Cliente por DNI / RUC o Razón Social
+                                    <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i> Buscar Cliente en Cartera por DNI / RUC
                                 </label>
                                 <span style="font-size:0.74rem; color:var(--accent-tan); font-weight:600;">
-                                    🔍 Ingresa el DNI o RUC y haz clic en la lupa para jalar los datos al instante
+                                    🔒 Clientes registrados en Mi Cartera
                                 </span>
                             </div>
                             <div style="display:flex; gap:8px; position:relative;">
                                 <div style="position:relative; flex:1;">
                                     <input type="text" id="inputBuscarClienteCotiz" 
-                                           placeholder="Escribe DNI (8 dígitos), RUC (11 dígitos) o Razón Social..." 
+                                           placeholder="Ingresa DNI (8 dígitos) o RUC del cliente registrado en cartera..." 
                                            class="cotiz-input-cell" style="padding:12px 16px; font-size:0.9rem; border-color:var(--accent-tan); width:100%;" 
                                            oninput="filtrarSugerenciasClientesCotiz(this.value)" 
-                                           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarYJalarClientePorDocumento(); }"
+                                           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarClienteCarteraPorDni(); }"
                                            autocomplete="off">
                                     <div id="sugerenciasClientesBox" style="display:none; position:absolute; top:100%; left:0; right:0; background:#FFF; border:1px solid var(--border-soft); border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.15); z-index:1000; max-height:220px; overflow-y:auto; margin-top:4px;">
                                         <!-- Lista de sugerencias inyectada por JS -->
                                     </div>
                                 </div>
                                 <button type="button" id="btnLupaBuscarDoc" class="btn-pill-white primary" 
-                                        onclick="buscarYJalarClientePorDocumento()" 
+                                        onclick="buscarClienteCarteraPorDni()" 
                                         style="background:var(--accent-tan); border-color:var(--accent-tan); color:#161719; font-weight:700; padding:0 20px; display:flex; align-items:center; gap:8px; white-space:nowrap; cursor:pointer;"
-                                        title="Buscar y jalar datos del cliente">
+                                        title="Buscar cliente registrado en cartera">
                                     <i class="fa-solid fa-magnifying-glass" id="iconLupaBuscar"></i>
-                                    <span>Buscar y Jalar</span>
+                                    <span>Buscar en Cartera</span>
                                 </button>
+                            </div>
+
+                            <!-- ALERTA SI EL CLIENTE NO SE ENCUENTRA REGISTRADO -->
+                            <div id="msgAlertaClienteNoRegistrado" style="display:none; margin-top:8px; padding:10px 14px; background:#FEF2F2; border:1px solid #FCA5A5; border-radius:10px; color:#DC2626; font-size:0.84rem; font-weight:700; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-circle-xmark" style="font-size:1.1rem;"></i>
+                                <span>No se registra en la cartera. Debe añadirlo primero en <strong>Mi Cartera de Clientes</strong> con el botón "+ Nuevo Cliente".</span>
+                            </div>
+                            <!-- CONFIRMACIÓN CUANDO EL CLIENTE ES DE CARTERA -->
+                            <div id="msgClienteVerificado" style="display:none; margin-top:8px; padding:8px 14px; background:#ECFDF5; border:1px solid #A7F3D0; border-radius:10px; color:#065F46; font-size:0.82rem; font-weight:700; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-circle-check" style="color:#10B981;"></i>
+                                <span>Cliente de Cartera Verificado</span>
                             </div>
                         </div>
 
-                        <!-- DATOS DEL CLIENTE (FORMULARIO AUTOCOMPLETADO) -->
+                        <!-- DATOS DEL CLIENTE (JALADOS DE LA CARTERA, SOLO LECTURA) -->
                         <div class="cotiz-client-grid">
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>Razón Social *</label>
-                                <input type="text" id="cotizRazonSocial" required placeholder="Ej: MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C." class="cotiz-input-cell">
+                                <label>Razón Social / Nombre del Cliente *</label>
+                                <input type="text" id="cotizRazonSocial" required readonly placeholder="Razón Social (se jala de la cartera)" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
                             </div>
                             <div class="form-group">
                                 <label>RUC / DNI *</label>
-                                <div style="display:flex; gap:6px;">
-                                    <input type="text" id="cotizRucDni" required placeholder="20602591990 o DNI" class="cotiz-input-cell" style="flex:1;"
-                                           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarYJalarClientePorDocumento(this.value); }">
-                                    <button type="button" id="btnLupaRucDni" onclick="buscarYJalarClientePorDocumento(document.getElementById('cotizRucDni').value)"
-                                            title="Jalar datos con este DNI/RUC"
-                                            style="background:var(--accent-tan); color:#161719; border:none; border-radius:12px; padding:0 16px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:transform 0.15s ease;">
-                                        <i class="fa-solid fa-magnifying-glass" id="iconLupaRucDni"></i>
-                                    </button>
-                                </div>
+                                <input type="text" id="cotizRucDni" required readonly placeholder="RUC o DNI" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
                             </div>
                             <div class="form-group">
                                 <label>Contacto / Residente</label>
-                                <input type="text" id="cotizContacto" placeholder="Ej: Fanny Ramirez / Ing. Residente" class="cotiz-input-cell">
+                                <input type="text" id="cotizContacto" readonly placeholder="Contacto asignado" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
                             </div>
                             <div class="form-group">
                                 <label>Teléfono / WhatsApp *</label>
-                                <input type="tel" id="cotizTelefono" required placeholder="942 377 626" class="cotiz-input-cell">
+                                <input type="tel" id="cotizTelefono" required readonly placeholder="Teléfono" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
                             </div>
                             <div class="form-group">
                                 <label>Correo Electrónico</label>
-                                <input type="email" id="cotizEmail" placeholder="Consorciomiraflores25@gmail.com" class="cotiz-input-cell">
+                                <input type="email" id="cotizEmail" readonly placeholder="Correo electrónico" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
                             </div>
                             <div class="form-group" style="grid-column: 1 / -1;">
                                 <label>Dirección Fiscal / Obra</label>
-                                <input type="text" id="cotizDireccion" placeholder="JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO" class="cotiz-input-cell">
+                                <input type="text" id="cotizDireccion" readonly placeholder="Dirección fiscal u obra" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
                             </div>
                         </div>
 
@@ -2044,9 +2063,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <div style="display:flex; gap:10px;">
                                 <button type="button" class="btn-pill-white primary" onclick="agregarFilaProductoCotiz()">
                                     <i class="fa-solid fa-plus"></i> Agregar Producto
-                                </button>
-                                <button type="button" class="btn-pill-white" onclick="cargarEjemploPdfMultinegocios()" title="Carga exactamente la cotización de muestra del PDF">
-                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Cargar Muestra PDF
                                 </button>
                             </div>
                             <small style="color:var(--text-muted); font-size:0.75rem;">
@@ -2134,18 +2150,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </div>
 
                         <!-- BARRA PRINCIPAL DE ACCIONES DE LA COTIZACIÓN -->
-                        <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; flex-wrap:wrap; padding-top:10px; border-top:1px solid var(--border-soft);">
-                            <button type="button" class="btn-pill-white" onclick="guardarCotizacionActual(false)">
+                        <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; flex-wrap:wrap; padding-top:16px; border-top:1px solid var(--border-soft);">
+                            <button type="button" class="btn-pill-white primary" onclick="guardarCotizacionActual(false)" style="background:var(--accent-tan); border-color:var(--accent-tan); color:#161719; font-weight:800; padding:12px 32px; font-size:0.95rem; display:inline-flex; align-items:center; gap:10px; border-radius:14px; cursor:pointer; box-shadow:0 4px 14px rgba(199,155,88,0.25);">
                                 <i class="fa-solid fa-floppy-disk"></i> Guardar Cotización
-                            </button>
-                            <button type="button" class="btn-pill-white" style="border-color:#10B981; color:#059669; font-weight:700;" onclick="enviarCotizacionActualWhatsApp()">
-                                <i class="fa-brands fa-whatsapp"></i> Enviar por WhatsApp
-                            </button>
-                            <button type="button" class="btn-pill-white" style="border-color:var(--accent-tan); color:var(--accent-tan); font-weight:700;" onclick="abrirModalVistaPreviaPdf()">
-                                <i class="fa-solid fa-print"></i> Ver Formato PDF Oficial
-                            </button>
-                            <button type="button" class="btn-pill-white primary" onclick="convertirCotizacionActualAFactura()">
-                                <i class="fa-solid fa-file-invoice-dollar"></i> Convertir a Factura
                             </button>
                         </div>
 
@@ -3199,23 +3206,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }, 150);
         }
 
-        // BÚSQUEDA Y AUTOCOMPLETADO DE CLIENTES POR DNI / RUC O RAZÓN SOCIAL
+        // BÚSQUEDA EXCLUSIVA EN CARTERA POR DNI / RUC O RAZÓN SOCIAL
         function filtrarSugerenciasClientesCotiz(query) {
             const box = document.getElementById('sugerenciasClientesBox');
+            const alertBox = document.getElementById('msgAlertaClienteNoRegistrado');
+            const okBox = document.getElementById('msgClienteVerificado');
             const q = query.trim().toLowerCase();
+            const cleanQ = query.replace(/[^0-9]/g, '');
+
             if (q.length < 2) {
                 box.style.display = 'none';
                 return;
             }
 
             const matches = CARTERA_CLIENTES.filter(c => {
-                return c.ruc.includes(q) || c.razon.toLowerCase().includes(q) || c.contacto.toLowerCase().includes(q);
+                const rClean = (c.ruc || '').replace(/[^0-9]/g, '');
+                return (cleanQ && rClean.includes(cleanQ)) || 
+                       (c.razon && c.razon.toLowerCase().includes(q)) || 
+                       (c.contacto && c.contacto.toLowerCase().includes(q));
             });
 
             if (matches.length === 0) {
                 box.innerHTML = `
-                    <div style="padding:12px 16px; font-size:0.82rem; color:var(--text-muted);">
-                        No se encontró ningún cliente con ese RUC/Nombre. Puedes escribir los datos manualmente en el formulario.
+                    <div style="padding:12px 16px; font-size:0.84rem; color:#DC2626; font-weight:700; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-circle-xmark"></i> No se registra en la cartera. Debe añadirlo primero en Mi Cartera de Clientes.
                     </div>
                 `;
                 box.style.display = 'block';
@@ -3223,12 +3237,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
 
             box.innerHTML = matches.map(c => `
-                <div onclick="seleccionarClienteCotiz('${c.ruc}')" style="padding:10px 16px; border-bottom:1px solid var(--border-soft); cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s;" onmouseover="this.style.background='rgba(199,155,88,0.08)'" onmouseout="this.style.background='transparent'">
+                <div onclick="buscarClienteCarteraPorDni('${c.ruc}')" style="padding:10px 16px; border-bottom:1px solid var(--border-soft); cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s;" onmouseover="this.style.background='rgba(199,155,88,0.08)'" onmouseout="this.style.background='transparent'">
                     <div>
                         <strong style="color:var(--text-dark); font-size:0.84rem;">${c.razon}</strong><br>
-                        <span style="font-size:0.74rem; color:var(--text-muted);">RUC: ${c.ruc} • Contacto: ${c.contacto}</span>
+                        <span style="font-size:0.74rem; color:var(--text-muted);">DNI/RUC: ${c.ruc} • Contacto: ${c.contacto || 'Sin contacto'}</span>
                     </div>
-                    <span class="badge-tag-activo" style="font-size:0.7rem;">Seleccionar</span>
+                    <span class="badge-tag-activo" style="font-size:0.7rem; background:#ECFDF5; color:#059669; border:1px solid #A7F3D0;">Seleccionar</span>
                 </div>
             `).join('');
 
@@ -3236,31 +3250,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         function seleccionarClienteCotiz(ruc) {
-            const cliente = CARTERA_CLIENTES.find(c => c.ruc === ruc);
-            if (!cliente) return;
-
-            document.getElementById('cotizRazonSocial').value = cliente.razon;
-            document.getElementById('cotizRucDni').value = cliente.ruc;
-            document.getElementById('cotizDireccion').value = cliente.direccion;
-            document.getElementById('cotizEmail').value = cliente.email;
-            document.getElementById('cotizTelefono').value = cliente.telefono;
-            document.getElementById('cotizContacto').value = cliente.contacto;
-
-            document.getElementById('inputBuscarClienteCotiz').value = cliente.razon;
-            document.getElementById('sugerenciasClientesBox').style.display = 'none';
-
-            mostrarToast('success', 'Cliente Cargado', `Se autocompletaron los datos de ${cliente.razon}.`);
+            buscarClienteCarteraPorDni(ruc);
         }
 
-        // BÚSQUEDA Y JALADO AUTOMÁTICO DE DATOS DE CLIENTE (LUPA DNI / RUC)
-        function buscarYJalarClientePorDocumento(valorDoc = null) {
+        // BÚSQUEDA Y JALADO EXCLUSIVO DESDE LA CARTERA DE CLIENTES
+        function buscarClienteCarteraPorDni(valorDoc = null) {
             let doc = valorDoc !== null ? valorDoc.toString().trim() : document.getElementById('inputBuscarClienteCotiz').value.trim();
-            if (!doc) {
-                doc = document.getElementById('cotizRucDni').value.trim();
-            }
 
             if (!doc) {
-                mostrarToast('warning', 'DNI o RUC Requerido', 'Por favor ingresa un número de DNI o RUC en la casilla para jalar los datos.');
+                mostrarToast('warning', 'DNI o RUC Requerido', 'Por favor ingresa un número de DNI o RUC en la casilla para buscar en cartera.');
                 const input = document.getElementById('inputBuscarClienteCotiz');
                 if (input) input.focus();
                 return;
@@ -3269,70 +3267,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const cleanDoc = doc.replace(/[^0-9]/g, '');
             const queryNorm = doc.toLowerCase();
 
-            // Animación en botones de lupa
+            const alertBox = document.getElementById('msgAlertaClienteNoRegistrado');
+            const okBox = document.getElementById('msgClienteVerificado');
+
+            // Animación temporal en el botón de búsqueda
             const btnMain = document.getElementById('btnLupaBuscarDoc');
             const iconMain = document.getElementById('iconLupaBuscar');
-            const iconMini = document.getElementById('iconLupaRucDni');
             if (iconMain) iconMain.className = 'fa-solid fa-spinner fa-spin';
-            if (iconMini) iconMini.className = 'fa-solid fa-spinner fa-spin';
             if (btnMain) btnMain.disabled = true;
 
             const resetIconos = () => {
                 if (iconMain) iconMain.className = 'fa-solid fa-magnifying-glass';
-                if (iconMini) iconMini.className = 'fa-solid fa-magnifying-glass';
                 if (btnMain) btnMain.disabled = false;
             };
 
-            // 1. Buscar primero en la cartera local cargada
-            const matchLocal = CARTERA_CLIENTES.find(c => {
+            // 1. Buscar EXCLUSIVAMENTE en la cartera de clientes
+            const cliente = CARTERA_CLIENTES.find(c => {
                 const rucClean = (c.ruc || '').replace(/[^0-9]/g, '');
                 return (cleanDoc && rucClean === cleanDoc) || 
                        (c.razon && c.razon.toLowerCase().includes(queryNorm)) ||
                        (c.contacto && c.contacto.toLowerCase().includes(queryNorm));
             });
 
-            if (matchLocal) {
-                seleccionarClienteCotiz(matchLocal.ruc);
-                resetIconos();
-                mostrarToast('success', 'Cliente Encontrado', `Datos cargados desde Cartera: ${matchLocal.razon}`);
-                return;
+            const sugerencias = document.getElementById('sugerenciasClientesBox');
+            if (sugerencias) sugerencias.style.display = 'none';
+            resetIconos();
+
+            if (cliente) {
+                // Cliente encontrado en cartera
+                document.getElementById('cotizRazonSocial').value = cliente.razon;
+                document.getElementById('cotizRucDni').value = cliente.ruc;
+                document.getElementById('cotizDireccion').value = cliente.direccion || '';
+                document.getElementById('cotizEmail').value = cliente.email || '';
+                document.getElementById('cotizTelefono').value = cliente.telefono || '';
+                document.getElementById('cotizContacto').value = cliente.contacto || '';
+
+                document.getElementById('inputBuscarClienteCotiz').value = `${cliente.ruc} - ${cliente.razon}`;
+
+                if (alertBox) alertBox.style.display = 'none';
+                if (okBox) {
+                    okBox.style.display = 'flex';
+                    const lblSpan = okBox.querySelector('span');
+                    if (lblSpan) lblSpan.textContent = `Cliente de Cartera Verificado: ${cliente.razon}`;
+                }
+                mostrarToast('success', 'Cliente de Cartera', `Datos cargados: ${cliente.razon}`);
+            } else {
+                // CLIENTE NO SE ENCUENTRA REGISTRADO
+                document.getElementById('cotizRazonSocial').value = 'No se registra';
+                document.getElementById('cotizRucDni').value = cleanDoc || '';
+                document.getElementById('cotizDireccion').value = '';
+                document.getElementById('cotizEmail').value = '';
+                document.getElementById('cotizTelefono').value = '';
+                document.getElementById('cotizContacto').value = '';
+
+                if (okBox) okBox.style.display = 'none';
+                if (alertBox) alertBox.style.display = 'flex';
+
+                mostrarToast('warning', 'No se registra', 'El cliente no se encuentra registrado en la cartera. Debe añadirlo primero en Cartera de Clientes.');
             }
+        }
 
-            // 2. Si no se encuentra en memoria o es un DNI/RUC numérico, consultar backend (base de datos + RENIEC/SUNAT)
-            const targetNumero = cleanDoc || doc;
-            fetch(`crm_backend.php?action=consultar_documento&numero=${encodeURIComponent(targetNumero)}`)
-                .then(res => res.json())
-                .then(data => {
-                    resetIconos();
-                    if (data.success && data.cliente) {
-                        const cl = data.cliente;
-                        document.getElementById('cotizRazonSocial').value = cl.razon || '';
-                        document.getElementById('cotizRucDni').value = cl.ruc || cleanDoc;
-                        if (cl.direccion) document.getElementById('cotizDireccion').value = cl.direccion;
-                        if (cl.contacto) document.getElementById('cotizContacto').value = cl.contacto;
-                        if (cl.telefono) document.getElementById('cotizTelefono').value = cl.telefono;
-                        if (cl.email) document.getElementById('cotizEmail').value = cl.email;
-
-                        document.getElementById('inputBuscarClienteCotiz').value = cl.razon || cl.ruc;
-                        const sugerencias = document.getElementById('sugerenciasClientesBox');
-                        if (sugerencias) sugerencias.style.display = 'none';
-
-                        // Guardar en la cartera local para acceso instantáneo posterior
-                        if (!CARTERA_CLIENTES.some(c => c.ruc === cl.ruc)) {
-                            CARTERA_CLIENTES.unshift(cl);
-                        }
-
-                        const origen = data.fuente === 'sunat' ? 'SUNAT' : (data.fuente === 'reniec' ? 'RENIEC' : 'Cartera BS Perú');
-                        mostrarToast('success', `Datos Jalados (${origen})`, `Se cargó automáticamente: ${cl.razon}`);
-                    } else {
-                        mostrarToast('warning', 'Documento no registrado', data.error || 'No se encontraron datos automáticos. Puedes ingresarlos manualmente.');
-                    }
-                })
-                .catch(err => {
-                    resetIconos();
-                    console.error(err);
-                    mostrarToast('warning', 'Aviso', 'No se pudo conectar con el servicio de consulta. Puedes completar los datos manualmente.');
-                });
+        // Alias de compatibilidad
+        function buscarYJalarClientePorDocumento(valorDoc = null) {
+            buscarClienteCarteraPorDni(valorDoc);
         }
 
         // AGREGAR FILA DE PRODUCTO EN LA COTIZACIÓN
@@ -3634,11 +3631,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             };
         }
 
+        // LIMPIAR FORMULARIO DE NUEVA COTIZACIÓN
+        function limpiarFormularioNuevaCotizacion() {
+            const inpBusq = document.getElementById('inputBuscarClienteCotiz');
+            if (inpBusq) inpBusq.value = '';
+            document.getElementById('cotizRazonSocial').value = '';
+            document.getElementById('cotizRucDni').value = '';
+            document.getElementById('cotizContacto').value = '';
+            document.getElementById('cotizTelefono').value = '';
+            document.getElementById('cotizEmail').value = '';
+            document.getElementById('cotizDireccion').value = '';
+
+            const alertBox = document.getElementById('msgAlertaClienteNoRegistrado');
+            const okBox = document.getElementById('msgClienteVerificado');
+            if (alertBox) alertBox.style.display = 'none';
+            if (okBox) okBox.style.display = 'none';
+
+            document.getElementById('cotizFecha').value = '<?php echo date('Y-m-d'); ?>';
+
+            const tbody = document.getElementById('tbodyItemsCotizacion');
+            if (tbody) {
+                tbody.innerHTML = '';
+                agregarFilaProductoCotiz();
+            }
+            recalcularTotalesCotiz();
+        }
+
         // GUARDAR COTIZACIÓN EN BACKEND
         function guardarCotizacionActual(silencioso = false) {
             const data = obtenerDatosCotizacionFormulario();
-            if (!data.cliente_nombre || !data.ruc_dni) {
-                alert('Por favor complete la Razón Social y el RUC/DNI del cliente.');
+            if (!data.cliente_nombre || data.cliente_nombre === 'No se registra' || !data.ruc_dni) {
+                alert('No se puede guardar la cotización: El cliente no se encuentra registrado en la cartera. Por favor busque y seleccione un cliente de la cartera en el apartado superior.');
+                const inputBusq = document.getElementById('inputBuscarClienteCotiz');
+                if (inputBusq) inputBusq.focus();
                 return;
             }
             if (data.items.length === 0) {
@@ -3677,6 +3702,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         mostrarToast('success', 'Cotización Guardada', `Cotización ${data.codigo} registrada correctamente.`);
                     }
                     cargarCotizaciones();
+                    limpiarFormularioNuevaCotizacion();
                 } else {
                     alert('Error al guardar cotización: ' + (resp.error || 'Desconocido'));
                 }
@@ -3686,6 +3712,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if (!silencioso) {
                     mostrarToast('success', 'Cotización Guardada (Local)', `Cotización ${data.codigo} archivada temporalmente.`);
                 }
+                cargarCotizaciones();
+                limpiarFormularioNuevaCotizacion();
             });
         }
 
@@ -3703,9 +3731,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         if (totalBadge) totalBadge.textContent = listaCotizacionesData.length;
                         if (histBadge) histBadge.textContent = listaCotizacionesData.length;
 
-                        // Si el correlativo en el formulario está vacío, asignar el sugerido
+                        // Actualizar automáticamente el correlativo para la siguiente cotización
                         const codInput = document.getElementById('cotizCodigo');
-                        if (codInput && data.siguiente_codigo && codInput.value === '0052459') {
+                        if (codInput && data.siguiente_codigo) {
                             codInput.value = data.siguiente_codigo;
                         }
                     }
