@@ -2206,6 +2206,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- ================= MODAL OBSERVAR PAGO ================= -->
+    <div class="modal-overlay" id="modalObservarPago">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <span style="font-size:0.72rem; color:#DC2626; font-weight:700; text-transform:uppercase;">Discrepancia Bancaria</span>
+                    <h3 id="modalObsCotiz">Observar Factura</h3>
+                </div>
+                <button class="modal-close-btn" onclick="cerrarModales()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:14px;">
+                Selecciona el motivo por el cual el comprobante no coincide para que el asesor de ventas lo rectifique:
+            </p>
+
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+                <label style="display:flex; align-items:center; gap:10px; font-size:0.84rem; cursor:pointer; background:#F8FAFC; padding:10px 14px; border-radius:12px; border:1px solid var(--border-soft);">
+                    <input type="radio" name="radioMotivoObs" value="Comprobante no coincide con extracto bancario" checked onchange="document.getElementById('inputObsPersonalizado').style.display='none'">
+                    <span>Comprobante no coincide con extracto bancario</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:10px; font-size:0.84rem; cursor:pointer; background:#F8FAFC; padding:10px 14px; border-radius:12px; border:1px solid var(--border-soft);">
+                    <input type="radio" name="radioMotivoObs" value="Monto transferido no coincide con el total de la cotización" onchange="document.getElementById('inputObsPersonalizado').style.display='none'">
+                    <span>Monto transferido no coincide con el total</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:10px; font-size:0.84rem; cursor:pointer; background:#F8FAFC; padding:10px 14px; border-radius:12px; border:1px solid var(--border-soft);">
+                    <input type="radio" name="radioMotivoObs" value="Voucher ilegible, cortado o de baja resolución" onchange="document.getElementById('inputObsPersonalizado').style.display='none'">
+                    <span>Voucher ilegible, cortado o de baja resolución</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:10px; font-size:0.84rem; cursor:pointer; background:#F8FAFC; padding:10px 14px; border-radius:12px; border:1px solid var(--border-soft);">
+                    <input type="radio" name="radioMotivoObs" value="N° de operación bancaria no figura registrada en cuenta" onchange="document.getElementById('inputObsPersonalizado').style.display='none'">
+                    <span>N° de operación no figura en cuenta bancaria</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:10px; font-size:0.84rem; cursor:pointer; background:#F8FAFC; padding:10px 14px; border-radius:12px; border:1px solid var(--border-soft);">
+                    <input type="radio" name="radioMotivoObs" value="otro" onchange="document.getElementById('inputObsPersonalizado').style.display='block'; document.getElementById('inputObsPersonalizado').focus()">
+                    <span>Otro motivo personalizado...</span>
+                </label>
+                <input type="text" id="inputObsPersonalizado" placeholder="Escribe la observación detallada..." style="display:none; width:100%; padding:10px 14px; border-radius:12px; border:1px solid var(--border-soft); font-size:0.84rem; outline:none; background:#FFF; color:#111;">
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button class="btn-pill-white" style="flex:1; justify-content:center;" onclick="cerrarModales()">Cancelar</button>
+                <button class="btn-pill-white primary" style="flex:2; justify-content:center; background:#DC2626; color:#FFF;" onclick="confirmarObservacionDesdeModal()">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Enviar Observación a Ventas
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= JAVASCRIPT ================= -->
     <script>
         let pagosPendientesCount = 3;
@@ -2447,6 +2495,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             .then(data => {
                 alert(`✅ ¡Pago de ${cotiz} confirmado exitosamente!\nSe actualizó la base de datos y se notificó al área de ventas para el despacho.`);
                 cargarPagosReporteria();
+                cargarChatReporteria();
             })
             .catch(err => {
                 alert('Pago aceptado localmente.');
@@ -2455,15 +2504,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         // OBSERVAR PAGO
+        let currentObsPagoId = 0;
+        let currentObsCotiz = '';
+
         function observarPagoEnFila(id, cotiz) {
-            const motivo = prompt(`Ingrese el motivo de observación para ${cotiz}:`, 'Comprobante no coincide con extracto bancario');
-            if (!motivo) return;
+            currentObsPagoId = id;
+            currentObsCotiz = cotiz;
+            const titleEl = document.getElementById('modalObsCotiz');
+            if (titleEl) titleEl.textContent = `Observar Factura ${cotiz}`;
+
+            // Resetear inputs del modal
+            const firstRadio = document.querySelector('input[name="radioMotivoObs"]');
+            if (firstRadio) firstRadio.checked = true;
+            const inputCustom = document.getElementById('inputObsPersonalizado');
+            if (inputCustom) {
+                inputCustom.style.display = 'none';
+                inputCustom.value = '';
+            }
+
+            document.getElementById('modalObservarPago').classList.add('open');
+        }
+
+        function confirmarObservacionDesdeModal() {
+            let motivo = '';
+            const radioSel = document.querySelector('input[name="radioMotivoObs"]:checked');
+            if (radioSel) {
+                if (radioSel.value === 'otro') {
+                    const inputCustom = document.getElementById('inputObsPersonalizado');
+                    motivo = inputCustom ? inputCustom.value.trim() : '';
+                    if (!motivo) motivo = 'Observación no especificada';
+                } else {
+                    motivo = radioSel.value;
+                }
+            } else {
+                motivo = 'Comprobante no coincide con extracto bancario';
+            }
+
+            cerrarModales();
 
             const formData = new FormData();
             formData.append('action', 'observar_pago');
-            formData.append('pago_id', id);
-            formData.append('cotizacion', cotiz);
+            formData.append('pago_id', currentObsPagoId);
+            formData.append('cotizacion', currentObsCotiz);
             formData.append('motivo', motivo);
+            formData.append('validador', 'Rodrigo Alonso (Reportería)');
 
             fetch('crm_backend.php', {
                 method: 'POST',
@@ -2471,8 +2555,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             })
             .then(res => res.json())
             .then(data => {
-                alert(`⚠️ Se marcó el pago como Observado. Se envió la notificación de corrección al asesor de ventas.`);
+                alert(`⚠️ Factura ${currentObsCotiz} marcada como Observada.\nMotivo: "${motivo}"\nSe notificó a Ventas en tiempo real.`);
                 cargarPagosReporteria();
+                cargarChatReporteria();
             })
             .catch(err => {
                 alert('Pago marcado como observado.');
@@ -2512,7 +2597,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             });
         }
 
-        // CHAT CON ASESORES
+        // CHAT CON ASESORES SINCRONIZADO CON BACKEND
         function abrirChatConAsesor(nombreAsesor) {
             cambiarVistaReporteria('chat');
             document.getElementById('chatActiveAdvisorName').textContent = nombreAsesor;
@@ -2531,39 +2616,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.getElementById('chatInputMessage').focus();
         }
 
+        function cargarChatReporteria() {
+            fetch('crm_backend.php?action=listar_mensajes')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.mensajes) return;
+                const scrollBox = document.getElementById('chatMessagesScroll');
+                if (!scrollBox) return;
+                scrollBox.innerHTML = '';
+                data.mensajes.forEach(m => {
+                    const isMio = (m.rol === 'Reportería' || m.remitente.includes('Rodrigo'));
+                    const div = document.createElement('div');
+                    div.className = `msg-bubble ${isMio ? 'sent' : 'received'}`;
+                    div.innerHTML = `
+                        <strong>${m.remitente}:</strong><br>
+                        ${m.mensaje}
+                        <span class="msg-time">${m.hora}</span>
+                    `;
+                    scrollBox.appendChild(div);
+                });
+                scrollBox.scrollTop = scrollBox.scrollHeight;
+            })
+            .catch(err => console.log('Error listar chat reporteria:', err));
+        }
+
         function enviarMensajeChat() {
             const input = document.getElementById('chatInputMessage');
             const msg = input.value.trim();
             if (!msg) return;
 
-            const scrollBox = document.getElementById('chatMessagesScroll');
-            const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} hrs`;
+            const formData = new FormData();
+            formData.append('action', 'enviar_chat');
+            formData.append('remitente', 'Rodrigo Alonso');
+            formData.append('rol', 'Reportería');
+            formData.append('mensaje', msg);
 
-            const div = document.createElement('div');
-            div.className = 'msg-bubble sent';
-            div.innerHTML = `
-                <strong>Rodrigo Alonso (Reportería):</strong><br>
-                ${msg}
-                <span class="msg-time">${timeStr}</span>
-            `;
-            scrollBox.appendChild(div);
-            scrollBox.scrollTop = scrollBox.scrollHeight;
-            input.value = '';
-
-            // Respuesta automática simulada del asesor
-            setTimeout(() => {
-                const advisorName = document.getElementById('chatActiveAdvisorName').textContent;
-                const repDiv = document.createElement('div');
-                repDiv.className = 'msg-bubble received';
-                repDiv.innerHTML = `
-                    <strong>${advisorName}:</strong><br>
-                    Recibido Rodrigo, muchas gracias por la verificación. Procedo con la coordinación del cliente.
-                    <span class="msg-time">${timeStr}</span>
-                `;
-                scrollBox.appendChild(repDiv);
-                scrollBox.scrollTop = scrollBox.scrollHeight;
-            }, 1000);
+            fetch('crm_backend.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                input.value = '';
+                cargarChatReporteria();
+            })
+            .catch(err => {
+                input.value = '';
+                cargarChatReporteria();
+            });
         }
 
         // EXPORTAR EXCEL / CSV
@@ -2583,10 +2683,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.body.removeChild(link);
         }
 
-        // Cargar pagos de reportería al iniciar y cada 5 segundos
+        // Cargar pagos y chat de reportería al iniciar y cada 4.5 segundos
         window.addEventListener('DOMContentLoaded', () => {
             cargarPagosReporteria();
-            setInterval(cargarPagosReporteria, 5000);
+            cargarChatReporteria();
+            setInterval(() => {
+                cargarPagosReporteria();
+                cargarChatReporteria();
+            }, 4500);
         });
     </script>
 </body>

@@ -1357,9 +1357,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #D1C5B4; border-radius: 3px; }
+
+        /* TOAST NOTIFICACIONES EN VIVO */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 999999;
+            pointer-events: none;
+        }
+        .toast-item {
+            pointer-events: auto;
+            background: #FFF;
+            border-radius: 18px;
+            padding: 16px 20px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+            border: 1px solid var(--border-soft);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 340px;
+            max-width: 440px;
+            animation: slideInToast 0.3s ease;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .toast-item { background: #1B201D; border-color: #27362E; }
+        @keyframes slideInToast {
+            from { transform: translateX(110%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-item.success { border-left: 5px solid #10B981; }
+        .toast-item.warning { border-left: 5px solid #EF4444; }
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .toast-item.success .toast-icon { background: #D1FAE5; color: #059669; }
+        .toast-item.warning .toast-icon { background: #FEE2E2; color: #DC2626; }
+        .toast-content { flex: 1; overflow: hidden; }
+        .toast-content h5 { font-size: 0.88rem; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+        .toast-content p { font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
     </style>
 </head>
 <body>
+
+    <!-- TOASTS EN VIVO -->
+    <div class="toast-container" id="toastContainerVentas"></div>
 
     <!-- CONTENEDOR PRINCIPAL EXPANDIDO A PANTALLA COMPLETA -->
     <div class="app-container">
@@ -2541,6 +2593,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
 
+        let previousPaymentStates = {};
+
+        function mostrarToast(tipo, titulo, mensaje) {
+            const container = document.getElementById('toastContainerVentas');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${tipo}`;
+            const icon = tipo === 'success' ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-triangle-exclamation"></i>';
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-content">
+                    <h5>${titulo}</h5>
+                    <p>${mensaje}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(110%)';
+                setTimeout(() => toast.remove(), 400);
+            }, 7000);
+        }
+
         // CARGAR COMPROBANTES DESDE EL BACKEND EN TIEMPO REAL
         function cargarComprobantesVentas() {
             fetch('crm_backend.php?action=listar_pagos')
@@ -2553,13 +2628,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     data.pagos.forEach(p => {
                         const isAceptado = (p.estado === 'Aceptado');
                         const isObservado = (p.estado === 'Observado');
+                        const montoFmt = parseFloat(p.monto).toLocaleString('en-US', {minimumFractionDigits:2});
+
+                        // Detectar cambio de estado en vivo para lanzar Toast de notificación
+                        const prevState = previousPaymentStates[p.id];
+                        if (prevState && prevState === 'Pendiente') {
+                            if (isAceptado) {
+                                mostrarToast('success', '🎉 ¡Pago Aceptado por Reportería!', `La factura ${p.nro_factura} (${p.cliente}) por S/ ${montoFmt} ha sido APROBADA. ¡Pedido liberado para despacho!`);
+                            } else if (isObservado) {
+                                mostrarToast('warning', '⚠️ Pago Observado por Reportería', `La factura ${p.nro_factura} (${p.cliente}) fue observada: "${p.motivo_observacion || 'Revisar extracto'}"`);
+                            }
+                        }
+                        previousPaymentStates[p.id] = p.estado;
+
                         let badge = '<span class="badge-tag-vip">⏳ En Revisión Reportería</span>';
                         if (isAceptado) badge = '<span class="badge-tag-activo">✅ Pago Aceptado</span>';
-                        else if (isObservado) badge = `<span style="background:#FEE2E2; color:#DC2626; padding:3px 8px; border-radius:10px; font-size:0.7rem; font-weight:700;">⚠️ Observado</span>`;
+                        else if (isObservado) badge = `<span style="background:#FEE2E2; color:#DC2626; padding:3px 8px; border-radius:10px; font-size:0.7rem; font-weight:700;">⚠️ Observado: ${p.motivo_observacion || 'Rectificar'}</span>`;
 
                         const card = document.createElement('div');
                         card.className = 'voucher-card-item';
-                        const montoFmt = parseFloat(p.monto).toLocaleString('en-US', {minimumFractionDigits:2});
                         card.innerHTML = `
                             <div class="voucher-card-thumb" onclick="verComprobanteDetalle('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.voucher_url}', '${p.estado}')">
                                 <img src="${p.voucher_url}" alt="Voucher" onerror="this.src='https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80'">
@@ -2626,19 +2713,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 document.getElementById('statVentasHoy').textContent = ventasHoyCount;
                 
                 alert(`✅ ¡Facturación ${nro} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} registrada!\n\n1. El comprobante de pago fue guardado en el servidor.\n2. Se notificó inmediatamente al área de Reportería para que verifique y acepte el pago.`);
-                
-                // Mensaje en el chat central
-                const chatContainer = document.getElementById('chatCenterMessages');
-                if (chatContainer) {
-                    const bubble = document.createElement('div');
-                    bubble.className = 'chat-bubble asesor';
-                    bubble.innerHTML = `<strong>Tú (Elizabeth Addams):</strong><br>Acabo de emitir la Factura ${nro} para ${cliente} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})}. Adjunto voucher ${op} para su validación.<div style="font-size:0.65rem; opacity:0.8; margin-top:4px;">Ahora mismo</div>`;
-                    chatContainer.appendChild(bubble);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }
 
                 // Recargar comprobantes y conmutar a la vista
                 cargarComprobantesVentas();
+                cargarChatVentas();
                 cambiarVistaVentas('comprobantes');
 
                 // Limpiar formulario y regenerar número
@@ -2681,7 +2759,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             });
         }
 
-        // CHAT CON REPORTERÍA
+        // CHAT SINCRONIZADO CON REPORTERÍA
+        function cargarChatVentas() {
+            fetch('crm_backend.php?action=listar_mensajes')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.mensajes) return;
+                const container = document.getElementById('chatCenterMessages');
+                if (!container) return;
+                container.innerHTML = '';
+                data.mensajes.forEach(m => {
+                    const isMio = (m.rol === 'Ventas' || m.remitente.includes('Elizabeth'));
+                    const bubble = document.createElement('div');
+                    bubble.className = `chat-bubble ${isMio ? 'asesor' : 'reporteria'}`;
+                    bubble.innerHTML = `
+                        <strong>${m.remitente}:</strong><br>
+                        ${m.mensaje}
+                        <div style="font-size:0.65rem; opacity:0.8; margin-top:4px;">${m.hora}</div>
+                    `;
+                    container.appendChild(bubble);
+                });
+                container.scrollTop = container.scrollHeight;
+            })
+            .catch(err => console.log('Error listar chat:', err));
+        }
+
         function insertarTextoChat(texto) {
             document.getElementById('inputChatMsg').value = texto;
             document.getElementById('inputChatMsg').focus();
@@ -2692,28 +2794,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const texto = input.value.trim();
             if (!texto) return;
 
-            const chatContainer = document.getElementById('chatCenterMessages');
-            const bubble = document.createElement('div');
-            bubble.className = 'chat-bubble asesor';
-            bubble.innerHTML = `<strong>Tú (Elizabeth Addams):</strong><br>${texto}<div style="font-size:0.65rem; opacity:0.8; margin-top:4px;">Ahora mismo</div>`;
-            chatContainer.appendChild(bubble);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            const formData = new FormData();
+            formData.append('action', 'enviar_chat');
+            formData.append('remitente', 'Elizabeth Addams');
+            formData.append('rol', 'Ventas');
+            formData.append('mensaje', texto);
 
-            input.value = '';
-
-            setTimeout(() => {
-                const repBubble = document.createElement('div');
-                repBubble.className = 'chat-bubble reporteria';
-                repBubble.innerHTML = `<strong>Área de Reportería (Finanzas):</strong><br>Recibido Elizabeth, estamos verificando en el sistema bancario. Te confirmamos en breve. ✅<div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">Ahora mismo</div>`;
-                chatContainer.appendChild(repBubble);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }, 1200);
+            fetch('crm_backend.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                input.value = '';
+                cargarChatVentas();
+            })
+            .catch(err => {
+                input.value = '';
+                cargarChatVentas();
+            });
         }
 
-        // Cargar comprobantes al iniciar y cada 6 segundos
+        // Inicializar cargas periódicas
         window.addEventListener('DOMContentLoaded', () => {
             cargarComprobantesVentas();
-            setInterval(cargarComprobantesVentas, 6000);
+            cargarChatVentas();
+            setInterval(() => {
+                cargarComprobantesVentas();
+                cargarChatVentas();
+            }, 4500);
         });
     </script>
 </body>

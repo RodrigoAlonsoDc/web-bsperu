@@ -27,6 +27,7 @@ if (!is_dir($dataDir)) {
     @mkdir($dataDir, 0777, true);
 }
 $pagosFile = $dataDir . '/pagos.json';
+$chatFile = $dataDir . '/mensajes_chat.json';
 
 // Inicializar pagos con datos de partida si el archivo aún no existe
 if (!file_exists($pagosFile)) {
@@ -86,6 +87,29 @@ if (!file_exists($pagosFile)) {
     @file_put_contents($pagosFile, json_encode($initialPagos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
+// Inicializar chat si no existe
+if (!file_exists($chatFile)) {
+    $initialChat = [
+        [
+            'id' => 1,
+            'remitente' => 'Elizabeth Addams',
+            'rol' => 'Ventas',
+            'mensaje' => 'Hola Rodrigo, envié las facturas del día para su validación bancaria.',
+            'hora' => '11:42 AM',
+            'tipo' => 'texto'
+        ],
+        [
+            'id' => 2,
+            'remitente' => 'Rodrigo Alonso',
+            'rol' => 'Reportería',
+            'mensaje' => 'Recibido Elizabeth, estamos revisando los extractos bancarios en BCP y BBVA. Te confirmamos por este medio.',
+            'hora' => '11:45 AM',
+            'tipo' => 'texto'
+        ]
+    ];
+    @file_put_contents($chatFile, json_encode($initialChat, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
 function obtenerPagos() {
     global $pagosFile;
     if (file_exists($pagosFile)) {
@@ -101,6 +125,30 @@ function obtenerPagos() {
 function guardarPagos($pagos) {
     global $pagosFile;
     file_put_contents($pagosFile, json_encode($pagos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+function obtenerMensajesChat() {
+    global $chatFile;
+    if (file_exists($chatFile)) {
+        $content = file_get_contents($chatFile);
+        $arr = json_decode($content, true);
+        if (is_array($arr)) {
+            return $arr;
+        }
+    }
+    return [];
+}
+
+function agregarMensajeChat($msg) {
+    global $chatFile;
+    $mensajes = obtenerMensajesChat();
+    $msg['id'] = count($mensajes) > 0 ? (max(array_column($mensajes, 'id')) + 1) : 1;
+    $mensajes[] = $msg;
+    // Mantener los últimos 50 mensajes
+    if (count($mensajes) > 50) {
+        $mensajes = array_slice($mensajes, -50);
+    }
+    file_put_contents($chatFile, json_encode($mensajes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 // Router de peticiones AJAX
@@ -226,6 +274,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         array_unshift($pagos, $nuevoPago);
         guardarPagos($pagos);
 
+        // Notificación automática en el chat
+        agregarMensajeChat([
+            'remitente' => $asesor,
+            'rol' => 'Ventas',
+            'mensaje' => "📤 NUEVA FACTURACIÓN: He registrado la factura {$nro_factura} para {$cliente} por S/ " . number_format($monto, 2) . ". Adjunto voucher {$banco} ({$nro_operacion}) para su pronta validación.",
+            'hora' => date('H:i'),
+            'tipo' => 'nueva_factura'
+        ]);
+
         echo json_encode([
             'success' => true,
             'mensaje' => "¡Facturación {$nro_factura} registrada! Se subió el voucher y se envió la notificación a Reportería.",
@@ -265,6 +322,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         }
         guardarPagos($pagos);
 
+        // Notificación automática en el chat para el vendedor
+        if ($pagoActualizado) {
+            agregarMensajeChat([
+                'remitente' => 'Rodrigo Alonso',
+                'rol' => 'Reportería',
+                'mensaje' => "✅ PAGO ACEPTADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) por S/ " . number_format($pagoActualizado['monto'], 2) . " ha sido verificada en {$pagoActualizado['banco']}. Pedido liberado para despacho.",
+                'hora' => date('H:i'),
+                'tipo' => 'pago_aceptado'
+            ]);
+        }
+
         echo json_encode([
             'success' => true,
             'mensaje' => 'Pago validado y aceptado exitosamente por Reportería.',
@@ -302,11 +370,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         }
         guardarPagos($pagos);
 
+        // Notificación automática en el chat de observación
+        if ($pagoActualizado) {
+            agregarMensajeChat([
+                'remitente' => 'Rodrigo Alonso',
+                'rol' => 'Reportería',
+                'mensaje' => "⚠️ PAGO OBSERVADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) tiene la siguiente observación: \"{$motivo}\". Por favor rectificar con el cliente.",
+                'hora' => date('H:i'),
+                'tipo' => 'pago_observado'
+            ]);
+        }
+
         echo json_encode([
             'success' => true,
             'mensaje' => 'Pago marcado como Observado. Notificación enviada al asesor.',
             'pago' => $pagoActualizado
         ]);
+        exit;
+    }
+
+    // 5. LISTAR MENSAJES DE CHAT
+    if ($action === 'listar_mensajes') {
+        header('Content-Type: application/json');
+        $mensajes = obtenerMensajesChat();
+        echo json_encode([
+            'success' => true,
+            'mensajes' => $mensajes
+        ]);
+        exit;
+    }
+
+    // 6. ENVIAR MENSAJE DE CHAT
+    if ($action === 'enviar_chat') {
+        header('Content-Type: application/json');
+        $remitente = trim($_POST['remitente'] ?? 'Usuario');
+        $rol = trim($_POST['rol'] ?? 'Ventas');
+        $texto = trim($_POST['mensaje'] ?? '');
+
+        if (!empty($texto)) {
+            $nuevoMsg = [
+                'remitente' => $remitente,
+                'rol' => $rol,
+                'mensaje' => $texto,
+                'hora' => date('H:i'),
+                'tipo' => 'texto'
+            ];
+            agregarMensajeChat($nuevoMsg);
+            echo json_encode([
+                'success' => true,
+                'mensaje' => $nuevoMsg
+            ]);
+            exit;
+        }
+        echo json_encode(['success' => false, 'error' => 'Mensaje vacío']);
         exit;
     }
 }
