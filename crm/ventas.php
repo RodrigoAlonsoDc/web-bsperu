@@ -1946,16 +1946,9 @@ if (file_exists($fileCotizPath)) {
                                 </div>
                             </div>
 
-                            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <label style="font-size:0.85rem; font-weight:700; color:var(--text-dark); text-transform:uppercase;">COTIZACIONES:</label>
-                                    <input type="text" id="cotizCodigo" value="<?php echo htmlspecialchars($siguienteCodigoCotiz); ?>" readonly style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem; width:130px; padding:6px 12px; border-radius:10px; border:1.5px solid var(--accent-tan); background:#F3F4F6; color:var(--text-dark); text-align:center; cursor:not-allowed;" title="Número correlativo generado automáticamente por el sistema">
-                                </div>
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Fecha:</label>
-                                    <input type="date" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>" readonly style="padding:6px 12px; border-radius:10px; border:1px solid var(--border-soft); background:#F3F4F6; color:var(--text-dark); font-size:0.82rem; cursor:not-allowed; pointer-events:none;" title="Fecha automática de emisión del día">
-                                </div>
-                            </div>
+                            <!-- Correlativo y Fecha automáticos del sistema (ocultos de la interfaz visual) -->
+                            <input type="hidden" id="cotizCodigo" value="<?php echo htmlspecialchars($siguienteCodigoCotiz); ?>">
+                            <input type="hidden" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>">
                         </div>
 
                         <!-- BUSCADOR EXCLUSIVO EN CARTERA POR DNI O RUC -->
