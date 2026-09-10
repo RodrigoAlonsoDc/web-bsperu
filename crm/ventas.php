@@ -2761,8 +2761,8 @@ if (file_exists($fileCotizPath)) {
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div class="status-dot"></div>
                             <div>
-                                <strong style="color:var(--text-dark); font-size:0.9rem;">Área de Reportería & Finanzas</strong>
-                                <p style="font-size:0.7rem; color:var(--text-muted);">Canal de validación de pagos y cierre de ventas diarias</p>
+                                <strong style="color:var(--text-dark); font-size:0.9rem;">Área de Reportería & Finanzas (Nayeli)</strong>
+                                <p style="font-size:0.7rem; color:var(--text-muted);">Canal directo • Endrina (Sucursal Chorrillos)</p>
                             </div>
                         </div>
                         <span class="badge-tag-activo">En línea</span>
@@ -4398,6 +4398,7 @@ if (file_exists($fileCotizPath)) {
             formData.append('metodo', metodo);
             formData.append('nro_operacion', op);
             formData.append('asesor', 'Endrina');
+            formData.append('sucursal', 'Sucursal Chorrillos');
 
             const fileInput = document.getElementById('inputVoucher');
             if (fileInput.files[0]) {
@@ -4413,12 +4414,12 @@ if (file_exists($fileCotizPath)) {
                 ventasHoyCount++;
                 document.getElementById('statVentasHoy').textContent = ventasHoyCount;
                 
-                alert(`✅ ¡Facturación ${nro} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} registrada!\n\n1. El comprobante de pago fue guardado en el servidor.\n2. Se notificó inmediatamente al área de Reportería para que verifique y acepte el pago.`);
+                alert(`✅ ¡Facturación ${nro} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} registrada!\n\n1. El comprobante y voucher fueron guardados en el servidor.\n2. Se notificó automáticamente al Chat de Nayeli (Reportería) con la tarjeta de la factura para la validación del pago.`);
 
-                // Recargar comprobantes y conmutar a la vista
+                // Recargar comprobantes y conmutar a la vista chat
                 cargarComprobantesVentas();
                 cargarChatVentas();
-                cambiarVistaVentas('comprobantes');
+                cambiarVistaVentas('chat');
 
                 // Limpiar formulario y regenerar número
                 document.getElementById('facCliente').value = '';
@@ -4432,7 +4433,8 @@ if (file_exists($fileCotizPath)) {
             .catch(err => {
                 alert('Facturación registrada localmente.');
                 cargarComprobantesVentas();
-                cambiarVistaVentas('comprobantes');
+                cargarChatVentas();
+                cambiarVistaVentas('chat');
             });
         }
 
@@ -4471,16 +4473,43 @@ if (file_exists($fileCotizPath)) {
                 if (!data.success || !data.mensajes) return;
                 const container = document.getElementById('chatCenterMessages');
                 if (!container) return;
+                
+                // Filtrar los mensajes de la conversación entre Endrina y Reportería (Nayeli)
+                const misMensajes = data.mensajes.filter(m => {
+                    return (m.asesor === 'Endrina') || (!m.asesor && (m.remitente.includes('Endrina') || m.rol === 'Ventas'));
+                });
+
                 container.innerHTML = '';
-                data.mensajes.forEach(m => {
-                    const isMio = (m.rol === 'Ventas' || m.remitente.includes('Endrina'));
+                misMensajes.forEach(m => {
+                    const isMio = (m.rol === 'Ventas' || (m.remitente && m.remitente.includes('Endrina')));
                     const bubble = document.createElement('div');
                     bubble.className = `chat-bubble ${isMio ? 'asesor' : 'reporteria'}`;
-                    bubble.innerHTML = `
-                        <strong>${m.remitente}:</strong><br>
-                        ${m.mensaje}
-                        <div style="font-size:0.65rem; opacity:0.8; margin-top:4px;">${m.hora}</div>
-                    `;
+                    
+                    if (m.tipo === 'factura_notif' && m.factura_data) {
+                        const fd = m.factura_data;
+                        const montoFmt = parseFloat(fd.monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        bubble.style.borderLeft = isMio ? '4px solid #f59e0b' : '4px solid #38bdf8';
+                        bubble.innerHTML = `
+                            <div style="font-weight:700; font-size:0.83rem; color:${isMio ? '#f59e0b' : '#38bdf8'}; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                                <span>📄</span> <span>${isMio ? 'Tú (Endrina)' : m.remitente}</span>
+                                <span style="background:rgba(245,158,11,0.2); color:#fbbf24; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:600; margin-left:auto;">Comprobante</span>
+                            </div>
+                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px;">${m.mensaje}</div>
+                            <div style="background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
+                                <div><strong style="color:#cbd5e1;">Factura:</strong> <span style="font-family:monospace; color:#38bdf8; font-weight:700;">${fd.nro_factura || ''}</span></div>
+                                <div><strong style="color:#cbd5e1;">Cliente:</strong> ${fd.cliente || ''} (${fd.ruc || ''})</div>
+                                <div><strong style="color:#cbd5e1;">Monto Total:</strong> <span style="color:#4ade80; font-weight:700;">S/ ${montoFmt}</span></div>
+                                <div><strong style="color:#cbd5e1;">Operación:</strong> ${fd.banco || ''} • <span style="font-family:monospace;">${fd.nro_operacion || ''}</span></div>
+                            </div>
+                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
+                        `;
+                    } else {
+                        bubble.innerHTML = `
+                            <strong style="color:${isMio ? '#93c5fd' : '#cbd5e1'}; font-size:0.8rem;">${isMio ? 'Tú (Endrina)' : m.remitente}:</strong><br>
+                            <span style="font-size:0.85rem; line-height:1.4;">${m.mensaje}</span>
+                            <div style="font-size:0.65rem; opacity:0.75; margin-top:4px; text-align:right;">${m.hora || ''}</div>
+                        `;
+                    }
                     container.appendChild(bubble);
                 });
                 container.scrollTop = container.scrollHeight;
@@ -4501,6 +4530,8 @@ if (file_exists($fileCotizPath)) {
             const formData = new FormData();
             formData.append('action', 'enviar_chat');
             formData.append('remitente', 'Endrina');
+            formData.append('asesor', 'Endrina');
+            formData.append('sucursal', 'Sucursal Chorrillos');
             formData.append('rol', 'Ventas');
             formData.append('mensaje', texto);
 

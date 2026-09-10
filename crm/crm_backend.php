@@ -216,23 +216,68 @@ if (!file_exists($pagosFile)) {
     @file_put_contents($pagosFile, json_encode($initialPagos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
-// Inicializar chat si no existe
+// Inicializar chat con asesores y sucursales si no existe
 if (!file_exists($chatFile)) {
+    $ahora = time();
     $initialChat = [
         [
             'id' => 1,
+            'asesor' => 'Endrina',
+            'sucursal' => 'Sucursal Chorrillos',
             'remitente' => 'Endrina',
             'rol' => 'Ventas',
-            'mensaje' => 'Hola Nayeli, envié las facturas del día para su validación bancaria.',
-            'hora' => '11:42 AM',
+            'mensaje' => 'Hola Nayeli, adjunto las nuevas cotizaciones y facturas del día para su validación bancaria desde la Sucursal Chorrillos.',
+            'hora' => date('H:i', $ahora - 1800),
+            'fecha' => date('Y-m-d'),
+            'timestamp' => $ahora - 1800,
             'tipo' => 'texto'
         ],
         [
             'id' => 2,
+            'asesor' => 'Endrina',
+            'sucursal' => 'Sucursal Chorrillos',
             'remitente' => 'Nayeli',
             'rol' => 'Reportería',
-            'mensaje' => 'Recibido Endrina, estamos revisando los extractos bancarios en BCP y BBVA. Te confirmamos por este medio.',
-            'hora' => '11:45 AM',
+            'mensaje' => 'Recibido Endrina. Estamos validando los extractos del BCP y BBVA para confirmar la acreditación de los pedidos.',
+            'hora' => date('H:i', $ahora - 1500),
+            'fecha' => date('Y-m-d'),
+            'timestamp' => $ahora - 1500,
+            'tipo' => 'texto'
+        ],
+        [
+            'id' => 3,
+            'asesor' => 'Maria Gomez',
+            'sucursal' => 'Sede Corporativa Lima',
+            'remitente' => 'Maria Gomez',
+            'rol' => 'Ventas',
+            'mensaje' => 'Hola Nayeli, Cosapi S.A. solicita confirmación de su pago de S/ 14,400.00 para despachar hoy.',
+            'hora' => date('H:i', $ahora - 3600),
+            'fecha' => date('Y-m-d'),
+            'timestamp' => $ahora - 3600,
+            'tipo' => 'texto'
+        ],
+        [
+            'id' => 4,
+            'asesor' => 'Carlos Ruiz',
+            'sucursal' => 'Sucursal Surquillo',
+            'remitente' => 'Carlos Ruiz',
+            'rol' => 'Ventas',
+            'mensaje' => 'Acabo de subir el voucher BBVA de Consorcio Vial Piura por S/ 6,800.00.',
+            'hora' => date('H:i', $ahora - 7200),
+            'fecha' => date('Y-m-d'),
+            'timestamp' => $ahora - 7200,
+            'tipo' => 'texto'
+        ],
+        [
+            'id' => 5,
+            'asesor' => 'Ana Torres',
+            'sucursal' => 'Sucursal San Borja',
+            'remitente' => 'Ana Torres',
+            'rol' => 'Ventas',
+            'mensaje' => 'Buenas tardes Nayeli, ¿se acreditó el voucher de Edificaciones Pacífico?',
+            'hora' => date('H:i', $ahora - 10800),
+            'fecha' => date('Y-m-d'),
+            'timestamp' => $ahora - 10800,
             'tipo' => 'texto'
         ]
     ];
@@ -306,10 +351,17 @@ function agregarMensajeChat($msg) {
     global $chatFile;
     $mensajes = obtenerMensajesChat();
     $msg['id'] = count($mensajes) > 0 ? (max(array_column($mensajes, 'id')) + 1) : 1;
+    $msg['timestamp'] = $msg['timestamp'] ?? time();
+    $msg['fecha'] = $msg['fecha'] ?? date('Y-m-d');
+    $msg['hora'] = $msg['hora'] ?? date('H:i');
+    $msg['asesor'] = $msg['asesor'] ?? 'Endrina';
+    $msg['sucursal'] = $msg['sucursal'] ?? ($msg['asesor'] === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal');
+    $msg['tipo'] = $msg['tipo'] ?? 'texto';
+    $msg['leido'] = $msg['leido'] ?? false;
     $mensajes[] = $msg;
-    // Mantener los últimos 50 mensajes
-    if (count($mensajes) > 50) {
-        $mensajes = array_slice($mensajes, -50);
+    // Mantener los últimos 100 mensajes
+    if (count($mensajes) > 100) {
+        $mensajes = array_slice($mensajes, -100);
     }
     file_put_contents($chatFile, json_encode($mensajes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
@@ -437,13 +489,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         array_unshift($pagos, $nuevoPago);
         guardarPagos($pagos);
 
-        // Notificación automática en el chat
+        // Notificación automática en el chat tipo WhatsApp
+        $sucursal_asesor = trim($_POST['sucursal'] ?? 'Sucursal Chorrillos');
         agregarMensajeChat([
+            'asesor' => $asesor,
+            'sucursal' => $sucursal_asesor,
             'remitente' => $asesor,
             'rol' => 'Ventas',
-            'mensaje' => "📤 NUEVA FACTURACIÓN: He registrado la factura {$nro_factura} para {$cliente} por S/ " . number_format($monto, 2) . ". Adjunto voucher {$banco} ({$nro_operacion}) para su pronta validación.",
+            'mensaje' => "📄 FACTURACIÓN EMITIDA: He generado la factura {$nro_factura} para {$cliente} por S/ " . number_format($monto, 2) . ". Adjunto voucher de {$banco} ({$nro_operacion}) para su validación bancaria.",
             'hora' => date('H:i'),
-            'tipo' => 'nueva_factura'
+            'fecha' => date('Y-m-d'),
+            'timestamp' => time(),
+            'tipo' => 'factura_notif',
+            'factura_data' => [
+                'nro_factura' => $nro_factura,
+                'cliente' => $cliente,
+                'ruc' => $ruc,
+                'monto' => $monto,
+                'banco' => $banco,
+                'nro_operacion' => $nro_operacion,
+                'voucher_url' => $voucher_url
+            ]
         ]);
 
         echo json_encode([
@@ -487,11 +553,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
         // Notificación automática en el chat para el vendedor
         if ($pagoActualizado) {
+            $asesorP = $pagoActualizado['asesor'] ?? 'Endrina';
             agregarMensajeChat([
+                'asesor' => $asesorP,
+                'sucursal' => ($asesorP === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal'),
                 'remitente' => 'Nayeli',
                 'rol' => 'Reportería',
                 'mensaje' => "✅ PAGO ACEPTADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) por S/ " . number_format($pagoActualizado['monto'], 2) . " ha sido verificada en {$pagoActualizado['banco']}. Pedido liberado para despacho.",
                 'hora' => date('H:i'),
+                'fecha' => date('Y-m-d'),
+                'timestamp' => time(),
                 'tipo' => 'pago_aceptado'
             ]);
         }
@@ -535,11 +606,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
         // Notificación automática en el chat de observación
         if ($pagoActualizado) {
+            $asesorP = $pagoActualizado['asesor'] ?? 'Endrina';
             agregarMensajeChat([
+                'asesor' => $asesorP,
+                'sucursal' => ($asesorP === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal'),
                 'remitente' => 'Nayeli',
                 'rol' => 'Reportería',
                 'mensaje' => "⚠️ PAGO OBSERVADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) tiene la siguiente observación: \"{$motivo}\". Por favor rectificar con el cliente.",
                 'hora' => date('H:i'),
+                'fecha' => date('Y-m-d'),
+                'timestamp' => time(),
                 'tipo' => 'pago_observado'
             ]);
         }
@@ -552,13 +628,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         exit;
     }
 
-    // 5. LISTAR MENSAJES DE CHAT
+    // 5. LISTAR MENSAJES DE CHAT (ESTILO WHATSAPP CON SUCURSALES Y ORDEN CRONOLÓGICO)
     if ($action === 'listar_mensajes') {
         header('Content-Type: application/json');
         $mensajes = obtenerMensajesChat();
+        $filtroAsesor = trim($_GET['asesor'] ?? '');
+
+        // Catálogo oficial de asesores con sus sucursales
+        $catalogoAsesores = [
+            'Endrina' => [
+                'nombre' => 'Endrina',
+                'sucursal' => 'Sucursal Chorrillos',
+                'rol' => 'Asesora de Ventas',
+                'avatar' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80',
+                'online' => true
+            ],
+            'Maria Gomez' => [
+                'nombre' => 'Maria Gomez',
+                'sucursal' => 'Sede Corporativa Lima',
+                'rol' => 'Ventas Corporativas',
+                'avatar' => 'https://ui-avatars.com/api/?name=Maria+Gomez&background=D1FAE5&color=059669',
+                'online' => true
+            ],
+            'Carlos Ruiz' => [
+                'nombre' => 'Carlos Ruiz',
+                'sucursal' => 'Sucursal Surquillo',
+                'rol' => 'Despachos & Logística',
+                'avatar' => 'https://ui-avatars.com/api/?name=Carlos+Ruiz&background=FEF3C7&color=D97706',
+                'online' => true
+            ],
+            'Ana Torres' => [
+                'nombre' => 'Ana Torres',
+                'sucursal' => 'Sucursal San Borja',
+                'rol' => 'Asesora Comercial',
+                'avatar' => 'https://ui-avatars.com/api/?name=Ana+Torres&background=E0E7FF&color=4338CA',
+                'online' => false
+            ]
+        ];
+
+        // Construir bandeja de conversaciones estilo WhatsApp
+        $conversaciones = [];
+        foreach ($catalogoAsesores as $key => $info) {
+            $msgsAsesor = array_values(array_filter($mensajes, function($m) use ($key) {
+                $as = $m['asesor'] ?? $m['remitente'] ?? '';
+                return $as === $key;
+            }));
+
+            $ultimoMsg = !empty($msgsAsesor) ? end($msgsAsesor) : null;
+            $ultimoTexto = 'Sin mensajes aún';
+            $ultimoTimestamp = 0;
+            $ultimaHora = '';
+            $ultimoRemitente = '';
+            $noLeidos = 0;
+
+            if ($ultimoMsg) {
+                $ultimoTexto = $ultimoMsg['mensaje'] ?? '';
+                if (($ultimoMsg['tipo'] ?? '') === 'factura_notif') {
+                    $nroF = $ultimoMsg['factura_data']['nro_factura'] ?? 'Factura';
+                    $montoF = isset($ultimoMsg['factura_data']['monto']) ? 'S/ ' . number_format($ultimoMsg['factura_data']['monto'], 2) : '';
+                    $ultimoTexto = "📄 {$nroF} ({$montoF}) - Por validar";
+                }
+                $ultimoTimestamp = intval($ultimoMsg['timestamp'] ?? (strtotime(($ultimoMsg['fecha'] ?? date('Y-m-d')) . ' ' . ($ultimoMsg['hora'] ?? '00:00')) ?: 0));
+                $ultimaHora = $ultimoMsg['hora'] ?? '';
+                $ultimoRemitente = $ultimoMsg['remitente'] ?? '';
+            }
+
+            $conversaciones[] = [
+                'asesor' => $info['nombre'],
+                'sucursal' => $info['sucursal'],
+                'rol' => $info['rol'],
+                'avatar' => $info['avatar'],
+                'online' => $info['online'],
+                'ultimo_mensaje' => $ultimoTexto,
+                'ultima_hora' => $ultimaHora,
+                'ultimo_timestamp' => $ultimoTimestamp,
+                'ultimo_remitente' => $ultimoRemitente,
+                'no_leidos' => $noLeidos
+            ];
+        }
+
+        // ORDEN ESTRICTO TIPO WHATSAPP: Primeras filas los que enviaron mensaje más recientemente
+        usort($conversaciones, function($a, $b) {
+            return $b['ultimo_timestamp'] - $a['ultimo_timestamp'];
+        });
+
+        // Filtrar mensajes si se solicita de un asesor específico
+        $mensajesFiltrados = $mensajes;
+        if (!empty($filtroAsesor)) {
+            $mensajesFiltrados = array_values(array_filter($mensajes, function($m) use ($filtroAsesor) {
+                $as = $m['asesor'] ?? $m['remitente'] ?? '';
+                return $as === $filtroAsesor;
+            }));
+        }
+
         echo json_encode([
             'success' => true,
-            'mensajes' => $mensajes
+            'conversaciones' => $conversaciones,
+            'mensajes' => $mensajesFiltrados,
+            'total_mensajes' => count($mensajes)
         ]);
         exit;
     }
@@ -569,14 +736,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $remitente = trim($_POST['remitente'] ?? 'Usuario');
         $rol = trim($_POST['rol'] ?? 'Ventas');
         $texto = trim($_POST['mensaje'] ?? '');
+        $asesor = trim($_POST['asesor'] ?? ($rol === 'Ventas' ? $remitente : 'Endrina'));
+
+        $sucursalesDefault = [
+            'Endrina' => 'Sucursal Chorrillos',
+            'Maria Gomez' => 'Sede Corporativa Lima',
+            'Carlos Ruiz' => 'Sucursal Surquillo',
+            'Ana Torres' => 'Sucursal San Borja'
+        ];
+        $sucursal = trim($_POST['sucursal'] ?? ($sucursalesDefault[$asesor] ?? 'Sucursal Chorrillos'));
 
         if (!empty($texto)) {
             $nuevoMsg = [
+                'asesor' => $asesor,
+                'sucursal' => $sucursal,
                 'remitente' => $remitente,
                 'rol' => $rol,
                 'mensaje' => $texto,
                 'hora' => date('H:i'),
-                'tipo' => 'texto'
+                'fecha' => date('Y-m-d'),
+                'timestamp' => time(),
+                'tipo' => 'texto',
+                'leido' => false
             ];
             agregarMensajeChat($nuevoMsg);
             echo json_encode([
