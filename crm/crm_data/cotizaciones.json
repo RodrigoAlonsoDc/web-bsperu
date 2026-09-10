@@ -1,0 +1,122 @@
+[
+    {
+        "id": 1,
+        "codigo": "0052456",
+        "fecha": "2026-08-19",
+        "cliente_nombre": "MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C.",
+        "ruc_dni": "20602591990",
+        "direccion": "JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO",
+        "email": "Consorciomiraflores25@gmail.com",
+        "telefono": "942 377 626",
+        "contacto": "Fanny Ramirez",
+        "asesor": "Endrina",
+        "forma_pago": "CONTADO CONTRA ENTREGA",
+        "vigencia": "7 dias",
+        "subtotal": 342.59,
+        "igv": 61.67,
+        "total": 404.26,
+        "estado": "Aceptada",
+        "descuento_max": 20.0,
+        "requiere_autorizacion": true,
+        "autorizado_por": "Administración",
+        "items": [
+            {
+                "item": 1,
+                "codigo": "110014568",
+                "descripcion": "Z SEP. CONCRETO ESCANTILLONES 30 CM X 25 UNI",
+                "cantidad": 8.0,
+                "umed": "B25",
+                "pre_orig": 45.09,
+                "descto": 20.0,
+                "prec_total": 36.072,
+                "subtotal": 288.576,
+                "estado": "DISPONIBLE"
+            },
+            {
+                "item": 2,
+                "codigo": "110014460",
+                "descripcion": "SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI",
+                "cantidad": 2.0,
+                "umed": "B100",
+                "pre_orig": 33.76,
+                "descto": 20.0,
+                "prec_total": 27.008,
+                "subtotal": 54.016,
+                "estado": "DISPONIBLE"
+            }
+        ],
+        "created_at": "2026-08-19 10:30:00"
+    },
+    {
+        "id": 2,
+        "codigo": "0052457",
+        "fecha": "2026-09-08",
+        "cliente_nombre": "Cosapi S.A.",
+        "ruc_dni": "20100038146",
+        "direccion": "Av. República de Colombia 791, San Isidro, Lima",
+        "email": "compras@cosapi.com.pe",
+        "telefono": "984 129 384",
+        "contacto": "Ing. Mary Rose",
+        "asesor": "Endrina",
+        "forma_pago": "CONTADO CONTRA ENTREGA",
+        "vigencia": "7 dias",
+        "subtotal": 12203.39,
+        "igv": 2196.61,
+        "total": 14400.0,
+        "estado": "Facturada",
+        "descuento_max": 5.0,
+        "requiere_autorizacion": false,
+        "autorizado_por": null,
+        "items": [
+            {
+                "item": 1,
+                "codigo": "110014292",
+                "descripcion": "AIRCON Z X 5 GAL - Aditivo incorporador de aire",
+                "cantidad": 40.0,
+                "umed": "GLN",
+                "pre_orig": 321.14,
+                "descto": 5.0,
+                "prec_total": 305.08,
+                "subtotal": 12203.39,
+                "estado": "DISPONIBLE"
+            }
+        ],
+        "created_at": "2026-09-08 11:20:00"
+    },
+    {
+        "id": 3,
+        "codigo": "0052458",
+        "fecha": "2026-09-10",
+        "cliente_nombre": "Besco Inmobiliaria & Construcción",
+        "ruc_dni": "20419283011",
+        "direccion": "Av. Rivera Navarrete 501, San Isidro, Lima",
+        "email": "adquisiciones@besco.com.pe",
+        "telefono": "951 753 852",
+        "contacto": "Arq. Lucía Ramos",
+        "asesor": "Endrina",
+        "forma_pago": "CONTADO CONTRA ENTREGA",
+        "vigencia": "7 dias",
+        "subtotal": 10423.73,
+        "igv": 1876.27,
+        "total": 12300.0,
+        "estado": "Pendiente",
+        "descuento_max": 4.5,
+        "requiere_autorizacion": false,
+        "autorizado_por": null,
+        "items": [
+            {
+                "item": 1,
+                "codigo": "110014480",
+                "descripcion": "ALQUITRAN Z X 5 GAL - Recubrimiento resistente a la humedad",
+                "cantidad": 60.0,
+                "umed": "GLN",
+                "pre_orig": 181.9,
+                "descto": 4.5,
+                "prec_total": 173.71,
+                "subtotal": 10423.73,
+                "estado": "DISPONIBLE"
+            }
+        ],
+        "created_at": "2026-09-10 09:15:00"
+    }
+]

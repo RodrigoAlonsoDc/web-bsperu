@@ -28,6 +28,134 @@ if (!is_dir($dataDir)) {
 }
 $pagosFile = $dataDir . '/pagos.json';
 $chatFile = $dataDir . '/mensajes_chat.json';
+$cotizacionesFile = $dataDir . '/cotizaciones.json';
+
+// Inicializar cotizaciones con datos de partida (incluyendo el formato del PDF oficial)
+if (!file_exists($cotizacionesFile)) {
+    $initialCotizaciones = [
+        [
+            'id' => 1,
+            'codigo' => '0052456',
+            'fecha' => '2026-08-19',
+            'cliente_nombre' => 'MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C.',
+            'ruc_dni' => '20602591990',
+            'direccion' => 'JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO',
+            'email' => 'Consorciomiraflores25@gmail.com',
+            'telefono' => '942 377 626',
+            'contacto' => 'Fanny Ramirez',
+            'asesor' => 'Endrina',
+            'forma_pago' => 'CONTADO CONTRA ENTREGA',
+            'vigencia' => '7 dias',
+            'subtotal' => 342.59,
+            'igv' => 61.67,
+            'total' => 404.26,
+            'estado' => 'Aceptada',
+            'descuento_max' => 20.0,
+            'requiere_autorizacion' => true,
+            'autorizado_por' => 'Administración',
+            'items' => [
+                [
+                    'item' => 1,
+                    'codigo' => '110014568',
+                    'descripcion' => 'Z SEP. CONCRETO ESCANTILLONES 30 CM X 25 UNI',
+                    'cantidad' => 8.0,
+                    'umed' => 'B25',
+                    'pre_orig' => 45.0900,
+                    'descto' => 20.0,
+                    'prec_total' => 36.0720,
+                    'subtotal' => 288.5760,
+                    'estado' => 'DISPONIBLE'
+                ],
+                [
+                    'item' => 2,
+                    'codigo' => '110014460',
+                    'descripcion' => 'SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI',
+                    'cantidad' => 2.0,
+                    'umed' => 'B100',
+                    'pre_orig' => 33.7600,
+                    'descto' => 20.0,
+                    'prec_total' => 27.0080,
+                    'subtotal' => 54.0160,
+                    'estado' => 'DISPONIBLE'
+                ]
+            ],
+            'created_at' => '2026-08-19 10:30:00'
+        ],
+        [
+            'id' => 2,
+            'codigo' => '0052457',
+            'fecha' => '2026-09-08',
+            'cliente_nombre' => 'Cosapi S.A.',
+            'ruc_dni' => '20100038146',
+            'direccion' => 'Av. República de Colombia 791, San Isidro, Lima',
+            'email' => 'compras@cosapi.com.pe',
+            'telefono' => '984 129 384',
+            'contacto' => 'Ing. Mary Rose',
+            'asesor' => 'Endrina',
+            'forma_pago' => 'CONTADO CONTRA ENTREGA',
+            'vigencia' => '7 dias',
+            'subtotal' => 12203.39,
+            'igv' => 2196.61,
+            'total' => 14400.00,
+            'estado' => 'Facturada',
+            'descuento_max' => 5.0,
+            'requiere_autorizacion' => false,
+            'autorizado_por' => null,
+            'items' => [
+                [
+                    'item' => 1,
+                    'codigo' => '110014292',
+                    'descripcion' => 'AIRCON Z X 5 GAL - Aditivo incorporador de aire',
+                    'cantidad' => 40.0,
+                    'umed' => 'GLN',
+                    'pre_orig' => 321.14,
+                    'descto' => 5.0,
+                    'prec_total' => 305.08,
+                    'subtotal' => 12203.39,
+                    'estado' => 'DISPONIBLE'
+                ]
+            ],
+            'created_at' => '2026-09-08 11:20:00'
+        ],
+        [
+            'id' => 3,
+            'codigo' => '0052458',
+            'fecha' => date('Y-m-d'),
+            'cliente_nombre' => 'Besco Inmobiliaria & Construcción',
+            'ruc_dni' => '20419283011',
+            'direccion' => 'Av. Rivera Navarrete 501, San Isidro, Lima',
+            'email' => 'adquisiciones@besco.com.pe',
+            'telefono' => '951 753 852',
+            'contacto' => 'Arq. Lucía Ramos',
+            'asesor' => 'Endrina',
+            'forma_pago' => 'CONTADO CONTRA ENTREGA',
+            'vigencia' => '7 dias',
+            'subtotal' => 10423.73,
+            'igv' => 1876.27,
+            'total' => 12300.00,
+            'estado' => 'Pendiente',
+            'descuento_max' => 4.5,
+            'requiere_autorizacion' => false,
+            'autorizado_por' => null,
+            'items' => [
+                [
+                    'item' => 1,
+                    'codigo' => '110014480',
+                    'descripcion' => 'ALQUITRAN Z X 5 GAL - Recubrimiento resistente a la humedad',
+                    'cantidad' => 60.0,
+                    'umed' => 'GLN',
+                    'pre_orig' => 181.90,
+                    'descto' => 4.5,
+                    'prec_total' => 173.71,
+                    'subtotal' => 10423.73,
+                    'estado' => 'DISPONIBLE'
+                ]
+            ],
+            'created_at' => date('Y-m-d H:i:s')
+        ]
+    ];
+    file_put_contents($cotizacionesFile, json_encode($initialCotizaciones, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
 
 // Inicializar pagos con datos de partida si el archivo aún no existe
 if (!file_exists($pagosFile)) {
@@ -125,6 +253,23 @@ function obtenerPagos() {
 function guardarPagos($pagos) {
     global $pagosFile;
     file_put_contents($pagosFile, json_encode($pagos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+function obtenerCotizaciones() {
+    global $cotizacionesFile;
+    if (file_exists($cotizacionesFile)) {
+        $content = file_get_contents($cotizacionesFile);
+        $arr = json_decode($content, true);
+        if (is_array($arr)) {
+            return $arr;
+        }
+    }
+    return [];
+}
+
+function guardarCotizaciones($cots) {
+    global $cotizacionesFile;
+    file_put_contents($cotizacionesFile, json_encode($cots, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 function obtenerMensajesChat() {
@@ -423,6 +568,167 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             exit;
         }
         echo json_encode(['success' => false, 'error' => 'Mensaje vacío']);
+        exit;
+    }
+
+    // 7. LISTAR COTIZACIONES
+    if ($action === 'listar_cotizaciones') {
+        header('Content-Type: application/json');
+        $cotizaciones = obtenerCotizaciones();
+        $totalCotizadas = count($cotizaciones);
+        $montoTotalCotizado = 0;
+        $pendientes = 0;
+        $aceptadas = 0;
+        $facturadas = 0;
+
+        foreach ($cotizaciones as $c) {
+            $montoTotalCotizado += floatval($c['total'] ?? 0);
+            $est = $c['estado'] ?? 'Pendiente';
+            if ($est === 'Pendiente') $pendientes++;
+            elseif ($est === 'Aceptada') $aceptadas++;
+            elseif ($est === 'Facturada') $facturadas++;
+        }
+
+        // Determinar siguiente correlativo
+        $ultimoCodigo = '0052456';
+        if (!empty($cotizaciones)) {
+            $codigos = array_map(function($item) {
+                return intval($item['codigo'] ?? 0);
+            }, $cotizaciones);
+            $maxCod = max($codigos);
+            if ($maxCod > 0) {
+                $ultimoCodigo = str_pad($maxCod + 1, 7, '0', STR_PAD_LEFT);
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'cotizaciones' => $cotizaciones,
+            'siguiente_codigo' => $ultimoCodigo,
+            'stats' => [
+                'total_cotizadas' => $totalCotizadas,
+                'monto_total' => $montoTotalCotizado,
+                'pendientes' => $pendientes,
+                'aceptadas' => $aceptadas,
+                'facturadas' => $facturadas
+            ]
+        ]);
+        exit;
+    }
+
+    // 8. GUARDAR / EMITIR NUEVA COTIZACIÓN
+    if ($action === 'guardar_cotizacion') {
+        header('Content-Type: application/json');
+        $cotizaciones = obtenerCotizaciones();
+
+        $cliente_nombre = trim($_POST['cliente_nombre'] ?? 'Cliente General');
+        $ruc_dni = trim($_POST['ruc_dni'] ?? '');
+        $direccion = trim($_POST['direccion'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $telefono = trim($_POST['telefono'] ?? '');
+        $contacto = trim($_POST['contacto'] ?? '');
+        $asesor = trim($_POST['asesor'] ?? 'Endrina');
+        $forma_pago = trim($_POST['forma_pago'] ?? 'CONTADO CONTRA ENTREGA');
+        $vigencia = trim($_POST['vigencia'] ?? '7 dias');
+        $fecha = trim($_POST['fecha'] ?? date('Y-m-d'));
+        
+        $subtotal = floatval($_POST['subtotal'] ?? 0);
+        $igv = floatval($_POST['igv'] ?? 0);
+        $total = floatval($_POST['total'] ?? ($subtotal + $igv));
+        $descuento_max = floatval($_POST['descuento_max'] ?? 0);
+        $requiere_autorizacion = ($descuento_max > 6.0);
+        $autorizado_por = trim($_POST['autorizado_por'] ?? '');
+
+        // Items en formato JSON
+        $itemsRaw = $_POST['items'] ?? '[]';
+        $items = json_decode($itemsRaw, true);
+        if (!is_array($items)) $items = [];
+
+        // Generar o usar código
+        $codigo = trim($_POST['codigo'] ?? '');
+        if (empty($codigo)) {
+            $codigos = array_map(function($item) {
+                return intval($item['codigo'] ?? 0);
+            }, $cotizaciones);
+            $maxCod = !empty($codigos) ? max($codigos) : 52456;
+            $codigo = str_pad($maxCod + 1, 7, '0', STR_PAD_LEFT);
+        }
+
+        $nuevoId = count($cotizaciones) > 0 ? (max(array_column($cotizaciones, 'id')) + 1) : 1;
+
+        $nuevaCotizacion = [
+            'id' => $nuevoId,
+            'codigo' => $codigo,
+            'fecha' => $fecha,
+            'cliente_nombre' => $cliente_nombre,
+            'ruc_dni' => $ruc_dni,
+            'direccion' => $direccion,
+            'email' => $email,
+            'telefono' => $telefono,
+            'contacto' => $contacto,
+            'asesor' => $asesor,
+            'forma_pago' => $forma_pago,
+            'vigencia' => $vigencia,
+            'subtotal' => $subtotal,
+            'igv' => $igv,
+            'total' => $total,
+            'estado' => 'Pendiente',
+            'descuento_max' => $descuento_max,
+            'requiere_autorizacion' => $requiere_autorizacion,
+            'autorizado_por' => !empty($autorizado_por) ? $autorizado_por : null,
+            'items' => $items,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        // Insertar en BD MySQL si está activa
+        if ($db) {
+            try {
+                $stmt = $db->prepare("INSERT INTO cotizaciones (codigo, cliente_nombre, ruc_dni, total, estado, asesor, created_at) VALUES (?, ?, ?, ?, 'Pendiente', ?, ?)");
+                $stmt->execute([$codigo, $cliente_nombre, $ruc_dni, $total, $asesor, date('Y-m-d H:i:s')]);
+            } catch(Exception $ex) {}
+        }
+
+        array_unshift($cotizaciones, $nuevaCotizacion);
+        guardarCotizaciones($cotizaciones);
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => 'Cotización ' . $codigo . ' guardada con éxito.',
+            'cotizacion' => $nuevaCotizacion
+        ]);
+        exit;
+    }
+
+    // 9. ACTUALIZAR ESTADO DE COTIZACIÓN
+    if ($action === 'actualizar_estado_cotizacion') {
+        header('Content-Type: application/json');
+        $cotizId = intval($_POST['id'] ?? 0);
+        $nuevoEstado = trim($_POST['estado'] ?? 'Aceptada');
+        $cotizaciones = obtenerCotizaciones();
+        $encontrado = false;
+
+        foreach ($cotizaciones as &$c) {
+            if ($c['id'] == $cotizId || ($c['codigo'] ?? '') === strval($_POST['codigo'] ?? '')) {
+                $c['estado'] = $nuevoEstado;
+                if (!empty($_POST['autorizado_por'])) {
+                    $c['autorizado_por'] = trim($_POST['autorizado_por']);
+                    $c['requiere_autorizacion'] = false;
+                }
+                $encontrado = true;
+                break;
+            }
+        }
+
+        if ($encontrado) {
+            guardarCotizaciones($cotizaciones);
+            echo json_encode([
+                'success' => true,
+                'mensaje' => 'Estado de cotización actualizado a ' . $nuevoEstado
+            ]);
+            exit;
+        }
+
+        echo json_encode(['success' => false, 'error' => 'Cotización no encontrada']);
         exit;
     }
 }

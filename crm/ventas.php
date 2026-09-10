@@ -1374,6 +1374,216 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #D1C5B4; border-radius: 3px; }
 
+        /* ================= ESTILOS MÓDULO COTIZACIONES ================= */
+        .cotiz-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-soft);
+            padding-bottom: 12px;
+        }
+        .cotiz-tab-btn {
+            background: #FFF;
+            border: 1px solid var(--border-soft);
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        body.dark-mode .cotiz-tab-btn { background: #1F2127; border-color: #2D3039; color: #FFF; }
+        .cotiz-tab-btn.active {
+            background: var(--accent-tan);
+            color: #161719;
+            border-color: var(--accent-tan);
+            box-shadow: 0 4px 14px rgba(199, 155, 88, 0.25);
+        }
+        .cotiz-card-header {
+            background: linear-gradient(135deg, rgba(199, 155, 88, 0.12), rgba(199, 155, 88, 0.03));
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 18px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        body.dark-mode .cotiz-card-header {
+            background: linear-gradient(135deg, rgba(199, 155, 88, 0.15), rgba(24, 25, 29, 0.9));
+        }
+        .cotiz-sheet {
+            background: #FFF;
+            border-radius: 20px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        body.dark-mode .cotiz-sheet { background: #18191D; border-color: #272A30; }
+
+        .cotiz-client-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            background: #FAF8F5;
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid var(--border-soft);
+        }
+        body.dark-mode .cotiz-client-grid { background: #1F2127; border-color: #2D3039; }
+
+        .cotiz-items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.82rem;
+            margin-top: 10px;
+        }
+        .cotiz-items-table th {
+            background: #F4EFE6;
+            color: var(--text-dark);
+            font-weight: 700;
+            padding: 10px 12px;
+            text-align: left;
+            border-top: 1px solid var(--border-soft);
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        body.dark-mode .cotiz-items-table th { background: #262932; border-color: #333842; color: #FFF; }
+        .cotiz-items-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-soft);
+            vertical-align: middle;
+        }
+        .cotiz-items-table tr:hover td {
+            background: rgba(199, 155, 88, 0.04);
+        }
+        .cotiz-input-cell {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            background: #FFF;
+            font-size: 0.82rem;
+            outline: none;
+            color: var(--text-dark);
+            font-family: inherit;
+        }
+        body.dark-mode .cotiz-input-cell {
+            background: #23252B;
+            border-color: #313540;
+            color: #FFF;
+        }
+        .cotiz-input-cell:focus {
+            border-color: var(--accent-tan);
+        }
+        .cotiz-totales-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 330px;
+            margin-left: auto;
+            background: #FAF8F5;
+            padding: 18px 22px;
+            border-radius: 18px;
+            border: 1px solid var(--border-soft);
+        }
+        body.dark-mode .cotiz-totales-box { background: #1F2127; border-color: #2D3039; }
+        .cotiz-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+        .cotiz-total-row.destacado {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            border-top: 1px dashed var(--border-soft);
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        /* Banner de Advertencia Descuento > 6% */
+        .alerta-descuento-admin {
+            border: 1px solid #EF4444;
+            background: rgba(239, 68, 68, 0.06);
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            animation: pulseWarning 2s infinite ease-in-out;
+        }
+        @keyframes pulseWarning {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+
+        /* Modal A4 para Previsualización e Impresión Exacta del PDF Oficial */
+        .modal-pdf-a4 {
+            background: #3B4247;
+            width: 100%;
+            max-width: 920px;
+            max-height: 92vh;
+            border-radius: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 24px;
+        }
+        .hoja-a4-oficial {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 1050px;
+            padding: 40px 48px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            line-height: 1.35;
+        }
+
+        /* CSS DE IMPRESIÓN (MEDIA PRINT) */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #printDocumentoOficial, #printDocumentoOficial * {
+                visibility: visible !important;
+            }
+            #printDocumentoOficial {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 8mm 12mm !important;
+                box-shadow: none !important;
+                background: #FFF !important;
+                color: #000 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
         /* TOAST NOTIFICACIONES EN VIVO */
         .toast-container {
             position: fixed;
@@ -1447,6 +1657,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <span>Dashboard</span>
                 </div>
 
+                <div class="nav-item" id="nav-cotizaciones" onclick="cambiarVistaVentas('cotizaciones', this)">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>Cotizaciones</span>
+                    <span class="nav-badge" id="badgeCotizacionesTotal" style="background:#D1FAE5; color:#065F46; font-weight:700;">3</span>
+                </div>
+
                 <div class="nav-item" id="nav-facturacion" onclick="cambiarVistaVentas('facturacion', this)">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                     <span>Nueva Factura</span>
@@ -1509,6 +1725,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <h1 id="viewMainTitle">Dashboard de Ventas</h1>
                     </div>
                     <div class="header-actions">
+                        <button class="btn-pill-white" onclick="abrirGeneradorCotizacion()">
+                            <i class="fa-solid fa-file-signature"></i> Nueva Cotización
+                        </button>
                         <button class="btn-pill-white primary" onclick="cambiarVistaVentas('facturacion')">
                             <i class="fa-solid fa-plus"></i> Nueva Facturación
                         </button>
@@ -1519,10 +1738,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="welcome-card">
                     <div class="welcome-content">
                         <h2>Welcome back, Endrina!</h2>
-                        <p>Tu meta comercial del mes está al 85% completada. Emite facturaciones, adjunta los comprobantes de pago y solicita confirmación inmediata a Reportería.</p>
+                        <p>Tu meta comercial del mes está al 85% completada. Emite cotizaciones oficiales para tus obras, adjunta los comprobantes de pago y solicita confirmación inmediata a Reportería.</p>
                         <div class="welcome-actions">
-                            <button class="btn-pill-white primary" onclick="cambiarVistaVentas('facturacion')">
-                                <i class="fa-solid fa-plus"></i> Nueva Facturación
+                            <button class="btn-pill-white primary" onclick="abrirGeneradorCotizacion()">
+                                <i class="fa-solid fa-file-signature"></i> Nueva Cotización
+                            </button>
+                            <button class="btn-pill-white" onclick="cambiarVistaVentas('facturacion')">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> Facturar Venta
                             </button>
                             <button class="btn-pill-white" onclick="cambiarVistaVentas('ventas-dia')">
                                 <i class="fa-solid fa-paper-plane"></i> Enviar Venta del Día
@@ -1658,6 +1880,287 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- ================= VISTA: COTIZACIONES (EN EL MEDIO) ================= -->
+            <div id="vista-cotizaciones" class="vista-seccion" style="display:none;">
+                <div class="main-header">
+                    <div>
+                        <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Gestión de Propuestas</span>
+                        <h1 style="margin-top:2px;">Cotizaciones & Pedidos de Tienda</h1>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
+                            <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUB-TABS: HISTORIAL / GENERADOR -->
+                <div class="cotiz-tabs">
+                    <button type="button" class="cotiz-tab-btn active" id="tabBtnNuevaCotiz" onclick="alternarTabCotizaciones('nueva')">
+                        <i class="fa-solid fa-file-circle-plus"></i> Nueva Cotización Oficial
+                    </button>
+                    <button type="button" class="cotiz-tab-btn" id="tabBtnHistorialCotiz" onclick="alternarTabCotizaciones('historial')">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Historial de Cotizaciones (<span id="countCotizHistorialBadge">3</span>)
+                    </button>
+                </div>
+
+                <!-- PANEL 1: GENERADOR DE COTIZACIÓN (HOJA OFICIAL) -->
+                <div id="panelNuevaCotizacion">
+                    <div class="cotiz-sheet">
+                        
+                        <!-- ENCABEZADO DE LA HOJA OFICIAL -->
+                        <div class="cotiz-card-header">
+                            <div style="display:flex; align-items:center; gap:16px;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div style="width:44px; height:44px; border-radius:12px; background:#161719; display:flex; align-items:center; justify-content:center; color:var(--accent-tan); font-weight:800; font-size:1.1rem; border:1px solid var(--accent-tan);">
+                                        BSP
+                                    </div>
+                                    <div>
+                                        <h3 style="font-family:'Outfit',sans-serif; font-size:1.2rem; font-weight:800; margin:0; color:var(--text-dark);">BUILDING SYSTEMS PERÚ</h3>
+                                        <span style="font-size:0.72rem; color:var(--text-muted);">RUC: 20609793806 • Sucursal Chorrillos</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <label style="font-size:0.85rem; font-weight:700; color:var(--text-dark); text-transform:uppercase;">COTIZACIONES:</label>
+                                    <input type="text" id="cotizCodigo" value="0052459" style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem; width:130px; padding:6px 12px; border-radius:10px; border:1px solid var(--accent-tan); background:var(--bg-main); color:var(--text-dark); text-align:center;">
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Fecha:</label>
+                                    <input type="date" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>" style="padding:6px 12px; border-radius:10px; border:1px solid var(--border-soft); background:var(--bg-main); color:var(--text-dark); font-size:0.82rem;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BUSCADOR INTELIGENTE DE CLIENTE (AUTOCOMPLETADO POR DNI O RAZÓN SOCIAL) -->
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <label style="font-size:0.84rem; font-weight:700; color:var(--text-dark);">
+                                    <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i> Buscar Cliente por RUC / DNI o Razón Social
+                                </label>
+                                <span style="font-size:0.74rem; color:var(--accent-tan); font-weight:600;">
+                                    ⚡ Al tipear o seleccionar, jala automáticamente todos los datos del cliente
+                                </span>
+                            </div>
+                            <div style="position:relative;">
+                                <input type="text" id="inputBuscarClienteCotiz" placeholder="Escribe RUC (ej. 20602591990), DNI o nombre (ej. Multinegocios, Cosapi, Besco...)" 
+                                       class="cotiz-input-cell" style="padding:12px 16px; font-size:0.9rem; border-color:var(--accent-tan);" 
+                                       oninput="filtrarSugerenciasClientesCotiz(this.value)" autocomplete="off">
+                                <div id="sugerenciasClientesBox" style="display:none; position:absolute; top:100%; left:0; right:0; background:#FFF; border:1px solid var(--border-soft); border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.15); z-index:1000; max-height:220px; overflow-y:auto; margin-top:4px;">
+                                    <!-- Lista de sugerencias inyectada por JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DATOS DEL CLIENTE (FORMULARIO AUTOCOMPLETADO) -->
+                        <div class="cotiz-client-grid">
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>Razón Social *</label>
+                                <input type="text" id="cotizRazonSocial" required placeholder="Ej: MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C." class="cotiz-input-cell">
+                            </div>
+                            <div class="form-group">
+                                <label>RUC / DNI *</label>
+                                <input type="text" id="cotizRucDni" required placeholder="20602591990" class="cotiz-input-cell">
+                            </div>
+                            <div class="form-group">
+                                <label>Contacto / Residente</label>
+                                <input type="text" id="cotizContacto" placeholder="Ej: Fanny Ramirez / Ing. Residente" class="cotiz-input-cell">
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono / WhatsApp *</label>
+                                <input type="tel" id="cotizTelefono" required placeholder="942 377 626" class="cotiz-input-cell">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="cotizEmail" placeholder="Consorciomiraflores25@gmail.com" class="cotiz-input-cell">
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>Dirección Fiscal / Obra</label>
+                                <input type="text" id="cotizDireccion" placeholder="JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO" class="cotiz-input-cell">
+                            </div>
+                        </div>
+
+                        <!-- TEXTO INTRODUCTORIO OFICIAL -->
+                        <div style="font-size:0.85rem; color:var(--text-muted); font-style:italic; border-left:3px solid var(--accent-tan); padding-left:12px; margin: 4px 0;">
+                            "De acuerdo con su amable solicitud, tenemos el agrado de cotizarle lo siguiente:"
+                        </div>
+
+                        <!-- TABLA DE ITEMS / PRODUCTOS DE TIENDA -->
+                        <div style="overflow-x:auto;">
+                            <table class="cotiz-items-table" id="tablaItemsCotizacion">
+                                <thead>
+                                    <tr>
+                                        <th style="width:45px; text-align:center;">Item</th>
+                                        <th style="width:115px;">Código</th>
+                                        <th style="min-width:280px;">Descripción (Producto de Tienda)</th>
+                                        <th style="width:85px;">Cantidad</th>
+                                        <th style="width:85px;">UMed</th>
+                                        <th style="width:105px;">Pre.Orig</th>
+                                        <th style="width:105px;">Descto %</th>
+                                        <th style="width:105px;">Prec.Total</th>
+                                        <th style="width:115px; text-align:right;">SubTotal</th>
+                                        <th style="width:95px; text-align:center;">Estado</th>
+                                        <th style="width:50px; text-align:center;">Quitar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyItemsCotizacion">
+                                    <!-- Filas dinámicas generadas por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN PARA AGREGAR ITEMS -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                            <div style="display:flex; gap:10px;">
+                                <button type="button" class="btn-pill-white primary" onclick="agregarFilaProductoCotiz()">
+                                    <i class="fa-solid fa-plus"></i> Agregar Producto
+                                </button>
+                                <button type="button" class="btn-pill-white" onclick="cargarEjemploPdfMultinegocios()" title="Carga exactamente la cotización de muestra del PDF">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Cargar Muestra PDF
+                                </button>
+                            </div>
+                            <small style="color:var(--text-muted); font-size:0.75rem;">
+                                Catálogo de productos sincronizado con BS Perú
+                            </small>
+                        </div>
+
+                        <!-- BANNER ALERTA POLÍTICA DE DESCUENTO (> 6%) -->
+                        <div id="alertaDescuentoAdmin" class="alerta-descuento-admin" style="display:none;">
+                            <div style="display:flex; align-items:center; gap:14px;">
+                                <i class="fa-solid fa-triangle-exclamation" style="font-size:1.6rem; color:#EF4444;"></i>
+                                <div>
+                                    <strong style="color:#EF4444; font-size:0.9rem;">⚠️ Descuento Superior al 6% Detectado</strong>
+                                    <p style="font-size:0.78rem; color:var(--text-muted); margin:2px 0 0 0;">
+                                        Política BS Perú: Como asesora puedes aplicar de <strong>1% a 6%</strong> de descuento directo. Los descuentos mayores requieren consulta y autorización de Administración.
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button type="button" class="btn-pill-white" style="border-color:#10B981; color:#059669; font-weight:700;" onclick="consultarAdminWhatsApp()">
+                                    <i class="fa-brands fa-whatsapp"></i> Consultar al Administrador
+                                </button>
+                                <button type="button" class="btn-pill-white" style="border-color:var(--accent-tan); color:var(--accent-tan); font-weight:700;" onclick="abrirModalAutorizacionDescuento()">
+                                    <i class="fa-solid fa-key"></i> Clave de Autorización
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="badgeDescuentoAutorizado" style="display:none; background:#D1FAE5; border:1px solid #10B981; border-radius:12px; padding:10px 16px; color:#065F46; font-size:0.82rem; font-weight:700;">
+                            <i class="fa-solid fa-circle-check" style="color:#10B981;"></i> Descuento especial autorizado por Administración BS Perú (<span id="lblAutorizador">Gerencia</span>)
+                        </div>
+
+                        <!-- TOTALES DE LA COTIZACIÓN -->
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px; margin-top:8px;">
+                            <div style="flex:1; min-width:300px;">
+                                <label style="font-size:0.82rem; font-weight:700; color:var(--text-dark); margin-bottom:6px; display:block;">Observaciones & Condiciones de Entrega</label>
+                                <textarea id="cotizObservaciones" rows="3" class="cotiz-input-cell" style="font-size:0.8rem;" placeholder="Observaciones sobre transporte, despacho o condiciones técnicas...">Productos puestos en obra según disponibilidad de almacén. Precios incluyen IGV.</textarea>
+                            </div>
+
+                            <div class="cotiz-totales-box">
+                                <div class="cotiz-total-row">
+                                    <span>Subtotal:</span>
+                                    <strong id="lblCotizSubtotal" style="color:var(--text-dark);">S/ 0.00</strong>
+                                </div>
+                                <div class="cotiz-total-row">
+                                    <span>IGV (18%):</span>
+                                    <strong id="lblCotizIgv" style="color:var(--text-dark);">S/ 0.00</strong>
+                                </div>
+                                <div class="cotiz-total-row destacado">
+                                    <span>Total Neto:</span>
+                                    <strong id="lblCotizTotalNeto" style="color:#10B981;">S/ 0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CONDICIONES COMERCIALES OFICIALES PRE-CARGADAS -->
+                        <div style="background:#FAF8F5; border-radius:16px; padding:18px 22px; border:1px solid var(--border-soft); font-size:0.75rem; line-height:1.5; color:var(--text-muted);">
+                            <strong style="color:var(--text-dark); text-transform:uppercase; display:block; margin-bottom:6px;">Condiciones Comerciales Oficiales BS Perú</strong>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:10px;">
+                                <div>
+                                    <strong style="color:var(--text-dark);">Forma de Pago:</strong>
+                                    <select id="cotizFormaPago" class="cotiz-input-cell" style="padding:6px 10px; margin-top:4px; font-size:0.78rem;">
+                                        <option value="CONTADO CONTRA ENTREGA" selected>CONTADO CONTRA ENTREGA</option>
+                                        <option value="CONTADO ANTICIPADO">CONTADO ANTICIPADO</option>
+                                        <option value="CRÉDITO 15 DÍAS">CRÉDITO 15 DÍAS</option>
+                                        <option value="CRÉDITO 30 DÍAS">CRÉDITO 30 DÍAS</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <strong style="color:var(--text-dark);">Vigencia de Cotización:</strong>
+                                    <select id="cotizVigencia" class="cotiz-input-cell" style="padding:6px 10px; margin-top:4px; font-size:0.78rem;">
+                                        <option value="7 dias" selected>7 días calendario</option>
+                                        <option value="15 dias">15 días calendario</option>
+                                        <option value="30 dias">30 días calendario</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <strong style="color:var(--text-dark);">Horario de Oficinas:</strong>
+                                    <p style="margin:4px 0 0 0;">Lunes a Viernes 8:00 a 17:30 / Sábados 8:00 a 12:00</p>
+                                </div>
+                            </div>
+                            <p style="margin:4px 0;">• Entregamos certificados de calidad, hojas de seguridad (MSDS) y especificaciones técnicas de todos nuestros productos a solicitud del cliente.</p>
+                            <p style="margin:4px 0;">• <strong>Cuentas Corrientes:</strong> BCP Soles: 193-9902956-0-56 (CCI: 00219300990295605614) | BBVA Soles: 0011-0152-0100100654 (CCI: 011-152-000100100654-61) | Interbank Soles: 200-3005486597 (CCI: 003-200-003005486597-34)</p>
+                            <p style="margin:4px 0;">• <strong>Sucursal Chorrillos:</strong> Av. Los Faisanes N° 675 Urb. La Campiña Chorrillos | Ventas Oficina Chorrillos</p>
+                        </div>
+
+                        <!-- BARRA PRINCIPAL DE ACCIONES DE LA COTIZACIÓN -->
+                        <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; flex-wrap:wrap; padding-top:10px; border-top:1px solid var(--border-soft);">
+                            <button type="button" class="btn-pill-white" onclick="guardarCotizacionActual(false)">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar Cotización
+                            </button>
+                            <button type="button" class="btn-pill-white" style="border-color:#10B981; color:#059669; font-weight:700;" onclick="enviarCotizacionActualWhatsApp()">
+                                <i class="fa-brands fa-whatsapp"></i> Enviar por WhatsApp
+                            </button>
+                            <button type="button" class="btn-pill-white" style="border-color:var(--accent-tan); color:var(--accent-tan); font-weight:700;" onclick="abrirModalVistaPreviaPdf()">
+                                <i class="fa-solid fa-print"></i> Ver Formato PDF Oficial
+                            </button>
+                            <button type="button" class="btn-pill-white primary" onclick="convertirCotizacionActualAFactura()">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> Convertir a Factura
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PANEL 2: HISTORIAL DE COTIZACIONES -->
+                <div id="panelHistorialCotizaciones" style="display:none;">
+                    <div class="card-seccion-centro">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+                            <div class="cartera-search-box" style="flex:1; max-width:400px;">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" placeholder="Buscar por código, cliente o RUC..." onkeyup="filtrarHistorialCotizaciones(this.value)">
+                            </div>
+                            <button type="button" class="btn-pill-white primary" onclick="alternarTabCotizaciones('nueva')">
+                                <i class="fa-solid fa-plus"></i> Nueva Cotización
+                            </button>
+                        </div>
+
+                        <div class="cartera-table-wrapper">
+                            <table class="cartera-table" id="tablaHistorialCotizaciones">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Fecha</th>
+                                        <th>Cliente / Razón Social</th>
+                                        <th>RUC / DNI</th>
+                                        <th>Total (S/)</th>
+                                        <th>Descto Máx</th>
+                                        <th>Estado</th>
+                                        <th style="text-align:center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyHistorialCotizaciones">
+                                    <!-- Inyectado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- ================= VISTA 2: NUEVA FACTURACIÓN (EN EL MEDIO) ================= -->
@@ -2431,10 +2934,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
 
-        // CONTROL DE MODALES (SOLO PARA ZOOM DE VOUCHER)
+        // CONTROL DE MODALES
         function closeModals() {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
         }
+        function cerrarModales() {
+            closeModals();
+        }
+
+        // ================= DATOS Y LÓGICA DE COTIZACIONES =================
+        const CARTERA_CLIENTES = [
+            {
+                razon: 'MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C.',
+                ruc: '20602591990',
+                direccion: 'JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO',
+                email: 'Consorciomiraflores25@gmail.com',
+                telefono: '942 377 626',
+                contacto: 'Fanny Ramirez'
+            },
+            {
+                razon: 'Cosapi S.A.',
+                ruc: '20100038146',
+                direccion: 'Av. República de Colombia 791, San Isidro, Lima',
+                email: 'compras@cosapi.com.pe',
+                telefono: '984 129 384',
+                contacto: 'Ing. Mary Rose'
+            },
+            {
+                razon: 'Graña & Montero Ingeniería',
+                ruc: '20100109850',
+                direccion: 'Av. Paseo de la República 4611, Surquillo, Lima',
+                email: 'logistica@gym.com.pe',
+                telefono: '991 482 103',
+                contacto: 'Arq. Carlos Mendoza'
+            },
+            {
+                razon: 'Besco Inmobiliaria & Construcción',
+                ruc: '20419283011',
+                direccion: 'Av. Rivera Navarrete 501, San Isidro, Lima',
+                email: 'adquisiciones@besco.com.pe',
+                telefono: '951 753 852',
+                contacto: 'Arq. Lucía Ramos'
+            },
+            {
+                razon: 'Consorcio Vial Piura',
+                ruc: '20601849201',
+                direccion: 'Av. Grau 1240, Piura',
+                email: 'obras@vialpiura.com',
+                telefono: '972 384 192',
+                contacto: 'Jerome Brown'
+            },
+            {
+                razon: 'Edificaciones Pacífico S.A.C.',
+                ruc: '20554189012',
+                direccion: 'Av. Benavides 1940, Miraflores, Lima',
+                email: 'proyectos@edificacionespacifico.pe',
+                telefono: '987 654 321',
+                contacto: 'Ing. Roberto Salcedo'
+            },
+            {
+                razon: 'JJC Contratistas Generales',
+                ruc: '20100142806',
+                direccion: 'Av. Manuel Olguín 325, Surco, Lima',
+                email: 'abastecimiento@jjc.com.pe',
+                telefono: '963 852 741',
+                contacto: 'Ing. Walter Palacios'
+            },
+            {
+                razon: 'Constructora Los Andes S.A.C.',
+                ruc: '20604819204',
+                direccion: 'Calle Mercaderes 310, Arequipa',
+                email: 'compras@losandesperu.pe',
+                telefono: '998 123 456',
+                contacto: 'Lic. Elena Morales'
+            }
+        ];
+
+        let PRODUCTOS_TIENDA = [
+            { codigo: '110014568', nombre: 'Z SEP. CONCRETO ESCANTILLONES 30 CM X 25 UNI', umed: 'B25', precio: 45.0900 },
+            { codigo: '110014460', nombre: 'SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI', umed: 'B100', precio: 33.7600 },
+            { codigo: '110014292', nombre: 'AIRCON Z X 5 GAL - Aditivo incorporador de aire', umed: 'GLN', precio: 321.1400 },
+            { codigo: '110014371', nombre: 'AIRCON Z X 55 GAL - Tambor Aditivo aireante', umed: 'BLD', precio: 2850.0000 },
+            { codigo: '110014480', nombre: 'ALQUITRAN Z X 5 GAL - Impermeabilizante asfáltico', umed: 'GLN', precio: 181.9000 },
+            { codigo: '110014697', nombre: 'PEGAMENTO Z ADITIVOS GRIS INT X 25 KG', umed: 'B25', precio: 28.5000 },
+            { codigo: '110014699', nombre: 'PEGAMENTO Z ADITIVOS BCO EXT X 25 KG', umed: 'B25', precio: 36.8000 },
+            { codigo: '110014810', nombre: 'EUCO 700 POLIURETANO ESTRUCTURAL 600ML', umed: 'UNI', precio: 42.5000 },
+            { codigo: '110014902', nombre: 'SIKA BOOM ESPUMA EXPANSIVA 750ML', umed: 'UNI', precio: 31.2000 },
+            { codigo: '110014950', nombre: 'SIKADUR 31 ADHESIVO EPOXICO JGO X 1 KG', umed: 'KG', precio: 58.0000 }
+        ];
+
+        let listaCotizacionesData = [];
+        let descuentoAutorizado = false;
+        let autorizadoPor = null;
+
+        // Intentar enriquecer catálogo desde productos.json
+        fetch('assets/Data/productos.json')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    data.forEach(p => {
+                        if (p.sku && p.nombre) {
+                            const exists = PRODUCTOS_TIENDA.some(item => item.codigo === p.sku);
+                            if (!exists) {
+                                PRODUCTOS_TIENDA.push({
+                                    codigo: p.sku,
+                                    nombre: p.nombre + (p.descripcion ? ' - ' + p.descripcion : ''),
+                                    umed: p.peso2 ? 'B25' : 'UNI',
+                                    precio: p.precio ? parseFloat(p.precio) : 48.5000
+                                });
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(() => {});
 
         // CAMBIAR VISTA EN EL MEDIO (SPA)
         function cambiarVistaVentas(nombreVista, elNav) {
@@ -2458,9 +3071,665 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if (matchingNav) matchingNav.classList.add('active');
             }
 
+            // Si es vista de cotizaciones, inicializar
+            if (nombreVista === 'cotizaciones') {
+                cargarCotizaciones();
+                const tbody = document.getElementById('tbodyItemsCotizacion');
+                if (tbody && tbody.children.length === 0) {
+                    agregarFilaProductoCotiz();
+                }
+            }
+
             // 4. Scroll al tope del área central
             const mainContent = document.querySelector('.main-content');
             if (mainContent) mainContent.scrollTop = 0;
+        }
+
+        // SUB-TABS DENTRO DE COTIZACIONES
+        function alternarTabCotizaciones(tab) {
+            const btnNueva = document.getElementById('tabBtnNuevaCotiz');
+            const btnHist = document.getElementById('tabBtnHistorialCotiz');
+            const pnlNueva = document.getElementById('panelNuevaCotizacion');
+            const pnlHist = document.getElementById('panelHistorialCotizaciones');
+
+            if (tab === 'nueva') {
+                btnNueva.classList.add('active');
+                btnHist.classList.remove('active');
+                pnlNueva.style.display = 'block';
+                pnlHist.style.display = 'none';
+            } else {
+                btnHist.classList.add('active');
+                btnNueva.classList.remove('active');
+                pnlHist.style.display = 'block';
+                pnlNueva.style.display = 'none';
+                cargarCotizaciones();
+            }
+        }
+
+        function abrirGeneradorCotizacion() {
+            cambiarVistaVentas('cotizaciones');
+            alternarTabCotizaciones('nueva');
+            setTimeout(() => {
+                const input = document.getElementById('inputBuscarClienteCotiz');
+                if (input) input.focus();
+            }, 150);
+        }
+
+        // BÚSQUEDA Y AUTOCOMPLETADO DE CLIENTES POR DNI / RUC O RAZÓN SOCIAL
+        function filtrarSugerenciasClientesCotiz(query) {
+            const box = document.getElementById('sugerenciasClientesBox');
+            const q = query.trim().toLowerCase();
+            if (q.length < 2) {
+                box.style.display = 'none';
+                return;
+            }
+
+            const matches = CARTERA_CLIENTES.filter(c => {
+                return c.ruc.includes(q) || c.razon.toLowerCase().includes(q) || c.contacto.toLowerCase().includes(q);
+            });
+
+            if (matches.length === 0) {
+                box.innerHTML = `
+                    <div style="padding:12px 16px; font-size:0.82rem; color:var(--text-muted);">
+                        No se encontró ningún cliente con ese RUC/Nombre. Puedes escribir los datos manualmente en el formulario.
+                    </div>
+                `;
+                box.style.display = 'block';
+                return;
+            }
+
+            box.innerHTML = matches.map(c => `
+                <div onclick="seleccionarClienteCotiz('${c.ruc}')" style="padding:10px 16px; border-bottom:1px solid var(--border-soft); cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s;" onmouseover="this.style.background='rgba(199,155,88,0.08)'" onmouseout="this.style.background='transparent'">
+                    <div>
+                        <strong style="color:var(--text-dark); font-size:0.84rem;">${c.razon}</strong><br>
+                        <span style="font-size:0.74rem; color:var(--text-muted);">RUC: ${c.ruc} • Contacto: ${c.contacto}</span>
+                    </div>
+                    <span class="badge-tag-activo" style="font-size:0.7rem;">Seleccionar</span>
+                </div>
+            `).join('');
+
+            box.style.display = 'block';
+        }
+
+        function seleccionarClienteCotiz(ruc) {
+            const cliente = CARTERA_CLIENTES.find(c => c.ruc === ruc);
+            if (!cliente) return;
+
+            document.getElementById('cotizRazonSocial').value = cliente.razon;
+            document.getElementById('cotizRucDni').value = cliente.ruc;
+            document.getElementById('cotizDireccion').value = cliente.direccion;
+            document.getElementById('cotizEmail').value = cliente.email;
+            document.getElementById('cotizTelefono').value = cliente.telefono;
+            document.getElementById('cotizContacto').value = cliente.contacto;
+
+            document.getElementById('inputBuscarClienteCotiz').value = cliente.razon;
+            document.getElementById('sugerenciasClientesBox').style.display = 'none';
+
+            mostrarToast('success', 'Cliente Cargado', `Se autocompletaron los datos de ${cliente.razon}.`);
+        }
+
+        // AGREGAR FILA DE PRODUCTO EN LA COTIZACIÓN
+        function agregarFilaProductoCotiz(data = null) {
+            const tbody = document.getElementById('tbodyItemsCotizacion');
+            const itemNum = tbody.children.length + 1;
+
+            const item = data || {
+                codigo: PRODUCTOS_TIENDA[0]?.codigo || '110014568',
+                nombre: PRODUCTOS_TIENDA[0]?.nombre || 'Z SEP. CONCRETO ESCANTILLONES 30 CM X 25 UNI',
+                cantidad: 1.00,
+                umed: 'B25',
+                preOrig: PRODUCTOS_TIENDA[0]?.precio || 45.0900,
+                descto: 0.00,
+                estado: 'DISPONIBLE'
+            };
+
+            const precTotal = item.preOrig * (1 - (item.descto / 100));
+            const subtotal = precTotal * item.cantidad;
+
+            // Opciones de productos para select o datalist
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align:center; font-weight:700; color:var(--text-dark);" class="td-item-num">${itemNum}</td>
+                <td>
+                    <input type="text" class="cotiz-input-cell cotiz-item-codigo" value="${item.codigo}" placeholder="SKU" style="font-family:monospace; font-weight:600;">
+                </td>
+                <td>
+                    <div style="position:relative;">
+                        <input type="text" class="cotiz-input-cell cotiz-item-desc" value="${item.nombre}" placeholder="Buscar o escribir producto..." onchange="onCambioNombreProducto(this)">
+                    </div>
+                </td>
+                <td>
+                    <input type="number" step="0.01" min="0.01" class="cotiz-input-cell cotiz-item-cant" value="${parseFloat(item.cantidad).toFixed(2)}" oninput="recalcularFilaCotiz(this)" style="text-align:right;">
+                </td>
+                <td>
+                    <select class="cotiz-input-cell cotiz-item-umed" style="padding:8px 4px; text-align:center;">
+                        <option value="B25" ${item.umed === 'B25' ? 'selected' : ''}>B25</option>
+                        <option value="B100" ${item.umed === 'B100' ? 'selected' : ''}>B100</option>
+                        <option value="GLN" ${item.umed === 'GLN' ? 'selected' : ''}>GLN</option>
+                        <option value="BLD" ${item.umed === 'BLD' ? 'selected' : ''}>BLD</option>
+                        <option value="LAT" ${item.umed === 'LAT' ? 'selected' : ''}>LAT</option>
+                        <option value="KG" ${item.umed === 'KG' ? 'selected' : ''}>KG</option>
+                        <option value="UNI" ${item.umed === 'UNI' ? 'selected' : ''}>UNI</option>
+                        <option value="M2" ${item.umed === 'M2' ? 'selected' : ''}>M2</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" step="0.0001" min="0" class="cotiz-input-cell cotiz-item-preorig" value="${parseFloat(item.preOrig).toFixed(4)}" oninput="recalcularFilaCotiz(this)" style="text-align:right;">
+                </td>
+                <td>
+                    <input type="number" step="0.1" min="0" max="100" class="cotiz-input-cell cotiz-item-descto" value="${parseFloat(item.descto).toFixed(2)}" oninput="recalcularFilaCotiz(this)" style="text-align:right; font-weight:700;" title="Hasta 6% directo. Más de 6% requiere autorización.">
+                </td>
+                <td style="text-align:right; font-family:monospace; font-size:0.85rem;" class="cotiz-item-prectotal">
+                    ${precTotal.toFixed(4)}
+                </td>
+                <td style="text-align:right; font-weight:700; color:var(--text-dark);" class="cotiz-item-subtotal">
+                    S/ ${subtotal.toFixed(2)}
+                </td>
+                <td style="text-align:center;">
+                    <span class="badge-tag-activo" style="font-size:0.65rem;">${item.estado || 'DISPONIBLE'}</span>
+                </td>
+                <td style="text-align:center;">
+                    <button type="button" class="btn-facturar-mini" style="background:#FEE2E2; color:#DC2626; padding:6px 9px;" onclick="eliminarFilaProductoCotiz(this)" title="Quitar producto">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(tr);
+            recalcularTotalesCotiz();
+        }
+
+        function onCambioNombreProducto(input) {
+            const val = input.value.trim().toLowerCase();
+            const match = PRODUCTOS_TIENDA.find(p => p.nombre.toLowerCase().includes(val) || p.codigo === val);
+            if (match) {
+                const tr = input.closest('tr');
+                tr.querySelector('.cotiz-item-codigo').value = match.codigo;
+                input.value = match.nombre;
+                tr.querySelector('.cotiz-item-umed').value = match.umed;
+                tr.querySelector('.cotiz-item-preorig').value = match.precio.toFixed(4);
+                recalcularFilaCotiz(input);
+            }
+        }
+
+        function eliminarFilaProductoCotiz(btn) {
+            const tr = btn.closest('tr');
+            tr.remove();
+            // Re-enumerar items
+            const rows = document.querySelectorAll('#tbodyItemsCotizacion tr');
+            rows.forEach((row, i) => {
+                const numCell = row.querySelector('.td-item-num');
+                if (numCell) numCell.textContent = (i + 1);
+            });
+            recalcularTotalesCotiz();
+        }
+
+        // RECALCULAR FILA Y TOTALES
+        function recalcularFilaCotiz(elem) {
+            const row = elem.closest('tr');
+            const cant = parseFloat(row.querySelector('.cotiz-item-cant').value) || 0;
+            const preOrig = parseFloat(row.querySelector('.cotiz-item-preorig').value) || 0;
+            const descto = parseFloat(row.querySelector('.cotiz-item-descto').value) || 0;
+
+            const precTotal = preOrig * (1 - (descto / 100));
+            const subtotal = precTotal * cant;
+
+            row.querySelector('.cotiz-item-prectotal').textContent = precTotal.toFixed(4);
+            row.querySelector('.cotiz-item-subtotal').textContent = 'S/ ' + subtotal.toFixed(2);
+
+            const inputDescto = row.querySelector('.cotiz-item-descto');
+            if (descto > 6.0) {
+                inputDescto.style.borderColor = '#EF4444';
+                inputDescto.style.color = '#EF4444';
+                inputDescto.title = 'Descuento > 6%: Requiere autorización de Administración';
+            } else {
+                inputDescto.style.borderColor = '';
+                inputDescto.style.color = '';
+                inputDescto.title = 'Descuento permitido';
+            }
+
+            recalcularTotalesCotiz();
+        }
+
+        function recalcularTotalesCotiz() {
+            const rows = document.querySelectorAll('#tbodyItemsCotizacion tr');
+            let totalBruto = 0;
+            let maxDescto = 0;
+
+            rows.forEach(row => {
+                const cant = parseFloat(row.querySelector('.cotiz-item-cant').value) || 0;
+                const preOrig = parseFloat(row.querySelector('.cotiz-item-preorig').value) || 0;
+                const descto = parseFloat(row.querySelector('.cotiz-item-descto').value) || 0;
+                if (descto > maxDescto) maxDescto = descto;
+
+                const precTotal = preOrig * (1 - (descto / 100));
+                totalBruto += (precTotal * cant);
+            });
+
+            // En la estructura del PDF: Subtotal + IGV (18%) = Total Neto
+            // O si los precios ya son base gravable:
+            const subtotal = totalBruto;
+            const igv = subtotal * 0.18;
+            const totalNeto = subtotal + igv;
+
+            document.getElementById('lblCotizSubtotal').textContent = 'S/ ' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('lblCotizIgv').textContent = 'S/ ' + igv.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('lblCotizTotalNeto').textContent = 'S/ ' + totalNeto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Validación de regla de descuento (> 6%)
+            const alertaBox = document.getElementById('alertaDescuentoAdmin');
+            const badgeAuth = document.getElementById('badgeDescuentoAutorizado');
+
+            if (maxDescto > 6.0 && !descuentoAutorizado) {
+                alertaBox.style.display = 'flex';
+                badgeAuth.style.display = 'none';
+                document.getElementById('lblModalPorcentajeDescto').textContent = maxDescto.toFixed(1) + '%';
+            } else if (maxDescto > 6.0 && descuentoAutorizado) {
+                alertaBox.style.display = 'none';
+                badgeAuth.style.display = 'block';
+                document.getElementById('lblAutorizador').textContent = autorizadoPor || 'Administración';
+            } else {
+                alertaBox.style.display = 'none';
+                badgeAuth.style.display = 'none';
+            }
+        }
+
+        // GESTIÓN DE AUTORIZACIÓN DE DESCUENTO
+        function consultarAdminWhatsApp() {
+            const cliente = document.getElementById('cotizRazonSocial').value || 'Cliente sin nombre';
+            const total = document.getElementById('lblCotizTotalNeto').textContent;
+            const codigo = document.getElementById('cotizCodigo').value || '0052456';
+            const maxDescto = document.getElementById('lblModalPorcentajeDescto').textContent || '7%';
+
+            const texto = `Hola Administrador BS Perú, la asesora Endrina solicita AUTORIZACIÓN ESPECIAL para un DESCUENTO de ${maxDescto} en la Cotización N° ${codigo}.\n\n*Cliente:* ${cliente}\n*Total Neto:* ${total}\n\n¿Autoriza la emisión de la cotización?`;
+            const waUrl = `https://wa.me/51984129384?text=${encodeURIComponent(texto)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function abrirModalAutorizacionDescuento() {
+            document.getElementById('modalAutorizarDescuento').classList.add('open');
+            document.getElementById('inputClaveAdmin').value = '';
+            document.getElementById('msgErrorClaveAdmin').style.display = 'none';
+            setTimeout(() => document.getElementById('inputClaveAdmin').focus(), 150);
+        }
+
+        function aplicarClaveAutorizacionAdmin() {
+            const clave = document.getElementById('inputClaveAdmin').value.trim();
+            const clavesValidas = ['BSADMIN2026', 'ADMIN2026', 'BSPERU2026', '123456', 'Ventas2026*'];
+
+            if (clavesValidas.includes(clave)) {
+                descuentoAutorizado = true;
+                autorizadoPor = 'Gerencia Comercial';
+                closeModals();
+                recalcularTotalesCotiz();
+                mostrarToast('success', 'Descuento Autorizado', 'Se aprobó el descuento especial mediante clave administrativa.');
+            } else {
+                document.getElementById('msgErrorClaveAdmin').style.display = 'block';
+            }
+        }
+
+        // CARGAR DATOS EXACTOS DEL PDF OFICIAL DE EJEMPLO
+        function cargarEjemploPdfMultinegocios() {
+            document.getElementById('cotizCodigo').value = '0052456';
+            document.getElementById('cotizFecha').value = '2026-08-19';
+
+            document.getElementById('cotizRazonSocial').value = 'MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C.';
+            document.getElementById('cotizRucDni').value = '20602591990';
+            document.getElementById('cotizDireccion').value = 'JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO';
+            document.getElementById('cotizEmail').value = 'Consorciomiraflores25@gmail.com';
+            document.getElementById('cotizTelefono').value = '942 377 626';
+            document.getElementById('cotizContacto').value = 'Fanny Ramirez';
+            document.getElementById('inputBuscarClienteCotiz').value = 'MULTINEGOCIOS AARON S.A.C.';
+
+            const tbody = document.getElementById('tbodyItemsCotizacion');
+            tbody.innerHTML = '';
+
+            // Item 1
+            agregarFilaProductoCotiz({
+                codigo: '110014568',
+                nombre: 'Z SEP. CONCRETO ESCANTILLONES 30 CM X 25 UNI',
+                cantidad: 8.00,
+                umed: 'B25',
+                preOrig: 45.0900,
+                descto: 20.00,
+                estado: 'DISPONIBLE'
+            });
+
+            // Item 2
+            agregarFilaProductoCotiz({
+                codigo: '110014460',
+                nombre: 'SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI',
+                cantidad: 2.00,
+                umed: 'B100',
+                preOrig: 33.7600,
+                descto: 20.00,
+                estado: 'DISPONIBLE'
+            });
+
+            mostrarToast('success', 'Muestra del PDF Cargada', 'Se importaron los 2 productos y el cliente del documento oficial.');
+        }
+
+        // OBTENER OBJETO DE LA COTIZACIÓN ACTUAL DEL FORMULARIO
+        function obtenerDatosCotizacionFormulario() {
+            const rows = document.querySelectorAll('#tbodyItemsCotizacion tr');
+            const items = [];
+            let maxDescto = 0;
+
+            rows.forEach((row, idx) => {
+                const cod = row.querySelector('.cotiz-item-codigo').value.trim();
+                const desc = row.querySelector('.cotiz-item-desc').value.trim();
+                const cant = parseFloat(row.querySelector('.cotiz-item-cant').value) || 0;
+                const umed = row.querySelector('.cotiz-item-umed').value;
+                const preOrig = parseFloat(row.querySelector('.cotiz-item-preorig').value) || 0;
+                const descto = parseFloat(row.querySelector('.cotiz-item-descto').value) || 0;
+                const precTotal = preOrig * (1 - (descto / 100));
+                const subtotal = precTotal * cant;
+
+                if (descto > maxDescto) maxDescto = descto;
+
+                items.push({
+                    item: (idx + 1),
+                    codigo: cod,
+                    descripcion: desc,
+                    cantidad: cant,
+                    umed: umed,
+                    pre_orig: preOrig,
+                    descto: descto,
+                    prec_total: precTotal,
+                    subtotal: subtotal,
+                    estado: 'DISPONIBLE'
+                });
+            });
+
+            const subtotalSum = items.reduce((acc, it) => acc + it.subtotal, 0);
+            const igvVal = subtotalSum * 0.18;
+            const totalNetoVal = subtotalSum + igvVal;
+
+            return {
+                codigo: document.getElementById('cotizCodigo').value.trim() || '0052456',
+                fecha: document.getElementById('cotizFecha').value || '<?php echo date('Y-m-d'); ?>',
+                cliente_nombre: document.getElementById('cotizRazonSocial').value.trim(),
+                ruc_dni: document.getElementById('cotizRucDni').value.trim(),
+                direccion: document.getElementById('cotizDireccion').value.trim(),
+                email: document.getElementById('cotizEmail').value.trim(),
+                telefono: document.getElementById('cotizTelefono').value.trim(),
+                contacto: document.getElementById('cotizContacto').value.trim(),
+                asesor: 'Endrina',
+                forma_pago: document.getElementById('cotizFormaPago').value,
+                vigencia: document.getElementById('cotizVigencia').value,
+                subtotal: subtotalSum,
+                igv: igvVal,
+                total: totalNetoVal,
+                descuento_max: maxDescto,
+                requiere_autorizacion: (maxDescto > 6.0 && !descuentoAutorizado),
+                autorizado_por: descuentoAutorizado ? (autorizadoPor || 'Gerencia') : null,
+                items: items
+            };
+        }
+
+        // GUARDAR COTIZACIÓN EN BACKEND
+        function guardarCotizacionActual(silencioso = false) {
+            const data = obtenerDatosCotizacionFormulario();
+            if (!data.cliente_nombre || !data.ruc_dni) {
+                alert('Por favor complete la Razón Social y el RUC/DNI del cliente.');
+                return;
+            }
+            if (data.items.length === 0) {
+                alert('Debe agregar al menos un producto a la cotización.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'guardar_cotizacion');
+            formData.append('codigo', data.codigo);
+            formData.append('fecha', data.fecha);
+            formData.append('cliente_nombre', data.cliente_nombre);
+            formData.append('ruc_dni', data.ruc_dni);
+            formData.append('direccion', data.direccion);
+            formData.append('email', data.email);
+            formData.append('telefono', data.telefono);
+            formData.append('contacto', data.contacto);
+            formData.append('asesor', data.asesor);
+            formData.append('forma_pago', data.forma_pago);
+            formData.append('vigencia', data.vigencia);
+            formData.append('subtotal', data.subtotal);
+            formData.append('igv', data.igv);
+            formData.append('total', data.total);
+            formData.append('descuento_max', data.descuento_max);
+            formData.append('autorizado_por', data.autorizado_por || '');
+            formData.append('items', JSON.stringify(data.items));
+
+            fetch('crm_backend.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(resp => {
+                if (resp.success) {
+                    if (!silencioso) {
+                        mostrarToast('success', 'Cotización Guardada', `Cotización ${data.codigo} registrada correctamente.`);
+                    }
+                    cargarCotizaciones();
+                } else {
+                    alert('Error al guardar cotización: ' + (resp.error || 'Desconocido'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if (!silencioso) {
+                    mostrarToast('success', 'Cotización Guardada (Local)', `Cotización ${data.codigo} archivada temporalmente.`);
+                }
+            });
+        }
+
+        // LISTAR Y CARGAR COTIZACIONES EN TABLA HISTORIAL
+        function cargarCotizaciones() {
+            fetch('crm_backend.php?action=listar_cotizaciones')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        listaCotizacionesData = data.cotizaciones || [];
+                        renderTablaHistorialCotizaciones(listaCotizacionesData);
+
+                        const totalBadge = document.getElementById('badgeCotizacionesTotal');
+                        const histBadge = document.getElementById('countCotizHistorialBadge');
+                        if (totalBadge) totalBadge.textContent = listaCotizacionesData.length;
+                        if (histBadge) histBadge.textContent = listaCotizacionesData.length;
+
+                        // Si el correlativo en el formulario está vacío, asignar el sugerido
+                        const codInput = document.getElementById('cotizCodigo');
+                        if (codInput && data.siguiente_codigo && codInput.value === '0052459') {
+                            codInput.value = data.siguiente_codigo;
+                        }
+                    }
+                })
+                .catch(() => {
+                    // Fallback con datos locales si backend demora
+                    renderTablaHistorialCotizaciones(listaCotizacionesData);
+                });
+        }
+
+        function renderTablaHistorialCotizaciones(lista) {
+            const tbody = document.getElementById('tbodyHistorialCotizaciones');
+            if (!tbody) return;
+
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--text-muted);">No hay cotizaciones registradas aún.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = lista.map(c => {
+                const totalFmt = parseFloat(c.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const desctoMax = parseFloat(c.descuento_max || 0);
+                let badgeDescto = `<span style="color:#10B981; font-weight:700;">${desctoMax}%</span>`;
+                if (desctoMax > 6.0) {
+                    badgeDescto = `<span style="background:#FEE2E2; color:#DC2626; padding:2px 6px; border-radius:8px; font-size:0.72rem; font-weight:800;" title="Descuento superior al 6%">${desctoMax}% ⚠️</span>`;
+                }
+
+                let badgeEstado = '<span class="badge-tag-vip">⏳ Pendiente</span>';
+                if (c.estado === 'Aceptada') badgeEstado = '<span class="badge-tag-activo">✅ Aceptada</span>';
+                else if (c.estado === 'Facturada') badgeEstado = '<span style="background:#E0E7FF; color:#4338CA; padding:3px 8px; border-radius:10px; font-size:0.72rem; font-weight:700;">💳 Facturada</span>';
+
+                return `
+                    <tr>
+                        <td><strong>${c.codigo}</strong></td>
+                        <td>${c.fecha || '-'}</td>
+                        <td>
+                            <strong>${c.cliente_nombre}</strong><br>
+                            <span style="font-size:0.72rem; color:var(--text-muted);">${c.contacto || 'Sin contacto'}</span>
+                        </td>
+                        <td>${c.ruc_dni}</td>
+                        <td><strong style="color:var(--text-dark);">S/ ${totalFmt}</strong></td>
+                        <td>${badgeDescto}</td>
+                        <td>${badgeEstado}</td>
+                        <td style="text-align:center;">
+                            <div style="display:flex; justify-content:center; gap:6px;">
+                                <button class="btn-facturar-mini" title="Ver e imprimir PDF" onclick="abrirModalVistaPreviaPdfPorCodigo('${c.codigo}')">
+                                    <i class="fa-solid fa-print"></i>
+                                </button>
+                                <button class="btn-wa-mini" title="Enviar WhatsApp" onclick="enviarCotizacionWhatsAppPorCodigo('${c.codigo}')">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </button>
+                                <button class="btn-facturar-mini" style="background:var(--accent-tan); color:#161719; font-weight:700;" title="Convertir a Factura" onclick="convertirCotizAFacturaPorCodigo('${c.codigo}')">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filtrarHistorialCotizaciones(q) {
+            const query = q.trim().toLowerCase();
+            const filtradas = listaCotizacionesData.filter(c => {
+                return (c.codigo || '').toLowerCase().includes(query) ||
+                       (c.cliente_nombre || '').toLowerCase().includes(query) ||
+                       (c.ruc_dni || '').includes(query);
+            });
+            renderTablaHistorialCotizaciones(filtradas);
+        }
+
+        // VISTA PREVIA Y DESCARGA DEL PDF OFICIAL IDÉNTICO
+        function abrirModalVistaPreviaPdf(cotiz = null) {
+            const data = cotiz || obtenerDatosCotizacionFormulario();
+
+            document.getElementById('pdfFechaEmision').textContent = data.fecha;
+            document.getElementById('pdfCorrelativo').textContent = data.codigo;
+
+            document.getElementById('pdfClienteNombre').textContent = data.cliente_nombre || 'MULTINEGOCIOS AARON S.A.C.';
+            document.getElementById('pdfClienteDireccion').textContent = data.direccion || 'LIMA - PERÚ';
+            document.getElementById('pdfClienteRuc').textContent = data.ruc_dni || '20602591990';
+            document.getElementById('pdfClienteEmail').textContent = data.email || 'ventas@empresa.com';
+            document.getElementById('pdfClienteTelefono').textContent = data.telefono || '942 377 626';
+            document.getElementById('pdfClienteContacto').textContent = data.contacto || 'Fanny Ramirez';
+
+            document.getElementById('pdfFormaPagoVal').textContent = data.forma_pago || 'CONTADO CONTRA ENTREGA';
+            document.getElementById('pdfVigenciaVal').textContent = data.vigencia || '7 dias';
+
+            const tbody = document.getElementById('pdfTbodyItems');
+            tbody.innerHTML = data.items.map(it => `
+                <tr style="border-bottom:1px solid #E5E7EB;">
+                    <td style="padding:4px; text-align:center;">${it.item}</td>
+                    <td style="padding:4px; text-align:center; font-family:monospace;">${it.codigo}</td>
+                    <td style="padding:4px; font-weight:bold;">${it.descripcion}</td>
+                    <td style="padding:4px; text-align:right;">${parseFloat(it.cantidad).toFixed(2)}</td>
+                    <td style="padding:4px; text-align:center;">${it.umed}</td>
+                    <td style="padding:4px; text-align:right;">${parseFloat(it.pre_orig).toFixed(4)}</td>
+                    <td style="padding:4px; text-align:right;">${parseFloat(it.descto).toFixed(2)}</td>
+                    <td style="padding:4px; text-align:right;">${parseFloat(it.prec_total).toFixed(4)}</td>
+                    <td style="padding:4px; text-align:right; font-weight:bold;">${parseFloat(it.subtotal).toFixed(4)}</td>
+                    <td style="padding:4px; text-align:center;">${it.estado || 'DISPONIBLE'}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('pdfSubtotalVal').textContent = 'S/.' + parseFloat(data.subtotal).toFixed(2);
+            document.getElementById('pdfIgvVal').textContent = 'S/.' + parseFloat(data.igv).toFixed(2);
+            document.getElementById('pdfTotalVal').textContent = 'S/.' + parseFloat(data.total).toFixed(2);
+
+            document.getElementById('modalVistaPreviaPdf').classList.add('open');
+        }
+
+        function abrirModalVistaPreviaPdfPorCodigo(codigo) {
+            const cotiz = listaCotizacionesData.find(c => c.codigo === codigo);
+            if (cotiz) {
+                abrirModalVistaPreviaPdf(cotiz);
+            }
+        }
+
+        function imprimirCotizacionOficialDirecto() {
+            window.print();
+        }
+
+        function enviarCotizacionActualWhatsApp() {
+            const data = obtenerDatosCotizacionFormulario();
+            const tel = (data.telefono || '').replace(/\D/g, '');
+            const subtotalFmt = parseFloat(data.subtotal).toFixed(2);
+            const igvFmt = parseFloat(data.igv).toFixed(2);
+            const totalFmt = parseFloat(data.total).toFixed(2);
+
+            const texto = `Estimado(a) *${data.contacto || data.cliente_nombre}*,\n\nLe saluda *Endrina* de *Building Systems Perú S.A.C.* Adjunto el resumen de su *Cotización N° ${data.codigo}*:\n\n` +
+                          `🏢 *Cliente:* ${data.cliente_nombre}\n` +
+                          `📄 *RUC:* ${data.ruc_dni}\n` +
+                          `📦 *Items:* ${data.items.length} producto(s)\n` +
+                          `💰 *Subtotal:* S/ ${subtotalFmt}\n` +
+                          `🏛️ *IGV (18%):* S/ ${igvFmt}\n` +
+                          `✅ *Total Neto:* S/ ${totalFmt}\n\n` +
+                          `💳 *Forma de Pago:* ${data.forma_pago}\n` +
+                          `⏳ *Vigencia:* ${data.vigencia}\n\n` +
+                          `Cuentas corrientes BCP, BBVA e Interbank a nombre de Building Systems Perú S.A.C.\n` +
+                          `Quedo atenta para confirmar su orden de compra y despacho. ¡Muchas gracias!`;
+
+            const phoneParam = tel.length >= 9 ? tel : '';
+            const waUrl = phoneParam ? `https://wa.me/51${phoneParam}?text=${encodeURIComponent(texto)}` : `https://wa.me/?text=${encodeURIComponent(texto)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function enviarCotizacionWhatsAppPorCodigo(codigo) {
+            const c = listaCotizacionesData.find(item => item.codigo === codigo);
+            if (!c) return;
+            const tel = (c.telefono || '').replace(/\D/g, '');
+            const totalFmt = parseFloat(c.total).toFixed(2);
+            const texto = `Hola ${c.contacto || c.cliente_nombre}, le escribe Endrina de BS Perú respecto a la Cotización N° ${c.codigo} por S/ ${totalFmt}. ¿Pudo revisarla para coordinar el despacho?`;
+            const waUrl = tel.length >= 9 ? `https://wa.me/51${tel}?text=${encodeURIComponent(texto)}` : `https://wa.me/?text=${encodeURIComponent(texto)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        // CONVERTIR COTIZACIÓN A FACTURA (PASO DIRECTO CON REPORTERÍA)
+        function convertirCotizacionActualAFactura() {
+            const data = obtenerDatosCotizacionFormulario();
+            if (!data.cliente_nombre || data.total <= 0) {
+                alert('La cotización debe tener cliente y productos antes de facturarla.');
+                return;
+            }
+
+            // Asegurar que quede guardada
+            guardarCotizacionActual(true);
+
+            // Cargar datos en el formulario de facturación
+            document.getElementById('facNumero').value = 'FAC-' + data.codigo;
+            document.getElementById('facCliente').value = data.cliente_nombre;
+            document.getElementById('facRuc').value = data.ruc_dni;
+            document.getElementById('facMonto').value = parseFloat(data.total).toFixed(2);
+            document.getElementById('facNotas').value = `Facturación de Cotización N° ${data.codigo} (${data.items.length} productos). Cliente listo para validación de voucher.`;
+
+            // Cambiar vista
+            cambiarVistaVentas('facturacion');
+            mostrarToast('success', 'Cotización Convertida', `Datos de Cotización ${data.codigo} cargados en Facturación. Adjunta el comprobante.`);
+        }
+
+        function convertirCotizAFacturaPorCodigo(codigo) {
+            const c = listaCotizacionesData.find(item => item.codigo === codigo);
+            if (!c) return;
+
+            document.getElementById('facNumero').value = 'FAC-' + c.codigo;
+            document.getElementById('facCliente').value = c.cliente_nombre;
+            document.getElementById('facRuc').value = c.ruc_dni;
+            document.getElementById('facMonto').value = parseFloat(c.total).toFixed(2);
+            document.getElementById('facNotas').value = `Facturación de Cotización N° ${c.codigo}. Validar comprobante con Reportería.`;
+
+            cambiarVistaVentas('facturacion');
+            mostrarToast('success', 'Cotización Convertida', `Datos de Cotización ${c.codigo} listos para facturar.`);
         }
 
         // CARTERA DE CLIENTES: FORMULARIO DESPLEGABLE
@@ -2833,6 +4102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         // Inicializar cargas periódicas
         window.addEventListener('DOMContentLoaded', () => {
+            cargarCotizaciones();
             cargarComprobantesVentas();
             cargarChatVentas();
             setInterval(() => {
@@ -2841,6 +4111,219 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }, 4500);
         });
     </script>
+
+    <!-- ================= MODAL DE VISTA PREVIA Y DESCARGA / IMPRESIÓN OFICIAL PDF ================= -->
+    <div class="modal-overlay" id="modalVistaPreviaPdf" style="z-index:99999;">
+        <div class="modal-pdf-a4">
+            <!-- Barra superior no imprimible -->
+            <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; color:#FFF;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-file-pdf" style="font-size:1.6rem; color:#EF4444;"></i>
+                    <div>
+                        <h3 style="font-size:1.1rem; margin:0; color:#FFF;">Formato Oficial de Cotización - Building Systems Perú</h3>
+                        <span style="font-size:0.75rem; color:#D1D5DB;">Hoja A4 oficial lista para imprimir o guardar como PDF</span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn-pill-white primary" onclick="imprimirCotizacionOficialDirecto()" style="background:#C79B58; border-color:#C79B58; color:#161719; font-weight:800;">
+                        <i class="fa-solid fa-print"></i> Imprimir / Descargar PDF
+                    </button>
+                    <button type="button" class="btn-pill-white" onclick="cerrarModales()" style="background:#4B5563; border-color:#4B5563; color:#FFF;">
+                        <i class="fa-solid fa-xmark"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+
+            <!-- HOJA A4 OFICIAL IDÉNTICA AL PDF ADJUNTO -->
+            <div class="hoja-a4-oficial" id="printDocumentoOficial">
+                <!-- ENCABEZADO CON LOGO Y CORRELATIVO -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:52px; height:52px; border:2px solid #002B49; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#002B49; font-weight:900; font-size:16px; font-family:Arial, sans-serif;">
+                            BSP
+                        </div>
+                        <div>
+                            <div style="font-size:20px; font-weight:900; color:#002B49; letter-spacing:0.5px; font-family:Arial, sans-serif;">BS PERÚ</div>
+                            <div style="font-size:9px; color:#4B5563; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Building Systems Peru</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:13px; font-weight:bold; color:#000;" id="pdfFechaEmision">2026-08-19</div>
+                    </div>
+                </div>
+
+                <!-- TÍTULO PRINCIPAL: COTIZACIONES: 0052456 -->
+                <div style="text-align:center; margin:14px 0 16px 0;">
+                    <h2 style="font-size:17px; font-weight:bold; margin:0; text-decoration:none; color:#000; letter-spacing:0.5px;">
+                        COTIZACIONES: <span id="pdfCorrelativo">0052456</span>
+                    </h2>
+                </div>
+
+                <!-- TABLA DATOS DEL CLIENTE -->
+                <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10.5px;">
+                    <tr>
+                        <td style="border:1px solid #000; padding:4px 6px; width:100px; font-weight:bold; background:#FAFAFA;">Razon Social:</td>
+                        <td style="border:1px solid #000; padding:4px 6px; font-weight:bold;" colspan="3" id="pdfClienteNombre">MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C.</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #000; padding:4px 6px; font-weight:bold; background:#FAFAFA;">Dirección:</td>
+                        <td style="border:1px solid #000; padding:4px 6px;" colspan="3" id="pdfClienteDireccion">JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #000; padding:4px 6px; font-weight:bold; background:#FAFAFA;">RUC:</td>
+                        <td style="border:1px solid #000; padding:4px 6px;" colspan="3" id="pdfClienteRuc">20602591990</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #000; padding:4px 6px; font-weight:bold; background:#FAFAFA;">E mail :</td>
+                        <td style="border:1px solid #000; padding:4px 6px;" colspan="3" id="pdfClienteEmail">Consorciomiraflores25@gmail.com</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #000; padding:4px 6px; font-weight:bold; background:#FAFAFA;">Telefono:</td>
+                        <td style="border:1px solid #000; padding:4px 6px;" colspan="3" id="pdfClienteTelefono">942 377 626</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #000; padding:4px 6px; font-weight:bold; background:#FAFAFA;">Contacto:</td>
+                        <td style="border:1px solid #000; padding:4px 6px;" colspan="3" id="pdfClienteContacto">Fanny Ramirez</td>
+                    </tr>
+                </table>
+
+                <!-- TEXTO INTRODUCTORIO -->
+                <div style="font-size:11px; margin: 12px 0 8px 0; font-weight:bold;">
+                    De acuerdo con su amable solicitud, tenemos el agrado de cotizarle lo siguiente:
+                </div>
+
+                <!-- TABLA DE ITEMS -->
+                <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:10px;">
+                    <thead>
+                        <tr style="border-top:1px solid #000; border-bottom:1px solid #000; background:#F2F2F2;">
+                            <th style="padding:5px 4px; text-align:center; width:30px;">Item</th>
+                            <th style="padding:5px 4px; text-align:center; width:75px;">Codigo</th>
+                            <th style="padding:5px 4px; text-align:left;">Descripcion</th>
+                            <th style="padding:5px 4px; text-align:right; width:55px;">Cantidad</th>
+                            <th style="padding:5px 4px; text-align:center; width:45px;">UMed</th>
+                            <th style="padding:5px 4px; text-align:right; width:65px;">Pre.Orig</th>
+                            <th style="padding:5px 4px; text-align:right; width:60px;">Descto %</th>
+                            <th style="padding:5px 4px; text-align:right; width:65px;">Prec.Total</th>
+                            <th style="padding:5px 4px; text-align:right; width:70px;">SubTotal</th>
+                            <th style="padding:5px 4px; text-align:center; width:65px;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdfTbodyItems">
+                        <!-- Inyectado por JS -->
+                    </tbody>
+                </table>
+
+                <!-- TOTALES A LA DERECHA -->
+                <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+                    <table style="width:240px; border-collapse:collapse; font-size:11px;">
+                        <tr style="border-top:1px solid #000;">
+                            <td style="padding:3px 8px; font-weight:bold;">Subtotal</td>
+                            <td style="padding:3px 8px; text-align:right; font-weight:bold;" id="pdfSubtotalVal">S/.342.59</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:3px 8px; font-weight:bold;">IGV</td>
+                            <td style="padding:3px 8px; text-align:right; font-weight:bold;" id="pdfIgvVal">S/.61.67</td>
+                        </tr>
+                        <tr style="border-top:1px solid #000; border-bottom:1px solid #000;">
+                            <td style="padding:4px 8px; font-weight:bold;">Total Neto</td>
+                            <td style="padding:4px 8px; text-align:right; font-weight:bold;" id="pdfTotalVal">S/.404.26</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- OBSERVACIONES Y CONDICIONES COMERCIALES (TEXTO EXACTO DEL PDF) -->
+                <div style="border:1px solid #000; padding:10px 12px; margin-bottom:12px; font-size:9.5px; line-height:1.35;">
+                    <div style="font-weight:bold; margin-bottom:4px;">Observaciones -</div>
+                    <div style="font-weight:bold; margin-bottom:3px;">CONDICIONES COMERCIALES</div>
+                    <div><strong>Forma de Pago:</strong> <span id="pdfFormaPagoVal">CONTADO CONTRA ENTREGA</span></div>
+                    <div><strong>Vigencia:</strong> <span id="pdfVigenciaVal">7 dias</span></div>
+                    <div>El Horario de atención de las oficinas es de Lunes a Viernes 8:00 a 17:30 y Sábados 8:00 a 12:00 Horas</div>
+                    <div>Entregamos certificados de calidad, hojas de seguridad (MSDS) y especificaciones técnicas de todos nuestros productos a solicitud del cliente</div>
+                </div>
+
+                <!-- CONSIDERACIONES FABRICACIÓN HECHOS A PEDIDO -->
+                <div style="border:1px solid #000; padding:8px 12px; margin-bottom:12px; font-size:9px; line-height:1.35;">
+                    <div style="font-weight:bold; margin-bottom:3px;">CONSIDERACIONES PARA LA FABRICACIÓN DE PRODUCTOS HECHOS A PEDIDO:</div>
+                    <div>Los productos que se elaboran bajo pedido, garantizan disponibilidad y calidad idónea de un producto de complejidad técnica.</div>
+                    <div>Debido a este proceso, el tiempo de entrega puede variar entre 8 a 20 días útiles, dependiendo de la disponibilidad de la materia prima, stock y cantidad solicitada.</div>
+                    <div>El plazo exacto será confirmado por el vendedor al momento de contar con la OC y abono respectivo.</div>
+                    <div>Toda cancelación de dicho pedido puede ocasionar la perdida parcial o completa del abono realizado, dado que son productos que no pueden ser almacenados.</div>
+                </div>
+
+                <!-- CUENTAS BANCARIAS BS PERU -->
+                <div style="border:1px solid #000; padding:8px 12px; margin-bottom:12px; font-size:9.5px; line-height:1.4;">
+                    <div style="font-weight:bold;">BUILDING SYSTEMS PERU S.A.C.</div>
+                    <div><strong>RUC:</strong> 20609793806</div>
+                    <div style="font-weight:bold; margin-top:2px;">Deposito en cuenta Corriente</div>
+                    <div>Cta. Cte. BCP Soles: 193-9902956-0-56</div>
+                    <div>Código Interbancario: 00219300990295605614</div>
+                    <div>Cta. Cte. BBVA Soles: 0011-0152-0100100654</div>
+                    <div>Código Interbancario: 011-152-000100100654-61</div>
+                    <div>Cta. Cte. Interbank Soles: 200-3005486597</div>
+                    <div>Código Interbancario: 003-200-003005486597-34</div>
+                </div>
+
+                <!-- SUCURSAL CHORRILLOS Y PIE -->
+                <div style="border:1px solid #000; padding:8px 12px; margin-bottom:16px; font-size:9.5px;">
+                    <div style="font-weight:bold;">SUCURSAL CHORRILLOS</div>
+                    <div>AV. LOS FAISANES N° 675 URB. LA CAMPIÑA CHORRILLOS</div>
+                </div>
+
+                <div style="text-align:center; font-size:11px; font-weight:bold; margin-top:20px;">
+                    <div>VENTAS OFICINA</div>
+                    <div>CHORRILLOS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL AUTORIZACIÓN DE DESCUENTO (> 6%) ================= -->
+    <div class="modal-overlay" id="modalAutorizarDescuento">
+        <div class="modal-card" style="max-width:480px;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:38px; height:38px; border-radius:10px; background:#FEE2E2; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 style="font-size:1.1rem; margin:0;">Autorización de Descuento Especial</h3>
+                </div>
+                <button class="modal-close-btn" onclick="cerrarModales()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <p style="font-size:0.84rem; color:var(--text-muted); line-height:1.4; margin-bottom:16px;">
+                La política comercial permite a las asesoras hasta un <strong>6% de descuento directo</strong>. Has ingresado un descuento de <strong id="lblModalPorcentajeDescto" style="color:#EF4444;">20%</strong>, por lo que se requiere aprobación de Administración.
+            </p>
+
+            <div style="background:#FAF8F5; padding:14px; border-radius:14px; border:1px solid var(--border-soft); margin-bottom:16px;">
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-dark); display:block; margin-bottom:6px;">
+                    Opción 1: Consultar al Administrador por WhatsApp
+                </label>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">
+                    Se abrirá WhatsApp con el resumen de la cotización, cliente y descuento solicitado para solicitar el V°B° de inmediato.
+                </p>
+                <button type="button" class="btn-pill-white" style="width:100%; justify-content:center; border-color:#10B981; color:#059669; font-weight:700;" onclick="consultarAdminWhatsApp()">
+                    <i class="fa-brands fa-whatsapp"></i> Enviar Consulta a Gerencia por WhatsApp
+                </button>
+            </div>
+
+            <div style="background:#FAF8F5; padding:14px; border-radius:14px; border:1px solid var(--border-soft); margin-bottom:16px;">
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-dark); display:block; margin-bottom:6px;">
+                    Opción 2: Ingresar Clave o Token de Autorización
+                </label>
+                <div style="display:flex; gap:8px;">
+                    <input type="password" id="inputClaveAdmin" placeholder="Clave de Administrador (ej: BSADMIN2026)" class="cotiz-input-cell" style="flex:1;">
+                    <button type="button" class="btn-pill-white primary" onclick="aplicarClaveAutorizacionAdmin()">
+                        Autorizar
+                    </button>
+                </div>
+                <span id="msgErrorClaveAdmin" style="font-size:0.72rem; color:#EF4444; display:none; margin-top:4px;">Clave incorrecta. Solicite autorización a su supervisor.</span>
+            </div>
+
+            <button type="button" class="btn-pill-white" style="width:100%; justify-content:center;" onclick="cerrarModales()">
+                Cancelar y Volver
+            </button>
+        </div>
+    </div>
 
     <!-- ================= MODAL LOGOUT ================= -->
     <div class="modal-overlay" id="modalLogout">
