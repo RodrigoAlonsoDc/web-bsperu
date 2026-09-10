@@ -553,17 +553,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
         // Notificación automática en el chat para el vendedor
         if ($pagoActualizado) {
-            $asesorP = $pagoActualizado['asesor'] ?? 'Endrina';
+            $asesorP = trim($_POST['asesor'] ?? ($pagoActualizado['asesor'] ?? 'Endrina'));
+            if (!$asesorP) $asesorP = 'Endrina';
+            $sucursalP = trim($_POST['sucursal'] ?? '');
+            if (!$sucursalP) {
+                $sucursalP = ($asesorP === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal');
+            }
+            $notaNayeli = trim($_POST['nota'] ?? 'Abono verificado y conciliado en extracto bancario. Pedido liberado y autorizado para despacho.');
+            $montoFmt = number_format($pagoActualizado['monto'], 2);
+
             agregarMensajeChat([
                 'asesor' => $asesorP,
-                'sucursal' => ($asesorP === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal'),
+                'sucursal' => $sucursalP,
                 'remitente' => 'Nayeli',
                 'rol' => 'Reportería',
-                'mensaje' => "✅ PAGO ACEPTADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) por S/ " . number_format($pagoActualizado['monto'], 2) . " ha sido verificada en {$pagoActualizado['banco']}. Pedido liberado para despacho.",
+                'mensaje' => "✅ PAGO VALIDADO & CONCILIADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) por S/ {$montoFmt} ha sido verificada en {$pagoActualizado['banco']}. {$notaNayeli}",
                 'hora' => date('H:i'),
                 'fecha' => date('Y-m-d'),
                 'timestamp' => time(),
-                'tipo' => 'pago_aceptado'
+                'tipo' => 'pago_aceptado',
+                'factura_data' => [
+                    'nro_factura' => $pagoActualizado['nro_factura'],
+                    'cliente' => $pagoActualizado['cliente'],
+                    'ruc' => $pagoActualizado['ruc'] ?? '',
+                    'monto' => $pagoActualizado['monto'],
+                    'banco' => $pagoActualizado['banco'] ?? 'BCP',
+                    'nro_operacion' => $pagoActualizado['nro_operacion'] ?? '',
+                    'voucher_url' => $pagoActualizado['voucher_url'] ?? '',
+                    'estado' => 'Aceptado',
+                    'validador' => $validador,
+                    'fecha_validacion' => $fecha,
+                    'nota' => $notaNayeli
+                ]
             ]);
         }
 
@@ -579,6 +600,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
     if ($action === 'observar_pago') {
         header('Content-Type: application/json');
         $pago_id = intval($_POST['pago_id'] ?? 0);
+        $cotizacion = trim($_POST['cotizacion'] ?? '');
         $motivo = trim($_POST['motivo'] ?? 'Comprobante no coincide con extracto bancario');
         $validador = $_POST['validador'] ?? 'Nayeli (Reportería)';
         $fecha = date('Y-m-d H:i:s');
@@ -593,7 +615,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $pagos = obtenerPagos();
         $pagoActualizado = null;
         foreach ($pagos as &$p) {
-            if ($p['id'] == $pago_id) {
+            if (($pago_id > 0 && $p['id'] == $pago_id) || ($cotizacion !== '' && ($p['nro_factura'] === $cotizacion || ($p['cotizacion'] ?? '') === $cotizacion))) {
                 $p['estado'] = 'Observado';
                 $p['motivo_observacion'] = $motivo;
                 $p['validador'] = $validador;
@@ -606,17 +628,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
         // Notificación automática en el chat de observación
         if ($pagoActualizado) {
-            $asesorP = $pagoActualizado['asesor'] ?? 'Endrina';
+            $asesorP = trim($_POST['asesor'] ?? ($pagoActualizado['asesor'] ?? 'Endrina'));
+            if (!$asesorP) $asesorP = 'Endrina';
+            $sucursalP = trim($_POST['sucursal'] ?? '');
+            if (!$sucursalP) {
+                $sucursalP = ($asesorP === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal');
+            }
+            $montoFmt = number_format($pagoActualizado['monto'], 2);
+
             agregarMensajeChat([
                 'asesor' => $asesorP,
-                'sucursal' => ($asesorP === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal'),
+                'sucursal' => $sucursalP,
                 'remitente' => 'Nayeli',
                 'rol' => 'Reportería',
-                'mensaje' => "⚠️ PAGO OBSERVADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) tiene la siguiente observación: \"{$motivo}\". Por favor rectificar con el cliente.",
+                'mensaje' => "⚠️ PAGO OBSERVADO: La factura {$pagoActualizado['nro_factura']} ({$pagoActualizado['cliente']}) por S/ {$montoFmt} presenta una observación: \"{$motivo}\". Por favor rectificar el comprobante con el cliente.",
                 'hora' => date('H:i'),
                 'fecha' => date('Y-m-d'),
                 'timestamp' => time(),
-                'tipo' => 'pago_observado'
+                'tipo' => 'pago_observado',
+                'factura_data' => [
+                    'nro_factura' => $pagoActualizado['nro_factura'],
+                    'cliente' => $pagoActualizado['cliente'],
+                    'ruc' => $pagoActualizado['ruc'] ?? '',
+                    'monto' => $pagoActualizado['monto'],
+                    'banco' => $pagoActualizado['banco'] ?? 'BCP',
+                    'nro_operacion' => $pagoActualizado['nro_operacion'] ?? '',
+                    'voucher_url' => $pagoActualizado['voucher_url'] ?? '',
+                    'estado' => 'Observado',
+                    'motivo' => $motivo,
+                    'validador' => $validador,
+                    'fecha_validacion' => $fecha
+                ]
             ]);
         }
 

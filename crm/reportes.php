@@ -1276,6 +1276,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             border-color: #2A3942;
             color: #FFF;
         }
+        .btn-chat-action-red {
+            background: #EF4444;
+            color: #FFF;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+        .btn-chat-action-red:hover {
+            background: #DC2626;
+            transform: translateY(-1px);
+        }
+        .card-pago-status-wa {
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+        .card-pago-status-wa.aceptado {
+            background: #ECFDF5;
+            border: 1.5px solid #6EE7B7;
+        }
+        body.dark-mode .card-pago-status-wa.aceptado {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+        .card-pago-status-wa.observado {
+            background: #FEF2F2;
+            border: 1.5px solid #FCA5A5;
+        }
+        body.dark-mode .card-pago-status-wa.observado {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.35);
+        }
 
         /* Barra de entrada WhatsApp */
         .chat-input-bar-wa {
@@ -2587,17 +2626,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (mainContent) mainContent.scrollTop = 0;
         }
 
+        let currentModalAsesor = 'Endrina';
+        let currentModalCliente = '';
+        let currentModalOp = '';
+
         // VISOR DE VOUCHER
         function abrirVisorVoucher(cotiz, cliente, monto, op, asesor, pagoId, imgUrl) {
             currentModalPagoId = pagoId;
             currentModalMonto = typeof monto === 'number' ? monto : parseFloat(String(monto).replace(/,/g, ''));
             currentModalCotiz = cotiz;
+            currentModalAsesor = asesor || asesorChatActivo;
+            currentModalCliente = cliente || '';
+            currentModalOp = op || '';
 
             document.getElementById('modalVoucherCotiz').textContent = cotiz;
             document.getElementById('modalVoucherCliente').textContent = cliente;
             document.getElementById('modalVoucherMonto').textContent = 'S/ ' + currentModalMonto.toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('modalVoucherOp').textContent = op;
-            document.getElementById('modalVoucherAsesor').textContent = asesor;
+            document.getElementById('modalVoucherAsesor').textContent = currentModalAsesor;
 
             if (imgUrl) {
                 document.getElementById('modalVoucherImg').src = imgUrl;
@@ -2632,6 +2678,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     const isAceptado = (p.estado === 'Aceptado');
                     const isObservado = (p.estado === 'Observado');
                     const montoFmt = parseFloat(p.monto).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    const clienteSafe = (p.cliente || '').replace(/'/g, "\\'");
+                    const asesorSafe = (p.asesor || 'Endrina').replace(/'/g, "\\'");
 
                     // Si está aceptado, agregarlo al historial de aceptados
                     if (isAceptado && tbodyHist) {
@@ -2644,7 +2692,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <td>${p.validador || 'Nayeli'}</td>
                             <td>${p.fecha_validacion || p.fecha}</td>
                             <td><span class="badge-status-accepted">✅ Pago Aceptado</span></td>
-                            <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.asesor}', 0, '${p.voucher_url}')">Ver</button></td>
+                            <td><button class="btn-confirm-direct" style="padding:4px 10px; font-size:0.7rem;" onclick="abrirVisorVoucher('${p.nro_factura}', '${clienteSafe}', '${montoFmt}', '${p.nro_operacion}', '${asesorSafe}', 0, '${p.voucher_url}')">Ver</button></td>
                         `;
                         tbodyHist.appendChild(trHist);
                     }
@@ -2654,10 +2702,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         let badge = `<span class="badge-status-pending" id="badge-pago-${p.id}"><i class="fa-solid fa-hourglass-start"></i> Por Confirmar</span>`;
                         let actions = `
                             <div style="display:flex; gap:6px; justify-content:center;">
-                                <button class="btn-confirm-direct" onclick="confirmarPagoEnFila(${p.id}, ${p.monto}, '${p.nro_factura}')">
+                                <button class="btn-confirm-direct" onclick="confirmarPagoEnFila(${p.id}, ${p.monto}, '${p.nro_factura}', '${asesorSafe}', '${clienteSafe}', '${p.banco}')">
                                     <i class="fa-solid fa-check"></i> Aceptar
                                 </button>
-                                <button class="btn-observe-direct" onclick="observarPagoEnFila(${p.id}, '${p.nro_factura}')">
+                                <button class="btn-observe-direct" onclick="observarPagoEnFila(${p.id}, '${p.nro_factura}', '${asesorSafe}', '${clienteSafe}', ${p.monto}, '${p.banco}')">
                                     <i class="fa-solid fa-circle-exclamation"></i> Observar
                                 </button>
                             </div>
@@ -2685,8 +2733,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <td><span style="background:#002A8F; color:#FFF; padding:3px 8px; border-radius:8px; font-size:0.72rem; font-weight:700;">${p.banco} #${p.nro_operacion}</span></td>
                             <td>
                                 <div style="display:flex; align-items:center; gap:8px;">
-                                    <img src="${p.voucher_url}" class="voucher-thumb-small" onerror="this.src='https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=150&q=80'" onclick="abrirVisorVoucher('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.asesor}', ${isAceptado ? 0 : p.id}, '${p.voucher_url}')" alt="Voucher">
-                                    <span style="font-size:0.75rem; color:var(--accent-green-dark); cursor:pointer; font-weight:600;" onclick="abrirVisorVoucher('${p.nro_factura}', '${p.cliente}', '${montoFmt}', '${p.nro_operacion}', '${p.asesor}', ${isAceptado ? 0 : p.id}, '${p.voucher_url}')">Ver Voucher</span>
+                                    <img src="${p.voucher_url}" class="voucher-thumb-small" onerror="this.src='https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=150&q=80'" onclick="abrirVisorVoucher('${p.nro_factura}', '${clienteSafe}', '${montoFmt}', '${p.nro_operacion}', '${asesorSafe}', ${isAceptado ? 0 : p.id}, '${p.voucher_url}')" alt="Voucher">
+                                    <span style="font-size:0.75rem; color:var(--accent-green-dark); cursor:pointer; font-weight:600;" onclick="abrirVisorVoucher('${p.nro_factura}', '${clienteSafe}', '${montoFmt}', '${p.nro_operacion}', '${asesorSafe}', ${isAceptado ? 0 : p.id}, '${p.voucher_url}')">Ver Voucher</span>
                                 </div>
                             </td>
                             <td>${badge}</td>
@@ -2728,26 +2776,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         // ACEPTAR PAGO DIRECTO
-        function confirmarPagoEnFila(id, monto, cotiz) {
-            if (!confirm(`¿Confirmar y conciliar el pago de S/ ${parseFloat(monto).toLocaleString()} para la factura ${cotiz}?`)) return;
+        function confirmarPagoEnFila(id, monto, cotiz, asesor, cliente, banco) {
+            if (!confirm(`¿Confirmar y conciliar el pago de S/ ${parseFloat(monto).toLocaleString()} para la factura ${cotiz}? Se notificará a ${asesor || 'Ventas'} por chat.`)) return;
 
-            ejecutarAprobacionPago(id, monto, cotiz);
+            ejecutarAprobacionPago(id, monto, cotiz, asesor, cliente, banco);
         }
 
         function confirmarDesdeModal() {
             cerrarModales();
             if (currentModalPagoId > 0) {
-                ejecutarAprobacionPago(currentModalPagoId, currentModalMonto, currentModalCotiz);
+                ejecutarAprobacionPago(currentModalPagoId, currentModalMonto, currentModalCotiz, currentModalAsesor, currentModalCliente, currentModalOp);
             }
         }
 
-        function ejecutarAprobacionPago(id, monto, cotiz) {
+        function ejecutarAprobacionPago(id, monto, cotiz, asesor, cliente, banco, nota) {
             const formData = new FormData();
             formData.append('action', 'confirmar_pago');
             formData.append('pago_id', id);
             formData.append('monto', monto);
             formData.append('cotizacion', cotiz);
+            formData.append('asesor', asesor || asesorChatActivo);
+            formData.append('cliente', cliente || '');
+            formData.append('banco', banco || 'BCP');
             formData.append('validador', 'Nayeli (Reportería)');
+            if (nota) formData.append('nota', nota);
 
             fetch('crm_backend.php', {
                 method: 'POST',
@@ -2755,7 +2807,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             })
             .then(res => res.json())
             .then(data => {
-                alert(`✅ ¡Pago de ${cotiz} confirmado exitosamente!\nSe actualizó la base de datos y se notificó al área de ventas para el despacho.`);
+                alert(`✅ ¡Pago de ${cotiz} confirmado exitosamente!\nSe actualizó la base de datos y se notificó inmediatamente a ${asesor || 'Ventas'} por chat para liberar el pedido.`);
                 cargarPagosReporteria();
                 cargarChatReporteria();
             })
@@ -2765,13 +2817,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             });
         }
 
+        // CONFIRMAR PAGO DIRECTO DESDE LA TARJETA DEL CHAT
+        function confirmarPagoDirectoDesdeChat(nroFactura, cliente, monto, asesor, banco, op) {
+            if (!confirm(`¿Aprobar y conciliar el pago de S/ ${parseFloat(monto).toLocaleString()} de ${cliente} (${nroFactura})?\n\nSe enviará de inmediato la respuesta oficial a ${asesor} por este canal de chat para autorizar el despacho.`)) return;
+
+            ejecutarAprobacionPago(0, monto, nroFactura, asesor, cliente, banco, 'Extracto bancario verificado. Abono conciliado en cuenta corriente. Pedido autorizado para despacho.');
+        }
+
         // OBSERVAR PAGO
         let currentObsPagoId = 0;
         let currentObsCotiz = '';
+        let currentObsAsesor = 'Endrina';
+        let currentObsCliente = '';
+        let currentObsMonto = 0;
+        let currentObsBanco = '';
 
-        function observarPagoEnFila(id, cotiz) {
+        function observarPagoEnFila(id, cotiz, asesor, cliente, monto, banco) {
             currentObsPagoId = id;
             currentObsCotiz = cotiz;
+            currentObsAsesor = asesor || asesorChatActivo;
+            currentObsCliente = cliente || '';
+            currentObsMonto = monto || 0;
+            currentObsBanco = banco || '';
             const titleEl = document.getElementById('modalObsCotiz');
             if (titleEl) titleEl.textContent = `Observar Factura ${cotiz}`;
 
@@ -2785,6 +2852,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
 
             document.getElementById('modalObservarPago').classList.add('open');
+        }
+
+        function observarPagoDirectoDesdeChat(nroFactura, cliente, monto, asesor) {
+            observarPagoEnFila(0, nroFactura, asesor, cliente, monto, 'Banco');
         }
 
         function confirmarObservacionDesdeModal() {
@@ -2808,6 +2879,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formData.append('action', 'observar_pago');
             formData.append('pago_id', currentObsPagoId);
             formData.append('cotizacion', currentObsCotiz);
+            formData.append('asesor', currentObsAsesor);
+            formData.append('cliente', currentObsCliente);
             formData.append('motivo', motivo);
             formData.append('validador', 'Nayeli (Reportería)');
 
@@ -2817,7 +2890,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             })
             .then(res => res.json())
             .then(data => {
-                alert(`⚠️ Factura ${currentObsCotiz} marcada como Observada.\nMotivo: "${motivo}"\nSe notificó a Ventas en tiempo real.`);
+                alert(`⚠️ Factura ${currentObsCotiz} marcada como Observada.\nMotivo: "${motivo}"\nSe notificó a ${currentObsAsesor} en el chat en tiempo real.`);
                 cargarPagosReporteria();
                 cargarChatReporteria();
             })
@@ -2829,8 +2902,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         function observarDesdeModal() {
             cerrarModales();
-            if (currentModalPagoId > 0) {
-                observarPagoEnFila(currentModalPagoId, currentModalCotiz);
+            if (currentModalPagoId > 0 || currentModalCotiz) {
+                observarPagoEnFila(currentModalPagoId, currentModalCotiz, currentModalAsesor, currentModalCliente, currentModalMonto, currentModalOp);
             }
         }
 
@@ -2984,36 +3057,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             scrollBox.innerHTML = msgs.map(m => {
                 const isMio = (m.rol === 'Reportería' || (m.remitente || '').includes('Nayeli'));
                 
-                // Si es notificación de factura emitida con voucher
+                // 1. Si es notificación de factura emitida con voucher por el asesor
                 if (m.tipo === 'factura_notif' && m.factura_data) {
                     const fd = m.factura_data;
                     const montoFmt = parseFloat(fd.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    const clienteSafe = (fd.cliente || '').replace(/'/g, "\\'");
+                    const asesorSafe = (m.asesor || asesorChatActivo).replace(/'/g, "\\'");
                     const voucherBtn = fd.voucher_url ? `
-                        <button type="button" class="btn-chat-action-outline" onclick="abrirVisorVoucher('${fd.nro_factura}', '${fd.cliente.replace(/'/g, "\\'")}', '${montoFmt}', '${fd.nro_operacion || ''}', '${m.asesor}', 1, '${fd.voucher_url}')">
+                        <button type="button" class="btn-chat-action-outline" onclick="abrirVisorVoucher('${fd.nro_factura}', '${clienteSafe}', '${montoFmt}', '${fd.nro_operacion || ''}', '${asesorSafe}', 1, '${fd.voucher_url}')">
                             <i class="fa-solid fa-receipt" style="color:var(--accent-green);"></i> Ver Voucher
                         </button>
                     ` : '';
 
                     return `
-                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:85%;">
+                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%;">
                             <div class="msg-sender-tag">
                                 <i class="fa-solid fa-file-invoice"></i> ${m.remitente} • ${m.sucursal || sucursalChatActiva}
                             </div>
                             <div class="card-factura-chat">
                                 <div class="card-factura-chat-header">
                                     <span>📄 FACTURA POR VALIDAR</span>
-                                    <span style="color:#059669; font-weight:800; font-size:0.85rem;">S/ ${montoFmt}</span>
+                                    <span style="color:#059669; font-weight:800; font-size:0.88rem;">S/ ${montoFmt}</span>
                                 </div>
                                 <div class="card-factura-chat-body">
-                                    <div><strong>N° Factura:</strong> ${fd.nro_factura}</div>
+                                    <div><strong>N° Factura:</strong> <span style="font-family:monospace; font-weight:700;">${fd.nro_factura}</span></div>
                                     <div><strong>Cliente:</strong> ${fd.cliente} (RUC: ${fd.ruc || '-'})</div>
                                     <div><strong>Banco:</strong> ${fd.banco || 'Banco'} • Op. #${fd.nro_operacion || '-'}</div>
                                     <div style="font-size:0.75rem; color:#64748B; margin-top:4px;">${m.mensaje}</div>
                                 </div>
                                 <div class="card-factura-chat-actions">
                                     ${voucherBtn}
-                                    <button type="button" class="btn-chat-action-green" onclick="irAValidarFacturaDesdeChat('${fd.nro_factura}', '${fd.cliente.replace(/'/g, "\\'")}', '${montoFmt}', '${fd.banco}', '${fd.nro_operacion}', '${fd.voucher_url || ''}')">
-                                        <i class="fa-solid fa-circle-check"></i> Validar en Banco
+                                    <button type="button" class="btn-chat-action-green" onclick="confirmarPagoDirectoDesdeChat('${fd.nro_factura}', '${clienteSafe}', ${fd.monto}, '${asesorSafe}', '${fd.banco || 'BCP'}', '${fd.nro_operacion || ''}')">
+                                        <i class="fa-solid fa-check-double"></i> Aceptar Pago
+                                    </button>
+                                    <button type="button" class="btn-chat-action-red" onclick="observarPagoDirectoDesdeChat('${fd.nro_factura}', '${clienteSafe}', ${fd.monto}, '${asesorSafe}')">
+                                        <i class="fa-solid fa-circle-exclamation"></i> Observar
                                     </button>
                                 </div>
                             </div>
@@ -3022,7 +3100,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     `;
                 }
 
-                // Mensaje regular de texto
+                // 2. Si es confirmación de pago aceptado enviado por Nayeli
+                if (m.tipo === 'pago_aceptado') {
+                    const fd = m.factura_data || {};
+                    const montoFmt = parseFloat(fd.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    return `
+                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #10B981;">
+                            <div class="msg-sender-tag" style="color:#059669; font-weight:700;">
+                                <i class="fa-solid fa-circle-check"></i> ${m.remitente} • Pago Conciliado & Aprobado
+                            </div>
+                            <div class="card-pago-status-wa aceptado">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                    <span style="font-weight:800; color:#065F46; font-size:0.78rem;"><i class="fa-solid fa-check-double"></i> PAGO ACEPTADO EN BANCO</span>
+                                    <span style="font-weight:800; color:#059669; font-size:0.92rem;">S/ ${montoFmt}</span>
+                                </div>
+                                <div style="font-size:0.8rem; line-height:1.4; color:#1F2937;">
+                                    <div><strong>Factura:</strong> <span style="font-family:monospace; font-weight:700; color:#047857;">${fd.nro_factura || ''}</span></div>
+                                    <div><strong>Cliente:</strong> ${fd.cliente || ''}</div>
+                                    <div><strong>Banco / Op:</strong> ${fd.banco || ''} • ${fd.nro_operacion || ''}</div>
+                                    <div style="margin-top:6px; padding:6px 8px; background:rgba(16,185,129,0.15); border-radius:6px; color:#065F46; font-size:0.75rem;">
+                                        <i class="fa-solid fa-truck-fast"></i> ${m.mensaje}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
+                        </div>
+                    `;
+                }
+
+                // 3. Si es notificación de observación de pago enviada por Nayeli
+                if (m.tipo === 'pago_observado') {
+                    const fd = m.factura_data || {};
+                    const montoFmt = parseFloat(fd.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    return `
+                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #EF4444;">
+                            <div class="msg-sender-tag" style="color:#DC2626; font-weight:700;">
+                                <i class="fa-solid fa-triangle-exclamation"></i> ${m.remitente} • Discrepancia de Pago
+                            </div>
+                            <div class="card-pago-status-wa observado">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                    <span style="font-weight:800; color:#991B1B; font-size:0.78rem;"><i class="fa-solid fa-circle-xmark"></i> OBSERVACIÓN BANCARIA</span>
+                                    <span style="font-weight:800; color:#DC2626; font-size:0.92rem;">S/ ${montoFmt}</span>
+                                </div>
+                                <div style="font-size:0.8rem; line-height:1.4; color:#1F2937;">
+                                    <div><strong>Factura:</strong> <span style="font-family:monospace; font-weight:700; color:#B91C1C;">${fd.nro_factura || ''}</span></div>
+                                    <div><strong>Cliente:</strong> ${fd.cliente || ''}</div>
+                                    <div style="margin-top:6px; padding:6px 8px; background:rgba(239,68,68,0.12); border-radius:6px; color:#991B1B; font-size:0.75rem;">
+                                        <strong>Motivo:</strong> ${fd.motivo || m.mensaje}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
+                        </div>
+                    `;
+                }
+
+                // 4. Mensaje regular de texto
                 return `
                     <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}">
                         ${!isMio ? `

@@ -4503,6 +4503,52 @@ if (file_exists($fileCotizPath)) {
                             </div>
                             <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
                         `;
+                    } else if (m.tipo === 'pago_aceptado') {
+                        const fd = m.factura_data || {};
+                        const montoFmt = parseFloat(fd.monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        const clienteSafe = (fd.cliente || '').replace(/'/g, "\\'");
+                        bubble.style.borderLeft = '4px solid #10b981';
+                        bubble.innerHTML = `
+                            <div style="font-weight:700; font-size:0.83rem; color:#34d399; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                                <span>✅</span> <span>Nayeli (Reportería)</span>
+                                <span style="background:rgba(16,185,129,0.25); color:#6ee7b7; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">PAGO CONCILIADO</span>
+                            </div>
+                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
+                            <div style="background:rgba(6,78,59,0.35); border:1px solid rgba(16,185,129,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
+                                <div><strong style="color:#a7f3d0;">Factura:</strong> <span style="font-family:monospace; color:#34d399; font-weight:700;">${fd.nro_factura || ''}</span></div>
+                                <div><strong style="color:#a7f3d0;">Cliente:</strong> ${fd.cliente || ''}</div>
+                                <div><strong style="color:#a7f3d0;">Monto Aprobado:</strong> <span style="color:#4ade80; font-weight:700;">S/ ${montoFmt}</span></div>
+                                <div><strong style="color:#a7f3d0;">Banco:</strong> ${fd.banco || ''} • <span style="font-family:monospace;">${fd.nro_operacion || ''}</span></div>
+                            </div>
+                            <div style="margin-top:8px; display:flex; gap:6px;">
+                                <button type="button" onclick="procederDespachoDesdeChat('${fd.nro_factura || ''}', '${clienteSafe}')" style="background:#10b981; color:#0e1210; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                                    <i class="fa-solid fa-truck-fast"></i> Despachar Pedido
+                                </button>
+                            </div>
+                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
+                        `;
+                    } else if (m.tipo === 'pago_observado') {
+                        const fd = m.factura_data || {};
+                        const montoFmt = parseFloat(fd.monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        bubble.style.borderLeft = '4px solid #ef4444';
+                        bubble.innerHTML = `
+                            <div style="font-weight:700; font-size:0.83rem; color:#f87171; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                                <span>⚠️</span> <span>Nayeli (Reportería)</span>
+                                <span style="background:rgba(239,68,68,0.25); color:#fca5a5; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">PAGO OBSERVADO</span>
+                            </div>
+                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
+                            <div style="background:rgba(127,29,29,0.35); border:1px solid rgba(239,68,68,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
+                                <div><strong style="color:#fecaca;">Factura:</strong> <span style="font-family:monospace; color:#f87171; font-weight:700;">${fd.nro_factura || ''}</span></div>
+                                <div><strong style="color:#fecaca;">Cliente:</strong> ${fd.cliente || ''}</div>
+                                <div><strong style="color:#fecaca;">Observación:</strong> <span style="color:#fca5a5; font-weight:600;">${fd.motivo || 'Verificar comprobante bancario'}</span></div>
+                            </div>
+                            <div style="margin-top:8px; display:flex; gap:6px;">
+                                <button type="button" onclick="insertarTextoChat('Hola Nayeli, ya me comuniqué con el cliente de ${fd.nro_factura || ''} para coordinar el nuevo voucher.')" style="background:#ef4444; color:#fff; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                                    <i class="fa-solid fa-reply"></i> Responder a Nayeli
+                                </button>
+                            </div>
+                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
+                        `;
                     } else {
                         bubble.innerHTML = `
                             <strong style="color:${isMio ? '#93c5fd' : '#cbd5e1'}; font-size:0.8rem;">${isMio ? 'Tú (Endrina)' : m.remitente}:</strong><br>
@@ -4513,8 +4559,20 @@ if (file_exists($fileCotizPath)) {
                     container.appendChild(bubble);
                 });
                 container.scrollTop = container.scrollHeight;
+
+                // Actualizar badge de notificaciones del chat
+                const countNaye = misMensajes.filter(m => (m.remitente || '').includes('Nayeli') || m.rol === 'Reportería').length;
+                const badgeEl = document.getElementById('chatBadgeNum');
+                if (badgeEl) {
+                    badgeEl.textContent = countNaye > 0 ? countNaye : '0';
+                    badgeEl.style.display = countNaye > 0 ? 'inline-flex' : 'none';
+                }
             })
             .catch(err => console.log('Error listar chat:', err));
+        }
+
+        function procederDespachoDesdeChat(nroFactura, cliente) {
+            alert(`📦 ¡DESPACHO AUTORIZADO!\n\nLa factura ${nroFactura} de ${cliente} ya cuenta con validación bancaria de Nayeli.\nSe ha generado la autorización de salida para almacén en Sucursal Chorrillos.`);
         }
 
         function insertarTextoChat(texto) {
