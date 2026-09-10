@@ -2943,7 +2943,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         // ================= DATOS Y LÓGICA DE COTIZACIONES =================
-        const CARTERA_CLIENTES = [
+        let CARTERA_CLIENTES = [
             {
                 razon: 'MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C.',
                 ruc: '20602591990',
@@ -3009,6 +3009,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 contacto: 'Lic. Elena Morales'
             }
         ];
+
+        function cargarCarteraClientes() {
+            fetch('crm_backend.php?action=listar_clientes')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && Array.isArray(data.clientes) && data.clientes.length > 0) {
+                        CARTERA_CLIENTES = data.clientes;
+                    }
+                })
+                .catch(err => console.log('Uso de cartera cliente local'));
+        }
 
         let PRODUCTOS_TIENDA = [
             { codigo: '110014568', nombre: 'Z SEP. CONCRETO ESCANTILLONES 30 CM X 25 UNI', umed: 'B25', precio: 45.0900 },
@@ -3802,6 +3813,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.getElementById('statClientesActivos').textContent = totalClientesCartera;
             document.getElementById('countFiltroTodos').textContent = totalClientesCartera;
 
+            // Persistir permanentemente en el servidor
+            const formDataCli = new FormData();
+            formDataCli.append('action', 'guardar_cliente');
+            formDataCli.append('razon', empresa);
+            formDataCli.append('ruc', ruc);
+            formDataCli.append('contacto', contacto);
+            formDataCli.append('telefono', tel);
+            formDataCli.append('categoria', cat);
+
+            fetch('crm_backend.php', {
+                method: 'POST',
+                body: formDataCli
+            })
+            .then(res => res.json())
+            .then(data => {
+                cargarCarteraClientes();
+            })
+            .catch(err => console.log('Guardado local de cliente'));
+
             e.target.reset();
             toggleFormNuevoCliente();
 
@@ -4103,6 +4133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // Inicializar cargas periódicas
         window.addEventListener('DOMContentLoaded', () => {
             cargarCotizaciones();
+            cargarCarteraClientes();
             cargarComprobantesVentas();
             cargarChatVentas();
             setInterval(() => {

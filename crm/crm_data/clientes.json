@@ -1,0 +1,74 @@
+[
+    {
+        "razon": "MULTINEGOCIOS AARON SOCIEDAD ANONIMA CERRADA-MULTINEGOCIOS AARON S.A.C.",
+        "ruc": "20602591990",
+        "direccion": "JR. SAGITARIO MZA. C LOTE. 22 URB. VILLA ALEGRE LIMA - LIMA - SANTIAGO DE SURCO",
+        "email": "Consorciomiraflores25@gmail.com",
+        "telefono": "942 377 626",
+        "contacto": "Fanny Ramirez",
+        "categoria": "Activo"
+    },
+    {
+        "razon": "Cosapi S.A.",
+        "ruc": "20100038146",
+        "direccion": "Av. República de Colombia 791, San Isidro, Lima",
+        "email": "compras@cosapi.com.pe",
+        "telefono": "984 129 384",
+        "contacto": "Ing. Mary Rose",
+        "categoria": "VIP"
+    },
+    {
+        "razon": "Graña & Montero Ingeniería",
+        "ruc": "20100109850",
+        "direccion": "Av. Paseo de la República 4611, Surquillo, Lima",
+        "email": "logistica@gym.com.pe",
+        "telefono": "991 482 103",
+        "contacto": "Arq. Carlos Mendoza",
+        "categoria": "VIP"
+    },
+    {
+        "razon": "Besco Inmobiliaria & Construcción",
+        "ruc": "20419283011",
+        "direccion": "Av. Rivera Navarrete 501, San Isidro, Lima",
+        "email": "adquisiciones@besco.com.pe",
+        "telefono": "951 753 852",
+        "contacto": "Arq. Lucía Ramos",
+        "categoria": "Seguimiento"
+    },
+    {
+        "razon": "Consorcio Vial Piura",
+        "ruc": "20601849201",
+        "direccion": "Av. Grau 1240, Piura",
+        "email": "obras@vialpiura.com",
+        "telefono": "972 384 192",
+        "contacto": "Jerome Brown",
+        "categoria": "Activo"
+    },
+    {
+        "razon": "Edificaciones Pacífico S.A.C.",
+        "ruc": "20554189012",
+        "direccion": "Av. Benavides 1940, Miraflores, Lima",
+        "email": "proyectos@edificacionespacifico.pe",
+        "telefono": "987 654 321",
+        "contacto": "Ing. Roberto Salcedo",
+        "categoria": "Activo"
+    },
+    {
+        "razon": "JJC Contratistas Generales",
+        "ruc": "20100142806",
+        "direccion": "Av. Manuel Olguín 325, Surco, Lima",
+        "email": "abastecimiento@jjc.com.pe",
+        "telefono": "963 852 741",
+        "contacto": "Ing. Walter Palacios",
+        "categoria": "VIP"
+    },
+    {
+        "razon": "Constructora Los Andes S.A.C.",
+        "ruc": "20604819204",
+        "direccion": "Calle Mercaderes 310, Arequipa",
+        "email": "compras@losandesperu.pe",
+        "telefono": "998 123 456",
+        "contacto": "Lic. Elena Morales",
+        "categoria": "Activo"
+    }
+]

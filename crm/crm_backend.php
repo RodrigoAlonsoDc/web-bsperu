@@ -29,6 +29,7 @@ if (!is_dir($dataDir)) {
 $pagosFile = $dataDir . '/pagos.json';
 $chatFile = $dataDir . '/mensajes_chat.json';
 $cotizacionesFile = $dataDir . '/cotizaciones.json';
+$clientesFile = $dataDir . '/clientes.json';
 
 // Inicializar cotizaciones con datos de partida (incluyendo el formato del PDF oficial)
 if (!file_exists($cotizacionesFile)) {
@@ -270,6 +271,23 @@ function obtenerCotizaciones() {
 function guardarCotizaciones($cots) {
     global $cotizacionesFile;
     file_put_contents($cotizacionesFile, json_encode($cots, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+function obtenerClientes() {
+    global $clientesFile;
+    if (file_exists($clientesFile)) {
+        $content = file_get_contents($clientesFile);
+        $arr = json_decode($content, true);
+        if (is_array($arr)) {
+            return $arr;
+        }
+    }
+    return [];
+}
+
+function guardarClientes($clientes) {
+    global $clientesFile;
+    file_put_contents($clientesFile, json_encode($clientes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 function obtenerMensajesChat() {
@@ -688,6 +706,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             } catch(Exception $ex) {}
         }
 
+        // Auto-guardar / actualizar cliente en la base de datos permanente de clientes
+        if (!empty($ruc_dni) && !empty($cliente_nombre)) {
+            $clientes = obtenerClientes();
+            $encontradoCli = false;
+            foreach ($clientes as &$cl) {
+                if (($cl['ruc'] ?? '') === $ruc_dni) {
+                    $cl['razon'] = $cliente_nombre;
+                    if (!empty($direccion)) $cl['direccion'] = $direccion;
+                    if (!empty($email)) $cl['email'] = $email;
+                    if (!empty($telefono)) $cl['telefono'] = $telefono;
+                    if (!empty($contacto)) $cl['contacto'] = $contacto;
+                    $encontradoCli = true;
+                    break;
+                }
+            }
+            if (!$encontradoCli) {
+                $clientes[] = [
+                    'razon' => $cliente_nombre,
+                    'ruc' => $ruc_dni,
+                    'direccion' => $direccion,
+                    'email' => $email,
+                    'telefono' => $telefono,
+                    'contacto' => $contacto,
+                    'categoria' => 'Activo'
+                ];
+            }
+            guardarClientes($clientes);
+        }
+
         array_unshift($cotizaciones, $nuevaCotizacion);
         guardarCotizaciones($cotizaciones);
 
@@ -729,6 +776,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         }
 
         echo json_encode(['success' => false, 'error' => 'Cotización no encontrada']);
+        exit;
+    }
+
+    // 10. LISTAR CLIENTES PERMANENTES
+    if ($action === 'listar_clientes') {
+        header('Content-Type: application/json');
+        $clientes = obtenerClientes();
+        echo json_encode([
+            'success' => true,
+            'clientes' => $clientes
+        ]);
+        exit;
+    }
+
+    // 11. GUARDAR NUEVO CLIENTE PERMANENTE
+    if ($action === 'guardar_cliente') {
+        header('Content-Type: application/json');
+        $razon = trim($_POST['razon'] ?? '');
+        $ruc = trim($_POST['ruc'] ?? '');
+        $direccion = trim($_POST['direccion'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $telefono = trim($_POST['telefono'] ?? '');
+        $contacto = trim($_POST['contacto'] ?? '');
+        $categoria = trim($_POST['categoria'] ?? 'Activo');
+
+        if (!empty($ruc) && !empty($razon)) {
+            $clientes = obtenerClientes();
+            $encontrado = false;
+            foreach ($clientes as &$c) {
+                if (($c['ruc'] ?? '') === $ruc) {
+                    $c['razon'] = $razon;
+                    $c['direccion'] = $direccion;
+                    $c['email'] = $email;
+                    $c['telefono'] = $telefono;
+                    $c['contacto'] = $contacto;
+                    $c['categoria'] = $categoria;
+                    $encontrado = true;
+                    break;
+                }
+            }
+            if (!$encontrado) {
+                $clientes[] = [
+                    'razon' => $razon,
+                    'ruc' => $ruc,
+                    'direccion' => $direccion,
+                    'email' => $email,
+                    'telefono' => $telefono,
+                    'contacto' => $contacto,
+                    'categoria' => $categoria
+                ];
+            }
+            guardarClientes($clientes);
+            echo json_encode(['success' => true, 'mensaje' => 'Cliente guardado permanentemente']);
+            exit;
+        }
+        echo json_encode(['success' => false, 'error' => 'Datos de cliente incompletos']);
         exit;
     }
 }
