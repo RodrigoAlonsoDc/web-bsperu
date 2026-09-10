@@ -1,7 +1,17 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: ../admin/login.php");
+if (!isset($_SESSION['crm_logged_in']) || $_SESSION['crm_logged_in'] !== true) {
+    header("Location: login.php");
+    exit;
+}
+
+// Si es un vendedor o reportera, enviarlo directamente a su módulo
+$rol = $_SESSION['crm_rol'] ?? '';
+if ($rol === 'ventas') {
+    header("Location: ventas.php");
+    exit;
+} elseif ($rol === 'reporteria') {
+    header("Location: reportes.php");
     exit;
 }
 ?>
@@ -117,7 +127,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
     <div class="topbar">
         <h1>BS PERU</h1>
-        <a href="../admin/logout.php" class="btn-logout">Cerrar Sesión</a>
+        <a href="logout.php" class="btn-logout">Cerrar Sesión</a>
     </div>
 
     <div id="image_track" data-mouse-down-at="0" data-prev-percentage="0">

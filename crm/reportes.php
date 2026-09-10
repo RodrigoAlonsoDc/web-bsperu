@@ -1,5 +1,21 @@
 <?php
 // crm/reportes.php - BS Perú CRM: Módulo de Reportería & Validación de Pagos
+session_start();
+
+// Control de acceso: Verificar autenticación
+if (!isset($_SESSION['crm_logged_in']) || $_SESSION['crm_logged_in'] !== true) {
+    header("Location: login.php");
+    exit;
+}
+
+// Control de rol: Si es Ventas (Endrina), enviarla a su módulo correspondiente
+if (isset($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'ventas') {
+    header("Location: ventas.php");
+    exit;
+}
+
+$currentUser = $_SESSION['crm_user'] ?? 'Nayeli';
+
 // Conexión opcional a base de datos con fallback automático
 $db = null;
 if (file_exists(__DIR__ . '/config/database.php')) {
@@ -2188,7 +2204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <h3 style="font-size:1.25rem;">¿Cerrar Sesión de Reportería?</h3>
             <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 20px;">Sesión activa de Nayeli (Finanzas & Reportería BS Perú).</p>
             <div style="display:flex; flex-direction:column; gap:10px;">
-                <a href="../admin/logout.php" class="btn-pill-white primary" style="justify-content:center; text-decoration:none; background:#DC2626; color:#FFF;">
+                <a href="logout.php" class="btn-pill-white primary" style="justify-content:center; text-decoration:none; background:#DC2626; color:#FFF;">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir del Sistema
                 </a>
                 <button class="btn-pill-white" style="justify-content:center;" onclick="cerrarModales()">

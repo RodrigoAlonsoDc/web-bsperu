@@ -1,5 +1,21 @@
 <?php
 // crm/ventas.php - BS Perú CRM: Módulo de Ventas & Facturación
+session_start();
+
+// Control de acceso: Verificar autenticación
+if (!isset($_SESSION['crm_logged_in']) || $_SESSION['crm_logged_in'] !== true) {
+    header("Location: login.php");
+    exit;
+}
+
+// Control de rol: Si es Reportería (Nayeli), enviarla a su módulo correspondiente
+if (isset($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'reporteria') {
+    header("Location: reportes.php");
+    exit;
+}
+
+$currentUser = $_SESSION['crm_user'] ?? 'Endrina';
+
 // Conexión opcional a base de datos con fallback automático
 $db = null;
 if (file_exists(__DIR__ . '/config/database.php')) {
@@ -1461,15 +1477,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </div>
 
             <!-- USER CARD BOTTOM -->
-            <div class="user-pill" onclick="alert('Sesión activa: Endrina\nAsesora Comercial - BS Perú')">
+            <div class="user-pill" onclick="abrirLogoutModal()" title="Clic para cerrar sesión de Ventas" style="cursor:pointer;">
                 <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" alt="Endrina" class="user-pill-avatar">
                 <div class="user-pill-info">
-                    <div class="user-pill-name">Endrina</div>
+                    <div class="user-pill-name"><?php echo htmlspecialchars($currentUser); ?></div>
                     <div class="user-pill-status">
                         <div class="status-dot"></div> Asesora de Ventas
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-right user-pill-chevron"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket user-pill-chevron" style="color:#EF4444; font-size:0.9rem;" title="Cerrar sesión"></i>
             </div>
 
             <!-- THEME TOGGLE -->
@@ -2811,6 +2827,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             });
         }
 
+        function abrirLogoutModal() {
+            document.getElementById('modalLogout').classList.add('open');
+        }
+
         // Inicializar cargas periódicas
         window.addEventListener('DOMContentLoaded', () => {
             cargarComprobantesVentas();
@@ -2821,5 +2841,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }, 4500);
         });
     </script>
+
+    <!-- ================= MODAL LOGOUT ================= -->
+    <div class="modal-overlay" id="modalLogout">
+        <div class="modal-card" style="text-align:center;">
+            <div style="width:60px; height:60px; background:#FEE2E2; color:#DC2626; border-radius:20px; display:flex; justify-content:center; align-items:center; font-size:1.6rem; margin:0 auto 16px;">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </div>
+            <h3 style="font-size:1.25rem;">¿Cerrar Sesión de Ventas?</h3>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 20px;">Sesión activa de Endrina (Ventas BS Perú).</p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <a href="logout.php" class="btn-pill-white primary" style="justify-content:center; text-decoration:none; background:#DC2626; color:#FFF;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir del Sistema
+                </a>
+                <button class="btn-pill-white" style="justify-content:center;" onclick="cerrarModales()">
+                    Permanecer en Ventas
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
