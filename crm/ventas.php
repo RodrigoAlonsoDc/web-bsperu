@@ -2487,6 +2487,7 @@ if (file_exists($fileCotizPath)) {
                         <thead>
                             <tr>
                                 <th>Cliente / Razón Social</th>
+                                <th style="text-align:center;">N° Cotización</th>
                                 <th>Contacto Principal</th>
                                 <th>WhatsApp / Teléfono</th>
                                 <th>Compras del Mes</th>
@@ -2504,6 +2505,11 @@ if (file_exists($fileCotizPath)) {
                                             <span>RUC: 20100038146 • Lima</span>
                                         </div>
                                     </div>
+                                </td>
+                                <td style="text-align:center;">
+                                    <button type="button" class="btn-pill-white" onclick="abrirBuscarCotizacionFacturarConCodigo('0052457')" style="font-family:'Outfit',monospace; font-weight:800; font-size:0.78rem; padding:4px 10px; background:rgba(199,155,88,0.14); border:1.5px solid var(--accent-tan); color:#161719; display:inline-flex; align-items:center; gap:5px; border-radius:10px; cursor:pointer;" title="Buscar cotización 0052457 para facturar">
+                                        <i class="fa-solid fa-file-invoice-dollar" style="color:var(--accent-tan);"></i> 0052457
+                                    </button>
                                 </td>
                                 <td>
                                     <strong>Ing. Mary Rose</strong><br>
@@ -2536,6 +2542,9 @@ if (file_exists($fileCotizPath)) {
                                         </div>
                                     </div>
                                 </td>
+                                <td style="text-align:center;">
+                                    <span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>
+                                </td>
                                 <td>
                                     <strong>Arq. Carlos Mendoza</strong><br>
                                     <span style="font-size:0.72rem; color:var(--text-muted);">Jefe de Abastecimiento</span>
@@ -2566,6 +2575,9 @@ if (file_exists($fileCotizPath)) {
                                             <span>RUC: 20601849201 • Piura</span>
                                         </div>
                                     </div>
+                                </td>
+                                <td style="text-align:center;">
+                                    <span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>
                                 </td>
                                 <td>
                                     <strong>Jerome Brown</strong><br>
@@ -2598,6 +2610,9 @@ if (file_exists($fileCotizPath)) {
                                         </div>
                                     </div>
                                 </td>
+                                <td style="text-align:center;">
+                                    <span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>
+                                </td>
                                 <td>
                                     <strong>Ing. Roberto Salcedo</strong><br>
                                     <span style="font-size:0.72rem; color:var(--text-muted);">Supervisor de Acabados</span>
@@ -2628,6 +2643,9 @@ if (file_exists($fileCotizPath)) {
                                             <span>RUC: 20100142806 • Surco</span>
                                         </div>
                                     </div>
+                                </td>
+                                <td style="text-align:center;">
+                                    <span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>
                                 </td>
                                 <td>
                                     <strong>Ing. Walter Palacios</strong><br>
@@ -2660,6 +2678,11 @@ if (file_exists($fileCotizPath)) {
                                         </div>
                                     </div>
                                 </td>
+                                <td style="text-align:center;">
+                                    <button type="button" class="btn-pill-white" onclick="abrirBuscarCotizacionFacturarConCodigo('0052458')" style="font-family:'Outfit',monospace; font-weight:800; font-size:0.78rem; padding:4px 10px; background:rgba(199,155,88,0.14); border:1.5px solid var(--accent-tan); color:#161719; display:inline-flex; align-items:center; gap:5px; border-radius:10px; cursor:pointer;" title="Buscar cotización 0052458 para facturar">
+                                        <i class="fa-solid fa-file-invoice-dollar" style="color:var(--accent-tan);"></i> 0052458
+                                    </button>
+                                </td>
                                 <td>
                                     <strong>Arq. Lucía Ramos</strong><br>
                                     <span style="font-size:0.72rem; color:var(--text-muted);">Cotizaciones Obra Condominio</span>
@@ -2690,6 +2713,9 @@ if (file_exists($fileCotizPath)) {
                                             <span>RUC: 20604819204 • Arequipa</span>
                                         </div>
                                     </div>
+                                </td>
+                                <td style="text-align:center;">
+                                    <span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>
                                 </td>
                                 <td>
                                     <strong>Lic. Elena Morales</strong><br>
@@ -3061,9 +3087,84 @@ if (file_exists($fileCotizPath)) {
                 .then(data => {
                     if (data.success && Array.isArray(data.clientes) && data.clientes.length > 0) {
                         CARTERA_CLIENTES = data.clientes;
+                        renderTablaCarteraClientes(CARTERA_CLIENTES);
                     }
                 })
                 .catch(err => console.log('Uso de cartera cliente local'));
+        }
+
+        function renderTablaCarteraClientes(lista) {
+            const tbody = document.getElementById('carteraTbody');
+            if (!tbody) return;
+            if (!Array.isArray(lista) || lista.length === 0) return;
+
+            tbody.innerHTML = lista.map(c => {
+                const razon = c.razon || '';
+                const words = razon.trim().split(/\s+/);
+                let initials = 'CL';
+                if (words.length >= 2) {
+                    initials = (words[0][0] + words[1][0]).toUpperCase();
+                } else if (words.length === 1 && words[0].length >= 2) {
+                    initials = words[0].substring(0, 2).toUpperCase();
+                }
+
+                const cat = c.categoria || 'Activo';
+                let badgeHtml = '<span class="badge-tag-activo">🏢 Activo</span>';
+                if (cat === 'VIP') badgeHtml = '<span class="badge-tag-vip">🏆 VIP</span>';
+                else if (cat === 'Seguimiento') badgeHtml = '<span class="badge-tag-seguimiento">⏳ Seguimiento</span>';
+
+                const tel = c.telefono || '999 999 999';
+                const telClean = tel.replace(/\D/g, '');
+                const ruc = c.ruc || '';
+                const contacto = c.contacto || 'Contacto Comercial';
+                const cargo = c.cargo || 'Residente / Logística';
+                const compras = c.compras_mes || 'S/ 0.00';
+
+                let cotizBadgeHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>';
+                if (c.ultima_cotizacion) {
+                    cotizBadgeHtml = `
+                        <button type="button" class="btn-pill-white" onclick="abrirBuscarCotizacionFacturarConCodigo('${c.ultima_cotizacion}')" style="font-family:'Outfit',monospace; font-weight:800; font-size:0.78rem; padding:4px 10px; background:rgba(199,155,88,0.14); border:1.5px solid var(--accent-tan); color:#161719; display:inline-flex; align-items:center; gap:5px; border-radius:10px; cursor:pointer;" title="Buscar cotización ${c.ultima_cotizacion} para facturar">
+                            <i class="fa-solid fa-file-invoice-dollar" style="color:var(--accent-tan);"></i> ${c.ultima_cotizacion}
+                        </button>
+                    `;
+                }
+
+                return `
+                    <tr data-tipo="${cat}">
+                        <td>
+                            <div class="cliente-item-cell">
+                                <div class="cliente-avatar-circle" style="background:var(--accent-tan); color:#161719;">${initials}</div>
+                                <div class="cliente-meta">
+                                    <h5>${razon}</h5>
+                                    <span>RUC: ${ruc}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="text-align:center;">
+                            ${cotizBadgeHtml}
+                        </td>
+                        <td>
+                            <strong>${contacto}</strong><br>
+                            <span style="font-size:0.72rem; color:var(--text-muted);">${cargo}</span>
+                        </td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span>${tel}</span>
+                                <a href="https://wa.me/51${telClean}?text=Hola%20${encodeURIComponent(contacto)},%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </td>
+                        <td><strong style="color:var(--text-dark);">${compras}</strong></td>
+                        <td>${badgeHtml}</td>
+                        <td style="text-align:center;">
+                            <button class="btn-facturar-mini" onclick="facturarACliente('${razon.replace(/'/g, "\\'")}', '${ruc}')">
+                                <i class="fa-solid fa-file-invoice"></i> Facturar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         let PRODUCTOS_TIENDA = [
@@ -3181,6 +3282,19 @@ if (file_exists($fileCotizPath)) {
             setTimeout(() => {
                 const input = document.getElementById('inputBuscarCotizFacturar');
                 if (input) input.focus();
+            }, 150);
+        }
+
+        function abrirBuscarCotizacionFacturarConCodigo(codigo) {
+            cambiarVistaVentas('cotizaciones');
+            alternarTabCotizaciones('facturar');
+            setTimeout(() => {
+                const input = document.getElementById('inputBuscarCotizFacturar');
+                if (input) {
+                    input.value = codigo;
+                    filtrarHistorialCotizaciones(codigo);
+                    input.focus();
+                }
             }, 150);
         }
 
@@ -3676,10 +3790,23 @@ if (file_exists($fileCotizPath)) {
             .then(res => res.json())
             .then(resp => {
                 if (resp.success) {
+                    const codigoGenerado = resp.codigo || data.codigo;
+                    const cotizGenerada = resp.cotizacion || Object.assign({}, data, { codigo: codigoGenerado });
+
                     if (!silencioso) {
-                        mostrarToast('success', 'Cotización Guardada', `Cotización ${data.codigo} registrada correctamente.`);
+                        mostrarToast('success', 'Cotización Guardada e Impresa', `N° ${codigoGenerado} generado con éxito. Abriendo hoja oficial para imprimir...`);
                     }
+
+                    // Actualizar listas de cotizaciones y cartera de clientes en tiempo real
                     cargarCotizaciones();
+                    cargarCarteraClientes();
+
+                    // Abrir vista previa PDF oficial y lanzar automáticamente la impresión
+                    abrirModalVistaPreviaPdf(cotizGenerada);
+                    setTimeout(() => {
+                        window.print();
+                    }, 500);
+
                     limpiarFormularioNuevaCotizacion();
                 } else {
                     alert('Error al guardar cotización: ' + (resp.error || 'Desconocido'));
@@ -3688,9 +3815,14 @@ if (file_exists($fileCotizPath)) {
             .catch(err => {
                 console.error(err);
                 if (!silencioso) {
-                    mostrarToast('success', 'Cotización Guardada (Local)', `Cotización ${data.codigo} archivada temporalmente.`);
+                    mostrarToast('warning', 'Cotización Guardada (Local)', `Cotización ${data.codigo} registrada.`);
                 }
+                abrirModalVistaPreviaPdf(data);
+                setTimeout(() => {
+                    window.print();
+                }, 500);
                 cargarCotizaciones();
+                cargarCarteraClientes();
                 limpiarFormularioNuevaCotizacion();
             });
         }
@@ -4037,6 +4169,9 @@ if (file_exists($fileCotizPath)) {
                             <span>RUC: ${ruc} • Registrado hoy</span>
                         </div>
                     </div>
+                </td>
+                <td style="text-align:center;">
+                    <span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>
                 </td>
                 <td>
                     <strong>${contacto}</strong><br>

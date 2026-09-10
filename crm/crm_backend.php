@@ -662,13 +662,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $items = json_decode($itemsRaw, true);
         if (!is_array($items)) $items = [];
 
-        // Generar o usar código
+        // Generar o usar código correlativo automático irrepetible
         $codigo = trim($_POST['codigo'] ?? '');
-        if (empty($codigo)) {
-            $codigos = array_map(function($item) {
-                return intval($item['codigo'] ?? 0);
-            }, $cotizaciones);
-            $maxCod = !empty($codigos) ? max($codigos) : 52456;
+        $codigosExistentes = array_map(function($item) {
+            return intval($item['codigo'] ?? 0);
+        }, $cotizaciones);
+        $maxCod = !empty($codigosExistentes) ? max($codigosExistentes) : 52458;
+
+        if (empty($codigo) || in_array(intval($codigo), $codigosExistentes)) {
             $codigo = str_pad($maxCod + 1, 7, '0', STR_PAD_LEFT);
         }
 
@@ -706,13 +707,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             } catch(Exception $ex) {}
         }
 
-        // Auto-guardar / actualizar cliente en la base de datos permanente de clientes
+        // Auto-guardar / actualizar cliente en la base de datos permanente de clientes vinculando su última cotización
         if (!empty($ruc_dni) && !empty($cliente_nombre)) {
             $clientes = obtenerClientes();
             $encontradoCli = false;
             foreach ($clientes as &$cl) {
                 if (($cl['ruc'] ?? '') === $ruc_dni) {
                     $cl['razon'] = $cliente_nombre;
+                    $cl['ultima_cotizacion'] = $codigo;
+                    $cl['fecha_ultima_cotizacion'] = $fecha;
                     if (!empty($direccion)) $cl['direccion'] = $direccion;
                     if (!empty($email)) $cl['email'] = $email;
                     if (!empty($telefono)) $cl['telefono'] = $telefono;
@@ -729,7 +732,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     'email' => $email,
                     'telefono' => $telefono,
                     'contacto' => $contacto,
-                    'categoria' => 'Activo'
+                    'categoria' => 'Activo',
+                    'ultima_cotizacion' => $codigo,
+                    'fecha_ultima_cotizacion' => $fecha
                 ];
             }
             guardarClientes($clientes);
@@ -741,6 +746,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         echo json_encode([
             'success' => true,
             'mensaje' => 'Cotización ' . $codigo . ' guardada con éxito.',
+            'codigo' => $codigo,
+            'siguiente_codigo' => str_pad(intval($codigo) + 1, 7, '0', STR_PAD_LEFT),
             'cotizacion' => $nuevaCotizacion
         ]);
         exit;
@@ -783,6 +790,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
     if ($action === 'listar_clientes') {
         header('Content-Type: application/json');
         $clientes = obtenerClientes();
+        $cotizaciones = obtenerCotizaciones();
+
+        // Mapear última cotización emitida por RUC
+        $cotizPorRuc = [];
+        foreach ($cotizaciones as $cot) {
+            $r = trim($cot['ruc_dni'] ?? '');
+            if (!empty($r) && !isset($cotizPorRuc[$r])) {
+                $cotizPorRuc[$r] = $cot['codigo'] ?? '';
+            }
+        }
+
+        foreach ($clientes as &$cl) {
+            $r = trim($cl['ruc'] ?? '');
+            if (isset($cotizPorRuc[$r])) {
+                $cl['ultima_cotizacion'] = $cotizPorRuc[$r];
+            } else if (!isset($cl['ultima_cotizacion'])) {
+                $cl['ultima_cotizacion'] = null;
+            }
+        }
+
         echo json_encode([
             'success' => true,
             'clientes' => $clientes
