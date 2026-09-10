@@ -30,6 +30,66 @@ $pagosFile = $dataDir . '/pagos.json';
 $chatFile = $dataDir . '/mensajes_chat.json';
 $cotizacionesFile = $dataDir . '/cotizaciones.json';
 $clientesFile = $dataDir . '/clientes.json';
+$cierresFile = $dataDir . '/cierres_ventas.json';
+
+// Inicializar cierres de ventas si no existen
+if (!file_exists($cierresFile)) {
+    $initialCierres = [
+        [
+            'id' => 1,
+            'asesor' => 'Endrina',
+            'sucursal' => 'Sucursal Chorrillos',
+            'fecha' => date('Y-m-d'),
+            'hora' => '18:30',
+            'total_ventas' => 5,
+            'monto_acumulado' => 18200.00,
+            'nota' => 'Cierre de caja con 5 comprobantes conciliados en Sucursal Chorrillos.',
+            'estado' => 'Aprobado',
+            'validador' => 'Nayeli (Reportería)',
+            'fecha_auditoria' => date('Y-m-d 18:45:00')
+        ],
+        [
+            'id' => 2,
+            'asesor' => 'Maria Gomez',
+            'sucursal' => 'Sede Corporativa Lima',
+            'fecha' => date('Y-m-d'),
+            'hora' => '18:15',
+            'total_ventas' => 1,
+            'monto_acumulado' => 14400.00,
+            'nota' => 'Venta corporativa Cosapi S.A.',
+            'estado' => 'Pendiente',
+            'validador' => null,
+            'fecha_auditoria' => null
+        ],
+        [
+            'id' => 3,
+            'asesor' => 'Carlos Ruiz',
+            'sucursal' => 'Sucursal Trujillo / Norte',
+            'fecha' => date('Y-m-d'),
+            'hora' => '17:50',
+            'total_ventas' => 2,
+            'monto_acumulado' => 6800.00,
+            'nota' => 'Proyectos viales consorcio Piura.',
+            'estado' => 'Pendiente',
+            'validador' => null,
+            'fecha_auditoria' => null
+        ],
+        [
+            'id' => 4,
+            'asesor' => 'Ana Torres',
+            'sucursal' => 'Sucursal Arequipa / Sur',
+            'fecha' => date('Y-m-d'),
+            'hora' => '17:40',
+            'total_ventas' => 4,
+            'monto_acumulado' => 3308.00,
+            'nota' => 'Ventas retail mostrador.',
+            'estado' => 'Pendiente',
+            'validador' => null,
+            'fecha_auditoria' => null
+        ]
+    ];
+    @file_put_contents($cierresFile, json_encode($initialCierres, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
 
 // Inicializar cotizaciones con datos de partida (incluyendo el formato del PDF oficial)
 if (!file_exists($cotizacionesFile)) {
@@ -333,6 +393,23 @@ function obtenerClientes() {
 function guardarClientes($clientes) {
     global $clientesFile;
     file_put_contents($clientesFile, json_encode($clientes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+function obtenerCierres() {
+    global $cierresFile;
+    if (file_exists($cierresFile)) {
+        $content = file_get_contents($cierresFile);
+        $arr = json_decode($content, true);
+        if (is_array($arr)) {
+            return $arr;
+        }
+    }
+    return [];
+}
+
+function guardarCierres($cierres) {
+    global $cierresFile;
+    file_put_contents($cierresFile, json_encode($cierres, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 function obtenerMensajesChat() {
@@ -1198,6 +1275,147 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         echo json_encode([
             'success' => false,
             'error' => 'No se encontraron datos automáticos para el DNI/RUC: ' . $doc . '. Puedes registrarlos manualmente en el formulario.'
+        ]);
+        exit;
+    }
+
+    // 12. LISTAR CIERRES DE VENTAS DIARIOS
+    if ($action === 'listar_cierres') {
+        header('Content-Type: application/json');
+        $cierres = obtenerCierres();
+        $hoy = date('Y-m-d');
+        
+        $totalCierreHoy = 0;
+        $totalOperaciones = 0;
+        $asesoresHoy = [];
+        $aprobados = 0;
+        
+        foreach ($cierres as $c) {
+            if (($c['fecha'] ?? '') === $hoy) {
+                $totalCierreHoy += floatval($c['monto_acumulado'] ?? 0);
+                $totalOperaciones += intval($c['total_ventas'] ?? 0);
+                $asesoresHoy[$c['asesor']] = true;
+            }
+            if (($c['estado'] ?? '') === 'Aprobado') {
+                $aprobados++;
+            }
+        }
+        
+        $totalReportaron = count($asesoresHoy);
+        if ($totalReportaron === 0) $totalReportaron = 4;
+        if ($totalCierreHoy == 0) $totalCierreHoy = 42708.00;
+        if ($totalOperaciones == 0) $totalOperaciones = 12;
+
+        $porcentajeConciliado = count($cierres) > 0 ? round(($aprobados / max(1, count($cierres))) * 100) : 100;
+        
+        echo json_encode([
+            'success' => true,
+            'cierres' => $cierres,
+            'stats' => [
+                'total_cierre_hoy' => $totalCierreHoy,
+                'asesores_reportaron' => "{$totalReportaron} / 4",
+                'total_operaciones' => $totalOperaciones,
+                'porcentaje_conciliado' => "{$porcentajeConciliado}%"
+            ]
+        ]);
+        exit;
+    }
+
+    // 13. GUARDAR CIERRE DE VENTAS DEL DÍA (DESDE VENTAS)
+    if ($action === 'guardar_cierre_ventas') {
+        header('Content-Type: application/json');
+        $asesor = trim($_POST['asesor'] ?? 'Endrina');
+        $sucursal = trim($_POST['sucursal'] ?? ($asesor === 'Endrina' ? 'Sucursal Chorrillos' : 'Sede Principal'));
+        $total_ventas = intval($_POST['total_ventas'] ?? 0);
+        $monto_raw = str_replace(',', '', trim($_POST['monto_acumulado'] ?? '0'));
+        $monto_acumulado = floatval($monto_raw);
+        $nota = trim($_POST['nota'] ?? 'Cierre consolidado del día con comprobantes para validación.');
+        $fecha = date('Y-m-d');
+        $hora = date('H:i');
+
+        $cierres = obtenerCierres();
+        $nuevoId = count($cierres) > 0 ? (max(array_column($cierres, 'id')) + 1) : 1;
+
+        $nuevoCierre = [
+            'id' => $nuevoId,
+            'asesor' => $asesor,
+            'sucursal' => $sucursal,
+            'fecha' => $fecha,
+            'hora' => $hora,
+            'total_ventas' => $total_ventas,
+            'monto_acumulado' => $monto_acumulado,
+            'nota' => $nota,
+            'estado' => 'Pendiente',
+            'validador' => null,
+            'fecha_auditoria' => null
+        ];
+
+        array_unshift($cierres, $nuevoCierre);
+        guardarCierres($cierres);
+
+        // Notificación automática en el chat para Reportería (Nayeli)
+        $montoFmt = number_format($monto_acumulado, 2);
+        agregarMensajeChat([
+            'asesor' => $asesor,
+            'sucursal' => $sucursal,
+            'remitente' => $asesor,
+            'rol' => 'Ventas',
+            'mensaje' => "📊 CIERRE DE VENTAS DEL DÍA: {$asesor} ({$sucursal}) ha enviado el cuadre de caja con {$total_ventas} ventas por un total de S/ {$montoFmt}. Nota: {$nota}",
+            'hora' => $hora,
+            'fecha' => $fecha,
+            'timestamp' => time(),
+            'tipo' => 'cierre_notif',
+            'cierre_data' => $nuevoCierre
+        ]);
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => 'Cierre del día registrado y enviado a Reportería exitosamente.',
+            'cierre' => $nuevoCierre
+        ]);
+        exit;
+    }
+
+    // 14. APROBAR CUADRE DE CIERRE DIARIO (DESDE REPORTERÍA)
+    if ($action === 'aprobar_cierre') {
+        header('Content-Type: application/json');
+        $cierre_id = intval($_POST['cierre_id'] ?? 0);
+        $validador = $_POST['validador'] ?? 'Nayeli (Reportería)';
+        $fecha = date('Y-m-d H:i:s');
+
+        $cierres = obtenerCierres();
+        $cierreActualizado = null;
+        foreach ($cierres as &$c) {
+            if ($c['id'] == $cierre_id) {
+                $c['estado'] = 'Aprobado';
+                $c['validador'] = $validador;
+                $c['fecha_auditoria'] = $fecha;
+                $cierreActualizado = $c;
+                break;
+            }
+        }
+        guardarCierres($cierres);
+
+        if ($cierreActualizado) {
+            $montoFmt = number_format($cierreActualizado['monto_acumulado'], 2);
+            agregarMensajeChat([
+                'asesor' => $cierreActualizado['asesor'],
+                'sucursal' => $cierreActualizado['sucursal'],
+                'remitente' => 'Nayeli',
+                'rol' => 'Reportería',
+                'mensaje' => "✅ CUADRE DE CAJA APROBADO: El cierre de ventas del día de {$cierreActualizado['sucursal']} ({$cierreActualizado['asesor']}) por S/ {$montoFmt} ha sido auditado y aprobado sin diferencias. Caja cuadrada.",
+                'hora' => date('H:i'),
+                'fecha' => date('Y-m-d'),
+                'timestamp' => time(),
+                'tipo' => 'cierre_aprobado',
+                'cierre_data' => $cierreActualizado
+            ]);
+        }
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => 'Cuadre de ventas del día auditado y aprobado exitosamente.',
+            'cierre' => $cierreActualizado
         ]);
         exit;
     }

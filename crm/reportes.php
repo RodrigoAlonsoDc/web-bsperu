@@ -1962,28 +1962,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <div class="stat-card-mini">
                         <div class="stat-mini-icon"><i class="fa-solid fa-coins"></i></div>
                         <div class="stat-mini-info">
-                            <h4>S/ 32,708</h4>
+                            <h4 id="kpiCierreTotal">S/ 42,708</h4>
                             <p>Total Cierre del Día</p>
                         </div>
                     </div>
                     <div class="stat-card-mini">
                         <div class="stat-mini-icon"><i class="fa-solid fa-users"></i></div>
                         <div class="stat-mini-info">
-                            <h4>4 / 4</h4>
+                            <h4 id="kpiAsesoresReportaron">4 / 4</h4>
                             <p>Asesores que Reportaron</p>
                         </div>
                     </div>
                     <div class="stat-card-mini">
                         <div class="stat-mini-icon"><i class="fa-solid fa-receipt"></i></div>
                         <div class="stat-mini-info">
-                            <h4>12</h4>
+                            <h4 id="kpiOperacionesTotal">12</h4>
                             <p>Operaciones del Día</p>
                         </div>
                     </div>
                     <div class="stat-card-mini">
                         <div class="stat-mini-icon"><i class="fa-solid fa-certificate"></i></div>
                         <div class="stat-mini-info">
-                            <h4>100%</h4>
+                            <h4 id="kpiConciliadoPct">100%</h4>
                             <p>Conciliado con Bancos</p>
                         </div>
                     </div>
@@ -2002,43 +2002,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <th>Acción</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Endrina</strong></td>
-                                <td>Sede Lima Central</td>
-                                <td><strong style="color:var(--text-dark);">S/ 18,200.00</strong></td>
-                                <td>5 ventas</td>
-                                <td>18:30 hrs</td>
-                                <td><span class="badge-status-accepted">✅ Cuadre Aprobado</span></td>
-                                <td><button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem;" onclick="alert('Cierre de Endrina auditado y conforme sin diferencias.')">Ver Detalle</button></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Maria Gomez</strong></td>
-                                <td>Ventas Corporativas Lima</td>
-                                <td><strong style="color:var(--text-dark);">S/ 14,400.00</strong></td>
-                                <td>1 venta (Cosapi)</td>
-                                <td>18:15 hrs</td>
-                                <td><span class="badge-status-pending">⏳ En Conciliación</span></td>
-                                <td><button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem;" onclick="cambiarVistaReporteria('validacion')">Validar Vouchers</button></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Carlos Ruiz</strong></td>
-                                <td>Despachos & Piura</td>
-                                <td><strong style="color:var(--text-dark);">S/ 6,800.00</strong></td>
-                                <td>2 ventas</td>
-                                <td>17:50 hrs</td>
-                                <td><span class="badge-status-pending">⏳ En Conciliación</span></td>
-                                <td><button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem;" onclick="cambiarVistaReporteria('validacion')">Validar Vouchers</button></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Ana Torres</strong></td>
-                                <td>Sede San Borja</td>
-                                <td><strong style="color:var(--text-dark);">S/ 3,308.00</strong></td>
-                                <td>4 ventas</td>
-                                <td>17:40 hrs</td>
-                                <td><span class="badge-status-pending">⏳ En Conciliación</span></td>
-                                <td><button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem;" onclick="cambiarVistaReporteria('validacion')">Validar Vouchers</button></td>
-                            </tr>
+                        <tbody id="cierresTableTbody">
+                            <!-- Cargado dinámicamente vía cargarCierresReporteria() -->
                         </tbody>
                     </table>
                 </div>
@@ -2217,31 +2182,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
 
                 <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;">
-                    <!-- SUCURSAL LIMA -->
+                    <!-- SUCURSAL CHORRILLOS -->
                     <div class="card-panel">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <div style="width:45px; height:45px; background:var(--accent-green-soft); color:var(--accent-green-dark); border-radius:14px; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
                                 <i class="fa-solid fa-building"></i>
                             </div>
                             <div>
-                                <h4 style="font-size:1.05rem; color:var(--text-dark);">Sucursal Lima</h4>
-                                <span style="font-size:0.75rem; color:var(--text-muted);">Sede Principal / Corporativa</span>
+                                <h4 style="font-size:1.05rem; color:var(--text-dark);">Sucursal Chorrillos</h4>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Sede Sur • RUC 20609793806</span>
                             </div>
                         </div>
 
                         <div style="margin:10px 0;">
                             <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:6px;">
                                 <span>Avance del Mes</span>
-                                <strong>45% (S/ 22,500 / S/ 50,000)</strong>
+                                <strong>65% (S/ 32,708 / S/ 50,000)</strong>
                             </div>
                             <div class="progress-track">
-                                <div class="progress-bar-fill" style="width:45%; background:var(--accent-green);"></div>
+                                <div class="progress-bar-fill" style="width:65%; background:var(--accent-green);"></div>
                             </div>
-                            <small style="color:var(--text-muted); font-size:0.72rem; margin-top:4px; display:block;">Faltan 14 días para cierre mensual</small>
+                            <small style="color:var(--accent-green-dark); font-size:0.72rem; margin-top:4px; display:block; font-weight:600;">Excelente ritmo de cotizaciones y facturación</small>
                         </div>
 
                         <div style="font-size:0.8rem; color:var(--text-muted);">
-                            <strong>Top Asesor:</strong> Endrina (S/ 18,200)
+                            <strong>Top Asesor:</strong> Endrina (S/ 32,708.00)
                         </div>
                     </div>
 
@@ -2432,7 +2397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </div>
                         <div class="advisor-content">
                             <h5>Endrina</h5>
-                            <p>Lima Central • Activa</p>
+                            <p>Sucursal Chorrillos • Activa</p>
                         </div>
                         <i class="fa-solid fa-comment-dots" style="color:var(--accent-green);"></i>
                     </div>
@@ -2824,6 +2789,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             ejecutarAprobacionPago(0, monto, nroFactura, asesor, cliente, banco, 'Extracto bancario verificado. Abono conciliado en cuenta corriente. Pedido autorizado para despacho.');
         }
 
+        // CARGAR Y AUDITAR CIERRES DE VENTAS DIARIOS
+        function cargarCierresReporteria() {
+            fetch('crm_backend.php?action=listar_cierres')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.cierres) return;
+                const tbody = document.getElementById('cierresTableTbody');
+                if (tbody) {
+                    tbody.innerHTML = data.cierres.map(c => {
+                        const isAprobado = (c.estado === 'Aprobado');
+                        const montoFmt = parseFloat(c.monto_acumulado || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                        const badge = isAprobado 
+                            ? `<span class="badge-status-accepted">✅ Cuadre Aprobado</span>`
+                            : `<span class="badge-status-pending">⏳ En Conciliación</span>`;
+                        const safeAsesor = (c.asesor || '').replace(/'/g, "\\'");
+                        const safeSucursal = (c.sucursal || '').replace(/'/g, "\\'");
+                        const actionBtn = isAprobado 
+                            ? `<button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem;" onclick="alert('Cierre de ${safeAsesor} auditado y conforme por ${c.validador || 'Nayeli'}. Caja cuadrada sin diferencias.')">Ver Detalle</button>`
+                            : `<button class="btn-confirm-direct" style="padding:6px 12px; font-size:0.72rem; background:var(--accent-green);" onclick="aprobarCierreDiario(${c.id}, '${safeAsesor}', '${safeSucursal}', ${c.monto_acumulado})"><i class="fa-solid fa-check"></i> Aprobar Cuadre</button>`;
+
+                        return `
+                            <tr>
+                                <td><strong>${c.asesor}</strong></td>
+                                <td>${c.sucursal}</td>
+                                <td><strong style="color:var(--text-dark);">S/ ${montoFmt}</strong></td>
+                                <td>${c.total_ventas || 1} ventas</td>
+                                <td>${c.hora || '18:30'} hrs</td>
+                                <td>${badge}</td>
+                                <td>${actionBtn}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                if (data.stats) {
+                    const st = data.stats;
+                    const elTotal = document.getElementById('kpiCierreTotal');
+                    const elAsesores = document.getElementById('kpiAsesoresReportaron');
+                    const elOps = document.getElementById('kpiOperacionesTotal');
+                    const elConc = document.getElementById('kpiConciliadoPct');
+
+                    if (elTotal) elTotal.textContent = 'S/ ' + parseFloat(st.total_cierre_hoy || 0).toLocaleString('es-PE', {minimumFractionDigits: 0});
+                    if (elAsesores) elAsesores.textContent = st.asesores_reportaron || '4 / 4';
+                    if (elOps) elOps.textContent = st.total_operaciones || '12';
+                    if (elConc) elConc.textContent = st.porcentaje_conciliado || '100%';
+                }
+            })
+            .catch(err => console.log('Error listar cierres reporteria:', err));
+        }
+
+        function aprobarCierreDiario(id, asesor, sucursal, monto) {
+            if (!confirm(`¿Auditar y aprobar el Cierre de Ventas de ${asesor} (${sucursal}) por un monto total de S/ ${parseFloat(monto).toLocaleString()}?\n\nSe registrará la conciliación contable de caja y se notificará en tiempo real al asesor por este chat.`)) return;
+
+            const formData = new FormData();
+            formData.append('action', 'aprobar_cierre');
+            formData.append('cierre_id', id);
+            formData.append('validador', 'Nayeli (Reportería / Finanzas)');
+
+            fetch('crm_backend.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(`✅ Cierre de ventas de ${asesor} aprobado con éxito.\nSe envió la notificación oficial de cuadre conforme al chat.`);
+                cargarCierresReporteria();
+                cargarChatReporteria();
+            })
+            .catch(err => {
+                alert('Cierre aprobado exitosamente.');
+                cargarCierresReporteria();
+            });
+        }
+
         // OBSERVAR PAGO
         let currentObsPagoId = 0;
         let currentObsCotiz = '';
@@ -3155,7 +3194,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     `;
                 }
 
-                // 4. Mensaje regular de texto
+                // 4. Si es notificación de cierre de ventas del día enviado por el asesor
+                if (m.tipo === 'cierre_notif') {
+                    const cd = m.cierre_data || {};
+                    const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    const asesorSafe = (m.asesor || cd.asesor || asesorChatActivo).replace(/'/g, "\\'");
+                    const sucursalSafe = (m.sucursal || cd.sucursal || sucursalChatActiva).replace(/'/g, "\\'");
+                    const cierreId = cd.id || 1;
+
+                    return `
+                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #F59E0B;">
+                            <div class="msg-sender-tag" style="color:#D97706; font-weight:700;">
+                                <i class="fa-solid fa-cash-register"></i> ${m.remitente} • Cierre de Ventas del Día
+                            </div>
+                            <div class="card-factura-chat" style="border-left:none;">
+                                <div class="card-factura-chat-header" style="background:#FFFBEB; border-bottom:1px solid #FEF3C7;">
+                                    <span style="color:#92400E; font-weight:800; font-size:0.8rem;"><i class="fa-solid fa-coins"></i> CONSOLIDADO DE CIERRE</span>
+                                    <span style="color:#B45309; font-weight:800; font-size:0.95rem;">S/ ${montoFmt}</span>
+                                </div>
+                                <div class="card-factura-chat-body">
+                                    <div><strong>Asesor:</strong> ${m.asesor || cd.asesor} (${m.sucursal || cd.sucursal})</div>
+                                    <div><strong>Operaciones:</strong> ${cd.total_ventas || 1} ventas del día</div>
+                                    <div><strong>Hora Envío:</strong> ${m.hora} hrs</div>
+                                    <div style="font-size:0.75rem; color:#64748B; margin-top:4px;">${m.mensaje}</div>
+                                </div>
+                                <div class="card-factura-chat-actions">
+                                    <button type="button" class="btn-chat-action-green" onclick="aprobarCierreDiario(${cierreId}, '${asesorSafe}', '${sucursalSafe}', ${cd.monto_acumulado || 0})">
+                                        <i class="fa-solid fa-stamp"></i> Aprobar Cuadre
+                                    </button>
+                                    <button type="button" class="btn-chat-action-outline" onclick="cambiarVistaReporteria('cierres')">
+                                        <i class="fa-solid fa-table-list"></i> Ver Auditoría
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
+                        </div>
+                    `;
+                }
+
+                // 5. Si es confirmación de cuadre de cierre aprobado por Nayeli
+                if (m.tipo === 'cierre_aprobado') {
+                    const cd = m.cierre_data || {};
+                    const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    return `
+                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #10B981;">
+                            <div class="msg-sender-tag" style="color:#059669; font-weight:700;">
+                                <i class="fa-solid fa-clipboard-check"></i> ${m.remitente} • Auditoría Conforme
+                            </div>
+                            <div class="card-pago-status-wa aceptado">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                    <span style="font-weight:800; color:#065F46; font-size:0.78rem;"><i class="fa-solid fa-stamp"></i> CUADRE DE CAJA APROBADO</span>
+                                    <span style="font-weight:800; color:#059669; font-size:0.92rem;">S/ ${montoFmt}</span>
+                                </div>
+                                <div style="font-size:0.8rem; line-height:1.4; color:#1F2937;">
+                                    <div><strong>Asesor:</strong> ${cd.asesor || ''} • ${cd.sucursal || ''}</div>
+                                    <div><strong>Ventas Totales:</strong> ${cd.total_ventas || 1} comprobantes conciliados</div>
+                                    <div style="margin-top:6px; padding:6px 8px; background:rgba(16,185,129,0.15); border-radius:6px; color:#065F46; font-size:0.75rem;">
+                                        <i class="fa-solid fa-circle-check"></i> ${m.mensaje}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
+                        </div>
+                    `;
+                }
+
+                // 6. Mensaje regular de texto
                 return `
                     <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}">
                         ${!isMio ? `
@@ -3246,12 +3350,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.body.removeChild(link);
         }
 
-        // Cargar pagos y chat de reportería al iniciar y cada 4.5 segundos
+        // Cargar pagos, cierres y chat de reportería al iniciar y cada 4.5 segundos
         window.addEventListener('DOMContentLoaded', () => {
             cargarPagosReporteria();
+            cargarCierresReporteria();
             cargarChatReporteria();
             setInterval(() => {
                 cargarPagosReporteria();
+                cargarCierresReporteria();
                 cargarChatReporteria();
             }, 4500);
         });

@@ -4441,26 +4441,27 @@ if (file_exists($fileCotizPath)) {
         // CONFIRMAR ENVÍO DE VENTAS DEL DÍA A REPORTERÍA
         function confirmarEnvioVentasDia() {
             const nota = document.getElementById('notaVentasDia').value;
-            const params = new URLSearchParams({
-                action: 'enviar_ventas_del_dia',
-                asesor: 'Endrina',
-                total_ventas: ventasHoyCount,
-                monto_acumulado: '32,708.00',
-                nota: nota
-            });
+            const formData = new FormData();
+            formData.append('action', 'guardar_cierre_ventas');
+            formData.append('asesor', 'Endrina');
+            formData.append('sucursal', 'Sucursal Chorrillos');
+            formData.append('total_ventas', ventasHoyCount || 4);
+            formData.append('monto_acumulado', '32708.00');
+            formData.append('nota', nota || 'Cierre de ventas consolidado con comprobantes y vouchers bancarios.');
 
-            fetch('ventas.php', {
+            fetch('crm_backend.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params.toString()
+                body: formData
             })
             .then(res => res.json())
             .then(data => {
-                alert(`📤 ¡Ventas del día enviadas exitosamente a Reportería!\n\nSe ha enviado el consolidado con los comprobantes del día. El área de reportería podrá revisarlos en su bandeja.`);
+                alert(`📤 ¡Cierre del día enviado exitosamente a Nayeli (Reportería / Finanzas)!\n\nSe ha consolidado un total de S/ 32,708.00 (${ventasHoyCount || 4} ventas) para Sucursal Chorrillos. Nayeli auditará el cuadre de caja en su panel.`);
+                cargarChatVentas();
                 cambiarVistaVentas('chat');
             })
-            .catch(() => ({ success: true }))
-            .then(() => {
+            .catch(() => {
+                alert('📤 Cierre del día enviado a Reportería.');
+                cargarChatVentas();
                 cambiarVistaVentas('chat');
             });
         }
@@ -4545,6 +4546,46 @@ if (file_exists($fileCotizPath)) {
                             <div style="margin-top:8px; display:flex; gap:6px;">
                                 <button type="button" onclick="insertarTextoChat('Hola Nayeli, ya me comuniqué con el cliente de ${fd.nro_factura || ''} para coordinar el nuevo voucher.')" style="background:#ef4444; color:#fff; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
                                     <i class="fa-solid fa-reply"></i> Responder a Nayeli
+                                </button>
+                            </div>
+                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
+                        `;
+                    } else if (m.tipo === 'cierre_notif') {
+                        const cd = m.cierre_data || {};
+                        const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        bubble.style.borderLeft = isMio ? '4px solid #f59e0b' : '4px solid #38bdf8';
+                        bubble.innerHTML = `
+                            <div style="font-weight:700; font-size:0.83rem; color:#fbbf24; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                                <span>📊</span> <span>${isMio ? 'Tú (Endrina)' : m.remitente}</span>
+                                <span style="background:rgba(245,158,11,0.25); color:#fde68a; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">CIERRE DIARIO ENVIADO</span>
+                            </div>
+                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
+                            <div style="background:rgba(120,53,15,0.25); border:1px solid rgba(245,158,11,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
+                                <div><strong style="color:#fde68a;">Sucursal:</strong> Sucursal Chorrillos</div>
+                                <div><strong style="color:#fde68a;">Monto Reportado:</strong> <span style="color:#fbbf24; font-weight:700;">S/ ${montoFmt}</span></div>
+                                <div><strong style="color:#fde68a;">Operaciones:</strong> ${cd.total_ventas || 4} comprobantes</div>
+                                <div><strong style="color:#fde68a;">Estado:</strong> <span style="color:#38bdf8; font-weight:600;">⏳ En Conciliación por Nayeli</span></div>
+                            </div>
+                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
+                        `;
+                    } else if (m.tipo === 'cierre_aprobado') {
+                        const cd = m.cierre_data || {};
+                        const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        bubble.style.borderLeft = '4px solid #10b981';
+                        bubble.innerHTML = `
+                            <div style="font-weight:700; font-size:0.83rem; color:#34d399; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                                <span>🎉</span> <span>Nayeli (Reportería)</span>
+                                <span style="background:rgba(16,185,129,0.25); color:#6ee7b7; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">CUADRE APROBADO</span>
+                            </div>
+                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
+                            <div style="background:rgba(6,78,59,0.35); border:1px solid rgba(16,185,129,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
+                                <div><strong style="color:#a7f3d0;">Sucursal:</strong> Sucursal Chorrillos</div>
+                                <div><strong style="color:#a7f3d0;">Monto Aprobado:</strong> <span style="color:#4ade80; font-weight:700;">S/ ${montoFmt}</span></div>
+                                <div><strong style="color:#a7f3d0;">Auditoría:</strong> <span style="color:#6ee7b7; font-weight:600;">Caja conforme sin diferencias</span></div>
+                            </div>
+                            <div style="margin-top:8px; display:flex; gap:6px;">
+                                <button type="button" onclick="alert('✅ Cierre de ventas conforme. Cuadre de caja validado por Nayeli.')" style="background:#10b981; color:#0e1210; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                                    <i class="fa-solid fa-stamp"></i> Cuadre Conforme
                                 </button>
                             </div>
                             <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
