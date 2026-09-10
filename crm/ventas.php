@@ -1728,6 +1728,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <button class="btn-pill-white" onclick="abrirGeneradorCotizacion()">
                             <i class="fa-solid fa-file-signature"></i> Nueva Cotización
                         </button>
+                        <button class="btn-pill-white" onclick="abrirBuscarCotizacionFacturar()" style="border-color:var(--accent-tan); color:var(--accent-tan); font-weight:700;">
+                            <i class="fa-solid fa-magnifying-glass-dollar"></i> Buscar Cotiz. para Facturar
+                        </button>
                         <button class="btn-pill-white primary" onclick="cambiarVistaVentas('facturacion')">
                             <i class="fa-solid fa-plus"></i> Nueva Facturación
                         </button>
@@ -1742,6 +1745,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <div class="welcome-actions">
                             <button class="btn-pill-white primary" onclick="abrirGeneradorCotizacion()">
                                 <i class="fa-solid fa-file-signature"></i> Nueva Cotización
+                            </button>
+                            <button class="btn-pill-white" onclick="abrirBuscarCotizacionFacturar()" style="background:#FFF; color:#161719; font-weight:700;">
+                                <i class="fa-solid fa-magnifying-glass-dollar"></i> Buscar Cotiz. para Facturar
                             </button>
                             <button class="btn-pill-white" onclick="cambiarVistaVentas('facturacion')">
                                 <i class="fa-solid fa-file-invoice-dollar"></i> Facturar Venta
@@ -1896,13 +1902,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                 </div>
 
-                <!-- SUB-TABS: HISTORIAL / GENERADOR -->
+                <!-- SUB-TABS: EMITIR NUEVA COTIZACIÓN vs BUSCAR COTIZACIÓN PARA FACTURAR -->
                 <div class="cotiz-tabs">
                     <button type="button" class="cotiz-tab-btn active" id="tabBtnNuevaCotiz" onclick="alternarTabCotizaciones('nueva')">
-                        <i class="fa-solid fa-file-circle-plus"></i> Nueva Cotización Oficial
+                        <i class="fa-solid fa-file-circle-plus"></i> 1. Emitir Nueva Cotización
                     </button>
-                    <button type="button" class="cotiz-tab-btn" id="tabBtnHistorialCotiz" onclick="alternarTabCotizaciones('historial')">
-                        <i class="fa-solid fa-clock-rotate-left"></i> Historial de Cotizaciones (<span id="countCotizHistorialBadge">3</span>)
+                    <button type="button" class="cotiz-tab-btn" id="tabBtnHistorialCotiz" onclick="alternarTabCotizaciones('facturar')">
+                        <i class="fa-solid fa-magnifying-glass-dollar"></i> 2. Buscar Cotización para Facturar (<span id="countCotizHistorialBadge">3</span>)
                     </button>
                 </div>
 
@@ -2146,17 +2152,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                 </div>
 
-                <!-- PANEL 2: HISTORIAL DE COTIZACIONES -->
+                <!-- PANEL 2: BUSCAR COTIZACIÓN PARA FACTURAR -->
                 <div id="panelHistorialCotizaciones" style="display:none;">
                     <div class="card-seccion-centro">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
-                            <div class="cartera-search-box" style="flex:1; max-width:400px;">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" placeholder="Buscar por código, cliente o RUC..." onkeyup="filtrarHistorialCotizaciones(this.value)">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:18px; border-bottom:1px solid var(--border-soft); padding-bottom:14px;">
+                            <div>
+                                <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-dark); margin:0; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-magnifying-glass-dollar" style="color:var(--accent-tan);"></i> Buscar Cotización para Facturar
+                                </h3>
+                                <p style="font-size:0.78rem; color:var(--text-muted); margin:4px 0 0 0;">
+                                    Ubica la cotización del cliente (por código correlativo, RUC o empresa) y haz clic en <strong>"Facturar Cotización"</strong> para transferirla inmediatamente y adjuntar el voucher.
+                                </p>
                             </div>
                             <button type="button" class="btn-pill-white primary" onclick="alternarTabCotizaciones('nueva')">
-                                <i class="fa-solid fa-plus"></i> Nueva Cotización
+                                <i class="fa-solid fa-plus"></i> + Emitir Nueva Cotización
                             </button>
+                        </div>
+
+                        <!-- BARRA DE BÚSQUEDA Y FILTROS RÁPIDOS -->
+                        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+                            <div class="cartera-search-box" style="flex:1; min-width:280px;">
+                                <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i>
+                                <input type="text" id="inputBuscarCotizFacturar" placeholder="Buscar por código (ej. 0052456), cliente o RUC..." onkeyup="filtrarHistorialCotizaciones(this.value)">
+                            </div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <button type="button" class="btn-pill-white cotiz-filtro-btn active" onclick="filtrarCotizacionesPorEstado('todos', this)" style="padding:7px 14px; font-size:0.75rem; font-weight:700;">Todos</button>
+                                <button type="button" class="btn-pill-white cotiz-filtro-btn" onclick="filtrarCotizacionesPorEstado('Pendiente', this)" style="padding:7px 14px; font-size:0.75rem; color:#D97706;">⏳ Por Facturar</button>
+                                <button type="button" class="btn-pill-white cotiz-filtro-btn" onclick="filtrarCotizacionesPorEstado('Aceptada', this)" style="padding:7px 14px; font-size:0.75rem; color:#059669;">✅ Aceptadas</button>
+                                <button type="button" class="btn-pill-white cotiz-filtro-btn" onclick="filtrarCotizacionesPorEstado('Facturada', this)" style="padding:7px 14px; font-size:0.75rem; color:#4F46E5;">💳 Ya Facturadas</button>
+                            </div>
                         </div>
 
                         <div class="cartera-table-wrapper">
@@ -2170,7 +2194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                         <th>Total (S/)</th>
                                         <th>Descto Máx</th>
                                         <th>Estado</th>
-                                        <th style="text-align:center;">Acciones</th>
+                                        <th style="text-align:center; min-width:210px;">Facturación / Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbodyHistorialCotizaciones">
@@ -3150,6 +3174,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 pnlHist.style.display = 'block';
                 pnlNueva.style.display = 'none';
                 cargarCotizaciones();
+                setTimeout(() => {
+                    const inp = document.getElementById('inputBuscarCotizFacturar');
+                    if (inp) inp.focus();
+                }, 100);
             }
         }
 
@@ -3158,6 +3186,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             alternarTabCotizaciones('nueva');
             setTimeout(() => {
                 const input = document.getElementById('inputBuscarClienteCotiz');
+                if (input) input.focus();
+            }, 150);
+        }
+
+        function abrirBuscarCotizacionFacturar() {
+            cambiarVistaVentas('cotizaciones');
+            alternarTabCotizaciones('facturar');
+            setTimeout(() => {
+                const input = document.getElementById('inputBuscarCotizFacturar');
                 if (input) input.focus();
             }, 150);
         }
@@ -3713,15 +3750,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <td>${badgeDescto}</td>
                         <td>${badgeEstado}</td>
                         <td style="text-align:center;">
-                            <div style="display:flex; justify-content:center; gap:6px;">
-                                <button class="btn-facturar-mini" title="Ver e imprimir PDF" onclick="abrirModalVistaPreviaPdfPorCodigo('${c.codigo}')">
+                            <div style="display:flex; justify-content:center; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <button type="button" class="btn-pill-white primary" style="background:var(--accent-tan); border-color:var(--accent-tan); color:#161719; font-weight:800; padding:6px 12px; font-size:0.75rem; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Convertir esta cotización en factura y adjuntar voucher" onclick="convertirCotizAFacturaPorCodigo('${c.codigo}')">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i> Facturar
+                                </button>
+                                <button type="button" class="btn-facturar-mini" title="Ver e imprimir PDF oficial" onclick="abrirModalVistaPreviaPdfPorCodigo('${c.codigo}')">
                                     <i class="fa-solid fa-print"></i>
                                 </button>
-                                <button class="btn-wa-mini" title="Enviar WhatsApp" onclick="enviarCotizacionWhatsAppPorCodigo('${c.codigo}')">
+                                <button type="button" class="btn-wa-mini" title="Enviar cotización por WhatsApp" onclick="enviarCotizacionWhatsAppPorCodigo('${c.codigo}')">
                                     <i class="fa-brands fa-whatsapp"></i>
-                                </button>
-                                <button class="btn-facturar-mini" style="background:var(--accent-tan); color:#161719; font-weight:700;" title="Convertir a Factura" onclick="convertirCotizAFacturaPorCodigo('${c.codigo}')">
-                                    <i class="fa-solid fa-file-invoice"></i>
                                 </button>
                             </div>
                         </td>
@@ -3730,12 +3767,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }).join('');
         }
 
+        let filtroEstadoActualCotiz = 'todos';
+
+        function filtrarCotizacionesPorEstado(estado, btn) {
+            filtroEstadoActualCotiz = estado;
+            document.querySelectorAll('.cotiz-filtro-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.fontWeight = 'normal';
+            });
+            if (btn) {
+                btn.classList.add('active');
+                btn.style.fontWeight = '800';
+            }
+            aplicarFiltrosCotizaciones();
+        }
+
         function filtrarHistorialCotizaciones(q) {
-            const query = q.trim().toLowerCase();
+            aplicarFiltrosCotizaciones(q);
+        }
+
+        function aplicarFiltrosCotizaciones(q = null) {
+            const inputVal = document.getElementById('inputBuscarCotizFacturar')?.value || '';
+            const query = (q !== null ? q : inputVal).trim().toLowerCase();
             const filtradas = listaCotizacionesData.filter(c => {
-                return (c.codigo || '').toLowerCase().includes(query) ||
-                       (c.cliente_nombre || '').toLowerCase().includes(query) ||
-                       (c.ruc_dni || '').includes(query);
+                const matchTexto = (c.codigo || '').toLowerCase().includes(query) ||
+                                   (c.cliente_nombre || '').toLowerCase().includes(query) ||
+                                   (c.ruc_dni || '').includes(query);
+
+                let matchEstado = true;
+                if (filtroEstadoActualCotiz === 'Pendiente') {
+                    matchEstado = (c.estado === 'Pendiente');
+                } else if (filtroEstadoActualCotiz === 'Aceptada') {
+                    matchEstado = (c.estado === 'Aceptada');
+                } else if (filtroEstadoActualCotiz === 'Facturada') {
+                    matchEstado = (c.estado === 'Facturada');
+                }
+                return matchTexto && matchEstado;
             });
             renderTablaHistorialCotizaciones(filtradas);
         }
