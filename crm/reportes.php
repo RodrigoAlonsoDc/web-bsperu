@@ -117,48 +117,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     
     <style>
         :root {
-            --outer-bg: #1B2B24;
-            --outer-bg-dark: #121A16;
-            --app-frame: #141716;
-            --sidebar-bg: #141716;
+            /* ================= PALETA COOLORS (SOLICITADA) ================= */
+            --color-1: #1B4079; /* Yale Blue: Sidebar y fondo estructural */
+            --color-2: #4D7C8A; /* Air Force Blue: Acento principal, botones y cabeceras */
+            --color-3: #7F9C96; /* Cambridge Blue: Acento secundario y bordes */
+            --color-4: #8FAD88; /* Cambridge Green / Sage: Indicadores de conciliación y éxito */
+            --color-5: #CBDF90; /* Mindaro: Resaltado luminoso, badges y detalles vivos */
+
+            --outer-bg: var(--color-1);
+            --outer-bg-dark: #0F2548;
+            --app-frame: var(--color-1);
+            --sidebar-bg: var(--color-1);
             --main-bg: #FFFFFF;
-            --right-bg: #F4F8F6;
+            --right-bg: #F4F8FA;
             
-            --accent-green: #10B981;
-            --accent-green-light: #34D399;
-            --accent-green-dark: #059669;
-            --accent-green-soft: #ECFDF5;
+            --accent-green: var(--color-2);
+            --accent-green-light: var(--color-3);
+            --accent-green-dark: var(--color-1);
+            --accent-green-soft: #EDF4F6;
             
-            --accent-tan: #C79B58;
-            --accent-tan-soft: #FBF8F2;
+            --accent-tan: var(--color-4);
+            --accent-tan-soft: #F3F7EE;
+            --accent-highlight: var(--color-5);
             
-            --text-dark: #1A202C;
-            --text-muted: #718096;
-            --text-light: #A0AEC0;
-            --border-soft: #E2E8F0;
+            --text-dark: #1A2433;
+            --text-muted: #64748B;
+            --text-light: #94A3B8;
+            --border-soft: #E2EAF0;
             --card-radius: 28px;
             --pill-radius: 40px;
 
-            --chart-green: #10B981;
-            --chart-blue: #3B82F6;
-            --chart-yellow: #F59E0B;
-            --chart-purple: #8B5CF6;
+            --chart-green: var(--color-4);
+            --chart-blue: var(--color-2);
+            --chart-yellow: var(--color-5);
+            --chart-purple: #6366F1;
             --chart-red: #EF4444;
 
             --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.dark-mode {
-            --outer-bg: #0F1713;
-            --app-frame: #0E1210;
-            --sidebar-bg: #0E1210;
-            --main-bg: #161C19;
-            --right-bg: #111714;
-            --text-dark: #F3F4F6;
-            --text-muted: #9CA3AF;
-            --border-soft: #232D27;
-            --accent-green-soft: #182B21;
-            --accent-tan-soft: #1E231F;
+            --outer-bg: #0C1A2E;
+            --app-frame: #0F2038;
+            --sidebar-bg: #0C1A2E;
+            --main-bg: #121D2B;
+            --right-bg: #0D1622;
+            --text-dark: #F1F5F9;
+            --text-muted: #94A3B8;
+            --border-soft: #1E3147;
+            --accent-green-soft: #17293B;
+            --accent-tan-soft: #1B2B23;
         }
 
         * {
@@ -219,15 +227,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         .brand-logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            background: linear-gradient(135deg, var(--color-2) 0%, var(--color-3) 100%);
             border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #0E1210;
+            color: #FFF;
             font-size: 1.25rem;
             font-weight: 800;
-            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
         }
         .brand-logo-text {
             font-family: 'Outfit', sans-serif;
@@ -241,8 +249,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         .brand-logo-text span {
             font-size: 0.72rem;
-            font-weight: 500;
-            color: var(--accent-green-light);
+            font-weight: 600;
+            color: var(--color-5);
             letter-spacing: 1px;
             text-transform: uppercase;
         }
@@ -277,17 +285,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         .nav-item:hover {
             color: #FFF;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             transform: translateX(3px);
         }
         .nav-item.active {
-            background: var(--accent-green);
-            color: #0E1210;
+            background: var(--color-2);
+            color: #FFF;
             font-weight: 600;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
         }
         .nav-item.active i {
-            color: #0E1210;
+            color: var(--color-5);
         }
         .nav-badge {
             margin-left: auto;
@@ -298,13 +306,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             font-weight: 600;
         }
         .nav-item.active .nav-badge {
-            background: #0E1210;
-            color: #FFF;
+            background: var(--color-5);
+            color: var(--color-1);
+            font-weight: 800;
         }
 
         /* USER PILL IN SIDEBAR */
         .user-pill {
-            background: #1B231F;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: var(--pill-radius);
             padding: 8px 12px;
             display: flex;
@@ -312,16 +321,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             gap: 10px;
             margin-top: auto;
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             transition: var(--transition);
         }
-        .user-pill:hover { background: #232D27; }
+        .user-pill:hover { background: rgba(255, 255, 255, 0.15); }
         .user-pill-avatar {
             width: 34px;
             height: 34px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid var(--accent-green);
+            border: 2px solid var(--color-5);
         }
         .user-pill-info { flex: 1; overflow: hidden; }
         .user-pill-name {
@@ -337,24 +346,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             align-items: center;
             gap: 5px;
             font-size: 0.68rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.7);
         }
         .status-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #10B981;
+            background: var(--color-5);
         }
-        .user-pill-chevron { color: var(--text-muted); font-size: 0.75rem; }
+        .user-pill-chevron { color: rgba(255, 255, 255, 0.6); font-size: 0.75rem; }
 
         /* THEME TOGGLE */
         .theme-toggle {
-            background: #1B231F;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: var(--pill-radius);
             padding: 4px;
             display: flex;
             margin-top: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .theme-btn {
             flex: 1;
@@ -362,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             border-radius: var(--pill-radius);
             border: none;
             background: transparent;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.78rem;
             font-weight: 600;
             cursor: pointer;
@@ -373,9 +382,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             transition: var(--transition);
         }
         .theme-btn.active {
-            background: var(--accent-green);
-            color: #0E1210;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background: var(--color-2);
+            color: #FFF;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
         }
 
         /* ================= ÁREA CENTRAL (BLANCA / DARK) ================= */
@@ -443,9 +452,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             transform: translateY(-2px);
         }
 
-        /* HERO / BANNER DE REPORTERÍA ESMERALDA */
+        /* HERO / BANNER DE REPORTERÍA */
         .welcome-card {
-            background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+            background: linear-gradient(135deg, var(--color-1) 0%, var(--color-2) 100%);
             border-radius: var(--card-radius);
             padding: 32px 42px;
             display: flex;
@@ -453,7 +462,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             align-items: center;
             color: #FFF;
             position: relative;
-            box-shadow: 0 14px 28px rgba(16, 185, 129, 0.22);
+            box-shadow: 0 14px 28px rgba(27, 64, 121, 0.25);
             overflow: hidden;
         }
         .welcome-content {
@@ -481,7 +490,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         .btn-pill-white {
             background: #FFF;
-            color: #064E3B;
+            color: var(--color-1);
             padding: 11px 22px;
             border-radius: var(--pill-radius);
             font-size: 0.85rem;
@@ -497,14 +506,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         .btn-pill-white:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
-            background: #F0FDF4;
+            background: #F8FAFC;
         }
         .btn-pill-white.primary {
-            background: #0E1210;
-            color: #FFF;
+            background: var(--color-5);
+            color: var(--color-1);
+            font-weight: 800;
         }
         .btn-pill-white.primary:hover {
-            background: #1B231F;
+            background: #FFF;
+            color: var(--color-1);
         }
 
         .welcome-avatar-wrapper {
@@ -1581,7 +1592,257 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         /* Scrollbar suave */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #A7D3BD; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--color-3); border-radius: 3px; }
+
+        /* ================= BOTONES Y MODAL EDITOR DE PALETA ================= */
+        .btn-palette-header {
+            background: #FFFFFF;
+            color: var(--color-1);
+            border: 1.5px solid var(--color-2);
+            padding: 8px 16px;
+            border-radius: var(--pill-radius);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: var(--transition);
+        }
+        .btn-palette-header:hover {
+            background: var(--color-2);
+            color: #FFFFFF;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+        body.dark-mode .btn-palette-header {
+            background: #182638;
+            color: #FFF;
+            border-color: var(--color-2);
+        }
+        .palette-mini-swatches {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+        .palette-mini-swatches span {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-palette-card {
+            background: #FFFFFF;
+            width: 100%;
+            max-width: 680px;
+            border-radius: 28px;
+            padding: 26px 30px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        body.dark-mode .modal-palette-card {
+            background: #111E2E;
+            color: #FFF;
+            border-color: #1E334D;
+        }
+
+        /* Barra tipo Coolors */
+        .coolors-bar-preview {
+            display: flex;
+            height: 74px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border: 2px solid #FFF;
+            margin-bottom: 4px;
+        }
+        body.dark-mode .coolors-bar-preview { border-color: #1E334D; }
+        .coolors-bar-segment {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 8px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            transition: var(--transition);
+            position: relative;
+        }
+        .coolors-bar-segment span.hex {
+            font-family: monospace;
+            font-size: 0.76rem;
+            letter-spacing: 0.5px;
+        }
+        .coolors-bar-segment span.name {
+            font-size: 0.62rem;
+            opacity: 0.88;
+            font-weight: 600;
+        }
+        .coolors-bar-segment .arrow-tag {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.45);
+            color: #FFF;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 0.58rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Cuadrícula de 5 colores */
+        .palette-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+        .palette-color-item {
+            background: #F8FAFC;
+            border: 1.5px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        body.dark-mode .palette-color-item {
+            background: #162436;
+            border-color: #223854;
+        }
+        .palette-color-item:hover {
+            border-color: var(--color-2);
+            transform: translateY(-2px);
+        }
+        .palette-color-picker-wrapper {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border: 2px solid #FFF;
+            cursor: pointer;
+        }
+        body.dark-mode .palette-color-picker-wrapper { border-color: #1E334D; }
+        .palette-color-picker-wrapper input[type="color"] {
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 68px;
+            height: 68px;
+            border: none;
+            cursor: pointer;
+        }
+        .palette-color-hex-input {
+            width: 100%;
+            border: 1px solid var(--border-soft);
+            background: #FFF;
+            color: var(--text-dark);
+            font-family: monospace;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 4px 4px;
+            border-radius: 8px;
+            outline: none;
+            text-transform: uppercase;
+        }
+        body.dark-mode .palette-color-hex-input {
+            background: #0E1825;
+            border-color: #223854;
+            color: #FFF;
+        }
+        .palette-color-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .palette-color-role {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            line-height: 1.2;
+        }
+
+        /* Fila de presets */
+        .preset-pills-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .preset-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--pill-radius);
+            background: #F1F5F9;
+            border: 1px solid var(--border-soft);
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        body.dark-mode .preset-pill-btn {
+            background: #182436;
+            border-color: #223854;
+            color: #E2E8F0;
+        }
+        .preset-pill-btn:hover {
+            background: var(--color-2);
+            color: #FFF;
+            border-color: var(--color-2);
+            transform: translateY(-1px);
+        }
+        .preset-dots {
+            display: flex;
+            gap: 2px;
+        }
+        .preset-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Toast Notificación */
+        .toast-palette-notify {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--color-1);
+            color: #FFF;
+            padding: 12px 22px;
+            border-radius: var(--pill-radius);
+            font-size: 0.84rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 999999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            border: 1.5px solid var(--color-5);
+        }
+        .toast-palette-notify.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -1656,6 +1917,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <i class="fa-solid fa-moon"></i> Oscuro
                 </button>
             </div>
+
+            <!-- BOTÓN ACCESO RÁPIDO A EDITAR PALETA -->
+            <div style="margin-top: 6px;">
+                <button type="button" class="theme-btn" style="width:100%; border:1px dashed rgba(255,255,255,0.25); padding:7px 10px; border-radius:var(--pill-radius); color:var(--color-5); background:rgba(255,255,255,0.06); font-size:0.75rem; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;" onclick="abrirModalEditorPaleta()" title="Probar y editar colores">
+                    <i class="fa-solid fa-palette"></i> Editar Paleta
+                </button>
+            </div>
         </div>
 
         <!-- ================= ÁREA CENTRAL (SPA DINÁMICA) ================= -->
@@ -1668,6 +1936,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <h1 id="pageMainTitle">Dashboard de Reportes & Validación</h1>
                 </div>
                 <div class="header-actions">
+                    <button type="button" class="btn-palette-header" onclick="abrirModalEditorPaleta()" title="Personalizar y probar paleta de colores de Reportería">
+                        <div class="palette-mini-swatches">
+                            <span style="background:var(--color-1);"></span>
+                            <span style="background:var(--color-2);"></span>
+                            <span style="background:var(--color-3);"></span>
+                            <span style="background:var(--color-4);"></span>
+                            <span style="background:var(--color-5);"></span>
+                        </div>
+                        <i class="fa-solid fa-palette"></i>
+                        <span>Editar Paleta</span>
+                    </button>
                     <button class="btn-pill-white" style="background:#FEE2E2; color:#B91C1C; font-size:0.8rem; padding:8px 16px;" onclick="abrirLogoutModal()">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir
                     </button>
@@ -2520,6 +2799,183 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- ================= MODAL EDITOR DE PALETA DE COLORES ================= -->
+    <div class="modal-overlay" id="modalEditorPaleta" style="z-index:99999;">
+        <div class="modal-palette-card">
+            <div class="modal-header" style="margin-bottom:6px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:42px; height:42px; border-radius:12px; background:var(--color-2); color:#FFF; display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                        <i class="fa-solid fa-palette"></i>
+                    </div>
+                    <div>
+                        <span style="font-size:0.72rem; color:var(--color-2); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Estilo & Identidad Visual</span>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:var(--text-dark); margin:0;">Personalizar Paleta de Colores</h3>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="cerrarModales()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">
+                Prueba y edita los 5 colores en tiempo real para el módulo de Reportería. Los cambios se aplican al instante en todo el panel.
+            </p>
+
+            <!-- BARRA MUESTRA COOLORS -->
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-dark); text-transform:uppercase; letter-spacing:0.5px;">
+                        <i class="fa-solid fa-swatchbook" style="color:var(--color-2);"></i> Paleta Coolors Activa
+                    </span>
+                    <span style="font-size:0.72rem; color:var(--text-muted);">Haz clic en los círculos para probar nuevos tonos</span>
+                </div>
+                <div class="coolors-bar-preview" id="coolorsBarPreview">
+                    <div class="coolors-bar-segment" id="coolorsSeg1" style="background:var(--color-1); color:#FFF;">
+                        <span class="name">Color 1 (Sidebar)</span>
+                        <span class="hex" id="barHex1">#1B4079</span>
+                    </div>
+                    <div class="coolors-bar-segment" id="coolorsSeg2" style="background:var(--color-2); color:#FFF;">
+                        <span class="arrow-tag"><i class="fa-solid fa-arrow-down"></i> Principal</span>
+                        <span class="name">Color 2 (Botones)</span>
+                        <span class="hex" id="barHex2">#4D7C8A</span>
+                    </div>
+                    <div class="coolors-bar-segment" id="coolorsSeg3" style="background:var(--color-3); color:#FFF;">
+                        <span class="name">Color 3 (Bordes)</span>
+                        <span class="hex" id="barHex3">#7F9C96</span>
+                    </div>
+                    <div class="coolors-bar-segment" id="coolorsSeg4" style="background:var(--color-4); color:#1A2433;">
+                        <span class="name">Color 4 (Éxito)</span>
+                        <span class="hex" id="barHex4">#8FAD88</span>
+                    </div>
+                    <div class="coolors-bar-segment" id="coolorsSeg5" style="background:var(--color-5); color:#1A2433;">
+                        <span class="name">Color 5 (Mindaro)</span>
+                        <span class="hex" id="barHex5">#CBDF90</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLES DE LOS 5 COLORES -->
+            <div class="palette-controls-grid">
+                <!-- Color 1 -->
+                <div class="palette-color-item">
+                    <div class="palette-color-picker-wrapper">
+                        <input type="color" id="pickerCol1" value="#1B4079" oninput="cambiarColorIndiv(1, this.value)">
+                    </div>
+                    <input type="text" class="palette-color-hex-input" id="inputHex1" value="#1B4079" maxlength="7" onchange="cambiarColorIndiv(1, this.value)">
+                    <div class="palette-color-label">Color 1</div>
+                    <div class="palette-color-role">Sidebar & Marco</div>
+                </div>
+                <!-- Color 2 -->
+                <div class="palette-color-item" style="border-color:var(--color-2); background:rgba(77,124,138,0.06);">
+                    <div class="palette-color-picker-wrapper">
+                        <input type="color" id="pickerCol2" value="#4D7C8A" oninput="cambiarColorIndiv(2, this.value)">
+                    </div>
+                    <input type="text" class="palette-color-hex-input" id="inputHex2" value="#4D7C8A" maxlength="7" onchange="cambiarColorIndiv(2, this.value)">
+                    <div class="palette-color-label" style="color:var(--color-2);">Color 2 ⭐</div>
+                    <div class="palette-color-role">Acento & Botones</div>
+                </div>
+                <!-- Color 3 -->
+                <div class="palette-color-item">
+                    <div class="palette-color-picker-wrapper">
+                        <input type="color" id="pickerCol3" value="#7F9C96" oninput="cambiarColorIndiv(3, this.value)">
+                    </div>
+                    <input type="text" class="palette-color-hex-input" id="inputHex3" value="#7F9C96" maxlength="7" onchange="cambiarColorIndiv(3, this.value)">
+                    <div class="palette-color-label">Color 3</div>
+                    <div class="palette-color-role">Bordes & Tabs</div>
+                </div>
+                <!-- Color 4 -->
+                <div class="palette-color-item">
+                    <div class="palette-color-picker-wrapper">
+                        <input type="color" id="pickerCol4" value="#8FAD88" oninput="cambiarColorIndiv(4, this.value)">
+                    </div>
+                    <input type="text" class="palette-color-hex-input" id="inputHex4" value="#8FAD88" maxlength="7" onchange="cambiarColorIndiv(4, this.value)">
+                    <div class="palette-color-label">Color 4</div>
+                    <div class="palette-color-role">Éxito & Conciliación</div>
+                </div>
+                <!-- Color 5 -->
+                <div class="palette-color-item">
+                    <div class="palette-color-picker-wrapper">
+                        <input type="color" id="pickerCol5" value="#CBDF90" oninput="cambiarColorIndiv(5, this.value)">
+                    </div>
+                    <input type="text" class="palette-color-hex-input" id="inputHex5" value="#CBDF90" maxlength="7" onchange="cambiarColorIndiv(5, this.value)">
+                    <div class="palette-color-label">Color 5</div>
+                    <div class="palette-color-role">Mindaro Vivo</div>
+                </div>
+            </div>
+
+            <!-- PALETAS PREDISEÑADAS -->
+            <div>
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-dark); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--color-2);"></i> Paletas Rápidas de Prueba
+                </div>
+                <div class="preset-pills-row">
+                    <button type="button" class="preset-pill-btn" onclick="aplicarPreset('coolors')">
+                        <div class="preset-dots">
+                            <span class="preset-dot" style="background:#1B4079;"></span>
+                            <span class="preset-dot" style="background:#4D7C8A;"></span>
+                            <span class="preset-dot" style="background:#7F9C96;"></span>
+                            <span class="preset-dot" style="background:#8FAD88;"></span>
+                            <span class="preset-dot" style="background:#CBDF90;"></span>
+                        </div>
+                        <span>⭐ Coolors (Yale & Air Force)</span>
+                    </button>
+                    <button type="button" class="preset-pill-btn" onclick="aplicarPreset('esmeralda')">
+                        <div class="preset-dots">
+                            <span class="preset-dot" style="background:#0F2B20;"></span>
+                            <span class="preset-dot" style="background:#10B981;"></span>
+                            <span class="preset-dot" style="background:#34D399;"></span>
+                            <span class="preset-dot" style="background:#6EE7B7;"></span>
+                            <span class="preset-dot" style="background:#C79B58;"></span>
+                        </div>
+                        <span>🌿 Esmeralda BS</span>
+                    </button>
+                    <button type="button" class="preset-pill-btn" onclick="aplicarPreset('oceano')">
+                        <div class="preset-dots">
+                            <span class="preset-dot" style="background:#0A192F;"></span>
+                            <span class="preset-dot" style="background:#0284C7;"></span>
+                            <span class="preset-dot" style="background:#38BDF8;"></span>
+                            <span class="preset-dot" style="background:#7DD3FC;"></span>
+                            <span class="preset-dot" style="background:#34D399;"></span>
+                        </div>
+                        <span>🌊 Océano Profundo</span>
+                    </button>
+                    <button type="button" class="preset-pill-btn" onclick="aplicarPreset('grafito')">
+                        <div class="preset-dots">
+                            <span class="preset-dot" style="background:#18181B;"></span>
+                            <span class="preset-dot" style="background:#2563EB;"></span>
+                            <span class="preset-dot" style="background:#60A5FA;"></span>
+                            <span class="preset-dot" style="background:#10B981;"></span>
+                            <span class="preset-dot" style="background:#FACC15;"></span>
+                        </div>
+                        <span>⚡ Grafito & Neón</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:4px; padding-top:12px; border-top:1px solid var(--border-soft); flex-wrap:wrap;">
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn-pill-white" style="font-size:0.78rem; padding:8px 14px;" onclick="restablecerPaletaCoolors()">
+                        <i class="fa-solid fa-rotate-left"></i> Restablecer a Coolors
+                    </button>
+                    <button type="button" class="btn-pill-white" style="font-size:0.78rem; padding:8px 14px;" onclick="copiarCssVariables()">
+                        <i class="fa-solid fa-copy"></i> Copiar CSS
+                    </button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn-pill-white" style="font-size:0.78rem; padding:8px 14px;" onclick="cerrarModales()">Cerrar</button>
+                    <button type="button" class="btn-pill-white primary" style="font-size:0.78rem; padding:8px 18px; background:var(--color-2); color:#FFF;" onclick="guardarPaletaActual()">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar en Navegador
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICACIÓN -->
+    <div class="toast-palette-notify" id="toastPaletteNotify">
+        <i class="fa-solid fa-circle-check" style="color:var(--color-5); font-size:1.1rem;"></i>
+        <span id="toastPaletteMsg">Paleta actualizada exitosamente</span>
+    </div>
+
     <!-- ================= JAVASCRIPT ================= -->
     <script>
         let pagosPendientesCount = 3;
@@ -2528,6 +2984,169 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         let currentModalPagoId = 0;
         let currentModalMonto = 0;
         let currentModalCotiz = '';
+
+        // ================= GESTOR DINÁMICO DE PALETA DE COLORES =================
+        const COOLORS_PALETTE = {
+            c1: '#1B4079', // Yale Blue: Sidebar y marcos profundos
+            c2: '#4D7C8A', // Air Force Blue: Acento principal, botones y cabeceras
+            c3: '#7F9C96', // Cambridge Blue: Acento secundario y bordes
+            c4: '#8FAD88', // Cambridge Green / Sage: Conciliación y éxito
+            c5: '#CBDF90'  // Mindaro: Resaltado vivo y badges luminosos
+        };
+
+        let currentPalette = Object.assign({}, COOLORS_PALETTE);
+
+        const PRESET_COLLECTIONS = {
+            coolors: {
+                c1: '#1B4079', c2: '#4D7C8A', c3: '#7F9C96', c4: '#8FAD88', c5: '#CBDF90'
+            },
+            esmeralda: {
+                c1: '#0F2B20', c2: '#10B981', c3: '#34D399', c4: '#6EE7B7', c5: '#C79B58'
+            },
+            oceano: {
+                c1: '#0A192F', c2: '#0284C7', c3: '#38BDF8', c4: '#7DD3FC', c5: '#34D399'
+            },
+            grafito: {
+                c1: '#18181B', c2: '#2563EB', c3: '#60A5FA', c4: '#10B981', c5: '#FACC15'
+            }
+        };
+
+        function getContrastYIQ(hexcolor) {
+            if (!hexcolor) return '#FFFFFF';
+            const clean = hexcolor.replace('#', '');
+            if (clean.length < 6) return '#FFFFFF';
+            const r = parseInt(clean.substr(0,2),16);
+            const g = parseInt(clean.substr(2,2),16);
+            const b = parseInt(clean.substr(4,2),16);
+            const yiq = ((r*299)+(g*587)+(b*114))/1000;
+            return (yiq >= 145) ? '#111827' : '#FFFFFF';
+        }
+
+        function aplicarPaletaReporteria(c1, c2, c3, c4, c5, guardar = false) {
+            currentPalette = { c1, c2, c3, c4, c5 };
+            const root = document.documentElement;
+
+            root.style.setProperty('--color-1', c1);
+            root.style.setProperty('--color-2', c2);
+            root.style.setProperty('--color-3', c3);
+            root.style.setProperty('--color-4', c4);
+            root.style.setProperty('--color-5', c5);
+
+            root.style.setProperty('--outer-bg', c1);
+            root.style.setProperty('--sidebar-bg', c1);
+            root.style.setProperty('--app-frame', c1);
+            root.style.setProperty('--accent-green', c2);
+            root.style.setProperty('--accent-green-dark', c1);
+            root.style.setProperty('--accent-green-light', c3);
+            root.style.setProperty('--accent-tan', c4);
+            root.style.setProperty('--accent-highlight', c5);
+
+            actualizarVistaModalPaleta();
+
+            if (guardar) {
+                localStorage.setItem('crm_reporteria_paleta_activa', JSON.stringify(currentPalette));
+                mostrarToastPaleta('💾 ¡Paleta guardada en tu navegador!');
+            }
+        }
+
+        function abrirModalEditorPaleta() {
+            cerrarModales();
+            actualizarVistaModalPaleta();
+            document.getElementById('modalEditorPaleta').classList.add('open');
+        }
+
+        function actualizarVistaModalPaleta() {
+            for (let i = 1; i <= 5; i++) {
+                const colorVal = currentPalette[`c${i}`];
+                const picker = document.getElementById(`pickerCol${i}`);
+                const hexInput = document.getElementById(`inputHex${i}`);
+                const barSeg = document.getElementById(`coolorsSeg${i}`);
+                const barHex = document.getElementById(`barHex${i}`);
+
+                if (picker) picker.value = colorVal;
+                if (hexInput) hexInput.value = colorVal.toUpperCase();
+                if (barSeg) {
+                    barSeg.style.backgroundColor = colorVal;
+                    barSeg.style.color = getContrastYIQ(colorVal);
+                }
+                if (barHex) barHex.textContent = colorVal.toUpperCase();
+            }
+        }
+
+        function cambiarColorIndiv(num, nuevoColor) {
+            if (!nuevoColor) return;
+            if (!nuevoColor.startsWith('#')) nuevoColor = '#' + nuevoColor;
+            if (nuevoColor.length === 7) {
+                currentPalette[`c${num}`] = nuevoColor;
+                aplicarPaletaReporteria(currentPalette.c1, currentPalette.c2, currentPalette.c3, currentPalette.c4, currentPalette.c5, false);
+            }
+        }
+
+        function aplicarPreset(key) {
+            if (PRESET_COLLECTIONS[key]) {
+                const p = PRESET_COLLECTIONS[key];
+                aplicarPaletaReporteria(p.c1, p.c2, p.c3, p.c4, p.c5, false);
+                mostrarToastPaleta(`🎨 Preset aplicado: ${key.toUpperCase()}`);
+            }
+        }
+
+        function restablecerPaletaCoolors() {
+            aplicarPaletaReporteria(COOLORS_PALETTE.c1, COOLORS_PALETTE.c2, COOLORS_PALETTE.c3, COOLORS_PALETTE.c4, COOLORS_PALETTE.c5, true);
+            mostrarToastPaleta('🔄 Restablecida la paleta Coolors (Yale Blue & Mindaro).');
+        }
+
+        function guardarPaletaActual() {
+            localStorage.setItem('crm_reporteria_paleta_activa', JSON.stringify(currentPalette));
+            mostrarToastPaleta('💾 Paleta guardada correctamente en el navegador.');
+            cerrarModales();
+        }
+
+        function copiarCssVariables() {
+            const cssBlock = `:root {
+    --color-1: ${currentPalette.c1}; /* Yale Blue / Sidebar */
+    --color-2: ${currentPalette.c2}; /* Air Force Blue / Botones */
+    --color-3: ${currentPalette.c3}; /* Cambridge Blue / Bordes */
+    --color-4: ${currentPalette.c4}; /* Sage Green / Éxito */
+    --color-5: ${currentPalette.c5}; /* Mindaro / Resaltado */
+}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(cssBlock).then(() => {
+                    mostrarToastPaleta('📋 ¡Código CSS copiado al portapapeles!');
+                }).catch(() => {
+                    prompt('Copia tus variables CSS:', cssBlock);
+                });
+            } else {
+                prompt('Copia tus variables CSS:', cssBlock);
+            }
+        }
+
+        function mostrarToastPaleta(msg) {
+            const toast = document.getElementById('toastPaletteNotify');
+            const txt = document.getElementById('toastPaletteMsg');
+            if (toast && txt) {
+                txt.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+        }
+
+        function inicializarPaletaReporteria() {
+            const saved = localStorage.getItem('crm_reporteria_paleta_activa');
+            if (saved) {
+                try {
+                    const p = JSON.parse(saved);
+                    if (p.c1 && p.c2 && p.c3 && p.c4 && p.c5) {
+                        aplicarPaletaReporteria(p.c1, p.c2, p.c3, p.c4, p.c5, false);
+                        return;
+                    }
+                } catch(e) {}
+            }
+            // Por defecto, aplicar la paleta solicitada
+            aplicarPaletaReporteria(COOLORS_PALETTE.c1, COOLORS_PALETTE.c2, COOLORS_PALETTE.c3, COOLORS_PALETTE.c4, COOLORS_PALETTE.c5, false);
+        }
+
+        // Ejecutar inmediatamente para evitar saltos visuales
+        inicializarPaletaReporteria();
 
         // TEMA CLARO / OSCURO
         function setAppTheme(theme) {
@@ -3350,8 +3969,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.body.removeChild(link);
         }
 
-        // Cargar pagos, cierres y chat de reportería al iniciar y cada 4.5 segundos
+        // Cargar paleta, pagos, cierres y chat de reportería al iniciar y cada 4.5 segundos
         window.addEventListener('DOMContentLoaded', () => {
+            inicializarPaletaReporteria();
             cargarPagosReporteria();
             cargarCierresReporteria();
             cargarChatReporteria();
