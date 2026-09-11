@@ -73,6 +73,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     if (!$rConn) {
                         throw new Exception(print_r(sqlsrv_errors(), true));
                     }
+                } elseif ($hasPdoOdbc || $hasOdbc) {
+                    $odbcDrivers = [
+                        "ODBC Driver 18 for SQL Server",
+                        "ODBC Driver 17 for SQL Server",
+                        "SQL Server Native Client 11.0",
+                        "FreeTDS",
+                        "SQL Server"
+                    ];
+                    $connectedOdbc = false;
+                    $lastOdbcErr = '';
+                    foreach ($odbcDrivers as $drv) {
+                        try {
+                            $dsn = "odbc:Driver={$drv};Server=$host,$port;Database=$db;TrustServerCertificate=yes;Encrypt=no;";
+                            $conn = new PDO($dsn, $user, $pass, [
+                                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                                PDO::ATTR_TIMEOUT => 5
+                            ]);
+                            $connectedOdbc = true;
+                            break;
+                        } catch (Exception $e) {
+                            $lastOdbcErr = $e->getMessage();
+                        }
+                    }
+                    if (!$connectedOdbc && !$conn) {
+                        throw new Exception("Error al conectar mediante ODBC: " . $lastOdbcErr);
+                    }
                 }
 
                 $testResult = [
@@ -348,7 +374,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                 <div class="form-grid">
                     <div class="form-group">
                         <label>IP o Host de Azure (El mismo de Escritorio Remoto):</label>
-                        <input type="text" name="host" placeholder="Ej: 20.120.45.67 o starsoft.cloudapp.azure.com" value="<?php echo htmlspecialchars($_POST['host'] ?? ''); ?>" required>
+                        <input type="text" name="host" placeholder="Ej: 48.216.211.109" value="<?php echo htmlspecialchars($_POST['host'] ?? '48.216.211.109'); ?>" required>
                     </div>
 
                     <div class="form-group">
