@@ -1413,6 +1413,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             transition: var(--transition);
             border-left: 1px solid var(--border-soft);
         }
+        .right-sidebar.hidden-view {
+            display: none !important;
+        }
 
         .right-header {
             display: flex;
@@ -2549,8 +2552,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         </div>
 
-        <!-- ================= SIDEBAR DERECHA (SIEMPRE VISIBLE) ================= -->
-        <div class="right-sidebar">
+        <!-- ================= SIDEBAR DERECHA: MONITOREO EN VIVO (SOLO DASHBOARD GENERAL) ================= -->
+        <div class="right-sidebar" id="rightSidebarMonitoreo">
             <div class="right-header">
                 <h3>Monitoreo en Vivo</h3>
                 <button class="btn-dots"><i class="fa-solid fa-ellipsis-vertical"></i></button>
@@ -3183,7 +3186,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 vista.style.display = 'flex';
             }
 
-            // 3. Actualizar menú lateral
+            // 3. Columna "Monitoreo en Vivo": Solo se mantiene visible en Dashboard General, en las demás vistas se oculta
+            const rightSidebar = document.getElementById('rightSidebarMonitoreo');
+            if (rightSidebar) {
+                if (nombreVista === 'dashboard') {
+                    rightSidebar.style.display = 'flex';
+                } else {
+                    rightSidebar.style.display = 'none';
+                }
+            }
+
+            // 4. Actualizar menú lateral
             document.querySelectorAll('.nav-menu .nav-item').forEach(item => item.classList.remove('active'));
             if (elNav) {
                 elNav.classList.add('active');
