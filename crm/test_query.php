@@ -91,14 +91,19 @@ try {
         echo "Error: " . $e->getMessage() . "\n";
     }
 
-    // 5. Muestra de PEDCAB (Últimos pedidos registrados)
-    echo "\n=== ÚLTIMOS PEDIDOS REGISTRADOS EN PEDCAB ===\n";
+    // 5. Columnas exactas de PEDCAB
+    echo "\n=== COLUMNAS EXACTAS DE PEDCAB ===\n";
     try {
-        $ped = runQuery($conn, "SELECT TOP 5 PCNUMPED, CONVERT(varchar, PCFECDOC, 23) as fecha, LTRIM(RTRIM(PCNOMCLI)) as cliente, LTRIM(RTRIM(PCUSER)) as usuario, PCVENDE, CAST(PCIMPNET as float) as neto, CAST(PCTOTPED as float) as total, PCESTADO FROM PEDCAB ORDER BY PCFECDOC DESC, PCNUMPED DESC");
-        print_r($ped);
+        $cols = runQuery($conn, "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'PEDCAB' ORDER BY ORDINAL_POSITION");
+        foreach ($cols as $c) {
+            echo "   {$c['COLUMN_NAME']} ({$c['DATA_TYPE']})\n";
+        }
+        $sample = runQuery($conn, "SELECT TOP 3 * FROM PEDCAB ORDER BY 1 DESC");
+        print_r($sample);
     } catch(Exception $e) {
-        echo "Error: " . $e->getMessage() . "\n";
+        echo "Error PEDCAB: " . $e->getMessage() . "\n";
     }
+
 
     // 6. Lista de Precios y Artículos (LISPROART)
     echo "\n=== MUESTRA DE LISPROART (Catálogo y Precios) ===\n";
