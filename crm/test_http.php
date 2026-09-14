@@ -3,14 +3,21 @@ header('Content-Type: text/plain; charset=utf-8');
 echo "=== PRUEBA DE FIREWALL SALIENTE DESDE BSPERU.PE ===\n\n";
 
 function testUrl($label, $url, $timeout = 3) {
-    echo "Probando $label ($url)... ";
-    $ctx = stream_context_create(['http' => ['timeout' => $timeout]]);
+    echo "Probando $label ($url)...\n";
+    $ctx = stream_context_create([
+        'http' => [
+            'timeout' => $timeout,
+            'ignore_errors' => true
+        ]
+    ]);
     $res = @file_get_contents($url, false, $ctx);
+    $responseHeaders = $http_response_header ?? [];
+    $firstHeader = $responseHeaders[0] ?? 'Sin respuesta';
     if ($res !== false) {
-        echo "OK (Exitoso, puerto saliente PERMITIDO)\n";
+        echo "   -> RESPUESTA RECIBIDA: $firstHeader (Longitud: " . strlen($res) . " bytes)\n";
     } else {
         $err = error_get_last();
-        echo "BLOQUEADO (" . ($err['message'] ?? 'Error') . ")\n";
+        echo "   -> FALLÓ: " . ($err['message'] ?? 'Error desconocido') . "\n";
     }
 }
 
