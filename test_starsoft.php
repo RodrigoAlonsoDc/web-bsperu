@@ -28,6 +28,23 @@ try {
     $serverPublicIp = $_SERVER['SERVER_ADDR'] ?? 'Desconocida';
 }
 
+// 2.1 Sondeo de Puertos Salientes desde este Hosting
+$probe443 = @fsockopen('google.com', 443, $eNo, $eStr, 2);
+$outbound443Ok = (bool)$probe443;
+if ($probe443) fclose($probe443);
+
+$probeAzure1433 = @fsockopen('48.216.211.109', 1433, $err1433No, $err1433Str, 2);
+$outbound1433Ok = (bool)$probeAzure1433;
+if ($probeAzure1433) fclose($probeAzure1433);
+
+$probeAzure50027 = @fsockopen('48.216.211.109', 50027, $err50027No, $err50027Str, 2);
+$outbound50027Ok = (bool)$probeAzure50027;
+if ($probeAzure50027) fclose($probeAzure50027);
+
+$probeAzure8089 = @fsockopen('48.216.211.109', 8089, $err8089No, $err8089Str, 2);
+$outbound8089Ok = (bool)$probeAzure8089;
+if ($probeAzure8089) fclose($probeAzure8089);
+
 // 3. Probar conexión en vivo si se envió el formulario
 $testResult = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
@@ -40,24 +57,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
     // Base de datos de conexión (si está vacía, conectar a master para listar todas)
     $targetDb = !empty($db) ? $db : 'master';
 
-    // Primero: Probar si el puerto 1433 está abierto (Prueba de Socket / Firewall)
-    $socketConn = @fsockopen($host, (int)$port, $sockErrNo, $sockErrStr, 4);
+    // Primero: Probar si el puerto está abierto por Socket
+    $socketWarning = null;
+    $socketConn = @fsockopen($host, (int)$port, $sockErrNo, $sockErrStr, 3);
     if (!$socketConn) {
-        $testResult = [
-            'success' => false,
-            'step' => 'Firewall / Red',
-            'message' => "No se pudo alcanzar $host en el puerto $port ($sockErrStr). Posible bloqueo en el Firewall de Azure (NSG) o en Windows Defender Firewall de la máquina virtual."
-        ];
+        $socketWarning = "Aviso de Socket: No se pudo abrir socket directo a $host:$port ($sockErrStr, código $sockErrNo). Esto suele suceder si el Firewall saliente de cPanel bloquea puertos no-estándar. Intentando conexión directa por ODBC...";
     } else {
         fclose($socketConn);
-        // Segundo: Probar autenticación con SQL Server
-        if (!$hasAnyDriver) {
-            $testResult = [
-                'success' => false,
-                'step' => 'Driver PHP',
-                'message' => "El puerto $port responde, pero este hosting no tiene instalado el driver de SQL Server (sqlsrv / pdo_dblib / odbc)."
-            ];
-        } else {
+    }
+
+    // Segundo: Probar autenticación con SQL Server
+    if (!$hasAnyDriver) {
+        $testResult = [
+            'success' => false,
+            'step' => 'Driver PHP',
+            'message' => "Este hosting no tiene instalado el driver de SQL Server (sqlsrv / pdo_dblib / odbc)."
+        ];
+    } else {
             try {
                 $conn = null;
                 if ($hasPdoSqlsrv) {
@@ -143,8 +159,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
             } catch (Exception $ex) {
                 $testResult = [
                     'success' => false,
-                    'step' => 'Autenticación / SQL',
-                    'message' => "El puerto respondió pero SQL Server rechazó la conexión: " . $ex->getMessage()
+                    'step' => 'Resultado de Conexión',
+                    'message' => ($socketWarning ? $socketWarning . "<br><br>" : "") . "<strong>Detalle del Driver SQL / ODBC:</strong> " . htmlspecialchars($ex->getMessage())
                 ];
             }
         }
@@ -394,6 +410,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     La conexión funcionará a través del controlador nativo de base de datos.
                 </div>
             <?php endif; ?>
+
+            <h3 style="font-family:'Outfit',sans-serif; font-size:1.1rem; margin-top:20px;">Sondeo de Red hacia Azure (48.216.211.109):</h3>
+            <div class="driver-list">
+                <div class="driver-item">
+                    <span><strong>Puerto 1433 (SQL Server Estándar)</strong></span>
+                    <?php if ($outbound1433Ok): ?>
+                        <span class="status-badge badge-success"><i class="fa-solid fa-check"></i> Abierto y Respondiendo</span>
+                    <?php else: ?>
+                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars($err1433Str); ?>)</span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="driver-item">
+                    <span><strong>Puerto 50027 (SQL Server Dinámico)</strong></span>
+                    <?php if ($outbound50027Ok): ?>
+                        <span class="status-badge badge-success"><i class="fa-solid fa-check"></i> Abierto y Respondiendo</span>
+                    <?php else: ?>
+                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars($err50027Str); ?>)</span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="driver-item">
+                    <span><strong>Puerto 8089 (Cotizador / CRM Web)</strong></span>
+                    <?php if ($outbound8089Ok): ?>
+                        <span class="status-badge badge-success"><i class="fa-solid fa-check"></i> Abierto y Respondiendo</span>
+                    <?php else: ?>
+                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars($err8089Str); ?>)</span>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
 
         <!-- CARD 2: PROBADOR EN VIVO DE CREDENCIALES -->
