@@ -31,11 +31,14 @@ try {
 // 3. Probar conexión en vivo si se envió el formulario
 $testResult = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
-    $host = trim($_POST['host'] ?? '');
+    $host = trim($_POST['host'] ?? '48.216.211.109');
     $port = trim($_POST['port'] ?? '1433');
     $db   = trim($_POST['database'] ?? '');
-    $user = trim($_POST['user'] ?? '');
-    $pass = trim($_POST['password'] ?? '');
+    $user = trim($_POST['user'] ?? 'SOPORTE1');
+    $pass = trim($_POST['password'] ?? 'Sop0rT3BSP');
+
+    // Base de datos de conexión (si está vacía, conectar a master para listar todas)
+    $targetDb = !empty($db) ? $db : 'master';
 
     // Primero: Probar si el puerto 1433 está abierto (Prueba de Socket / Firewall)
     $socketConn = @fsockopen($host, (int)$port, $sockErrNo, $sockErrStr, 4);
@@ -52,23 +55,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
             $testResult = [
                 'success' => false,
                 'step' => 'Driver PHP',
-                'message' => "El puerto $port responde, pero este hosting no tiene instalado el driver de SQL Server (sqlsrv / pdo_dblib)."
+                'message' => "El puerto $port responde, pero este hosting no tiene instalado el driver de SQL Server (sqlsrv / pdo_dblib / odbc)."
             ];
         } else {
             try {
                 $conn = null;
                 if ($hasPdoSqlsrv) {
-                    $conn = new PDO("sqlsrv:server=$host,$port;Database=$db;Encrypt=no;TrustServerCertificate=yes", $user, $pass, [
+                    $conn = new PDO("sqlsrv:server=$host,$port;Database=$targetDb;Encrypt=no;TrustServerCertificate=yes", $user, $pass, [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                        PDO::ATTR_TIMEOUT => 5
+                        PDO::ATTR_TIMEOUT => 6
                     ]);
                 } elseif ($hasPdoDblib) {
-                    $conn = new PDO("dblib:host=$host:$port;dbname=$db", $user, $pass, [
+                    $conn = new PDO("dblib:host=$host:$port;dbname=$targetDb", $user, $pass, [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                        PDO::ATTR_TIMEOUT => 5
+                        PDO::ATTR_TIMEOUT => 6
                     ]);
                 } elseif ($hasSqlsrv) {
-                    $connInfo = ["Database" => $db, "UID" => $user, "PWD" => $pass];
+                    $connInfo = ["Database" => $targetDb, "UID" => $user, "PWD" => $pass];
                     $rConn = sqlsrv_connect("$host,$port", $connInfo);
                     if (!$rConn) {
                         throw new Exception(print_r(sqlsrv_errors(), true));
@@ -85,10 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     $lastOdbcErr = '';
                     foreach ($odbcDrivers as $drv) {
                         try {
-                            $dsn = "odbc:Driver={$drv};Server=$host,$port;Database=$db;TrustServerCertificate=yes;Encrypt=no;";
+                            $dsn = "odbc:Driver={$drv};Server=$host,$port;Database=$targetDb;TrustServerCertificate=yes;Encrypt=no;";
                             $conn = new PDO($dsn, $user, $pass, [
                                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                                PDO::ATTR_TIMEOUT => 5
+                                PDO::ATTR_TIMEOUT => 6
                             ]);
                             $connectedOdbc = true;
                             break;
@@ -101,10 +104,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     }
                 }
 
+                // Si conectó, explorar bases de datos disponibles
+                $foundDatabases = [];
+                $foundTables = [];
+
+                if ($conn) {
+                    try {
+                        $qDbs = $conn->query("SELECT name FROM sys.databases WHERE name NOT IN ('master','tempdb','model','msdb') ORDER BY name");
+                        if ($qDbs) {
+                            while ($r = $qDbs->fetch(PDO::FETCH_ASSOC)) {
+                                $foundDatabases[] = $r['name'];
+                            }
+                        }
+                    } catch (Exception $e) {}
+
+                    // Explorar tablas de la BD seleccionada o la primera encontrada
+                    $inspectDb = !empty($db) ? $db : (!empty($foundDatabases) ? $foundDatabases[0] : '');
+                    if ($inspectDb) {
+                        try {
+                            $qTb = $conn->query("SELECT TOP 30 TABLE_NAME FROM [{$inspectDb}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME");
+                            if ($qTb) {
+                                while ($r = $qTb->fetch(PDO::FETCH_ASSOC)) {
+                                    $foundTables[] = $r['TABLE_NAME'];
+                                }
+                            }
+                        } catch(Exception $e) {}
+                    }
+                }
+
                 $testResult = [
                     'success' => true,
                     'step' => 'Conexión Exitosa',
-                    'message' => "¡ENHORABUENA! Conexión exitosa a la base de datos '$db' de Starsoft en Azure."
+                    'message' => "¡ENHORABUENA! Autenticación exitosa en SQL Server (Azure) con el usuario '$user'.",
+                    'databases' => $foundDatabases,
+                    'tables' => $foundTables,
+                    'activeDb' => !empty($db) ? $db : (!empty($foundDatabases) ? $foundDatabases[0] : 'master')
                 ];
             } catch (Exception $ex) {
                 $testResult = [
@@ -140,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
         }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
         body { background: var(--bg); color: var(--text-dark); padding: 30px 20px; }
-        .container { max-width: 820px; margin: 0 auto; }
+        .container { max-width: 840px; margin: 0 auto; }
         .card {
             background: var(--card-bg);
             border-radius: 20px;
@@ -226,18 +260,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
         .form-group.full { grid-column: span 2; }
         .form-group label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
         .form-group input {
-            padding: 10px 14px;
+            padding: 11px 14px;
             border-radius: 10px;
             border: 1px solid var(--border);
             outline: none;
             font-size: 0.88rem;
+            background: #FAFCFE;
+            transition: all 0.2s;
         }
-        .form-group input:focus { border-color: var(--accent); }
+        .form-group input:focus { border-color: var(--accent); background: #FFF; box-shadow: 0 0 0 3px rgba(77, 124, 138, 0.15); }
 
         .btn-test {
             background: linear-gradient(135deg, var(--primary), var(--accent));
             color: #FFF;
-            padding: 12px 24px;
+            padding: 13px 24px;
             border-radius: 30px;
             border: none;
             font-size: 0.95rem;
@@ -247,10 +283,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
             margin-top: 18px;
             transition: all 0.2s ease;
         }
-        .btn-test:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(27, 64, 121, 0.25); }
+        .btn-test:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(27, 64, 121, 0.28); }
 
         .alert-box {
-            padding: 16px;
+            padding: 18px;
             border-radius: 14px;
             margin-top: 18px;
             font-size: 0.88rem;
@@ -355,25 +391,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
             <?php else: ?>
                 <div class="alert-box success">
                     <strong>✅ ¡Excelente! Tu hosting ya tiene activo el driver necesario para conectar con SQL Server.</strong><br>
-                    Cuando tengas las credenciales de Azure, la conexión funcionará de manera nativa.
+                    La conexión funcionará a través del controlador nativo de base de datos.
                 </div>
             <?php endif; ?>
         </div>
 
-        <!-- CARD 2: PROBADOR EN VIVO DE CREDENCIALES (PARA MAÑANA) -->
+        <!-- CARD 2: PROBADOR EN VIVO DE CREDENCIALES -->
         <div class="card">
             <h2 style="font-family:'Outfit',sans-serif; font-size:1.3rem; color:var(--primary); margin-bottom:6px;">
-                <i class="fa-solid fa-plug-circle-check"></i> Probador de Conexión a Starsoft (Azure)
+                <i class="fa-solid fa-plug-circle-check"></i> Probador de Conexión en Vivo a Starsoft (Azure)
             </h2>
             <p style="font-size:0.85rem; color:var(--text-muted);">
-                Puedes usar este probador apenas tengas el usuario y la clave de SQL Server mañana:
+                Ya dejamos precargada la IP de Azure y las credenciales recibidas:
             </p>
 
             <form method="POST" action="">
                 <input type="hidden" name="probar_conexion" value="1">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>IP o Host de Azure (El mismo de Escritorio Remoto):</label>
+                        <label>IP o Host de Azure:</label>
                         <input type="text" name="host" placeholder="Ej: 48.216.211.109" value="<?php echo htmlspecialchars($_POST['host'] ?? '48.216.211.109'); ?>" required>
                     </div>
 
@@ -383,23 +419,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     </div>
 
                     <div class="form-group">
-                        <label>Nombre de la Base de Datos Starsoft:</label>
-                        <input type="text" name="database" placeholder="Ej: BD_STARSOFT_BS" value="<?php echo htmlspecialchars($_POST['database'] ?? ''); ?>" required>
+                        <label>Base de Datos (Opcional - dejar vacío para buscar todas):</label>
+                        <input type="text" name="database" placeholder="Ej: Dejar vacío para explorar todas" value="<?php echo htmlspecialchars($_POST['database'] ?? ''); ?>">
                     </div>
 
                     <div class="form-group">
                         <label>Usuario SQL Server:</label>
-                        <input type="text" name="user" placeholder="Ej: usr_crm_bsperu" value="<?php echo htmlspecialchars($_POST['user'] ?? ''); ?>" required>
+                        <input type="text" name="user" placeholder="Ej: SOPORTE1" value="<?php echo htmlspecialchars($_POST['user'] ?? 'SOPORTE1'); ?>" required>
                     </div>
 
                     <div class="form-group full">
                         <label>Contraseña SQL Server:</label>
-                        <input type="password" name="password" placeholder="Tu contraseña..." required>
+                        <input type="text" name="password" placeholder="Tu contraseña..." value="<?php echo htmlspecialchars($_POST['password'] ?? 'Sop0rT3BSP'); ?>" required>
                     </div>
                 </div>
 
                 <button type="submit" class="btn-test">
-                    <i class="fa-solid fa-bolt"></i> Probar Conexión en Vivo
+                    <i class="fa-solid fa-bolt"></i> Probar Conexión en Vivo Ahora
                 </button>
             </form>
 
@@ -407,6 +443,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                 <div class="alert-box <?php echo $testResult['success'] ? 'success' : 'danger'; ?>">
                     <strong>[Paso: <?php echo htmlspecialchars($testResult['step']); ?>]</strong><br>
                     <?php echo htmlspecialchars($testResult['message']); ?>
+
+                    <?php if (!empty($testResult['databases'])): ?>
+                        <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(0,0,0,0.1);">
+                            <strong style="display:block; margin-bottom:6px;">📁 Bases de Datos encontradas en este SQL Server:</strong>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <?php foreach ($testResult['databases'] as $dbNameItem): ?>
+                                    <span style="background:#FFF; border:1.5px solid var(--primary); padding:6px 14px; border-radius:20px; font-size:0.82rem; font-weight:700; color:var(--primary); box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+                                        <i class="fa-solid fa-database"></i> <?php echo htmlspecialchars($dbNameItem); ?>
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($testResult['tables'])): ?>
+                        <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(0,0,0,0.1);">
+                            <strong style="display:block; margin-bottom:6px;">📋 Tablas detectadas en [<?php echo htmlspecialchars($testResult['activeDb']); ?>]:</strong>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <?php foreach ($testResult['tables'] as $tbItem): ?>
+                                    <span style="background:#F1F5F9; border:1px solid #CBD5E1; padding:4px 10px; border-radius:8px; font-size:0.75rem; font-family:monospace; color:#0F172A;">
+                                        <?php echo htmlspecialchars($tbItem); ?>
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>
