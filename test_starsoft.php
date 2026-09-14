@@ -149,7 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
             }
         }
     }
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
