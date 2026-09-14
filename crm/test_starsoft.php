@@ -77,18 +77,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                         throw new Exception(print_r(sqlsrv_errors(), true));
                     }
                 } elseif ($hasPdoOdbc || $hasOdbc) {
-                    $odbcDrivers = [
-                        "ODBC Driver 18 for SQL Server",
-                        "ODBC Driver 17 for SQL Server",
-                        "SQL Server Native Client 11.0",
-                        "FreeTDS",
-                        "SQL Server"
+                    $dsnCandidates = [
+                        "odbc:Driver=FreeTDS;Server=$host;Port=$port;Database=$targetDb;TDS_Version=7.4;ClientCharset=UTF-8;",
+                        "odbc:Driver=FreeTDS;Server=$host;Port=$port;Database=$targetDb;TDS_Version=7.3;ClientCharset=UTF-8;",
+                        "odbc:Driver=FreeTDS;Server=$host,$port;Database=$targetDb;",
+                        "odbc:Driver=ODBC Driver 18 for SQL Server;Server=$host,$port;Database=$targetDb;TrustServerCertificate=yes;Encrypt=no;",
+                        "odbc:Driver=ODBC Driver 17 for SQL Server;Server=$host,$port;Database=$targetDb;TrustServerCertificate=yes;Encrypt=no;",
+                        "odbc:Driver=SQL Server;Server=$host,$port;Database=$targetDb;"
                     ];
                     $connectedOdbc = false;
                     $lastOdbcErr = '';
-                    foreach ($odbcDrivers as $drv) {
+                    foreach ($dsnCandidates as $dsn) {
                         try {
-                            $dsn = "odbc:Driver={$drv};Server=$host,$port;Database=$targetDb;TrustServerCertificate=yes;Encrypt=no;";
                             $conn = new PDO($dsn, $user, $pass, [
                                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                                 PDO::ATTR_TIMEOUT => 6
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                         }
                     }
                     if (!$connectedOdbc && !$conn) {
-                        throw new Exception("Error al conectar mediante ODBC: " . $lastOdbcErr);
+                        throw new Exception("Error al conectar mediante ODBC (FreeTDS): " . $lastOdbcErr);
                     }
                 }
 
