@@ -3099,7 +3099,7 @@ if (file_exists($fileCotizPath)) {
             if (!Array.isArray(lista) || lista.length === 0) return;
 
             tbody.innerHTML = lista.map(c => {
-                const razon = c.razon || '';
+                const razon = c.razon || c.nombre || '';
                 const words = razon.trim().split(/\s+/);
                 let initials = 'CL';
                 if (words.length >= 2) {
@@ -3988,7 +3988,19 @@ if (file_exists($fileCotizPath)) {
         function abrirModalVistaPreviaPdfPorCodigo(codigo) {
             const cotiz = listaCotizacionesData.find(c => c.codigo === codigo);
             if (cotiz) {
-                abrirModalVistaPreviaPdf(cotiz);
+                if (!cotiz.items || cotiz.items.length === 0) {
+                    fetch(`crm_backend.php?action=obtener_detalle_cotizacion&codigo=${encodeURIComponent(codigo)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success && data.items && data.items.length > 0) {
+                                cotiz.items = data.items;
+                            }
+                            abrirModalVistaPreviaPdf(cotiz);
+                        })
+                        .catch(() => abrirModalVistaPreviaPdf(cotiz));
+                } else {
+                    abrirModalVistaPreviaPdf(cotiz);
+                }
             }
         }
 
@@ -4369,6 +4381,8 @@ if (file_exists($fileCotizPath)) {
                 if (data.stats) {
                     const pendEl = document.getElementById('statPendientesRep');
                     if (pendEl) pendEl.textContent = data.stats.pendientes;
+                    const acepEl = document.getElementById('statAceptadosRep');
+                    if (acepEl) acepEl.textContent = data.stats.aceptados;
                 }
             })
             .catch(err => console.log('Error al listar comprobantes:', err));

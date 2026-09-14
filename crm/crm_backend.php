@@ -504,16 +504,17 @@ function obtenerClientes() {
     if ($db) {
         try {
             $sql = "SELECT TOP 100
-                LTRIM(RTRIM(CCODCLI)) as ruc,
+                COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
                 LTRIM(RTRIM(CNOMCLI)) as nombre,
                 LTRIM(RTRIM(CDIRCLI)) as direccion,
                 LTRIM(RTRIM(CTELEFO)) as telefono,
                 LTRIM(RTRIM(CEMAIL)) as email,
+                LTRIM(RTRIM(CNOMREP)) as contacto,
                 LTRIM(RTRIM(CDEPT)) as departamento,
                 LTRIM(RTRIM(CPROV)) as provincia
             FROM [003BDCOMUN].dbo.MAECLI
             WHERE CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
-            ORDER BY CCODCLI DESC";
+            ORDER BY DFECCRE DESC, CCODCLI DESC";
 
             $stmt = $db->query($sql);
             if ($stmt) {
@@ -524,11 +525,13 @@ function obtenerClientes() {
                         $clientes[] = [
                             'id' => $idx + 1,
                             'nombre' => $r['nombre'],
+                            'razon' => $r['nombre'],
                             'ruc' => $r['ruc'],
                             'direccion' => $r['direccion'] ?: ($r['departamento'] . ' - ' . $r['provincia']),
                             'telefono' => $r['telefono'] ?: 'No registrado',
                             'email' => $r['email'] ?: '',
-                            'contacto' => 'Representante Comercial',
+                            'contacto' => !empty($r['contacto']) ? $r['contacto'] : 'Contacto Comercial',
+                            'categoria' => 'Activo',
                             'total_cotizaciones' => 1,
                             'monto_acumulado' => 0
                         ];
@@ -1138,6 +1141,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         exit;
     }
 
+    // 7.1. OBTENER DETALLE DE ITEMS DE UNA COTIZACIÓN (DESDE STARSOFT COTDET)
+    if ($action === 'obtener_detalle_cotizacion') {
+        header('Content-Type: application/json');
+        $codigo = trim($_GET['codigo'] ?? ($_POST['codigo'] ?? ''));
+        $items = [];
+        if (!empty($codigo) && $db) {
+            try {
+                $stmt = $db->prepare("SELECT 
+                    LTRIM(RTRIM(CDNUMDOC)) as codigo,
+                    CAST(CDSECUEN as int) as item,
+                    LTRIM(RTRIM(CDCODIGO)) as sku,
+                    LTRIM(RTRIM(CDDESCRI)) as descripcion,
+                    CAST(CDCANTID as float) as cantidad,
+                    LTRIM(RTRIM(CDUNIDAD)) as umed,
+                    CAST(CDPREC_ORI as float) as pre_orig,
+                    CAST(CDPORDES as float) as descto,
+                    CAST(CDPREC_VEN as float) as prec_total,
+                    CAST(CDIMPMN as float) as subtotal
+                FROM COTDET 
+                WHERE CDNUMDOC = ? 
+                ORDER BY CAST(CDSECUEN as int) ASC");
+                $stmt->execute([$codigo]);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                if (!empty($rows)) {
+                    foreach ($rows as $r) {
+                        $items[] = [
+                            'item' => $r['item'],
+                            'codigo' => $r['sku'],
+                            'descripcion' => $r['descripcion'],
+                            'cantidad' => $r['cantidad'],
+                            'umed' => $r['umed'] ?: 'UNI',
+                            'pre_orig' => $r['pre_orig'],
+                            'descto' => $r['descto'],
+                            'prec_total' => $r['prec_total'],
+                            'subtotal' => $r['subtotal'],
+                            'estado' => 'DISPONIBLE'
+                        ];
+                    }
+                }
+            } catch(Exception $ex) {}
+        }
+        
+        // Si no hay items en BD, buscar en JSON
+        if (empty($items)) {
+            $cotizaciones = obtenerCotizaciones();
+            foreach ($cotizaciones as $c) {
+                if (($c['codigo'] ?? '') === $codigo && !empty($c['items'])) {
+                    $items = $c['items'];
+                    break;
+                }
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'codigo' => $codigo,
+            'items' => $items
+        ]);
+        exit;
+    }
+
     // 8. GUARDAR / EMITIR NUEVA COTIZACIÓN
     if ($action === 'guardar_cotizacion') {
         header('Content-Type: application/json');
@@ -1375,7 +1439,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             exit;
         }
 
-        // 1. Buscar primero en la base de datos permanente de clientes (clientes.json)
+        // 1. Buscar en StarSoft SQL Server (MAECLI)
+        if ($db) {
+            try {
+                $stmtCli = $db->prepare("SELECT TOP 1 
+                    COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
+                    LTRIM(RTRIM(CNOMCLI)) as razon,
+                    LTRIM(RTRIM(CDIRCLI)) as direccion,
+                    LTRIM(RTRIM(CTELEFO)) as telefono,
+                    LTRIM(RTRIM(CEMAIL)) as email,
+                    LTRIM(RTRIM(CNOMREP)) as contacto,
+                    LTRIM(RTRIM(CDEPT)) as departamento,
+                    LTRIM(RTRIM(CPROV)) as provincia
+                FROM [003BDCOMUN].dbo.MAECLI
+                WHERE CCODCLI = ? OR CNUMRUC = ? OR CDOCIDEN = ?");
+                $stmtCli->execute([$doc, $doc, $doc]);
+                $cliRow = $stmtCli->fetch(PDO::FETCH_ASSOC);
+                if ($cliRow && !empty($cliRow['razon'])) {
+                    echo json_encode([
+                        'success' => true,
+                        'fuente' => 'starsoft',
+                        'cliente' => [
+                            'razon' => $cliRow['razon'],
+                            'ruc' => $cliRow['ruc'] ?: $doc,
+                            'direccion' => $cliRow['direccion'] ?: ($cliRow['departamento'] . ' - ' . $cliRow['provincia']),
+                            'telefono' => $cliRow['telefono'] ?: '',
+                            'email' => $cliRow['email'] ?: '',
+                            'contacto' => $cliRow['contacto'] ?: 'Contacto Comercial',
+                            'categoria' => 'Activo'
+                        ]
+                    ]);
+                    exit;
+                }
+            } catch(Exception $ex) {}
+        }
+
+        // 2. Buscar en la base de datos de clientes (clientes.json)
         $clientes = obtenerClientes();
         foreach ($clientes as $cl) {
             if (($cl['ruc'] ?? '') === $doc) {
