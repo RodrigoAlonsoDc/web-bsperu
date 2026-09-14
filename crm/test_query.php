@@ -28,48 +28,87 @@ try {
     echo "Total Tablas: " . count($tables) . "\n";
     echo implode(", ", $tables) . "\n\n";
 
-    // 3. Cantidad de registros en las tablas clave operativas
-    echo "=== CONTEO DE REGISTROS EN TABLAS PRINCIPALES ===\n";
-    $keyTables = ['COTCAB', 'COTDET', 'PEDCAB', 'PEDDET', 'BDT_VENDEDORCUOTA', 'COTART', 'PEDART', 'CLIENTES', 'VENDEDOR'];
-    foreach ($keyTables as $tbl) {
+    // Helper seguro para ejecutar queries con closeCursor
+    function runQuery($conn, $sql) {
+        $stmt = $conn->query($sql);
+        if (!$stmt) return [];
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $res;
+    }
+
+    // 1. Conteo exacto de todas las tablas
+    echo "=== CONTEO DE REGISTROS EN TODAS LAS TABLAS DE BDTPED_SSA ===\n";
+    $tablas = [
+        'COTCAB' => 'Cotizaciones (Cabecera)',
+        'COTDET' => 'Cotizaciones (Detalle Ítems)',
+        'PEDCAB' => 'Pedidos de Venta (Cabecera)',
+        'PEDDET' => 'Pedidos de Venta (Detalle Ítems)',
+        'FACCAB' => 'Facturación (Cabecera)',
+        'FACDET' => 'Facturación (Detalle Ítems)',
+        'GREMISION_CAB' => 'Guías de Remisión (Cabecera)',
+        'GREMISION_DET' => 'Guías de Remisión (Detalle)',
+        'LISPROART' => 'Lista de Precios / Artículos',
+        'BDT_VENDEDORCUOTA' => 'Cuotas / Metas de Vendedores',
+        'USUARIO_BS' => 'Usuarios del Sistema BS',
+        'PROMOCAB' => 'Promociones (Cabecera)',
+        'PROMODET' => 'Promociones (Detalle)',
+        'lugares' => 'Lugares de Entrega / Despacho',
+        'TIPODESP' => 'Tipos de Despacho',
+        'TipoCompra' => 'Tipos de Compra / Pago'
+    ];
+
+    foreach ($tablas as $tbl => $desc) {
         try {
-            $qc = $conn->query("SELECT COUNT(*) as total FROM $tbl");
-            $cnt = $qc->fetch(PDO::FETCH_ASSOC)['total'];
-            echo " - $tbl: " . number_format($cnt) . " registros\n";
+            $r = runQuery($conn, "SELECT COUNT(*) as c FROM $tbl");
+            $cnt = $r[0]['c'] ?? 0;
+            echo sprintf("  %-18s: %7s registros (%s)\n", $tbl, number_format($cnt), $desc);
         } catch (Exception $e) {
-            // No existe o error
+            echo "  $tbl: Error ({$e->getMessage()})\n";
         }
     }
 
-    // 4. Estructura de PEDCAB (Pedidos / Ventas / Comprobantes)
-    echo "\n=== COLUMNAS PRINCIPALES DE PEDCAB (Pedidos de Venta) ===\n";
+    // 2. Vistas en BDTPED_SSA
+    echo "\n=== VISTAS EN BDTPED_SSA ===\n";
+    $vistas = runQuery($conn, "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='VIEW'");
+    print_r($vistas);
+
+    // 3. Usuarios en USUARIO_BS
+    echo "\n=== USUARIOS EN USUARIO_BS ===\n";
     try {
-        $qp = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'PEDCAB' ORDER BY ORDINAL_POSITION");
-        $cols = $qp->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($cols as $c) {
-            echo "   {$c['COLUMN_NAME']} ({$c['DATA_TYPE']})\n";
-        }
+        $u = runQuery($conn, "SELECT * FROM USUARIO_BS");
+        print_r($u);
     } catch(Exception $e) {
-        echo "Error PEDCAB: " . $e->getMessage() . "\n";
+        echo "Error: " . $e->getMessage() . "\n";
     }
 
-    // 5. Tabla de Cuotas de Vendedores (BDT_VENDEDORCUOTA)
-    echo "\n=== BDT_VENDEDORCUOTA (Metas / Cuotas de Vendedores en BDTPED_SSA) ===\n";
+    // 4. Cuotas de Vendedores (BDT_VENDEDORCUOTA)
+    echo "\n=== CUOTAS DE VENDEDORES (BDT_VENDEDORCUOTA) ===\n";
     try {
-        $qcuota = $conn->query("SELECT TOP 10 * FROM BDT_VENDEDORCUOTA");
-        print_r($qcuota->fetchAll(PDO::FETCH_ASSOC));
+        $cuotas = runQuery($conn, "SELECT TOP 10 * FROM BDT_VENDEDORCUOTA");
+        print_r($cuotas);
     } catch(Exception $e) {
-        echo "Error BDT_VENDEDORCUOTA: " . $e->getMessage() . "\n";
+        echo "Error: " . $e->getMessage() . "\n";
     }
 
-    // 6. Últimos Pedidos registrados en PEDCAB (Hoy / Recientes)
+    // 5. Muestra de PEDCAB (Últimos pedidos registrados)
     echo "\n=== ÚLTIMOS PEDIDOS REGISTRADOS EN PEDCAB ===\n";
     try {
-        $qped = $conn->query("SELECT TOP 5 PCNUMPED, PCFECDOC, LTRIM(RTRIM(PCNOMCLI)) as cliente, LTRIM(RTRIM(PCUSER)) as usuario, PCVENDE, CAST(PCIMPNET as float) as total, PCESTADO FROM PEDCAB ORDER BY PCFECDOC DESC, PCNUMPED DESC");
-        print_r($qped->fetchAll(PDO::FETCH_ASSOC));
+        $ped = runQuery($conn, "SELECT TOP 5 PCNUMPED, CONVERT(varchar, PCFECDOC, 23) as fecha, LTRIM(RTRIM(PCNOMCLI)) as cliente, LTRIM(RTRIM(PCUSER)) as usuario, PCVENDE, CAST(PCIMPNET as float) as neto, CAST(PCTOTPED as float) as total, PCESTADO FROM PEDCAB ORDER BY PCFECDOC DESC, PCNUMPED DESC");
+        print_r($ped);
     } catch(Exception $e) {
-        echo "Error PEDCAB query: " . $e->getMessage() . "\n";
+        echo "Error: " . $e->getMessage() . "\n";
     }
+
+    // 6. Lista de Precios y Artículos (LISPROART)
+    echo "\n=== MUESTRA DE LISPROART (Catálogo y Precios) ===\n";
+    try {
+        $art = runQuery($conn, "SELECT TOP 5 * FROM LISPROART");
+        print_r($art);
+    } catch(Exception $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+
 
 } catch (Exception $e) {
     echo "ERROR GLOBAL: " . $e->getMessage() . "\n";
