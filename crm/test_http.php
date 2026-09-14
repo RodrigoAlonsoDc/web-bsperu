@@ -34,8 +34,12 @@ if (function_exists('odbc_data_sources')) {
     $ds = @odbc_data_sources(null, SQL_FETCH_FIRST);
     echo "ODBC Data Sources: " . print_r($ds, true) . "\n";
 }
-if (file_exists('/etc/odbcinst.ini')) {
-    echo "Contenido de /etc/odbcinst.ini:\n" . @file_get_contents('/etc/odbcinst.ini') . "\n";
-} else {
-    echo "/etc/odbcinst.ini no encontrado.\n";
+echo "\n=== VALIDACIÓN DE TEST_STARSOFT.PHP ===\n";
+try {
+    ob_start();
+    include __DIR__ . '/test_starsoft.php';
+    $out = ob_get_clean();
+    echo "test_starsoft.php compiló y corrió con éxito. Longitud de salida HTML: " . strlen($out) . " bytes.\n";
+} catch (Throwable $t) {
+    echo "ERROR DETECTADO: " . $t->getMessage() . " en " . $t->getFile() . ":" . $t->getLine() . "\n";
 }
