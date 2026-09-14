@@ -27,3 +27,15 @@ testUrl("Hosting Salida Puerto 8089 (portquiz.net)", "http://portquiz.net:8089/"
 // 4. Probar la VM de Azure directamente
 testUrl("Azure VM Starsoft SQL (48.216.211.109:1433)", "http://48.216.211.109:1433/");
 testUrl("Azure VM Cotizador (48.216.211.109:8089)", "http://48.216.211.109:8089/");
+
+echo "\n=== DRIVERS DE BASE DE DATOS EN ESTE HOSTING ===\n";
+echo "PDO Drivers instalados: " . implode(', ', PDO::getAvailableDrivers()) . "\n";
+if (function_exists('odbc_data_sources')) {
+    $ds = @odbc_data_sources(null, SQL_FETCH_FIRST);
+    echo "ODBC Data Sources: " . print_r($ds, true) . "\n";
+}
+if (file_exists('/etc/odbcinst.ini')) {
+    echo "Contenido de /etc/odbcinst.ini:\n" . @file_get_contents('/etc/odbcinst.ini') . "\n";
+} else {
+    echo "/etc/odbcinst.ini no encontrado.\n";
+}
