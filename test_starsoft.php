@@ -1,5 +1,8 @@
 <?php
 // test_starsoft.php - Diagnóstico de Conexión SQL Server / Azure para Starsoft BS Perú
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 header('Content-Type: text/html; charset=utf-8');
 
 $phpVersion = phpversion();
@@ -29,9 +32,9 @@ try {
 }
 
 // 2.1 Sondeo de Puertos Salientes desde este Hosting
-$probe443 = @fsockopen('google.com', 443, $eNo, $eStr, 2);
-$outbound443Ok = (bool)$probe443;
-if ($probe443) fclose($probe443);
+$err1433No = 0; $err1433Str = '';
+$err50027No = 0; $err50027Str = '';
+$err8089No = 0; $err8089Str = '';
 
 $probeAzure1433 = @fsockopen('48.216.211.109', 1433, $err1433No, $err1433Str, 2);
 $outbound1433Ok = (bool)$probeAzure1433;
@@ -418,7 +421,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     <?php if ($outbound1433Ok): ?>
                         <span class="status-badge badge-success"><i class="fa-solid fa-check"></i> Abierto y Respondiendo</span>
                     <?php else: ?>
-                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars($err1433Str); ?>)</span>
+                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars((string)$err1433Str); ?>)</span>
                     <?php endif; ?>
                 </div>
 
@@ -427,7 +430,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     <?php if ($outbound50027Ok): ?>
                         <span class="status-badge badge-success"><i class="fa-solid fa-check"></i> Abierto y Respondiendo</span>
                     <?php else: ?>
-                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars($err50027Str); ?>)</span>
+                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars((string)$err50027Str); ?>)</span>
                     <?php endif; ?>
                 </div>
 
@@ -436,7 +439,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
                     <?php if ($outbound8089Ok): ?>
                         <span class="status-badge badge-success"><i class="fa-solid fa-check"></i> Abierto y Respondiendo</span>
                     <?php else: ?>
-                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars($err8089Str); ?>)</span>
+                        <span class="status-badge badge-danger"><i class="fa-solid fa-xmark"></i> Bloqueado (<?php echo htmlspecialchars((string)$err8089Str); ?>)</span>
                     <?php endif; ?>
                 </div>
             </div>
