@@ -71,4 +71,9 @@ try {
         echo "Error PEDCAB query: " . $e->getMessage() . "\n";
     }
 
+} catch (Exception $e) {
+    echo "ERROR GLOBAL: " . $e->getMessage() . "\n";
+}
+
+
 
