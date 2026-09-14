@@ -16,25 +16,20 @@ try {
     ]);
     echo "CONEXIÓN EXITOSA A BDTPED_SSA!\n\n";
 
-    // 1. Asesores / Usuarios en COTCAB
-    echo "=== ASESORES / USUARIOS EN COTCAB (Cotizaciones) ===\n";
-    $q = $conn->query("SELECT LTRIM(RTRIM(CCUSER)) as asesor, COUNT(*) as total_cots, SUM(CAST(CCIMPORTE as float)) as monto_total, MAX(CCFECDOC) as ultima_fecha FROM COTCAB WHERE CCUSER IS NOT NULL AND CCUSER != '' GROUP BY CCUSER ORDER BY total_cots DESC");
-    print_r($q->fetchAll(PDO::FETCH_ASSOC));
-
-    // 2. Tablas de Vendedores en BDTPED_SSA y 003BDCOMUN
-    echo "\n=== TABLAS DE VENDEDORES EN BDTPED_SSA Y 003BDCOMUN ===\n";
-    $qv = $conn->query("SELECT TABLE_CATALOG, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%VEN%' UNION SELECT TABLE_CATALOG, TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%VEN%'");
-    print_r($qv->fetchAll(PDO::FETCH_ASSOC));
-
-    // 3. Columnas de COTCAB relacionadas a vendedores / usuarios
-    echo "\n=== COLUMNAS DE COTCAB (Vendedor / Usuario / Asesor) ===\n";
-    $qc = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'COTCAB' AND (COLUMN_NAME LIKE '%VEN%' OR COLUMN_NAME LIKE '%USE%' OR COLUMN_NAME LIKE '%COD%')");
+    // 1. Columnas y contenido de [003BDCOMUN].dbo.VENDEDOR
+    echo "=== COLUMNAS DE [003BDCOMUN].dbo.VENDEDOR ===\n";
+    $qc = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'VENDEDOR' ORDER BY ORDINAL_POSITION");
     print_r($qc->fetchAll(PDO::FETCH_ASSOC));
 
-    // 4. Muestra de cotizaciones recientes con asesor y vendedor
-    echo "\n=== COTIZACIONES RECIENTES CON ASESOR ===\n";
-    $qs = $conn->query("SELECT TOP 5 CCNUMDOC, CCFECDOC, LTRIM(RTRIM(CCNOMBRE)) as cliente, LTRIM(RTRIM(CCUSER)) as usuario, CAST(CCIMPORTE as float) as importe FROM COTCAB ORDER BY CCFECDOC DESC, CCNUMDOC DESC");
-    print_r($qs->fetchAll(PDO::FETCH_ASSOC));
+    echo "\n=== LISTA DE VENDEDORES / ASESORES EN [003BDCOMUN].dbo.VENDEDOR ===\n";
+    $qv = $conn->query("SELECT * FROM [003BDCOMUN].dbo.VENDEDOR");
+    print_r($qv->fetchAll(PDO::FETCH_ASSOC));
+
+    // 2. Relación de Vendedores en COTCAB (CCVENDE vs CCUSER)
+    echo "\n=== VENDEDORES ACTIVOS HOY EN COTCAB ===\n";
+    $qtoday = $conn->query("SELECT TOP 10 CCNUMDOC, CCFECDOC, CCVENDE, CCUSER, LTRIM(RTRIM(CCNOMBRE)) as cliente, CAST(CCIMPORTE as float) as total FROM COTCAB WHERE CCFECDOC >= '2026-09-01' ORDER BY CCFECDOC DESC, CCNUMDOC DESC");
+    print_r($qtoday->fetchAll(PDO::FETCH_ASSOC));
+
 
 } catch (Exception $e) {
     echo "ERROR: " . $e->getMessage() . "\n";
