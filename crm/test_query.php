@@ -16,22 +16,59 @@ try {
     ]);
     echo "CONEXIÓN EXITOSA A BDTPED_SSA!\n\n";
 
-    // 1. Columnas y contenido de [003BDCOMUN].dbo.VENDEDOR
-    echo "=== COLUMNAS DE [003BDCOMUN].dbo.VENDEDOR ===\n";
-    $qc = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'VENDEDOR' ORDER BY ORDINAL_POSITION");
-    print_r($qc->fetchAll(PDO::FETCH_ASSOC));
+    // 1. Estadísticas Generales de BDTPED_SSA
+    echo "=== RESUMEN GENERAL DE TABLAS EN BDTPED_SSA ===\n";
+    $qtables = $conn->query("SELECT TABLE_TYPE, COUNT(*) as cantidad FROM INFORMATION_SCHEMA.TABLES GROUP BY TABLE_TYPE");
+    print_r($qtables->fetchAll(PDO::FETCH_ASSOC));
 
-    echo "\n=== LISTA DE VENDEDORES / ASESORES EN [003BDCOMUN].dbo.VENDEDOR ===\n";
-    $qv = $conn->query("SELECT * FROM [003BDCOMUN].dbo.VENDEDOR");
-    print_r($qv->fetchAll(PDO::FETCH_ASSOC));
+    // 2. Todas las tablas en BDTPED_SSA agrupadas por nombre
+    echo "\n=== TODAS LAS TABLAS BASE EN BDTPED_SSA ===\n";
+    $qall = $conn->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME");
+    $tables = $qall->fetchAll(PDO::FETCH_COLUMN);
+    echo "Total Tablas: " . count($tables) . "\n";
+    echo implode(", ", $tables) . "\n\n";
 
-    // 2. Relación de Vendedores en COTCAB (CCVENDE vs CCUSER)
-    echo "\n=== VENDEDORES ACTIVOS HOY EN COTCAB ===\n";
-    $qtoday = $conn->query("SELECT TOP 10 CCNUMDOC, CCFECDOC, CCVENDE, CCUSER, LTRIM(RTRIM(CCNOMBRE)) as cliente, CAST(CCIMPORTE as float) as total FROM COTCAB WHERE CCFECDOC >= '2026-09-01' ORDER BY CCFECDOC DESC, CCNUMDOC DESC");
-    print_r($qtoday->fetchAll(PDO::FETCH_ASSOC));
+    // 3. Cantidad de registros en las tablas clave operativas
+    echo "=== CONTEO DE REGISTROS EN TABLAS PRINCIPALES ===\n";
+    $keyTables = ['COTCAB', 'COTDET', 'PEDCAB', 'PEDDET', 'BDT_VENDEDORCUOTA', 'COTART', 'PEDART', 'CLIENTES', 'VENDEDOR'];
+    foreach ($keyTables as $tbl) {
+        try {
+            $qc = $conn->query("SELECT COUNT(*) as total FROM $tbl");
+            $cnt = $qc->fetch(PDO::FETCH_ASSOC)['total'];
+            echo " - $tbl: " . number_format($cnt) . " registros\n";
+        } catch (Exception $e) {
+            // No existe o error
+        }
+    }
 
+    // 4. Estructura de PEDCAB (Pedidos / Ventas / Comprobantes)
+    echo "\n=== COLUMNAS PRINCIPALES DE PEDCAB (Pedidos de Venta) ===\n";
+    try {
+        $qp = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'PEDCAB' ORDER BY ORDINAL_POSITION");
+        $cols = $qp->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($cols as $c) {
+            echo "   {$c['COLUMN_NAME']} ({$c['DATA_TYPE']})\n";
+        }
+    } catch(Exception $e) {
+        echo "Error PEDCAB: " . $e->getMessage() . "\n";
+    }
 
-} catch (Exception $e) {
-    echo "ERROR: " . $e->getMessage() . "\n";
-}
+    // 5. Tabla de Cuotas de Vendedores (BDT_VENDEDORCUOTA)
+    echo "\n=== BDT_VENDEDORCUOTA (Metas / Cuotas de Vendedores en BDTPED_SSA) ===\n";
+    try {
+        $qcuota = $conn->query("SELECT TOP 10 * FROM BDT_VENDEDORCUOTA");
+        print_r($qcuota->fetchAll(PDO::FETCH_ASSOC));
+    } catch(Exception $e) {
+        echo "Error BDT_VENDEDORCUOTA: " . $e->getMessage() . "\n";
+    }
+
+    // 6. Últimos Pedidos registrados en PEDCAB (Hoy / Recientes)
+    echo "\n=== ÚLTIMOS PEDIDOS REGISTRADOS EN PEDCAB ===\n";
+    try {
+        $qped = $conn->query("SELECT TOP 5 PCNUMPED, PCFECDOC, LTRIM(RTRIM(PCNOMCLI)) as cliente, LTRIM(RTRIM(PCUSER)) as usuario, PCVENDE, CAST(PCIMPNET as float) as total, PCESTADO FROM PEDCAB ORDER BY PCFECDOC DESC, PCNUMPED DESC");
+        print_r($qped->fetchAll(PDO::FETCH_ASSOC));
+    } catch(Exception $e) {
+        echo "Error PEDCAB query: " . $e->getMessage() . "\n";
+    }
+
 
