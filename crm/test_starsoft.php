@@ -40,24 +40,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
     // Base de datos de conexión (si está vacía, conectar a master para listar todas)
     $targetDb = !empty($db) ? $db : 'master';
 
-    // Primero: Probar si el puerto 1433 está abierto (Prueba de Socket / Firewall)
-    $socketConn = @fsockopen($host, (int)$port, $sockErrNo, $sockErrStr, 4);
-    if (!$socketConn) {
+    // Prueba de Socket previa (diagnóstico de conectividad TCP)
+    $socketInfo = '';
+    $socketConn = @fsockopen($host, (int)$port, $sockErrNo, $sockErrStr, 3);
+    if ($socketConn) {
+        $socketInfo = "Puerto $port abierto y respondiendo por TCP.";
+        fclose($socketConn);
+    } else {
+        $socketInfo = "Aviso de Socket TCP ($sockErrStr, código $sockErrNo).";
+    }
+
+    // Probar conexión y autenticación con SQL Server
+    if (!$hasAnyDriver) {
         $testResult = [
             'success' => false,
-            'step' => 'Firewall / Red',
-            'message' => "No se pudo alcanzar $host en el puerto $port ($sockErrStr). Posible bloqueo en el Firewall de Azure (NSG) o en Windows Defender Firewall de la máquina virtual."
+            'step' => 'Driver PHP',
+            'message' => "Este hosting no tiene instalado el driver de SQL Server (sqlsrv / pdo_dblib / odbc)."
         ];
     } else {
-        fclose($socketConn);
-        // Segundo: Probar autenticación con SQL Server
-        if (!$hasAnyDriver) {
-            $testResult = [
-                'success' => false,
-                'step' => 'Driver PHP',
-                'message' => "El puerto $port responde, pero este hosting no tiene instalado el driver de SQL Server (sqlsrv / pdo_dblib / odbc)."
-            ];
-        } else {
             try {
                 $conn = null;
                 if ($hasPdoSqlsrv) {
@@ -143,8 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['probar_conexion'])) {
             } catch (Exception $ex) {
                 $testResult = [
                     'success' => false,
-                    'step' => 'Autenticación / SQL',
-                    'message' => "El puerto respondió pero SQL Server rechazó la conexión: " . $ex->getMessage()
+                    'step' => 'Respuesta de Red / SQL Server',
+                    'message' => "<strong>Diagnóstico de Red:</strong> $socketInfo<br><br><strong>Detalle del Driver SQL / ODBC:</strong> " . htmlspecialchars($ex->getMessage())
                 ];
             }
         }
