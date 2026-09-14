@@ -16,32 +16,27 @@ try {
     ]);
     echo "CONEXIÓN EXITOSA A BDTPED_SSA!\n\n";
 
-    // 1. Tablas en 003BDCOMUN
-    echo "=== TABLAS EN 003BDCOMUN (Clientes y Productos) ===\n";
-    $q = $conn->query("SELECT TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND (TABLE_NAME LIKE '%CLI%' OR TABLE_NAME LIKE '%ART%' OR TABLE_NAME LIKE '%PRO%') ORDER BY TABLE_NAME");
-    while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
-        echo "{$row['TABLE_NAME']}\n";
-    }
+    // 1. Asesores / Usuarios en COTCAB
+    echo "=== ASESORES / USUARIOS EN COTCAB (Cotizaciones) ===\n";
+    $q = $conn->query("SELECT LTRIM(RTRIM(CCUSER)) as asesor, COUNT(*) as total_cots, SUM(CAST(CCIMPORTE as float)) as monto_total, MAX(CCFECDOC) as ultima_fecha FROM COTCAB WHERE CCUSER IS NOT NULL AND CCUSER != '' GROUP BY CCUSER ORDER BY total_cots DESC");
+    print_r($q->fetchAll(PDO::FETCH_ASSOC));
 
-    echo "\n=== ÚLTIMOS CLIENTES EN 003BDCOMUN.MAECLI ===\n";
-    try {
-        $qc = $conn->query("SELECT TOP 3 * FROM [003BDCOMUN].dbo.MAECLI");
-        print_r($qc->fetchAll(PDO::FETCH_ASSOC));
-    } catch(Exception $e) {
-        echo "MAECLI error: " . $e->getMessage() . "\n";
-    }
+    // 2. Tablas de Vendedores en BDTPED_SSA y 003BDCOMUN
+    echo "\n=== TABLAS DE VENDEDORES EN BDTPED_SSA Y 003BDCOMUN ===\n";
+    $qv = $conn->query("SELECT TABLE_CATALOG, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%VEN%' UNION SELECT TABLE_CATALOG, TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%VEN%'");
+    print_r($qv->fetchAll(PDO::FETCH_ASSOC));
 
-    // 2. Columnas de COTCAB (Cotizaciones)
-    echo "\n=== COLUMNAS DE COTCAB (Cotizaciones) ===\n";
-    $q3 = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'COTCAB' ORDER BY ORDINAL_POSITION");
-    while ($row = $q3->fetch(PDO::FETCH_ASSOC)) {
-        echo "{$row['COLUMN_NAME']} ({$row['DATA_TYPE']})\n";
-    }
+    // 3. Columnas de COTCAB relacionadas a vendedores / usuarios
+    echo "\n=== COLUMNAS DE COTCAB (Vendedor / Usuario / Asesor) ===\n";
+    $qc = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'COTCAB' AND (COLUMN_NAME LIKE '%VEN%' OR COLUMN_NAME LIKE '%USE%' OR COLUMN_NAME LIKE '%COD%')");
+    print_r($qc->fetchAll(PDO::FETCH_ASSOC));
 
-    echo "\n=== ÚLTIMAS 3 COTIZACIONES EN COTCAB ===\n";
-    $q4 = $conn->query("SELECT TOP 3 * FROM COTCAB ORDER BY 1 DESC");
-    print_r($q4->fetchAll(PDO::FETCH_ASSOC));
+    // 4. Muestra de cotizaciones recientes con asesor y vendedor
+    echo "\n=== COTIZACIONES RECIENTES CON ASESOR ===\n";
+    $qs = $conn->query("SELECT TOP 5 CCNUMDOC, CCFECDOC, LTRIM(RTRIM(CCNOMBRE)) as cliente, LTRIM(RTRIM(CCUSER)) as usuario, CAST(CCIMPORTE as float) as importe FROM COTCAB ORDER BY CCFECDOC DESC, CCNUMDOC DESC");
+    print_r($qs->fetchAll(PDO::FETCH_ASSOC));
 
 } catch (Exception $e) {
     echo "ERROR: " . $e->getMessage() . "\n";
 }
+
