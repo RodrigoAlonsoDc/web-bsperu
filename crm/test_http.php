@@ -25,6 +25,7 @@ testUrl("Hosting Salida Puerto 1433 (portquiz.net)", "http://portquiz.net:1433/"
 testUrl("Hosting Salida Puerto 8089 (portquiz.net)", "http://portquiz.net:8089/");
 
 // 4. Probar la VM de Azure directamente
+testUrl("Azure VM Puerto 80 HTTP (48.216.211.109)", "http://48.216.211.109/");
 testUrl("Azure VM Starsoft SQL (48.216.211.109:1433)", "http://48.216.211.109:1433/");
 testUrl("Azure VM Cotizador (48.216.211.109:8089)", "http://48.216.211.109:8089/");
 
