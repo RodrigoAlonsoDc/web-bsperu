@@ -654,6 +654,222 @@ function agregarMensajeChat($msg) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
     $action = $_POST['action'] ?? ($_GET['action'] ?? '');
 
+    // 0. CONSULTA OFICIAL DE COMPROBANTES ELECTRÓNICOS (CPE STARSOFT)
+    if ($action === 'consultar_documentos_cpe') {
+        header('Content-Type: application/json');
+        
+        $tipo_doc = strtoupper(trim($_REQUEST['tipo_doc'] ?? 'TODOS'));
+        $termino = trim($_REQUEST['termino'] ?? '');
+        $estado_sunat = strtoupper(trim($_REQUEST['estado_sunat'] ?? 'TODOS'));
+        $pv = trim($_REQUEST['pv'] ?? 'TODOS');
+        $fecha_desde = trim($_REQUEST['fecha_desde'] ?? '');
+        $fecha_hasta = trim($_REQUEST['fecha_hasta'] ?? '');
+        $limit = intval($_REQUEST['limit'] ?? 100);
+        if ($limit <= 0 || $limit > 500) $limit = 100;
+
+        $dbConn = $db ?: (function_exists('getStarsoftDB') ? getStarsoftDB() : null);
+
+        if (!$dbConn) {
+            echo json_encode([
+                'success' => false,
+                'mensaje' => 'No hay conexión activa con la base de datos de StarSoft.',
+                'documentos' => [],
+                'stats' => ['total' => 0, 'aprobados' => 0, 'pendientes' => 0, 'monto_total' => 0]
+            ]);
+            exit;
+        }
+
+        try {
+            $where = ["1=1"];
+            $params = [];
+
+            // Filtro por Tipo de Comprobante
+            if ($tipo_doc === 'FACTURA' || $tipo_doc === '01') {
+                $where[] = "c.TIPODOC_COMPROBANTE = '01'";
+            } elseif ($tipo_doc === 'BOLETA' || $tipo_doc === '03') {
+                $where[] = "c.TIPODOC_COMPROBANTE = '03'";
+            } elseif ($tipo_doc === 'NOTA_CREDITO' || $tipo_doc === '07' || $tipo_doc === 'NC') {
+                $where[] = "c.TIPODOC_COMPROBANTE = '07'";
+            } elseif ($tipo_doc === 'NOTA_DEBITO' || $tipo_doc === '08' || $tipo_doc === 'ND') {
+                $where[] = "c.TIPODOC_COMPROBANTE = '08'";
+            }
+
+            // Filtro por Estado SUNAT
+            if ($estado_sunat !== 'TODOS' && $estado_sunat !== '') {
+                $where[] = "c.ESTADO_COMPROBANTE = ?";
+                $params[] = $estado_sunat;
+            }
+
+            // Filtro por Punto de Venta (PV)
+            if ($pv !== 'TODOS' && $pv !== '') {
+                $where[] = "(c.CODIGOPVENTA = ? OR c.CFNUMSER LIKE ?)";
+                $params[] = $pv;
+                $params[] = '%' . $pv . '%';
+            }
+
+            // Filtro por Fecha
+            if ($fecha_desde !== '') {
+                $where[] = "c.CFFECDOC >= ?";
+                $params[] = $fecha_desde . ' 00:00:00';
+            }
+            if ($fecha_hasta !== '') {
+                $where[] = "c.CFFECDOC <= ?";
+                $params[] = $fecha_hasta . ' 23:59:59';
+            }
+
+            // Filtro por Término de Búsqueda (Número de documento, RUC o Cliente)
+            if ($termino !== '') {
+                if (strpos($termino, '-') !== false) {
+                    $parts = explode('-', $termino, 2);
+                    $serieSearch = '%' . trim($parts[0]) . '%';
+                    $numClean = ltrim(trim($parts[1]), '0');
+                    $where[] = "((c.CFNUMSER LIKE ? AND (c.CFNUMDOC LIKE ? OR LTRIM(c.CFNUMDOC) LIKE ?)) OR c.NRO_DOC_RECEPTOR LIKE ? OR c.CFNOMBRE LIKE ?)";
+                    $params[] = $serieSearch;
+                    $params[] = '%' . trim($parts[1]) . '%';
+                    $params[] = '%' . $numClean . '%';
+                    $params[] = '%' . $termino . '%';
+                    $params[] = '%' . $termino . '%';
+                } else {
+                    $where[] = "(c.CFNUMDOC LIKE ? OR c.CFNUMSER LIKE ? OR c.NRO_DOC_RECEPTOR LIKE ? OR c.CFNOMBRE LIKE ?)";
+                    $params[] = '%' . $termino . '%';
+                    $params[] = '%' . $termino . '%';
+                    $params[] = '%' . $termino . '%';
+                    $params[] = '%' . $termino . '%';
+                }
+            }
+
+            $whereSql = implode(' AND ', $where);
+
+            $sql = "SELECT TOP $limit
+                LTRIM(RTRIM(COALESCE(c.CODIGOPVENTA, ''))) as pv,
+                c.TIPODOC_COMPROBANTE as tipo_cod,
+                CASE 
+                    WHEN c.TIPODOC_COMPROBANTE = '01' THEN 'Factura'
+                    WHEN c.TIPODOC_COMPROBANTE = '03' THEN 'Boleta'
+                    WHEN c.TIPODOC_COMPROBANTE = '07' THEN 'Nota de Crédito'
+                    WHEN c.TIPODOC_COMPROBANTE = '08' THEN 'Nota de Débito'
+                    ELSE COALESCE(NULLIF(c.COD_BAJA,''), 'Comprobante')
+                END as tipo_nombre,
+                LTRIM(RTRIM(COALESCE(c.COD_BAJA, ''))) as cod_baja,
+                LTRIM(RTRIM(c.CFNUMSER)) as serie,
+                LTRIM(RTRIM(c.CFNUMDOC)) as numero,
+                (LTRIM(RTRIM(COALESCE(c.COD_BAJA, ''))) + ' ' + LTRIM(RTRIM(c.CFNUMSER)) + '-' + LTRIM(RTRIM(c.CFNUMDOC))) as documento_completo,
+                CONVERT(varchar, c.CFFECDOC, 23) as fecha,
+                CONVERT(varchar, c.CFFECDOC, 103) as fecha_dmy,
+                LTRIM(RTRIM(COALESCE(NULLIF(c.NRO_DOC_RECEPTOR, ''), c.CFCODCLI, ''))) as ruc,
+                LTRIM(RTRIM(COALESCE(c.CFCODCLI, ''))) as codigo_cliente,
+                LTRIM(RTRIM(c.CFNOMBRE)) as razon_social,
+                LTRIM(RTRIM(COALESCE(c.TIPO_PAGO, '00'))) as forma_pago,
+                CASE 
+                    WHEN c.MONEDA = 'USD' OR c.MONEDA = 'ME' THEN 'ME'
+                    ELSE 'MN'
+                END as moneda,
+                CASE 
+                    WHEN c.MONEDA = 'USD' OR c.MONEDA = 'ME' THEN '$'
+                    ELSE 'S/'
+                END as simbolo_moneda,
+                CAST(COALESCE(c.IMPORTE_TOTAL_VENTA, 0) as float) as importe,
+                CAST(COALESCE(c.SUMATORIA_IGV, 0) as float) as igv,
+                CAST(COALESCE(c.TVV_IMP_OPE_GRAVADAS, 0) as float) as subtotal,
+                LTRIM(RTRIM(COALESCE(c.ESTADO_COMPROBANTE, 'PENDIENTE'))) as estado_sunat,
+                LTRIM(RTRIM(COALESCE(c.CDR, ''))) as cdr,
+                LTRIM(RTRIM(COALESCE(c.RUTA_COMPROBANTE, ''))) as ruta_comprobante,
+                LTRIM(RTRIM(COALESCE(c.CORREO, ''))) as correo,
+                LTRIM(RTRIM(COALESCE(c.ORDENCOMPRA, ''))) as orden_compra,
+                LTRIM(RTRIM(COALESCE(c.SERIE_GUIA, ''))) as serie_guia,
+                LTRIM(RTRIM(COALESCE(c.NRO_GUIA, ''))) as nro_guia,
+                LTRIM(RTRIM(COALESCE(c.DIRECCION_RECEPTOR, ''))) as direccion_cliente,
+                CASE WHEN c.XML IS NOT NULL AND LTRIM(RTRIM(CAST(c.XML as varchar(50)))) <> '' THEN 1 ELSE 0 END as tiene_xml
+            FROM [003BDCOMUN].dbo.COMPROBANTE_CAB c
+            WHERE $whereSql
+            ORDER BY c.CFFECDOC DESC, c.CFNUMDOC DESC";
+
+            $stmt = $dbConn->prepare($sql);
+            $stmt->execute($params);
+            $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Resumen de estadísticas
+            $totales = 0;
+            $aprobados = 0;
+            $pendientes = 0;
+            $montoTotal = 0;
+            foreach ($docs as &$d) {
+                $totales++;
+                $montoTotal += floatval($d['importe']);
+                $est = strtoupper($d['estado_sunat']);
+                if ($est === 'APROBADO') $aprobados++;
+                else $pendientes++;
+
+                // Normalizar PV si está vacío
+                if (empty($d['pv'])) {
+                    $d['pv'] = preg_replace('/[^0-9]/', '', $d['serie']) ?: '01';
+                }
+            }
+
+            echo json_encode([
+                'success' => true,
+                'total_registros' => count($docs),
+                'documentos' => $docs,
+                'stats' => [
+                    'total' => $totales,
+                    'aprobados' => $aprobados,
+                    'pendientes' => $pendientes,
+                    'monto_total' => round($montoTotal, 2)
+                ]
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'mensaje' => 'Error al consultar StarSoft: ' . $e->getMessage(),
+                'documentos' => []
+            ]);
+            exit;
+        }
+    }
+
+    // 0.1 DESCARGAR / OBTENER XML FIRMADO DEL CPE
+    if ($action === 'obtener_xml_cpe') {
+        $serie = trim($_REQUEST['serie'] ?? '');
+        $numero = trim($_REQUEST['numero'] ?? '');
+        $descargar = isset($_REQUEST['descargar']);
+
+        $dbConn = $db ?: (function_exists('getStarsoftDB') ? getStarsoftDB() : null);
+        if (!$dbConn || empty($serie) || empty($numero)) {
+            header('Content-Type: text/plain; charset=utf-8');
+            echo "Parámetros insuficientes o sin conexión.";
+            exit;
+        }
+
+        try {
+            $stmt = $dbConn->prepare("SELECT TOP 1 XML, CFNUMSER, CFNUMDOC, RUC_EMISOR, TIPODOC_COMPROBANTE FROM [003BDCOMUN].dbo.COMPROBANTE_CAB WHERE CFNUMSER = ? AND (CFNUMDOC = ? OR LTRIM(CFNUMDOC) = ?)");
+            $stmt->execute([$serie, $numero, ltrim($numero, '0')]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($row && !empty($row['XML'])) {
+                $xml = $row['XML'];
+                $filename = ($row['RUC_EMISOR'] ?: '20609793806') . '-' . ($row['TIPODOC_COMPROBANTE'] ?: '01') . '-' . $serie . '-' . $numero . '.xml';
+                
+                if ($descargar) {
+                    header('Content-Type: application/xml; charset=utf-8');
+                    header('Content-Disposition: attachment; filename="' . $filename . '"');
+                } else {
+                    header('Content-Type: text/xml; charset=utf-8');
+                }
+                echo $xml;
+                exit;
+            } else {
+                header('Content-Type: text/plain; charset=utf-8');
+                echo "El comprobante {$serie}-{$numero} no cuenta con XML almacenado en base de datos.";
+                exit;
+            }
+        } catch (Exception $e) {
+            header('Content-Type: text/plain; charset=utf-8');
+            echo "Error al obtener XML: " . $e->getMessage();
+            exit;
+        }
+    }
+
     // 1. LISTAR PAGOS Y COMPROBANTES
     if ($action === 'listar_pagos') {
         header('Content-Type: application/json');
