@@ -37,58 +37,49 @@ try {
         return $res;
     }
 
-    // 1. Todas las Bases de Datos en el Servidor SQL
-    echo "=== TODAS LAS BASES DE DATOS EN SQL SERVER ===\n";
-    $dbs = runQuery($conn, "SELECT name, database_id FROM sys.databases ORDER BY name");
-    foreach ($dbs as $d) {
-        echo " - {$d['name']} (ID: {$d['database_id']})\n";
+    // 1. Rutas de facturas en COMPROBANTE_CAB (003BDCOMUN)
+    echo "=== RUTA_COMPROBANTE EN [003BDCOMUN].dbo.COMPROBANTE_CAB ===\n";
+    try {
+        $rutas = runQuery($conn, "SELECT TOP 10 TIPODOCSUNAT, TIPODOCVENTAS, CFNUMSER, CFNUMDOC, RUTA_COMPROBANTE, RUTA_CDR, XML, ESTADO FROM [003BDCOMUN].dbo.COMPROBANTE_CAB WHERE RUTA_COMPROBANTE IS NOT NULL AND RUTA_COMPROBANTE <> '' ORDER BY CFNUMDOC DESC");
+        print_r($rutas);
+    } catch(Exception $e) {
+        echo "Error COMPROBANTE_CAB: " . $e->getMessage() . "\n";
     }
 
-    // 2. Tablas en 003BDCOMUN relacionadas a facturas o configuración
-    echo "\n=== TABLAS EN 003BDCOMUN (Facturación / Configuración) ===\n";
+    // 2. Muestra general de COMPROBANTE_CAB sin filtro
+    echo "\n=== MUESTRA GENERAL COMPROBANTE_CAB ===\n";
     try {
-        $tComun = runQuery($conn, "SELECT TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND (TABLE_NAME LIKE '%FAC%' OR TABLE_NAME LIKE '%CONF%' OR TABLE_NAME LIKE '%PARAM%' OR TABLE_NAME LIKE '%FE%' OR TABLE_NAME LIKE '%ELECT%' OR TABLE_NAME LIKE '%COMPROB%' OR TABLE_NAME LIKE '%DOC%') ORDER BY TABLE_NAME");
-        echo implode(", ", array_column($tComun, 'TABLE_NAME')) . "\n";
+        $sampleC = runQuery($conn, "SELECT TOP 5 TIPODOCSUNAT, TIPODOCVENTAS, CFNUMSER, CFNUMDOC, RUTA_COMPROBANTE, RUTA_CDR, XML, ESTADO, FECHA_EMISION FROM [003BDCOMUN].dbo.COMPROBANTE_CAB ORDER BY FECHA_EMISION DESC");
+        print_r($sampleC);
     } catch(Exception $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 
-    // 3. Columnas con RUTA, PATH, DIR, ARCHIVO, PDF, XML en TODAS las tablas de 003BDCOMUN y BDTPED_SSA
-    echo "\n=== COLUMNAS CON RUTA / PATH / PDF / XML / CARPETA ===\n";
+    // 3. Tablas en BDARCHIVOS_SS y BD_ARCHIVOS
+    echo "\n=== TABLAS EN BDARCHIVOS_SS ===\n";
     try {
-        $qRutas = runQuery($conn, "
-            SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
-            FROM INFORMATION_SCHEMA.COLUMNS 
-            WHERE COLUMN_NAME LIKE '%RUTA%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%CARPETA%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%' OR COLUMN_NAME LIKE '%ARCHIVO%'
-            UNION ALL
-            SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
-            FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS 
-            WHERE COLUMN_NAME LIKE '%RUTA%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%CARPETA%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%' OR COLUMN_NAME LIKE '%ARCHIVO%'
-        ");
-        print_r($qRutas);
+        $tArch = runQuery($conn, "SELECT TABLE_NAME FROM [BDARCHIVOS_SS].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'");
+        echo implode(", ", array_column($tArch, 'TABLE_NAME')) . "\n";
     } catch(Exception $e) {
-        echo "Error Rutas: " . $e->getMessage() . "\n";
+        echo "Error BDARCHIVOS_SS: " . $e->getMessage() . "\n";
     }
 
-    // 4. Columnas y muestra de FACCAB en BDTPED_SSA
-    echo "\n=== COLUMNAS DE FACCAB EN BDTPED_SSA ===\n";
+    // 4. Tablas en 003BDCBT2026
+    echo "\n=== TABLAS EN 003BDCBT2026 ===\n";
     try {
-        $colsFac = runQuery($conn, "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='FACCAB' ORDER BY ORDINAL_POSITION");
-        $cNames = array_column($colsFac, 'COLUMN_NAME');
-        echo implode(", ", $cNames) . "\n";
-        $sampleFac = runQuery($conn, "SELECT TOP 3 * FROM FACCAB ORDER BY 1 DESC");
-        print_r($sampleFac);
+        $tCbt = runQuery($conn, "SELECT TABLE_NAME FROM [003BDCBT2026].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'");
+        echo implode(", ", array_column($tCbt, 'TABLE_NAME')) . "\n";
     } catch(Exception $e) {
-        echo "Error FACCAB: " . $e->getMessage() . "\n";
+        echo "Error 003BDCBT2026: " . $e->getMessage() . "\n";
     }
 
-    // 5. Valores en CONFIGURACION o tablas de parámetros en 003BDCOMUN
-    echo "\n=== VALORES DE CONFIGURACION EN 003BDCOMUN ===\n";
+    // 5. GREMISION_CAB en BDTPED_SSA
+    echo "\n=== RUTA_COMPROBANTE EN GREMISION_CAB ===\n";
     try {
-        $conf = runQuery($conn, "SELECT TOP 1 * FROM [003BDCOMUN].dbo.CONFIGURACION");
-        print_r($conf);
+        $rGuia = runQuery($conn, "SELECT TOP 5 NUMGUIA, RUTA_COMPROBANTE, RUTA_CDR, XML FROM GREMISION_CAB WHERE RUTA_COMPROBANTE IS NOT NULL AND RUTA_COMPROBANTE <> ''");
+        print_r($rGuia);
     } catch(Exception $e) {
-        echo "Error Config: " . $e->getMessage() . "\n";
+        echo "Error GREMISION_CAB: " . $e->getMessage() . "\n";
     }
 
 
