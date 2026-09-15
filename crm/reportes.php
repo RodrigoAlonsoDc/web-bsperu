@@ -1547,6 +1547,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             text-overflow: ellipsis;
         }
 
+        /* CSS DE IMPRESIÓN Y HOJA A4 PARA FACTURA CPE CON SELLO */
+        .hoja-factura-a4 {
+            background: #FFFFFF !important;
+            color: #1E293B !important;
+            width: 100%;
+            max-width: 820px;
+            margin: 0 auto;
+            min-height: 980px;
+            padding: 36px 42px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            line-height: 1.35;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+        }
+        .factura-tabla-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 10.5px;
+        }
+        .factura-tabla-items th {
+            background: #F1F5F9;
+            color: #334155;
+            padding: 7px 8px;
+            text-align: left;
+            border: 1px solid #CBD5E1;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 9.5px;
+        }
+        .factura-tabla-items td {
+            padding: 6px 8px;
+            border: 1px solid #E2E8F0;
+            color: #1E293B;
+            vertical-align: middle;
+        }
+        .factura-recuadro-ruc {
+            border: 2px solid #0F172A;
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: center;
+            background: #FAFAFA;
+            min-width: 250px;
+        }
+        .sello-aprobado-box {
+            border: 2px dashed #059669;
+            background: #ECFDF5;
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #065F46;
+            transition: all 0.3s ease;
+        }
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #printFacturaA4, #printFacturaA4 * {
+                visibility: visible !important;
+            }
+            #printFacturaA4 {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 8mm 12mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #FFF !important;
+                color: #000 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
         /* MODALES */
         .modal-overlay {
             position: fixed;
@@ -3360,9 +3442,195 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </button>
                     <button type="button" class="btn-pill-white primary" id="btnDescargarXmlModal" style="background:var(--color-2); color:#FFF;">
                         <i class="fa-solid fa-download"></i> Descargar Archivo .XML
+    <!-- ================= MODAL FACTURA A4 CON SELLO DE APROBACIÓN ================= -->
+    <div class="modal-overlay" id="modalFacturaA4" style="z-index:100010; padding:15px; align-items:flex-start; overflow-y:auto;">
+        <div class="modal-card" style="max-width:920px; width:100%; border-radius:24px; padding:0; background:transparent; border:none; box-shadow:none; margin:20px auto;">
+            
+            <!-- Barra superior flotante de controles (No imprimible) -->
+            <div class="no-print" style="background:#1E293B; border-radius:18px; padding:14px 20px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 10px 25px rgba(0,0,0,0.3); border:1px solid #334155;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button type="button" class="modal-close-btn" style="background:#334155; color:#FFF;" onclick="cerrarModales()"><i class="fa-solid fa-arrow-left"></i></button>
+                    <div>
+                        <div style="font-size:0.7rem; color:#94A3B8; font-weight:700; text-transform:uppercase;">Visor Oficial de Comprobante</div>
+                        <h4 id="topbarFacturaTitulo" style="color:#FFF; margin:0; font-size:1.1rem; font-weight:800;">F001-0015902</h4>
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <!-- Toggle Sello -->
+                    <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.8rem; background:rgba(16, 185, 129, 0.15); padding:8px 14px; border-radius:12px; border:1px solid #10B981; color:#34D399;">
+                        <input type="checkbox" id="chkEstamparSello" onchange="toggleSelloAprobado(this.checked)" checked style="accent-color:#10B981; width:17px; height:17px;">
+                        <span><i class="fa-solid fa-stamp"></i> Estampar Sello de Aprobado</span>
+                    </label>
+
+                    <button type="button" class="btn-pill-white" id="btnGuardarAprobacionModal" onclick="guardarAprobacionModalActual()" style="background:#0284C7; color:#FFF; font-weight:700; border:none; padding:8px 16px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Guardar en cPanel
+                    </button>
+
+                    <button type="button" class="btn-pill-white primary" onclick="imprimirFacturaA4Modal()" style="background:#15803D; color:#FFF; font-weight:700; border:none; padding:8px 18px;">
+                        <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
                     </button>
                 </div>
             </div>
+
+            <!-- Barra de configuración del sello de aprobación (No imprimible) -->
+            <div class="no-print" id="barraConfigSello" style="background:#0F172A; border-radius:14px; padding:12px 18px; margin-bottom:14px; border:1px solid #1E293B; display:flex; flex-wrap:wrap; gap:12px; align-items:center; font-size:0.8rem;">
+                <span style="color:#38BDF8; font-weight:700;"><i class="fa-solid fa-sliders"></i> Datos del Sello:</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="color:#94A3B8; font-size:0.75rem;">Banco:</label>
+                    <select id="inputSelloBanco" onchange="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem;">
+                        <option value="BCP">BCP (Banco de Crédito)</option>
+                        <option value="BBVA">BBVA Continental</option>
+                        <option value="Interbank">Interbank</option>
+                        <option value="Scotiabank">Scotiabank</option>
+                        <option value="BanBif">BanBif</option>
+                        <option value="Banco de la Nación">Banco de la Nación</option>
+                        <option value="Yape">Yape</option>
+                        <option value="Plin">Plin</option>
+                        <option value="Efectivo / Caja">Efectivo / Caja</option>
+                    </select>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="color:#94A3B8; font-size:0.75rem;">N° Operación:</label>
+                    <input type="text" id="inputSelloOperacion" placeholder="Ej. 849201" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:110px;">
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="color:#94A3B8; font-size:0.75rem;">Validador:</label>
+                    <input type="text" id="inputSelloValidador" value="Nayeli (Reportería)" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:150px;">
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="color:#94A3B8; font-size:0.75rem;">Nota:</label>
+                    <input type="text" id="inputSelloNota" value="Pago conciliado en extracto" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:160px;">
+                </div>
+            </div>
+
+            <!-- HOJA A4 IMPRIMIBLE -->
+            <div id="printFacturaA4" class="hoja-factura-a4">
+                <!-- Encabezado -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; border-bottom:2px solid #E2E8F0; padding-bottom:16px;">
+                    <div style="flex:1;">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                            <img src="https://bsperu.pe/assets/img/logo.png" alt="BS Perú Logo" style="height:44px; object-fit:contain;" onerror="this.style.display='none'">
+                            <div>
+                                <h2 style="margin:0; font-size:1.15rem; font-weight:800; color:#0F172A; letter-spacing:0.5px;">BUILDING SYSTEMS PERU S.A.C.</h2>
+                                <div style="font-size:0.7rem; color:#64748B; font-weight:600;">Soluciones Químicas para la Construcción y Minería</div>
+                            </div>
+                        </div>
+                        <div style="font-size:0.72rem; color:#475569; line-height:1.4;">
+                            <strong>Dirección Fiscal:</strong> AV. LOS FAISANES N° 675 - URB. LA CAMPIÑA<br>
+                            CHORRILLOS - LIMA - PERÚ<br>
+                            <strong>Central Telefónica:</strong> (01) 251-2940 • <strong>Email:</strong> ventas@bsperu.pe<br>
+                            <strong>Web:</strong> www.bsperu.pe
+                        </div>
+                    </div>
+
+                    <div class="factura-recuadro-ruc">
+                        <div style="font-size:0.95rem; font-weight:800; color:#0F172A; letter-spacing:1px;">R.U.C. N° 20609793806</div>
+                        <h3 id="a4TipoDocTitulo" style="margin:6px 0; font-size:1.05rem; font-weight:800; color:#0F172A; background:#F1F5F9; padding:4px 8px; border-radius:4px;">FACTURA ELECTRÓNICA</h3>
+                        <div id="a4NumeroDoc" style="font-size:1.35rem; font-weight:900; color:#DC2626; letter-spacing:1px;">F001-0015902</div>
+                    </div>
+                </div>
+
+                <!-- Bloque Datos del Cliente -->
+                <div style="margin-top:14px; border:1px solid #CBD5E1; border-radius:8px; padding:10px 14px; background:#F8FAFC; display:grid; grid-template-columns: 2fr 1fr; gap:8px 16px; font-size:0.76rem;">
+                    <div>
+                        <span style="color:#64748B; font-weight:700;">SEÑOR(ES):</span>
+                        <strong id="a4ClienteNombre" style="color:#0F172A; display:block; font-size:0.82rem;">-</strong>
+                    </div>
+                    <div>
+                        <span style="color:#64748B; font-weight:700;">R.U.C. / D.N.I.:</span>
+                        <strong id="a4ClienteRuc" style="color:#0F172A; display:block; font-family:monospace; font-size:0.84rem;">-</strong>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <span style="color:#64748B; font-weight:700;">DIRECCIÓN:</span>
+                        <span id="a4ClienteDireccion" style="color:#334155;">-</span>
+                    </div>
+                    <div>
+                        <span style="color:#64748B; font-weight:700;">FECHA DE EMISIÓN:</span>
+                        <strong id="a4FechaEmision" style="color:#0F172A;">-</strong>
+                    </div>
+                    <div>
+                        <span style="color:#64748B; font-weight:700;">MONEDA:</span>
+                        <strong id="a4Moneda" style="color:#0F172A;">SOLES (PEN)</strong>
+                    </div>
+                    <div>
+                        <span style="color:#64748B; font-weight:700;">FORMA DE PAGO:</span>
+                        <span id="a4FormaPago" style="color:#0F172A;">Contado</span>
+                    </div>
+                    <div>
+                        <span style="color:#64748B; font-weight:700;">GUÍA DE REMISIÓN:</span>
+                        <strong id="a4GuiaRemision" style="color:#0F172A;">-</strong>
+                    </div>
+                </div>
+
+                <!-- Tabla de Productos / Items -->
+                <table class="factura-tabla-items">
+                    <thead>
+                        <tr>
+                            <th style="width:30px; text-align:center;">ITEM</th>
+                            <th style="width:75px;">CÓDIGO</th>
+                            <th style="width:55px; text-align:right;">CANT.</th>
+                            <th style="width:45px; text-align:center;">UND</th>
+                            <th>DESCRIPCIÓN</th>
+                            <th style="width:75px; text-align:right;">V. UNIT</th>
+                            <th style="width:65px; text-align:right;">DSCTO</th>
+                            <th style="width:80px; text-align:right;">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="a4ItemsTbody">
+                        <!-- Items inyectados dinámicamente -->
+                    </tbody>
+                </table>
+
+                <!-- Bloque Inferior: Sello, Letras y Totales -->
+                <div style="margin-top:16px; display:grid; grid-template-columns: 1.4fr 1fr; gap:16px; align-items:flex-start;">
+                    <div>
+                        <div style="font-size:0.74rem; color:#334155; margin-bottom:8px;">
+                            <strong>SON:</strong> <span id="a4TotalLetras" style="font-weight:700; text-transform:uppercase;">-</span>
+                        </div>
+
+                        <!-- SELLO OFICIAL DE APROBACIÓN / TESORERÍA -->
+                        <div id="selloAprobacionBox" class="sello-aprobado-box">
+                            <i class="fa-solid fa-circle-check" style="font-size:2.2rem; color:#10B981;"></i>
+                            <div style="flex:1;">
+                                <div style="font-weight:900; font-size:0.85rem; letter-spacing:0.5px; color:#065F46;">✔ PAGO CONCILIADO & APROBADO</div>
+                                <div style="font-size:0.7rem; font-weight:700; color:#047857;">BUILDING SYSTEMS PERÚ SAC • AUDITORÍA DE INGRESOS</div>
+                                <div style="font-size:0.72rem; margin-top:3px; color:#1E293B;">
+                                    Validado por: <strong id="selloValidadorTxt">Nayeli (Reportería)</strong><br>
+                                    Fecha: <strong id="selloFechaTxt">15/09/2026 12:49</strong> • Banco: <strong id="selloBancoTxt">BCP</strong> • Op: <strong id="selloOpTxt">894102</strong>
+                                </div>
+                                <div style="font-size:0.65rem; color:#059669; font-weight:800; margin-top:3px; text-transform:uppercase;">AUTORIZADO PARA SALIDA Y DESPACHO DE MERCADERÍA</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:12px; font-size:0.65rem; color:#64748B;">
+                            <div><strong>Código Hash SUNAT:</strong> <span id="a4HashSunat" style="font-family:monospace;">-</span></div>
+                            <div style="margin-top:2px;">Representación impresa de la Factura Electrónica generada mediante StarSoft ERP y auditada por el CRM de Building Systems Perú SAC.</div>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro de Totales -->
+                    <div style="border:1px solid #CBD5E1; border-radius:8px; background:#F8FAFC; overflow:hidden; font-size:0.76rem;">
+                        <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid #E2E8F0;">
+                            <span style="color:#64748B; font-weight:600;">Op. Gravada / Subtotal:</span>
+                            <strong id="a4Subtotal" style="color:#0F172A;">S/ 0.00</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid #E2E8F0;">
+                            <span style="color:#64748B; font-weight:600;">Descuentos Totales:</span>
+                            <strong id="a4Descuento" style="color:#DC2626;">S/ 0.00</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid #E2E8F0;">
+                            <span style="color:#64748B; font-weight:600;">I.G.V. (18%):</span>
+                            <strong id="a4Igv" style="color:#0F172A;">S/ 0.00</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:10px 12px; background:#E2E8F0;">
+                            <span style="font-size:0.85rem; font-weight:800; color:#0F172A;">IMPORTE TOTAL:</span>
+                            <strong id="a4Total" style="font-size:1.1rem; font-weight:900; color:#0F172A;">S/ 0.00</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -4550,10 +4818,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <td style="text-align:right; font-weight:800; font-size:0.9rem; color:var(--text-dark);">
                         ${escapeHtml(d.simbolo_moneda || 'S/')} ${montoFmt}
                     </td>
-                    <td style="text-align:center;">${badgeSunat}</td>
+                    <td style="text-align:center;">
+                        ${badgeSunat}
+                        ${d.aprobado_crm ? `
+                        <div style="margin-top:4px;">
+                            <span class="badge-sello-crm" style="background:#DCFCE7; color:#15803D; font-size:0.68rem; font-weight:800; padding:2px 7px; border-radius:12px; border:1px solid #86EFAC; display:inline-flex; align-items:center; gap:3px;">
+                                <i class="fa-solid fa-stamp"></i> Aprobado CRM
+                            </span>
+                        </div>` : ''}
+                    </td>
                     <td style="text-align:center;">
                         <div style="display:inline-flex; gap:4px; justify-content:center;">
-                            <button type="button" class="cpe-action-btn" title="Ver Detalle Completo" onclick="abrirDetalleCPE('${docJsonStr}')">
+                            <button type="button" class="cpe-action-btn" style="color:#15803D; font-size:0.92rem;" title="Ver e Imprimir Factura A4 con Sello" onclick="abrirFacturaA4('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
+                                <i class="fa-solid fa-print"></i>
+                            </button>
+                            <button type="button" class="cpe-action-btn" title="Ver Detalle Rápido" onclick="abrirDetalleCPE('${docJsonStr}')">
                                 <i class="fa-solid fa-eye" style="color:var(--color-2);"></i>
                             </button>
                             ${d.tiene_xml ? `
@@ -4628,9 +4907,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 const btnAcciones = document.getElementById('modalCpeBotonesAccion');
                 if (btnAcciones) {
                     btnAcciones.innerHTML = `
-                        <button type="button" class="btn-pill-white primary" style="background:var(--color-2); color:#FFF;" onclick="verXmlCPE('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
-                            <i class="fa-solid fa-code"></i> Ver XML UBL 2.1
+                        <button type="button" class="btn-pill-white primary" style="background:#15803D; color:#FFF; font-weight:700;" onclick="abrirFacturaA4('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
+                            <i class="fa-solid fa-print"></i> Formato A4 / Imprimir Sello
                         </button>
+                        ${d.tiene_xml ? `
+                        <button type="button" class="btn-pill-white" style="background:var(--color-2); color:#FFF;" onclick="verXmlCPE('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
+                            <i class="fa-solid fa-code"></i> Ver XML UBL 2.1
+                        </button>` : ''}
                     `;
                 }
 
@@ -4711,6 +4994,318 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        // ==================== VISOR FACTURA A4 Y SELLO DE APROBACIÓN ====================
+        let currentA4Data = null;
+
+        function abrirFacturaA4(serie, numero) {
+            cerrarModales();
+            const modal = document.getElementById('modalFacturaA4');
+            if (!modal) return;
+
+            document.getElementById('topbarFacturaTitulo').textContent = `Cargando ${serie}-${numero}...`;
+            modal.classList.add('open');
+
+            fetch(`crm_backend.php?action=obtener_detalle_factura_completa&serie=${encodeURIComponent(serie)}&numero=${encodeURIComponent(numero)}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.success) {
+                        alert(res.mensaje || 'No se pudo recuperar el detalle de la factura.');
+                        cerrarModales();
+                        return;
+                    }
+                    currentA4Data = res;
+                    renderizarFacturaA4(res);
+                })
+                .catch(err => {
+                    alert('Error de conexión al cargar la factura: ' + err.message);
+                    cerrarModales();
+                });
+        }
+
+        function renderizarFacturaA4(res) {
+            const cab = res.cabecera || {};
+            const items = res.items || [];
+            const emisor = res.emisor || {};
+            const receptor = res.receptor || {};
+            const totales = res.totales || {};
+            const aprobacion = res.aprobacion_crm || null;
+
+            // Barra superior
+            document.getElementById('topbarFacturaTitulo').textContent = `${cab.tipo_nombre || 'COMPROBANTE'}: ${cab.serie}-${cab.numero}`;
+
+            // Cabecera RUC & Documento
+            document.getElementById('a4TipoDocTitulo').textContent = (cab.tipo_nombre || 'FACTURA ELECTRÓNICA').toUpperCase();
+            document.getElementById('a4NumeroDoc').textContent = `${cab.serie}-${cab.numero}`;
+
+            // Datos Cliente
+            document.getElementById('a4ClienteNombre').textContent = receptor.razon_social || cab.razon_social || '-';
+            document.getElementById('a4ClienteRuc').textContent = receptor.ruc || cab.ruc || '-';
+            document.getElementById('a4ClienteDireccion').textContent = receptor.direccion || '-';
+            document.getElementById('a4FechaEmision').textContent = cab.fecha_dmy || cab.fecha || '-';
+            
+            const monedaNombre = (cab.moneda === 'US' || cab.moneda === 'USD' || cab.moneda === '$') ? 'DÓLARES AMERICANOS (USD)' : 'SOLES (PEN)';
+            document.getElementById('a4Moneda').textContent = monedaNombre;
+            document.getElementById('a4FormaPago').textContent = cab.forma_pago || 'Contado';
+            document.getElementById('a4GuiaRemision').textContent = cab.guia_remision || '-';
+
+            // Tabla de Items
+            const tbody = document.getElementById('a4ItemsTbody');
+            tbody.innerHTML = '';
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr>
+                    <td style="text-align:center;">1</td>
+                    <td style="font-family:monospace;">ITEM-01</td>
+                    <td style="text-align:right;">1.00</td>
+                    <td style="text-align:center;">NIU</td>
+                    <td>VENTA DE MERCADERÍA SEGÚN COMPROBANTE DE PAGO ELECTRÓNICO</td>
+                    <td style="text-align:right;">${Number(totales.gravadas || cab.subtotal || 0).toFixed(2)}</td>
+                    <td style="text-align:right;">0.00</td>
+                    <td style="text-align:right; font-weight:700;">${Number(totales.gravadas || cab.subtotal || 0).toFixed(2)}</td>
+                </tr>`;
+            } else {
+                items.forEach((it, idx) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="text-align:center;">${it.item || (idx + 1)}</td>
+                        <td style="font-family:monospace; font-size:0.72rem;">${escapeHtml(it.codigo || '-')}</td>
+                        <td style="text-align:right; font-weight:700;">${Number(it.cantidad || 1).toFixed(2)}</td>
+                        <td style="text-align:center; font-size:0.72rem;">${escapeHtml(it.unidad || 'NIU')}</td>
+                        <td style="font-size:0.74rem;">${escapeHtml(it.descripcion || '')}</td>
+                        <td style="text-align:right;">${Number(it.valor_unitario || 0).toFixed(2)}</td>
+                        <td style="text-align:right;">${Number(it.descuento || 0).toFixed(2)}</td>
+                        <td style="text-align:right; font-weight:700;">${Number(it.valor_total || 0).toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Totales
+            const simbolo = (cab.moneda === 'US' || cab.moneda === 'USD' || cab.moneda === '$') ? '$' : 'S/';
+            const totalVal = Number(totales.total || cab.importe || 0);
+            const gravadaVal = Number(totales.gravadas || cab.subtotal || 0);
+            const igvVal = Number(totales.igv || cab.igv || 0);
+            const dsctoVal = Number(totales.descuento_global || 0);
+
+            document.getElementById('a4Subtotal').textContent = `${simbolo} ${gravadaVal.toFixed(2)}`;
+            document.getElementById('a4Descuento').textContent = `${simbolo} ${dsctoVal.toFixed(2)}`;
+            document.getElementById('a4Igv').textContent = `${simbolo} ${igvVal.toFixed(2)}`;
+            document.getElementById('a4Total').textContent = `${simbolo} ${totalVal.toFixed(2)}`;
+
+            // Total en letras
+            document.getElementById('a4TotalLetras').textContent = numeroALetras(totalVal, cab.moneda);
+
+            // Hash SUNAT
+            document.getElementById('a4HashSunat').textContent = res.sunat_hash || 'Firmado Digitalmente conforme a Resolución de SUNAT';
+
+            // Configuración del sello de aprobación
+            const chk = document.getElementById('chkEstamparSello');
+            if (aprobacion && aprobacion.aprobado) {
+                chk.checked = true;
+                if (aprobacion.banco) document.getElementById('inputSelloBanco').value = aprobacion.banco;
+                if (aprobacion.numero_operacion) document.getElementById('inputSelloOperacion').value = aprobacion.numero_operacion;
+                if (aprobacion.validador) document.getElementById('inputSelloValidador').value = aprobacion.validador;
+                if (aprobacion.nota) document.getElementById('inputSelloNota').value = aprobacion.nota;
+                if (aprobacion.fecha_aprobacion) document.getElementById('selloFechaTxt').textContent = aprobacion.fecha_aprobacion;
+                
+                document.getElementById('btnGuardarAprobacionModal').innerHTML = '<i class="fa-solid fa-check"></i> Actualizar en cPanel';
+            } else {
+                chk.checked = true;
+                document.getElementById('inputSelloOperacion').value = '';
+                const ahora = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const fechaStr = `${pad(ahora.getDate())}/${pad(ahora.getMonth()+1)}/${ahora.getFullYear()} ${pad(ahora.getHours())}:${pad(ahora.getMinutes())}`;
+                document.getElementById('selloFechaTxt').textContent = fechaStr;
+                document.getElementById('btnGuardarAprobacionModal').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Guardar en cPanel';
+            }
+
+            toggleSelloAprobado(chk.checked);
+            actualizarTextosSello();
+        }
+
+        function toggleSelloAprobado(activado) {
+            const selloBox = document.getElementById('selloAprobacionBox');
+            const barraConfig = document.getElementById('barraConfigSello');
+            if (activado) {
+                if (selloBox) selloBox.style.display = 'flex';
+                if (barraConfig) barraConfig.style.display = 'flex';
+            } else {
+                if (selloBox) selloBox.style.display = 'none';
+                if (barraConfig) barraConfig.style.display = 'none';
+            }
+        }
+
+        function actualizarTextosSello() {
+            const banco = document.getElementById('inputSelloBanco').value;
+            const op = document.getElementById('inputSelloOperacion').value || 'S/N';
+            const validador = document.getElementById('inputSelloValidador').value || 'Nayeli (Reportería)';
+
+            document.getElementById('selloBancoTxt').textContent = banco;
+            document.getElementById('selloOpTxt').textContent = op;
+            document.getElementById('selloValidadorTxt').textContent = validador;
+        }
+
+        function guardarAprobacionModalActual() {
+            if (!currentA4Data || !currentA4Data.cabecera) {
+                alert('No hay una factura seleccionada.');
+                return;
+            }
+
+            const cab = currentA4Data.cabecera;
+            const btn = document.getElementById('btnGuardarAprobacionModal');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+            btn.disabled = true;
+
+            const payload = {
+                serie: cab.serie,
+                numero: cab.numero,
+                banco: document.getElementById('inputSelloBanco').value,
+                numero_operacion: document.getElementById('inputSelloOperacion').value,
+                validador: document.getElementById('inputSelloValidador').value,
+                nota: document.getElementById('inputSelloNota').value
+            };
+
+            fetch('crm_backend.php?action=guardar_factura_aprobada', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                if (res.success) {
+                    mostrarToastPaleta('✔ ¡Aprobación registrada en la base de datos de cPanel!');
+                    if (Array.isArray(docsCpeCache)) {
+                        const item = docsCpeCache.find(x => x.serie === cab.serie && x.numero === cab.numero);
+                        if (item) {
+                            item.aprobado_crm = true;
+                            item.datos_aprobacion = res.datos;
+                            renderizarTablaCPE(docsCpeCache);
+                        }
+                    }
+                } else {
+                    alert('Error al registrar: ' + (res.mensaje || 'Error desconocido'));
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                alert('Error al guardar en cPanel: ' + err.message);
+            });
+        }
+
+        function imprimirFacturaA4Modal() {
+            window.print();
+        }
+
+        function numeroALetras(cantidad, moneda) {
+            moneda = (moneda || 'MN').toUpperCase();
+            let nombreMoneda = (moneda === 'US' || moneda === 'USD' || moneda === '$') ? 'DÓLARES AMERICANOS' : 'SOLES';
+            
+            let enteras = Math.floor(cantidad);
+            let centavos = Math.round((cantidad - enteras) * 100);
+            let centavosStr = String(centavos).padStart(2, '0') + "/100 " + nombreMoneda;
+
+            function unidades(num) {
+                switch(num) {
+                    case 1: return "UN";
+                    case 2: return "DOS";
+                    case 3: return "TRES";
+                    case 4: return "CUATRO";
+                    case 5: return "CINCO";
+                    case 6: return "SEIS";
+                    case 7: return "SIETE";
+                    case 8: return "OCHO";
+                    case 9: return "NUEVE";
+                    default: return "";
+                }
+            }
+
+            function decenasY(strSin, numUnidades) {
+                if (numUnidades > 0) return strSin + " Y " + unidades(numUnidades);
+                return strSin;
+            }
+
+            function decenas(num) {
+                let d = Math.floor(num/10);
+                let u = num - (d * 10);
+                switch(d) {
+                    case 1:
+                        switch(u) {
+                            case 0: return "DIEZ";
+                            case 1: return "ONCE";
+                            case 2: return "DOCE";
+                            case 3: return "TRECE";
+                            case 4: return "CATORCE";
+                            case 5: return "QUINCE";
+                            default: return "DIECI" + unidades(u);
+                        }
+                    case 2:
+                        if (u === 0) return "VEINTE";
+                        return "VEINTI" + unidades(u);
+                    case 3: return decenasY("TREINTA", u);
+                    case 4: return decenasY("CUARENTA", u);
+                    case 5: return decenasY("CINCUENTA", u);
+                    case 6: return decenasY("SESENTA", u);
+                    case 7: return decenasY("SETENTA", u);
+                    case 8: return decenasY("OCHENTA", u);
+                    case 9: return decenasY("NOVENTA", u);
+                    case 0: return unidades(u);
+                }
+            }
+
+            function centenas(num) {
+                let c = Math.floor(num / 100);
+                let d = num - (c * 100);
+                switch(c) {
+                    case 1:
+                        if (d > 0) return "CIENTO " + decenas(d);
+                        return "CIEN";
+                    case 2: return "DOSCIENTOS " + decenas(d);
+                    case 3: return "TRESCIENTOS " + decenas(d);
+                    case 4: return "CUATROCIENTOS " + decenas(d);
+                    case 5: return "QUINIENTOS " + decenas(d);
+                    case 6: return "SEISCIENTOS " + decenas(d);
+                    case 7: return "SETECIENTOS " + decenas(d);
+                    case 8: return "OCHOCIENTOS " + decenas(d);
+                    case 9: return "NOVECIENTOS " + decenas(d);
+                    default: return decenas(d);
+                }
+            }
+
+            function seccion(num, divisor, strSingular, strPlural) {
+                let cientos = Math.floor(num / divisor);
+                let resto = num - (cientos * divisor);
+                let letras = "";
+                if (cientos > 0) {
+                    if (cientos > 1) {
+                        letras = centenas(cientos) + " " + strPlural;
+                    } else {
+                        letras = strSingular;
+                    }
+                }
+                return { letras: letras, resto: resto };
+            }
+
+            function convertir(num) {
+                if (num === 0) return "CERO";
+                let milesMillones = seccion(num, 1000000000, "UN MIL MILLÓN", "MIL MILLONES");
+                let millones = seccion(milesMillones.resto, 1000000, "UN MILLÓN", "MILLONES");
+                let miles = seccion(millones.resto, 1000, "MIL", "MIL");
+                let c = centenas(miles.resto);
+
+                let resultado = "";
+                if (milesMillones.letras) resultado += milesMillones.letras + " ";
+                if (millones.letras) resultado += millones.letras + " ";
+                if (miles.letras) resultado += miles.letras + " ";
+                if (c) resultado += c;
+                return resultado.trim();
+            }
+
+            return convertir(enteras) + " CON " + centavosStr;
         }
 
         function escapeHtml(str) {
