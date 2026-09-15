@@ -911,12 +911,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             $guiaRemision = $getX('//DespatchDocumentReference/ID', '');
             $totalLetras = $getX('//Note', '');
             $hashSunat = $getX('//DigestValue', '');
+            $ordenCompra = $getX('//OrderReference/ID', '');
+            $observacionXml = $getX('//InstructionNote', '');
 
-            // Totales
+            // Totales e Impuestos
             $subtotal = floatval($getX('//LegalMonetaryTotal/LineExtensionAmount', '0'));
             $igv = floatval($getX('//TaxTotal/TaxAmount', '0'));
             $total = floatval($getX('//LegalMonetaryTotal/PayableAmount', '0'));
             $descuentoGlobal = floatval($getX('//AllowanceCharge/Amount', '0'));
+
+            // Desglose de Operaciones (Gravadas, Inafectas, Exoneradas, Gratuitas)
+            $opeGravadas = $subtotal;
+            $opeInafectas = 0.0;
+            $opeExoneradas = 0.0;
+            $opeGratuitas = 0.0;
+
+            $taxSubtotals = $sxml->xpath('//TaxTotal/TaxSubtotal');
+            if (!empty($taxSubtotals)) {
+                foreach ($taxSubtotals as $ts) {
+                    $schId = (string)($ts->xpath('TaxCategory/TaxScheme/ID')[0] ?? '');
+                    $taxable = floatval((string)($ts->xpath('TaxableAmount')[0] ?? 0));
+                    if ($schId === '1000' && $taxable > 0) $opeGravadas = $taxable;
+                    elseif ($schId === '9998') $opeInafectas = $taxable;
+                    elseif ($schId === '9997') $opeExoneradas = $taxable;
+                    elseif ($schId === '9996') $opeGratuitas = $taxable;
+                }
+            }
+
+            // Cuotas de Crédito (si aplica)
+            $cuotas = [];
+            $ptNodes = $sxml->xpath('//PaymentTerms');
+            if (!empty($ptNodes)) {
+                foreach ($ptNodes as $pt) {
+                    $idTerm = (string)($pt->xpath('ID')[0] ?? '');
+                    if (stripos($idTerm, 'Cuota') !== false) {
+                        $montoCuota = floatval((string)($pt->xpath('Amount')[0] ?? 0));
+                        $vctoCuota = (string)($pt->xpath('PaymentDueDate')[0] ?? '');
+                        $cuotas[] = [
+                            'nro_cuota' => preg_replace('/[^0-9]/', '', $idTerm) ?: (count($cuotas) + 1),
+                            'fecha_vcto' => !empty($vctoCuota) ? date('d/m/Y', strtotime($vctoCuota)) : '',
+                            'monto' => $montoCuota
+                        ];
+                    }
+                }
+            }
 
             // Items
             $items = [];
@@ -941,10 +979,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     $totalItem = $valorVenta + $igvItem;
                     if ($totalItem <= 0 && $pRef > 0) $totalItem = round($qty * $pRef, 2);
 
+                    // Extracción de Lote si está presente en el XML o descripción
+                    $lote = (string)($l->xpath('Item/ItemInstance/LotIdentification/LotNumberID')[0] ?? '');
+                    if (empty($lote) && preg_match('/(L[0-9]{5,8}|LOTE\s*:\s*[A-Z0-9]+)/i', $desc, $mLote)) {
+                        $lote = $mLote[0];
+                    }
+
                     $items[] = [
                         'item' => $num++,
                         'codigo' => $cod ?: 'PROD-' . $num,
                         'descripcion' => $desc,
+                        'lote' => $lote ?: '-',
                         'cantidad' => $qty,
                         'unidad' => $unit,
                         'precio_unitario' => $pUnit,
@@ -980,15 +1025,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     'moneda' => $moneda,
                     'simbolo_moneda' => ($moneda === 'USD' || $moneda === 'ME' ? '$' : 'S/'),
                     'guia_remision' => $guiaRemision,
+                    'orden_compra' => $ordenCompra,
+                    'observacion' => $observacionXml,
                     'total_letras' => $totalLetras,
                     'hash_sunat' => $hashSunat
                 ],
                 'totales' => [
+                    'gravadas' => $opeGravadas,
+                    'inafectas' => $opeInafectas,
+                    'exoneradas' => $opeExoneradas,
+                    'gratuitas' => $opeGratuitas,
                     'subtotal' => $subtotal,
                     'descuento' => $descuentoGlobal,
                     'igv' => $igv,
                     'total' => $total
                 ],
+                'cuotas' => $cuotas,
                 'items' => $items
             ];
         } catch(Exception $ex) {
@@ -1057,6 +1109,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             $numCleanSinCeros = ltrim($numero, '0');
             $sql = "SELECT TOP 1 XML, CFNUMSER, CFNUMDOC, RUC_EMISOR, TIPODOC_COMPROBANTE, 
                            CONVERT(varchar, CFFECDOC, 23) as fecha,
+                           CONVERT(varchar, CFFECDOC, 103) as fecha_dmy,
+                           CONVERT(varchar, CFFECVEN, 103) as fecha_vcto_dmy,
+                           LTRIM(RTRIM(COALESCE(TIPO_PAGO, 'CONTADO'))) as forma_pago,
+                           LTRIM(RTRIM(COALESCE(CFNUMPED, ''))) as nro_pedido,
+                           LTRIM(RTRIM(COALESCE(ORDENCOMPRA, ''))) as orden_compra,
+                           LTRIM(RTRIM(COALESCE(CFCODVEN, ''))) as cod_vendedor,
+                           LTRIM(RTRIM(COALESCE(SERIE_GUIA, ''))) as serie_guia,
+                           LTRIM(RTRIM(COALESCE(NRO_GUIA, ''))) as nro_guia,
+                           LTRIM(RTRIM(COALESCE(DIRECCION_RECEPTOR, ''))) as direccion_cliente,
+                           CASE WHEN MONEDA = 'USD' OR MONEDA = 'ME' THEN 'ME' ELSE 'MN' END as moneda,
                            LTRIM(RTRIM(CFNOMBRE)) as razon_social,
                            CASE WHEN LEN(LTRIM(RTRIM(COALESCE(NRO_DOC_RECEPTOR, '')))) > 4 THEN LTRIM(RTRIM(NRO_DOC_RECEPTOR))
                                 ELSE LTRIM(RTRIM(COALESCE(CFCODCLI, ''))) END as ruc,
@@ -1081,6 +1143,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 $detalleXml = parsearXmlCpe($row['XML']);
             }
 
+            // Armar estructura base de cabecera
+            $guiaStr = trim(($row['serie_guia'] ?? '') . ' - ' . ($row['nro_guia'] ?? ''), ' -');
+            $cabeceraData = [
+                'serie' => $serie,
+                'numero' => $numero,
+                'documento_completo' => $serie . '-' . $numero,
+                'fecha_emision' => $row['fecha'],
+                'fecha_dmy' => $row['fecha_dmy'] ?? (!empty($row['fecha']) ? date('d/m/Y', strtotime($row['fecha'])) : ''),
+                'fecha_vcto_dmy' => $row['fecha_vcto_dmy'] ?? '',
+                'razon_social' => $row['razon_social'],
+                'ruc' => $row['ruc'],
+                'direccion' => $row['direccion_cliente'] ?? '',
+                'forma_pago' => $row['forma_pago'] ?? 'CONTADO CONTRA ENTREGA',
+                'nro_pedido' => $row['nro_pedido'] ?? '',
+                'orden_compra' => $row['orden_compra'] ?? '',
+                'cod_vendedor' => $row['cod_vendedor'] ?? '',
+                'guia_remision' => $guiaStr,
+                'importe' => $row['importe'],
+                'igv' => $row['igv'],
+                'subtotal' => $row['subtotal'],
+                'moneda' => $row['moneda'] ?? 'MN',
+                'tipo_doc' => $row['TIPODOC_COMPROBANTE'] ?: '01',
+                'tipo_nombre' => ($row['TIPODOC_COMPROBANTE'] === '01' ? 'FACTURA ELECTRÓNICA' : ($row['TIPODOC_COMPROBANTE'] === '03' ? 'BOLETA DE VENTA ELECTRÓNICA' : 'NOTA DE CRÉDITO'))
+            ];
+
             // Si el XML no se pudo parsear o está vacío, armar estructura fallback con los datos de cabecera
             if (!$detalleXml) {
                 $detalleXml = [
@@ -1095,31 +1182,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     'receptor' => [
                         'ruc' => $row['ruc'],
                         'nombre' => $row['razon_social'],
-                        'direccion' => 'No registrada en cabecera'
+                        'direccion' => $row['direccion_cliente'] ?: 'No registrada en cabecera'
                     ],
                     'documento' => [
                         'numero_completo' => $serie . '-' . $numero,
-                        'tipo_doc' => $row['TIPODOC_COMPROBANTE'] ?: '01',
-                        'tipo_nombre' => ($row['TIPODOC_COMPROBANTE'] === '01' ? 'FACTURA ELECTRÓNICA' : 'BOLETA ELECTRÓNICA'),
+                        'tipo_doc' => $cabeceraData['tipo_doc'],
+                        'tipo_nombre' => $cabeceraData['tipo_nombre'],
                         'fecha_emision' => $row['fecha'],
-                        'fecha_dmy' => !empty($row['fecha']) ? date('d/m/Y', strtotime($row['fecha'])) : '',
-                        'moneda' => 'PEN',
-                        'simbolo_moneda' => 'S/',
-                        'guia_remision' => '',
+                        'fecha_dmy' => $cabeceraData['fecha_dmy'],
+                        'moneda' => $cabeceraData['moneda'] === 'ME' ? 'USD' : 'PEN',
+                        'simbolo_moneda' => $cabeceraData['moneda'] === 'ME' ? '$' : 'S/',
+                        'guia_remision' => $guiaStr,
+                        'orden_compra' => $row['orden_compra'],
                         'total_letras' => '',
                         'hash_sunat' => $row['cdr']
                     ],
                     'totales' => [
+                        'gravadas' => $row['subtotal'],
+                        'inafectas' => 0,
+                        'exoneradas' => 0,
+                        'gratuitas' => 0,
                         'subtotal' => $row['subtotal'],
                         'descuento' => 0,
                         'igv' => $row['igv'],
                         'total' => $row['importe']
                     ],
+                    'cuotas' => [],
                     'items' => [
                         [
                             'item' => 1,
                             'codigo' => 'PROD',
                             'descripcion' => 'Venta según factura StarSoft',
+                            'lote' => '-',
                             'cantidad' => 1,
                             'unidad' => 'NIU',
                             'precio_unitario' => $row['subtotal'],
@@ -1143,6 +1237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 'documento' => $serie . '-' . $numero,
                 'serie' => $serie,
                 'numero' => $numero,
+                'cabecera' => $cabeceraData,
                 'detalle' => $detalleXml,
                 'aprobado_crm' => !empty($datosAprobacion),
                 'datos_aprobacion' => $datosAprobacion
@@ -1157,15 +1252,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
     // 0.3 GUARDAR FACTURA APROBADA EN CPANEL CON SELLO DE AUDITORÍA
     if ($action === 'guardar_factura_aprobada') {
         header('Content-Type: application/json; charset=utf-8');
+        $rawInput = file_get_contents('php://input');
+        if (!empty($rawInput)) {
+            $jsonData = json_decode($rawInput, true);
+            if (is_array($jsonData)) {
+                $_POST = array_merge($_POST, $jsonData);
+            }
+        }
+
         $serie = preg_replace('/[^A-Za-z0-9]/', '', trim($_POST['serie'] ?? ''));
         $numero = preg_replace('/[^A-Za-z0-9]/', '', trim($_POST['numero'] ?? ''));
         $banco = trim($_POST['banco'] ?? 'BCP');
-        $nroOperacion = trim($_POST['nro_operacion'] ?? '');
+        $nroOperacion = trim($_POST['nro_operacion'] ?? $_POST['numero_operacion'] ?? '');
         $validador = trim($_POST['validador'] ?? 'Nayeli (Reportería)');
         $nota = trim($_POST['nota'] ?? 'Pago verificado y conciliado');
         $montoTotal = floatval($_POST['monto_total'] ?? 0);
         $clienteNombre = trim($_POST['cliente_nombre'] ?? '');
         $clienteRuc = trim($_POST['cliente_ruc'] ?? '');
+        $fechaCustom = trim($_POST['fecha'] ?? $_POST['fecha_aprobacion'] ?? '');
 
         if (empty($serie) || empty($numero)) {
             echo json_encode(['success' => false, 'mensaje' => 'Serie y número de documento son requeridos.']);
@@ -1178,10 +1282,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             'serie' => $serie,
             'numero' => $numero,
             'fecha_aprobacion' => date('Y-m-d H:i:s'),
-            'fecha_dmy' => date('d/m/Y H:i'),
+            'fecha_dmy' => !empty($fechaCustom) ? $fechaCustom : date('d/m/Y H:i'),
             'validador' => $validador,
             'banco' => $banco,
             'nro_operacion' => $nroOperacion,
+            'numero_operacion' => $nroOperacion,
             'nota' => $nota,
             'monto_total' => $montoTotal,
             'cliente_nombre' => $clienteNombre,

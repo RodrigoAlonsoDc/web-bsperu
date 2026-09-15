@@ -1547,62 +1547,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             text-overflow: ellipsis;
         }
 
-        /* CSS DE IMPRESIÓN Y HOJA A4 PARA FACTURA CPE CON SELLO */
+        /* CSS DE IMPRESIÓN Y HOJA A4 PARA FACTURA CPE CON SELLO OFICIAL */
         .hoja-factura-a4 {
             background: #FFFFFF !important;
-            color: #1E293B !important;
+            color: #000000 !important;
             width: 100%;
             max-width: 820px;
             margin: 0 auto;
-            min-height: 980px;
-            padding: 36px 42px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            min-height: 1060px;
+            padding: 30px 36px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.18);
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 11px;
+            font-size: 8pt;
             line-height: 1.35;
-            border-radius: 8px;
-            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            border: 1px solid #D1D5DB;
+            box-sizing: border-box;
+            position: relative;
         }
-        .factura-tabla-items {
+        .factura-tabla-items-oficial {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 14px;
-            font-size: 10.5px;
+            border: 1.5px solid #000;
+            margin-top: 10px;
+            font-size: 7.8pt;
         }
-        .factura-tabla-items th {
-            background: #F1F5F9;
-            color: #334155;
-            padding: 7px 8px;
+        .factura-tabla-items-oficial th {
+            background: #0D47A1 !important;
+            color: #FFFFFF !important;
+            padding: 4px 6px;
             text-align: left;
-            border: 1px solid #CBD5E1;
-            font-weight: 700;
+            border: 1px solid #000;
+            font-weight: bold;
             text-transform: uppercase;
-            font-size: 9.5px;
+            font-size: 7.2pt;
+            letter-spacing: 0.3px;
         }
-        .factura-tabla-items td {
-            padding: 6px 8px;
-            border: 1px solid #E2E8F0;
-            color: #1E293B;
-            vertical-align: middle;
+        .factura-tabla-items-oficial td {
+            padding: 4px 6px;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-top: none;
+            border-bottom: none;
+            color: #000;
+            vertical-align: top;
         }
-        .factura-recuadro-ruc {
-            border: 2px solid #0F172A;
-            border-radius: 8px;
-            padding: 12px 16px;
-            text-align: center;
-            background: #FAFAFA;
-            min-width: 250px;
-        }
-        .sello-aprobado-box {
-            border: 2px dashed #059669;
-            background: #ECFDF5;
+        .factura-ruc-box-oficial {
+            border: 1.5px solid #000;
             border-radius: 12px;
-            padding: 10px 16px;
+            padding: 8px 12px;
+            text-align: center;
+            background: #FFF;
+            min-width: 255px;
+            box-sizing: border-box;
+        }
+        .factura-cliente-box-oficial {
+            border: 1.5px solid #000;
+            border-radius: 10px;
+            padding: 7px 12px;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 2.5px 16px;
+            font-size: 7.8pt;
+            line-height: 1.4;
+            color: #000;
+        }
+
+        /* SELLO DE CANCELADO IDÉNTICO A LA FOTO FÍSICA */
+        .sello-cancelado-wrapper {
+            text-align: center;
+            padding: 15px 0 10px 0;
+            position: relative;
+        }
+        .sello-cancelado-stamp {
+            border: 2.5px solid #781826;
+            border-radius: 8px;
+            padding: 8px 20px 10px 20px;
+            display: inline-block;
+            color: #781826;
+            background: rgba(120, 24, 38, 0.02);
+            box-shadow: 0 0 1px rgba(120, 24, 38, 0.3);
+            transform: rotate(-1.5deg);
+            min-width: 320px;
+            max-width: 400px;
+            user-select: none;
+        }
+        .sello-cancelado-title {
+            font-size: 19pt;
+            font-weight: 900;
+            letter-spacing: 5px;
+            margin-bottom: 6px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #781826;
+            text-align: center;
+        }
+        .sello-cancelado-line {
+            font-size: 8.5pt;
+            font-weight: bold;
+            text-align: left;
+            margin: 4px 0;
             display: flex;
-            align-items: center;
-            gap: 14px;
-            color: #065F46;
-            transition: all 0.3s ease;
+            align-items: baseline;
+            font-family: 'Courier New', Courier, monospace, Arial;
+        }
+        .sello-cancelado-dots {
+            flex: 1;
+            border-bottom: 1.5px dotted #781826;
+            margin: 0 4px 2px 4px;
+            position: relative;
+            min-height: 14px;
+        }
+        .sello-cancelado-val {
+            position: absolute;
+            bottom: 0px;
+            left: 8px;
+            color: #1E3A8A; /* Tinta azul de lapicero de la foto */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 9.5pt;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+        .sello-cancelado-company {
+            font-size: 8pt;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            margin-top: 6px;
+            color: #781826;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
         }
         @media print {
             body * {
@@ -3452,20 +3525,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             <!-- Barra de configuración del sello de aprobación (No imprimible) -->
             <div class="no-print" id="barraConfigSello" style="background:#0F172A; border-radius:14px; padding:12px 18px; margin-bottom:14px; border:1px solid #1E293B; display:flex; flex-wrap:wrap; gap:12px; align-items:center; font-size:0.8rem;">
-                <span style="color:#38BDF8; font-weight:700;"><i class="fa-solid fa-sliders"></i> Datos del Sello:</span>
+                <span style="color:#F43F5E; font-weight:800;"><i class="fa-solid fa-stamp"></i> Datos del Sello CANCELADO:</span>
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <label style="color:#94A3B8; font-size:0.75rem;">Banco:</label>
-                    <select id="inputSelloBanco" onchange="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem;">
-                        <option value="BCP">BCP (Banco de Crédito)</option>
-                        <option value="BBVA">BBVA Continental</option>
-                        <option value="Interbank">Interbank</option>
-                        <option value="Scotiabank">Scotiabank</option>
-                        <option value="BanBif">BanBif</option>
-                        <option value="Banco de la Nación">Banco de la Nación</option>
-                        <option value="Yape">Yape</option>
-                        <option value="Plin">Plin</option>
-                        <option value="Efectivo / Caja">Efectivo / Caja</option>
-                    </select>
+                    <label style="color:#94A3B8; font-size:0.75rem;">Fecha:</label>
+                    <input type="text" id="inputSelloFecha" placeholder="DD/MM/AAAA" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:95px;">
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="color:#94A3B8; font-size:0.75rem;">Banco / Medio:</label>
+                    <input type="text" id="inputSelloBanco" list="listaBancosSello" placeholder="Ej. BCP, VISA" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:130px;">
+                    <datalist id="listaBancosSello">
+                        <option value="BCP">
+                        <option value="BBVA">
+                        <option value="Interbank">
+                        <option value="Scotiabank">
+                        <option value="Banco de la Nación">
+                        <option value="VISA">
+                        <option value="Mastercard">
+                        <option value="Yape">
+                        <option value="Plin">
+                        <option value="Efectivo / Caja">
+                    </datalist>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
                     <label style="color:#94A3B8; font-size:0.75rem;">N° Operación:</label>
@@ -3473,138 +3552,186 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
                     <label style="color:#94A3B8; font-size:0.75rem;">Validador:</label>
-                    <input type="text" id="inputSelloValidador" value="Nayeli (Reportería)" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:150px;">
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <label style="color:#94A3B8; font-size:0.75rem;">Nota:</label>
-                    <input type="text" id="inputSelloNota" value="Pago conciliado en extracto" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:160px;">
+                    <input type="text" id="inputSelloValidador" value="Nayeli (Reportería)" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:140px;">
                 </div>
             </div>
 
-            <!-- HOJA A4 IMPRIMIBLE -->
+            <!-- HOJA A4 IMPRIMIBLE (RÉPLICA EXACTA DE FT15909_FacturaMuestra.pdf) -->
             <div id="printFacturaA4" class="hoja-factura-a4">
-                <!-- Encabezado -->
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; border-bottom:2px solid #E2E8F0; padding-bottom:16px;">
-                    <div style="flex:1;">
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                            <img src="https://bsperu.pe/assets/img/logo.png" alt="BS Perú Logo" style="height:44px; object-fit:contain;" onerror="this.style.display='none'">
-                            <div>
-                                <h2 style="margin:0; font-size:1.15rem; font-weight:800; color:#0F172A; letter-spacing:0.5px;">BUILDING SYSTEMS PERU S.A.C.</h2>
-                                <div style="font-size:0.7rem; color:#64748B; font-weight:600;">Soluciones Químicas para la Construcción y Minería</div>
-                            </div>
-                        </div>
-                        <div style="font-size:0.72rem; color:#475569; line-height:1.4;">
-                            <strong>Dirección Fiscal:</strong> AV. LOS FAISANES N° 675 - URB. LA CAMPIÑA<br>
-                            CHORRILLOS - LIMA - PERÚ<br>
-                            <strong>Central Telefónica:</strong> (01) 251-2940 • <strong>Email:</strong> ventas@bsperu.pe<br>
-                            <strong>Web:</strong> www.bsperu.pe
+                <!-- Encabezado Superior -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
+                    <!-- Logo BS PERÚ -->
+                    <div style="width:140px; text-align:left;">
+                        <img src="img/logo_bs.png" alt="BS PERÚ" style="height:56px; max-width:140px; object-fit:contain;" onerror="this.onerror=null; this.src='https://bsperu.pe/assets/img%20principales/logo.png';">
+                    </div>
+
+                    <!-- Datos Centrales de la Empresa -->
+                    <div style="text-align:center; flex:1; padding:0 8px;">
+                        <div style="font-family:Arial, Helvetica, sans-serif; font-size:11.8pt; font-weight:900; color:#000; letter-spacing:0.3px; margin-bottom:2px;">BUILDING SYSTEMS PERU S.A.C.</div>
+                        <div style="font-size:7.4pt; line-height:1.32; color:#000;">
+                            <strong>Domicilio Fiscal:</strong> Av. Los Faisanes N° 675<br>
+                            Urb. La Campiña, Chorrillos - Lima - Lima<br>
+                            <div style="margin:2px 0;"><strong>Sucursal:</strong> Av. Los Faisanes N° 675<br>
+                            Urb. La Campiña, Chorrillos - Lima - Lima</div>
+                            <strong>E-mail :</strong> ventas.04@bsperu.pe<br>
+                            <strong>Telf.:</strong> (01) 329 9307 &nbsp;<strong>Cel.</strong> 923 062 809
                         </div>
                     </div>
 
-                    <div class="factura-recuadro-ruc">
-                        <div style="font-size:0.95rem; font-weight:800; color:#0F172A; letter-spacing:1px;">R.U.C. N° 20609793806</div>
-                        <h3 id="a4TipoDocTitulo" style="margin:6px 0; font-size:1.05rem; font-weight:800; color:#0F172A; background:#F1F5F9; padding:4px 8px; border-radius:4px;">FACTURA ELECTRÓNICA</h3>
-                        <div id="a4NumeroDoc" style="font-size:1.35rem; font-weight:900; color:#DC2626; letter-spacing:1px;">F001-0015902</div>
+                    <!-- Recuadro Oficial de RUC y Comprobante -->
+                    <div class="factura-ruc-box-oficial">
+                        <div style="font-size:11.2pt; font-weight:900; letter-spacing:0.5px; color:#000;">R.U.C. N° 20609793806</div>
+                        <div id="a4TipoDocTitulo" style="background:#0D47A1; color:#FFF; font-weight:900; font-size:10.2pt; padding:4px 8px; margin:5px 0; letter-spacing:0.5px;">FACTURA ELECTRONICA</div>
+                        <div id="a4NumeroDoc" style="font-size:12pt; font-weight:900; color:#000; letter-spacing:0.5px;">N° F001 - 0015909</div>
                     </div>
                 </div>
 
-                <!-- Bloque Datos del Cliente -->
-                <div style="margin-top:14px; border:1px solid #CBD5E1; border-radius:8px; padding:10px 14px; background:#F8FAFC; display:grid; grid-template-columns: 2fr 1fr; gap:8px 16px; font-size:0.76rem;">
-                    <div>
-                        <span style="color:#64748B; font-weight:700;">SEÑOR(ES):</span>
-                        <strong id="a4ClienteNombre" style="color:#0F172A; display:block; font-size:0.82rem;">-</strong>
-                    </div>
-                    <div>
-                        <span style="color:#64748B; font-weight:700;">R.U.C. / D.N.I.:</span>
-                        <strong id="a4ClienteRuc" style="color:#0F172A; display:block; font-family:monospace; font-size:0.84rem;">-</strong>
-                    </div>
-                    <div style="grid-column: 1 / -1;">
-                        <span style="color:#64748B; font-weight:700;">DIRECCIÓN:</span>
-                        <span id="a4ClienteDireccion" style="color:#334155;">-</span>
-                    </div>
-                    <div>
-                        <span style="color:#64748B; font-weight:700;">FECHA DE EMISIÓN:</span>
-                        <strong id="a4FechaEmision" style="color:#0F172A;">-</strong>
-                    </div>
-                    <div>
-                        <span style="color:#64748B; font-weight:700;">MONEDA:</span>
-                        <strong id="a4Moneda" style="color:#0F172A;">SOLES (PEN)</strong>
-                    </div>
-                    <div>
-                        <span style="color:#64748B; font-weight:700;">FORMA DE PAGO:</span>
-                        <span id="a4FormaPago" style="color:#0F172A;">Contado</span>
-                    </div>
-                    <div>
-                        <span style="color:#64748B; font-weight:700;">GUÍA DE REMISIÓN:</span>
-                        <strong id="a4GuiaRemision" style="color:#0F172A;">-</strong>
-                    </div>
+                <!-- Cuadro Oficial de Datos del Cliente -->
+                <div class="factura-cliente-box-oficial">
+                    <div><strong>Fecha Emisión:</strong> <span id="a4FechaEmision">15/09/2026</span></div>
+                    <div><strong>Fecha Vcto.:</strong> <span id="a4FechaVcto">16/09/2026</span></div>
+
+                    <div><strong>Nombre Cliente:</strong> <span id="a4ClienteNombre" style="font-weight:700;">-</span></div>
+                    <div><strong>Cond. de Pago:</strong> <span id="a4FormaPago">CONTADO CONTRA ENTREGA</span></div>
+
+                    <div><strong>N° Doc. / R.U.C.:</strong> <span id="a4ClienteRuc" style="font-weight:700;">-</span></div>
+                    <div><strong>N° Pedido:</strong> <span id="a4NumeroPedido">-</span></div>
+
+                    <div><strong>Dirección:</strong> <span id="a4ClienteDireccion">-</span></div>
+                    <div><strong>N° Ord. Compra:</strong> <span id="a4OrdenCompra">-</span></div>
+
+                    <div><strong>Cod. Vendedor:</strong> <span id="a4CodVendedor">07 CARMEN LOLOY</span></div>
+                    <div><strong>N° Cotización:</strong> <span id="a4Cotizacion">-</span></div>
+
+                    <div></div>
+                    <div><strong>Guía Remisión Electrónica:</strong> <span id="a4GuiaRemision" style="font-weight:700;">-</span></div>
                 </div>
 
-                <!-- Tabla de Productos / Items -->
-                <table class="factura-tabla-items">
-                    <thead>
-                        <tr>
-                            <th style="width:30px; text-align:center;">ITEM</th>
-                            <th style="width:75px;">CÓDIGO</th>
-                            <th style="width:55px; text-align:right;">CANT.</th>
-                            <th style="width:45px; text-align:center;">UND</th>
-                            <th>DESCRIPCIÓN</th>
-                            <th style="width:75px; text-align:right;">V. UNIT</th>
-                            <th style="width:65px; text-align:right;">DSCTO</th>
-                            <th style="width:80px; text-align:right;">TOTAL</th>
-                        </tr>
-                    </thead>
-                    <tbody id="a4ItemsTbody">
-                        <!-- Items inyectados dinámicamente -->
-                    </tbody>
-                </table>
+                <!-- Tabla de Productos / Ítems con cabecera Azul Oficial -->
+                <div style="border:1.5px solid #000; border-radius:10px; overflow:hidden; margin-top:10px;">
+                    <table class="factura-tabla-items-oficial" style="margin-top:0; border:none;">
+                        <thead>
+                            <tr>
+                                <th style="width:32px; text-align:center;">ITEM</th>
+                                <th style="width:75px; text-align:left;">CODIGO</th>
+                                <th style="width:58px; text-align:right;">CANTIDAD</th>
+                                <th style="width:40px; text-align:center;">UND</th>
+                                <th style="text-align:left;">DESCRIPCIÓN</th>
+                                <th style="width:65px; text-align:center;">LOTE</th>
+                                <th style="width:70px; text-align:right;">P. UNITARIO</th>
+                                <th style="width:75px; text-align:right;">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="a4ItemsTbody">
+                            <!-- Items inyectados dinámicamente -->
+                        </tbody>
+                    </table>
 
-                <!-- Bloque Inferior: Sello, Letras y Totales -->
-                <div style="margin-top:16px; display:grid; grid-template-columns: 1.4fr 1fr; gap:16px; align-items:flex-start;">
-                    <div>
-                        <div style="font-size:0.74rem; color:#334155; margin-bottom:8px;">
-                            <strong>SON:</strong> <span id="a4TotalLetras" style="font-weight:700; text-transform:uppercase;">-</span>
-                        </div>
-
-                        <!-- SELLO OFICIAL DE APROBACIÓN / TESORERÍA -->
-                        <div id="selloAprobacionBox" class="sello-aprobado-box">
-                            <i class="fa-solid fa-circle-check" style="font-size:2.2rem; color:#10B981;"></i>
-                            <div style="flex:1;">
-                                <div style="font-weight:900; font-size:0.85rem; letter-spacing:0.5px; color:#065F46;">✔ PAGO CONCILIADO & APROBADO</div>
-                                <div style="font-size:0.7rem; font-weight:700; color:#047857;">BUILDING SYSTEMS PERÚ SAC • AUDITORÍA DE INGRESOS</div>
-                                <div style="font-size:0.72rem; margin-top:3px; color:#1E293B;">
-                                    Validado por: <strong id="selloValidadorTxt">Nayeli (Reportería)</strong><br>
-                                    Fecha: <strong id="selloFechaTxt">15/09/2026 12:49</strong> • Banco: <strong id="selloBancoTxt">BCP</strong> • Op: <strong id="selloOpTxt">894102</strong>
+                    <!-- Espacio en blanco inferior de la tabla donde se estampa el Sello Físico -->
+                    <div style="min-height:180px; padding:15px; display:flex; justify-content:center; align-items:center;">
+                        <!-- SELLO FÍSICO DE CANCELADO (RÉPLICA EXACTA DE LA FOTO) -->
+                        <div id="selloAprobacionBox" class="sello-cancelado-wrapper">
+                            <div class="sello-cancelado-stamp">
+                                <div class="sello-cancelado-title">CANCELADO</div>
+                                <div class="sello-cancelado-line">
+                                    <span style="min-width:65px;">FECHA:</span>
+                                    <div class="sello-cancelado-dots"><span id="selloFechaTxt" class="sello-cancelado-val">15/09/2026</span></div>
                                 </div>
-                                <div style="font-size:0.65rem; color:#059669; font-weight:800; margin-top:3px; text-transform:uppercase;">AUTORIZADO PARA SALIDA Y DESPACHO DE MERCADERÍA</div>
+                                <div class="sello-cancelado-line">
+                                    <span style="min-width:65px;">BANCO:</span>
+                                    <div class="sello-cancelado-dots"><span id="selloBancoTxt" class="sello-cancelado-val">VISA</span></div>
+                                </div>
+                                <div class="sello-cancelado-line">
+                                    <span style="min-width:115px;">N° OPERACIÓN:</span>
+                                    <div class="sello-cancelado-dots"><span id="selloOpTxt" class="sello-cancelado-val">849201</span></div>
+                                </div>
+                                <div class="sello-cancelado-company">BUILDING SYSTEMS PERU S.A.C.</div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div style="margin-top:12px; font-size:0.65rem; color:#64748B;">
-                            <div><strong>Código Hash SUNAT:</strong> <span id="a4HashSunat" style="font-family:monospace;">-</span></div>
-                            <div style="margin-top:2px;">Representación impresa de la Factura Electrónica generada mediante StarSoft ERP y auditada por el CRM de Building Systems Perú SAC.</div>
+                <!-- Observación y Total en Letras -->
+                <div style="font-size:7.8pt; line-height:1.4; color:#000; margin-top:8px;">
+                    <div><strong>Observación:</strong> <span id="a4Observacion">-</span></div>
+                    <div style="margin-top:3px;"><strong>SON:</strong> <span id="a4TotalLetras" style="font-weight:bold; text-transform:uppercase;">-</span></div>
+                </div>
+
+                <!-- Bloque Inferior: Cuotas, Cuentas Corrientes, QR y Cuadro de Totales -->
+                <div style="margin-top:10px; display:grid; grid-template-columns: 1.45fr 1fr; gap:16px; align-items:flex-start;">
+                    <!-- Columna Izquierda -->
+                    <div>
+                        <!-- Cuadro Cuotas (Si aplica) -->
+                        <table id="a4TablaCuotas" style="width:100%; border:1px solid #000; border-collapse:collapse; font-size:7.2pt; margin-bottom:8px; display:none;">
+                            <thead>
+                                <tr style="background:#F1F5F9;">
+                                    <th style="border:1px solid #000; padding:2px 4px; text-align:center;">Nro Cuota</th>
+                                    <th style="border:1px solid #000; padding:2px 4px; text-align:center;">Fecha Vcto.</th>
+                                    <th style="border:1px solid #000; padding:2px 4px; text-align:right;">Importe Cuota</th>
+                                </tr>
+                            </thead>
+                            <tbody id="a4CuotasTbody"></tbody>
+                        </table>
+
+                        <!-- Cuentas Corrientes Oficiales -->
+                        <div style="font-size:7.3pt; line-height:1.35; color:#000; margin-bottom:8px;">
+                            <strong>CUENTAS CORRIENTES:</strong><br>
+                            <strong>BCP:</strong> 193-9902956-0-56 &nbsp;<strong>CCI:</strong> 00219300990295605614<br>
+                            <strong>BBVA:</strong> 0011-0152-0100100654 &nbsp;<strong>CCI:</strong> 01115200010010065461<br>
+                            <strong>INTERBANK:</strong> 200-3005486597 &nbsp;<strong>CCI:</strong> 003-200-003005486597-34<br>
+                            <strong>BANCO DE LA NACION (DETRACCION):</strong> 00-014-173102
+                        </div>
+
+                        <!-- Código QR + Hash SUNAT + Texto Legal -->
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <img id="a4QrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=20609793806|01|F001|0015909" alt="QR SUNAT" style="width:78px; height:78px; border:1px solid #CBD5E1; padding:2px; background:#FFF;">
+                            <div style="font-size:6.7pt; line-height:1.28; color:#000;">
+                                <div id="a4HashSunat" style="font-family:monospace; font-weight:bold; word-break:break-all; margin-bottom:3px;">-</div>
+                                <div>Representación impresa de la <span id="a4TipoDocLegal">FACTURA ELECTRONICA</span>.</div>
+                                <div>Consulte el documento en <strong>starsoftweb.com/FactronWeb/Factron</strong></div>
+                                <div>Autorizado mediante resolución 2023 / SUNAT</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Cuadro de Totales -->
-                    <div style="border:1px solid #CBD5E1; border-radius:8px; background:#F8FAFC; overflow:hidden; font-size:0.76rem;">
-                        <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid #E2E8F0;">
-                            <span style="color:#64748B; font-weight:600;">Op. Gravada / Subtotal:</span>
-                            <strong id="a4Subtotal" style="color:#0F172A;">S/ 0.00</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid #E2E8F0;">
-                            <span style="color:#64748B; font-weight:600;">Descuentos Totales:</span>
-                            <strong id="a4Descuento" style="color:#DC2626;">S/ 0.00</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid #E2E8F0;">
-                            <span style="color:#64748B; font-weight:600;">I.G.V. (18%):</span>
-                            <strong id="a4Igv" style="color:#0F172A;">S/ 0.00</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; padding:10px 12px; background:#E2E8F0;">
-                            <span style="font-size:0.85rem; font-weight:800; color:#0F172A;">IMPORTE TOTAL:</span>
-                            <strong id="a4Total" style="font-size:1.1rem; font-weight:900; color:#0F172A;">S/ 0.00</strong>
-                        </div>
-                    </div>
+                    <!-- Columna Derecha: Cuadro Oficial de Totales -->
+                    <table style="width:100%; border:1.5px solid #000; border-collapse:collapse; font-size:7.6pt; color:#000;">
+                        <tr>
+                            <td style="border:1px solid #000; padding:2.5px 8px;">Total Ope. Gravadas</td>
+                            <td style="border:1px solid #000; padding:2.5px 6px; text-align:center; width:28px;"><span class="a4SimboloMoneda">S/</span></td>
+                            <td style="border:1px solid #000; padding:2.5px 8px; text-align:right; font-weight:bold; width:80px;" id="a4Subtotal">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #000; padding:2.5px 8px;">Total Ope. Inafectas</td>
+                            <td style="border:1px solid #000; padding:2.5px 6px; text-align:center;"><span class="a4SimboloMoneda">S/</span></td>
+                            <td style="border:1px solid #000; padding:2.5px 8px; text-align:right;" id="a4TotalInafectas">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #000; padding:2.5px 8px;">Total Ope. Exoneradas</td>
+                            <td style="border:1px solid #000; padding:2.5px 6px; text-align:center;"><span class="a4SimboloMoneda">S/</span></td>
+                            <td style="border:1px solid #000; padding:2.5px 8px; text-align:right;" id="a4TotalExoneradas">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #000; padding:2.5px 8px;">Total Descuentos</td>
+                            <td style="border:1px solid #000; padding:2.5px 6px; text-align:center;"><span class="a4SimboloMoneda">S/</span></td>
+                            <td style="border:1px solid #000; padding:2.5px 8px; text-align:right;" id="a4Descuento">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #000; padding:2.5px 8px;">Total Ope. Gratuitas</td>
+                            <td style="border:1px solid #000; padding:2.5px 6px; text-align:center;"><span class="a4SimboloMoneda">S/</span></td>
+                            <td style="border:1px solid #000; padding:2.5px 8px; text-align:right;" id="a4TotalGratuitas">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #000; padding:2.5px 8px;">Total IGV 18%</td>
+                            <td style="border:1px solid #000; padding:2.5px 6px; text-align:center;"><span class="a4SimboloMoneda">S/</span></td>
+                            <td style="border:1px solid #000; padding:2.5px 8px; text-align:right; font-weight:bold;" id="a4Igv">0.00</td>
+                        </tr>
+                        <tr style="background:#F1F5F9; font-weight:bold; font-size:8.3pt;">
+                            <td style="border:1.5px solid #000; padding:5px 8px;">TOTAL A PAGAR</td>
+                            <td style="border:1.5px solid #000; padding:5px 6px; text-align:center;"><span class="a4SimboloMoneda">S/</span></td>
+                            <td style="border:1.5px solid #000; padding:5px 8px; text-align:right; font-weight:900;" id="a4Total">0.00</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
 
@@ -5003,101 +5130,180 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         function renderizarFacturaA4(res) {
             const cab = res.cabecera || {};
-            const items = res.items || [];
-            const emisor = res.emisor || {};
-            const receptor = res.receptor || {};
-            const totales = res.totales || {};
-            const aprobacion = res.aprobacion_crm || null;
+            const detalle = res.detalle || {};
+            const items = (detalle && detalle.items && detalle.items.length > 0) ? detalle.items : (res.items || []);
+            const emisor = (detalle && detalle.emisor) || res.emisor || {};
+            const receptor = (detalle && detalle.receptor) || res.receptor || {};
+            const totales = (detalle && detalle.totales) || res.totales || {};
+            const doc = (detalle && detalle.documento) || {};
+            const cuotas = (detalle && detalle.cuotas) || [];
+            const aprobacion = res.datos_aprobacion || res.aprobacion_crm || null;
 
             // Barra superior
-            document.getElementById('topbarFacturaTitulo').textContent = `${cab.tipo_nombre || 'COMPROBANTE'}: ${cab.serie}-${cab.numero}`;
+            const topbar = document.getElementById('topbarFacturaTitulo');
+            if (topbar) topbar.textContent = `${cab.tipo_nombre || 'COMPROBANTE'}: ${cab.serie}-${cab.numero}`;
 
             // Cabecera RUC & Documento
-            document.getElementById('a4TipoDocTitulo').textContent = (cab.tipo_nombre || 'FACTURA ELECTRÓNICA').toUpperCase();
-            document.getElementById('a4NumeroDoc').textContent = `${cab.serie}-${cab.numero}`;
+            const elTipoDoc = document.getElementById('a4TipoDocTitulo');
+            if (elTipoDoc) elTipoDoc.textContent = (cab.tipo_nombre || 'FACTURA ELECTRONICA').toUpperCase();
+            const elNumDoc = document.getElementById('a4NumeroDoc');
+            if (elNumDoc) elNumDoc.textContent = `N° ${cab.serie} - ${cab.numero}`;
 
-            // Datos Cliente
-            document.getElementById('a4ClienteNombre').textContent = receptor.razon_social || cab.razon_social || '-';
-            document.getElementById('a4ClienteRuc').textContent = receptor.ruc || cab.ruc || '-';
-            document.getElementById('a4ClienteDireccion').textContent = receptor.direccion || '-';
-            document.getElementById('a4FechaEmision').textContent = cab.fecha_dmy || cab.fecha || '-';
-            
-            const monedaNombre = (cab.moneda === 'US' || cab.moneda === 'USD' || cab.moneda === '$') ? 'DÓLARES AMERICANOS (USD)' : 'SOLES (PEN)';
-            document.getElementById('a4Moneda').textContent = monedaNombre;
-            document.getElementById('a4FormaPago').textContent = cab.forma_pago || 'Contado';
-            document.getElementById('a4GuiaRemision').textContent = cab.guia_remision || '-';
+            // Cuadro Datos Cliente
+            const elClienteNom = document.getElementById('a4ClienteNombre');
+            if (elClienteNom) elClienteNom.textContent = receptor.nombre || receptor.razon_social || cab.razon_social || '-';
+            const elClienteRuc = document.getElementById('a4ClienteRuc');
+            if (elClienteRuc) elClienteRuc.textContent = receptor.ruc || cab.ruc || '-';
+            const elClienteDir = document.getElementById('a4ClienteDireccion');
+            if (elClienteDir) elClienteDir.textContent = receptor.direccion || cab.direccion || '-';
+            const elFechaEmis = document.getElementById('a4FechaEmision');
+            if (elFechaEmis) elFechaEmis.textContent = cab.fecha_dmy || doc.fecha_dmy || cab.fecha || '-';
+            const elFechaVcto = document.getElementById('a4FechaVcto');
+            if (elFechaVcto) elFechaVcto.textContent = cab.fecha_vcto_dmy || doc.fecha_vcto || '-';
+            const elFormaPago = document.getElementById('a4FormaPago');
+            if (elFormaPago) elFormaPago.textContent = cab.forma_pago || doc.forma_pago || 'CONTADO CONTRA ENTREGA';
+            const elNumPedido = document.getElementById('a4NumeroPedido');
+            if (elNumPedido) elNumPedido.textContent = cab.nro_pedido || '-';
+            const elOrdenCompra = document.getElementById('a4OrdenCompra');
+            if (elOrdenCompra) elOrdenCompra.textContent = cab.orden_compra || doc.orden_compra || '-';
+            const elCodVendedor = document.getElementById('a4CodVendedor');
+            if (elCodVendedor) elCodVendedor.textContent = cab.cod_vendedor || '-';
+            const elCotizacion = document.getElementById('a4Cotizacion');
+            if (elCotizacion) elCotizacion.textContent = cab.nro_cotizacion || doc.nro_cotizacion || '-';
+            const elGuiaRem = document.getElementById('a4GuiaRemision');
+            if (elGuiaRem) elGuiaRem.textContent = cab.guia_remision || doc.guia_remision || '-';
 
-            // Tabla de Items
+            // Tabla de Items con 8 columnas oficiales (ITEM, CODIGO, CANTIDAD, UND, DESCRIPCION, LOTE, P. UNITARIO, TOTAL)
             const tbody = document.getElementById('a4ItemsTbody');
-            tbody.innerHTML = '';
-            if (items.length === 0) {
-                tbody.innerHTML = `<tr>
-                    <td style="text-align:center;">1</td>
-                    <td style="font-family:monospace;">ITEM-01</td>
-                    <td style="text-align:right;">1.00</td>
-                    <td style="text-align:center;">NIU</td>
-                    <td>VENTA DE MERCADERÍA SEGÚN COMPROBANTE DE PAGO ELECTRÓNICO</td>
-                    <td style="text-align:right;">${Number(totales.gravadas || cab.subtotal || 0).toFixed(2)}</td>
-                    <td style="text-align:right;">0.00</td>
-                    <td style="text-align:right; font-weight:700;">${Number(totales.gravadas || cab.subtotal || 0).toFixed(2)}</td>
-                </tr>`;
-            } else {
-                items.forEach((it, idx) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td style="text-align:center;">${it.item || (idx + 1)}</td>
-                        <td style="font-family:monospace; font-size:0.72rem;">${escapeHtml(it.codigo || '-')}</td>
-                        <td style="text-align:right; font-weight:700;">${Number(it.cantidad || 1).toFixed(2)}</td>
-                        <td style="text-align:center; font-size:0.72rem;">${escapeHtml(it.unidad || 'NIU')}</td>
-                        <td style="font-size:0.74rem;">${escapeHtml(it.descripcion || '')}</td>
-                        <td style="text-align:right;">${Number(it.valor_unitario || 0).toFixed(2)}</td>
-                        <td style="text-align:right;">${Number(it.descuento || 0).toFixed(2)}</td>
-                        <td style="text-align:right; font-weight:700;">${Number(it.valor_total || 0).toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
+            if (tbody) {
+                tbody.innerHTML = '';
+                if (items.length === 0) {
+                    tbody.innerHTML = `<tr>
+                        <td style="text-align:center; padding:4px;">1</td>
+                        <td style="font-family:monospace; font-size:7.2pt; padding:4px;">ITEM-01</td>
+                        <td style="text-align:right; font-weight:700; padding:4px 6px;">1.00</td>
+                        <td style="text-align:center; font-size:7.2pt; padding:4px;">NIU</td>
+                        <td style="font-size:7.4pt; padding:4px 6px;">VENTA DE MERCADERÍA SEGÚN COMPROBANTE DE PAGO ELECTRÓNICO</td>
+                        <td style="text-align:center; font-size:7.2pt; padding:4px;">-</td>
+                        <td style="text-align:right; padding:4px 6px;">${Number(totales.gravadas || cab.subtotal || 0).toFixed(2)}</td>
+                        <td style="text-align:right; font-weight:700; padding:4px 6px;">${Number(totales.gravadas || cab.subtotal || 0).toFixed(2)}</td>
+                    </tr>`;
+                } else {
+                    items.forEach((it, idx) => {
+                        const row = document.createElement('tr');
+                        const cant = Number(it.cantidad || 1).toFixed(2);
+                        const pUnit = Number(it.precio_unitario || it.valor_unitario || 0).toFixed(2);
+                        const totalFila = Number(it.total || it.valor_total || (cant * pUnit)).toFixed(2);
+                        row.innerHTML = `
+                            <td style="text-align:center; padding:3px 4px;">${it.item || (idx + 1)}</td>
+                            <td style="font-family:monospace; font-size:7.2pt; padding:3px 4px;">${escapeHtml(it.codigo || '-')}</td>
+                            <td style="text-align:right; font-weight:700; padding:3px 6px;">${cant}</td>
+                            <td style="text-align:center; font-size:7.2pt; padding:3px 4px;">${escapeHtml(it.unidad || 'NIU')}</td>
+                            <td style="font-size:7.4pt; padding:3px 6px; line-height:1.2;">${escapeHtml(it.descripcion || '')}</td>
+                            <td style="text-align:center; font-size:7.2pt; padding:3px 4px;">${escapeHtml(it.lote || '-')}</td>
+                            <td style="text-align:right; padding:3px 6px;">${pUnit}</td>
+                            <td style="text-align:right; font-weight:700; padding:3px 6px;">${totalFila}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
             }
 
-            // Totales
-            const simbolo = (cab.moneda === 'US' || cab.moneda === 'USD' || cab.moneda === '$') ? '$' : 'S/';
+            // Observación y Total en Letras
             const totalVal = Number(totales.total || cab.importe || 0);
             const gravadaVal = Number(totales.gravadas || cab.subtotal || 0);
+            const inafectaVal = Number(totales.inafectas || 0);
+            const exoneradaVal = Number(totales.exoneradas || 0);
+            const gratuitaVal = Number(totales.gratuitas || 0);
+            const dsctoVal = Number(totales.descuento || totales.descuento_global || 0);
             const igvVal = Number(totales.igv || cab.igv || 0);
-            const dsctoVal = Number(totales.descuento_global || 0);
 
-            document.getElementById('a4Subtotal').textContent = `${simbolo} ${gravadaVal.toFixed(2)}`;
-            document.getElementById('a4Descuento').textContent = `${simbolo} ${dsctoVal.toFixed(2)}`;
-            document.getElementById('a4Igv').textContent = `${simbolo} ${igvVal.toFixed(2)}`;
-            document.getElementById('a4Total').textContent = `${simbolo} ${totalVal.toFixed(2)}`;
+            const elObs = document.getElementById('a4Observacion');
+            if (elObs) elObs.textContent = doc.observacion || cab.orden_compra || '-';
+            const elLetras = document.getElementById('a4TotalLetras');
+            if (elLetras) elLetras.textContent = doc.total_letras || numeroALetras(totalVal, cab.moneda);
 
-            // Total en letras
-            document.getElementById('a4TotalLetras').textContent = numeroALetras(totalVal, cab.moneda);
+            // Símbolo de moneda en toda la factura
+            const esDolar = (cab.moneda === 'US' || cab.moneda === 'USD' || cab.moneda === '$' || cab.moneda === 'ME');
+            const simbolo = esDolar ? '$' : 'S/';
+            document.querySelectorAll('.a4SimboloMoneda').forEach(el => el.textContent = simbolo);
 
-            // Hash SUNAT
-            document.getElementById('a4HashSunat').textContent = res.sunat_hash || 'Firmado Digitalmente conforme a Resolución de SUNAT';
+            // Totales de la derecha
+            const elSub = document.getElementById('a4Subtotal');
+            if (elSub) elSub.textContent = gravadaVal.toFixed(2);
+            const elInaf = document.getElementById('a4TotalInafectas');
+            if (elInaf) elInaf.textContent = inafectaVal.toFixed(2);
+            const elExon = document.getElementById('a4TotalExoneradas');
+            if (elExon) elExon.textContent = exoneradaVal.toFixed(2);
+            const elDesc = document.getElementById('a4Descuento');
+            if (elDesc) elDesc.textContent = dsctoVal.toFixed(2);
+            const elGrat = document.getElementById('a4TotalGratuitas');
+            if (elGrat) elGrat.textContent = gratuitaVal.toFixed(2);
+            const elIgv = document.getElementById('a4Igv');
+            if (elIgv) elIgv.textContent = igvVal.toFixed(2);
+            const elTot = document.getElementById('a4Total');
+            if (elTot) elTot.textContent = totalVal.toFixed(2);
 
-            // Configuración del sello de aprobación
-            const chk = document.getElementById('chkEstamparSello');
-            if (aprobacion && aprobacion.aprobado) {
-                chk.checked = true;
-                if (aprobacion.banco) document.getElementById('inputSelloBanco').value = aprobacion.banco;
-                if (aprobacion.numero_operacion) document.getElementById('inputSelloOperacion').value = aprobacion.numero_operacion;
-                if (aprobacion.validador) document.getElementById('inputSelloValidador').value = aprobacion.validador;
-                if (aprobacion.nota) document.getElementById('inputSelloNota').value = aprobacion.nota;
-                if (aprobacion.fecha_aprobacion) document.getElementById('selloFechaTxt').textContent = aprobacion.fecha_aprobacion;
-                
-                document.getElementById('btnGuardarAprobacionModal').innerHTML = '<i class="fa-solid fa-check"></i> Actualizar en cPanel';
-            } else {
-                chk.checked = true;
-                document.getElementById('inputSelloOperacion').value = '';
-                const ahora = new Date();
-                const pad = (n) => String(n).padStart(2, '0');
-                const fechaStr = `${pad(ahora.getDate())}/${pad(ahora.getMonth()+1)}/${ahora.getFullYear()} ${pad(ahora.getHours())}:${pad(ahora.getMinutes())}`;
-                document.getElementById('selloFechaTxt').textContent = fechaStr;
-                document.getElementById('btnGuardarAprobacionModal').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Guardar en cPanel';
+            // Cuadro de Cuotas (si tiene venta a crédito o cuotas UBL)
+            const tablaCuotas = document.getElementById('a4TablaCuotas');
+            const cuotasTbody = document.getElementById('a4CuotasTbody');
+            if (tablaCuotas && cuotasTbody) {
+                if (cuotas && cuotas.length > 0) {
+                    cuotasTbody.innerHTML = '';
+                    cuotas.forEach((cu, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="border:1px solid #000; padding:2px 4px; text-align:center;">Cuota ${idx + 1}</td>
+                            <td style="border:1px solid #000; padding:2px 4px; text-align:center;">${cu.fecha_vcto || '-'}</td>
+                            <td style="border:1px solid #000; padding:2px 4px; text-align:right; font-weight:bold;">${simbolo} ${Number(cu.monto || 0).toFixed(2)}</td>
+                        `;
+                        cuotasTbody.appendChild(tr);
+                    });
+                    tablaCuotas.style.display = 'table';
+                } else {
+                    tablaCuotas.style.display = 'none';
+                }
             }
 
-            toggleSelloAprobado(chk.checked);
+            // QR Code SUNAT oficial
+            const qrImg = document.getElementById('a4QrCodeImg');
+            if (qrImg) {
+                const qrData = `20609793806|${cab.tipo_doc || '01'}|${cab.serie}|${cab.numero}|${igvVal.toFixed(2)}|${totalVal.toFixed(2)}|${cab.fecha_dmy || ''}|${receptor.ruc || cab.ruc || ''}`;
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(qrData)}`;
+            }
+
+            // Hash SUNAT
+            const elHash = document.getElementById('a4HashSunat');
+            if (elHash) elHash.textContent = res.sunat_hash || doc.hash_sunat || cab.cdr || 'Firmado Digitalmente conforme a Resolución de SUNAT';
+
+            // Configuración del sello de aprobación (CANCELADO)
+            const chk = document.getElementById('chkEstamparSello');
+            const inputFecha = document.getElementById('inputSelloFecha');
+            const inputBanco = document.getElementById('inputSelloBanco');
+            const inputOp = document.getElementById('inputSelloOperacion');
+            const btnGuardar = document.getElementById('btnGuardarAprobacionModal');
+
+            if (aprobacion && (aprobacion.aprobado || aprobacion.estado_crm === 'APROBADO_CONCILIADO' || aprobacion.banco)) {
+                if (chk) chk.checked = true;
+                if (inputFecha) inputFecha.value = aprobacion.fecha_dmy || aprobacion.fecha_aprobacion || cab.fecha_dmy || '';
+                if (inputBanco) inputBanco.value = aprobacion.banco || 'BCP';
+                if (inputOp) inputOp.value = aprobacion.nro_operacion || aprobacion.numero_operacion || '';
+                if (btnGuardar) btnGuardar.innerHTML = '<i class="fa-solid fa-check"></i> Actualizar en cPanel';
+            } else {
+                if (chk) chk.checked = true;
+                if (inputFecha) inputFecha.value = cab.fecha_dmy || new Date().toLocaleDateString('es-PE');
+                if (inputBanco) {
+                    const forma = (cab.forma_pago || '').toUpperCase();
+                    if (forma.includes('BBVA')) inputBanco.value = 'BBVA';
+                    else if (forma.includes('INTERBANK')) inputBanco.value = 'Interbank';
+                    else if (forma.includes('VISA')) inputBanco.value = 'VISA';
+                    else inputBanco.value = 'BCP';
+                }
+                if (inputOp) inputOp.value = '';
+                if (btnGuardar) btnGuardar.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Guardar en cPanel';
+            }
+
+            toggleSelloAprobado(chk ? chk.checked : true);
             actualizarTextosSello();
         }
 
@@ -5114,13 +5320,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         function actualizarTextosSello() {
-            const banco = document.getElementById('inputSelloBanco').value;
-            const op = document.getElementById('inputSelloOperacion').value || 'S/N';
-            const validador = document.getElementById('inputSelloValidador').value || 'Nayeli (Reportería)';
+            const fecha = document.getElementById('inputSelloFecha')?.value || '';
+            const banco = document.getElementById('inputSelloBanco')?.value || '';
+            const op = document.getElementById('inputSelloOperacion')?.value || '';
 
-            document.getElementById('selloBancoTxt').textContent = banco;
-            document.getElementById('selloOpTxt').textContent = op;
-            document.getElementById('selloValidadorTxt').textContent = validador;
+            const elFecha = document.getElementById('selloFechaTxt');
+            const elBanco = document.getElementById('selloBancoTxt');
+            const elOp = document.getElementById('selloOpTxt');
+
+            if (elFecha) elFecha.textContent = fecha || '-';
+            if (elBanco) elBanco.textContent = banco || '-';
+            if (elOp) elOp.textContent = op || '-';
         }
 
         function guardarAprobacionModalActual() {
@@ -5138,10 +5348,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const payload = {
                 serie: cab.serie,
                 numero: cab.numero,
-                banco: document.getElementById('inputSelloBanco').value,
-                numero_operacion: document.getElementById('inputSelloOperacion').value,
-                validador: document.getElementById('inputSelloValidador').value,
-                nota: document.getElementById('inputSelloNota').value
+                fecha: document.getElementById('inputSelloFecha')?.value || '',
+                banco: document.getElementById('inputSelloBanco')?.value || '',
+                numero_operacion: document.getElementById('inputSelloOperacion')?.value || '',
+                nro_operacion: document.getElementById('inputSelloOperacion')?.value || '',
+                validador: document.getElementById('inputSelloValidador')?.value || 'Nayeli (Reportería)',
+                nota: 'Pago verificado y conciliado',
+                monto_total: currentA4Data.totales?.total || cab.importe || 0,
+                cliente_nombre: cab.razon_social || '',
+                cliente_ruc: cab.ruc || ''
             };
 
             fetch('crm_backend.php?action=guardar_factura_aprobada', {
@@ -5159,10 +5374,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         const item = docsCpeCache.find(x => x.serie === cab.serie && x.numero === cab.numero);
                         if (item) {
                             item.aprobado_crm = true;
-                            item.datos_aprobacion = res.datos;
+                            item.datos_aprobacion = res.registro || res.datos;
                             renderizarTablaCPE(docsCpeCache);
                         }
                     }
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Actualizado en cPanel';
                 } else {
                     alert('Error al registrar: ' + (res.mensaje || 'Error desconocido'));
                 }
