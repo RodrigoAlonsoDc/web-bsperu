@@ -31,6 +31,30 @@ $chatFile = $dataDir . '/mensajes_chat.json';
 $cotizacionesFile = $dataDir . '/cotizaciones.json';
 $clientesFile = $dataDir . '/clientes.json';
 $cierresFile = $dataDir . '/cierres_ventas.json';
+$facturasAprobadasFile = $dataDir . '/facturas_aprobadas.json';
+
+if (!file_exists($facturasAprobadasFile)) {
+    @file_put_contents($facturasAprobadasFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+function obtenerFacturasAprobadas() {
+    global $facturasAprobadasFile;
+    if (file_exists($facturasAprobadasFile)) {
+        return json_decode(file_get_contents($facturasAprobadasFile), true) ?: [];
+    }
+    return [];
+}
+
+function guardarFacturaAprobadaRecord($registro) {
+    global $facturasAprobadasFile;
+    $lista = obtenerFacturasAprobadas();
+    $docKey = trim($registro['documento'] ?? '');
+    if (empty($docKey)) return false;
+
+    $lista[$docKey] = $registro;
+    @file_put_contents($facturasAprobadasFile, json_encode($lista, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+    return true;
+}
 
 // Inicializar cierres de ventas si no existen
 if (!file_exists($cierresFile)) {
@@ -794,11 +818,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             $stmt = $dbConn->query($sql);
             $docs = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
 
-            // Resumen de estadísticas
+            // Resumen de estadísticas y cruce con aprobaciones de cPanel
             $totales = 0;
             $aprobados = 0;
             $pendientes = 0;
             $montoTotal = 0;
+            $facturasAprobadasCRM = obtenerFacturasAprobadas();
+
             foreach ($docs as &$d) {
                 $totales++;
                 $montoTotal += floatval($d['importe']);
@@ -809,6 +835,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 // Normalizar PV si está vacío
                 if (empty($d['pv'])) {
                     $d['pv'] = preg_replace('/[^0-9]/', '', $d['serie']) ?: '01';
+                }
+
+                // Verificar si ya fue aprobada y conciliada en cPanel
+                $docKey = trim($d['serie']) . '-' . trim($d['numero']);
+                if (isset($facturasAprobadasCRM[$docKey])) {
+                    $d['aprobado_crm'] = true;
+                    $d['datos_aprobacion'] = $facturasAprobadasCRM[$docKey];
+                } else {
+                    $d['aprobado_crm'] = false;
+                    $d['datos_aprobacion'] = null;
                 }
             }
 
@@ -831,6 +867,141 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 'documentos' => []
             ]);
             exit;
+        }
+    }
+
+    // FUNCIÓN AUXILIAR: PARSEAR XML UBL 2.1 OFICIAL
+    function parsearXmlCpe($xmlString) {
+        if (empty($xmlString)) return null;
+
+        try {
+            libxml_use_internal_errors(true);
+            $sxml = simplexml_load_string($xmlString);
+            if (!$sxml) return null;
+
+            // Registrar namespaces oficiales de UBL 2.1
+            $ns = $sxml->getNamespaces(true);
+            $cbcNs = $ns['cbc'] ?? 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2';
+            $cacNs = $ns['cac'] ?? 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2';
+            $dsNs = $ns['ds'] ?? 'http://www.w3.org/2000/09/xmldsig#';
+
+            $sxml->registerXPathNamespace('cbc', $cbcNs);
+            $sxml->registerXPathNamespace('cac', $cacNs);
+            $sxml->registerXPathNamespace('ds', $dsNs);
+
+            $getX = function($query, $default = '') use ($sxml) {
+                $res = $sxml->xpath($query);
+                if ($res && isset($res[0])) {
+                    return trim((string)$res[0]);
+                }
+                return $default;
+            };
+
+            // Emisor
+            $emisorRuc = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID', '20609793806');
+            $emisorNombre = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName', 'BUILDING SYSTEMS PERU SAC');
+            $emisorDireccion = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine/cbc:Line', 'AV. LOS FAISANES N° 675');
+            $emisorDistrito = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District', 'CHORRILLOS');
+            $emisorProvincia = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentity', 'LIMA');
+
+            // Receptor
+            $receptorRuc = $getX('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID', '');
+            $receptorNombre = $getX('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName', '');
+            $receptorDireccion = $getX('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine/cbc:Line', '');
+
+            // Documento
+            $idDoc = $getX('//cbc:ID', '');
+            $fechaEmision = $getX('//cbc:IssueDate', '');
+            $tipoDoc = $getX('//cbc:InvoiceTypeCode', '01');
+            $moneda = $getX('//cbc:DocumentCurrencyCode', 'PEN');
+            $guiaRemision = $getX('//cac:DespatchDocumentReference/cbc:ID', '');
+            $totalLetras = $getX('//cbc:Note', '');
+            $hashSunat = $getX('//ds:DigestValue', '');
+
+            // Totales
+            $subtotal = floatval($getX('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount', '0'));
+            $igv = floatval($getX('//cac:TaxTotal/cbc:TaxAmount', '0'));
+            $total = floatval($getX('//cac:LegalMonetaryTotal/cbc:PayableAmount', '0'));
+            $descuentoGlobal = floatval($getX('//cac:AllowanceCharge[cbc:ChargeIndicator="false"]/cbc:Amount', '0'));
+
+            // Items
+            $items = [];
+            $lineNodes = $sxml->xpath('//cac:InvoiceLine');
+            if (!empty($lineNodes)) {
+                $num = 1;
+                foreach ($lineNodes as $l) {
+                    $l->registerXPathNamespace('cbc', $cbcNs);
+                    $l->registerXPathNamespace('cac', $cacNs);
+
+                    $qNode = $l->xpath('cbc:InvoicedQuantity')[0] ?? null;
+                    $qty = $qNode ? floatval((string)$qNode) : 1;
+                    $unit = $qNode ? (string)($qNode['unitCode'] ?? 'NIU') : 'NIU';
+
+                    $cod = (string)($l->xpath('cac:Item/cac:SellersItemIdentification/cbc:ID')[0] ?? '');
+                    $desc = (string)($l->xpath('cac:Item/cbc:Description')[0] ?? '');
+                    $pRef = floatval((string)($l->xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceAmount')[0] ?? 0));
+                    $pUnit = floatval((string)($l->xpath('cac:Price/cbc:PriceAmount')[0] ?? 0));
+                    if ($pRef > 0 && $pUnit <= 0) $pUnit = round($pRef / 1.18, 4);
+
+                    $dscto = floatval((string)($l->xpath('cac:AllowanceCharge[cbc:ChargeIndicator="false"]/cbc:Amount')[0] ?? 0));
+                    $valorVenta = floatval((string)($l->xpath('cbc:LineExtensionAmount')[0] ?? 0));
+                    $igvItem = floatval((string)($l->xpath('cac:TaxTotal/cbc:TaxAmount')[0] ?? 0));
+
+                    $totalItem = $valorVenta + $igvItem;
+                    if ($totalItem <= 0 && $pRef > 0) $totalItem = round($qty * $pRef, 2);
+
+                    $items[] = [
+                        'item' => $num++,
+                        'codigo' => $cod ?: 'PROD-' . $num,
+                        'descripcion' => $desc,
+                        'cantidad' => $qty,
+                        'unidad' => $unit,
+                        'precio_unitario' => $pUnit,
+                        'precio_referencial' => $pRef,
+                        'descuento' => $dscto,
+                        'subtotal' => $valorVenta,
+                        'igv' => $igvItem,
+                        'total' => $totalItem
+                    ];
+                }
+            }
+
+            return [
+                'emisor' => [
+                    'ruc' => $emisorRuc,
+                    'nombre' => $emisorNombre,
+                    'direccion' => $emisorDireccion,
+                    'distrito' => $emisorDistrito,
+                    'provincia' => $emisorProvincia,
+                    'pais' => 'PERÚ'
+                ],
+                'receptor' => [
+                    'ruc' => $receptorRuc,
+                    'nombre' => $receptorNombre,
+                    'direccion' => $receptorDireccion
+                ],
+                'documento' => [
+                    'numero_completo' => $idDoc,
+                    'tipo_doc' => $tipoDoc,
+                    'tipo_nombre' => ($tipoDoc === '01' ? 'FACTURA ELECTRÓNICA' : ($tipoDoc === '03' ? 'BOLETA DE VENTA ELECTRÓNICA' : 'NOTA DE CRÉDITO')),
+                    'fecha_emision' => $fechaEmision,
+                    'fecha_dmy' => !empty($fechaEmision) ? date('d/m/Y', strtotime($fechaEmision)) : '',
+                    'moneda' => $moneda,
+                    'simbolo_moneda' => ($moneda === 'USD' || $moneda === 'ME' ? '$' : 'S/'),
+                    'guia_remision' => $guiaRemision,
+                    'total_letras' => $totalLetras,
+                    'hash_sunat' => $hashSunat
+                ],
+                'totales' => [
+                    'subtotal' => $subtotal,
+                    'descuento' => $descuentoGlobal,
+                    'igv' => $igv,
+                    'total' => $total
+                ],
+                'items' => $items
+            ];
+        } catch(Exception $ex) {
+            return null;
         }
     }
 
@@ -877,6 +1048,179 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             echo "Error al obtener XML: " . $e->getMessage();
             exit;
         }
+    }
+
+    // 0.2 OBTENER DETALLE COMPLETO DE FACTURA DESDE XML PARA IMPRESIÓN A4
+    if ($action === 'obtener_detalle_factura_completa') {
+        header('Content-Type: application/json; charset=utf-8');
+        $serie = preg_replace('/[^A-Za-z0-9]/', '', trim($_REQUEST['serie'] ?? ''));
+        $numero = preg_replace('/[^A-Za-z0-9]/', '', trim($_REQUEST['numero'] ?? ''));
+
+        $dbConn = $db ?: (function_exists('getStarsoftDB') ? getStarsoftDB() : null);
+        if (!$dbConn || empty($serie) || empty($numero)) {
+            echo json_encode(['success' => false, 'mensaje' => 'Parámetros insuficientes o sin conexión.']);
+            exit;
+        }
+
+        try {
+            $numCleanSinCeros = ltrim($numero, '0');
+            $sql = "SELECT TOP 1 XML, CFNUMSER, CFNUMDOC, RUC_EMISOR, TIPODOC_COMPROBANTE, 
+                           CONVERT(varchar, CFFECDOC, 23) as fecha,
+                           LTRIM(RTRIM(CFNOMBRE)) as razon_social,
+                           CASE WHEN LEN(LTRIM(RTRIM(COALESCE(NRO_DOC_RECEPTOR, '')))) > 4 THEN LTRIM(RTRIM(NRO_DOC_RECEPTOR))
+                                ELSE LTRIM(RTRIM(COALESCE(CFCODCLI, ''))) END as ruc,
+                           CAST(COALESCE(IMPORTE_TOTAL_VENTA, 0) as float) as importe,
+                           CAST(COALESCE(SUMATORIA_IGV, 0) as float) as igv,
+                           CAST(COALESCE(TVV_IMP_OPE_GRAVADAS, 0) as float) as subtotal,
+                           LTRIM(RTRIM(COALESCE(CDR, ''))) as cdr,
+                           LTRIM(RTRIM(COALESCE(ESTADO_COMPROBANTE, ''))) as estado_sunat
+                    FROM [003BDCOMUN].dbo.COMPROBANTE_CAB 
+                    WHERE CFNUMSER = '$serie' AND (CFNUMDOC = '$numero' OR LTRIM(CFNUMDOC) = '$numero' OR LTRIM(CFNUMDOC) = '$numCleanSinCeros')";
+            $stmt = $dbConn->query($sql);
+            $row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+
+            if (!$row) {
+                echo json_encode(['success' => false, 'mensaje' => "No se encontró el comprobante {$serie}-{$numero} en StarSoft."]);
+                exit;
+            }
+
+            // Parsear XML si existe
+            $detalleXml = null;
+            if (!empty($row['XML'])) {
+                $detalleXml = parsearXmlCpe($row['XML']);
+            }
+
+            // Si el XML no se pudo parsear o está vacío, armar estructura fallback con los datos de cabecera
+            if (!$detalleXml) {
+                $detalleXml = [
+                    'emisor' => [
+                        'ruc' => '20609793806',
+                        'nombre' => 'BUILDING SYSTEMS PERU SAC',
+                        'direccion' => 'AV. LOS FAISANES N° 675',
+                        'distrito' => 'CHORRILLOS',
+                        'provincia' => 'LIMA',
+                        'pais' => 'PERÚ'
+                    ],
+                    'receptor' => [
+                        'ruc' => $row['ruc'],
+                        'nombre' => $row['razon_social'],
+                        'direccion' => 'No registrada en cabecera'
+                    ],
+                    'documento' => [
+                        'numero_completo' => $serie . '-' . $numero,
+                        'tipo_doc' => $row['TIPODOC_COMPROBANTE'] ?: '01',
+                        'tipo_nombre' => ($row['TIPODOC_COMPROBANTE'] === '01' ? 'FACTURA ELECTRÓNICA' : 'BOLETA ELECTRÓNICA'),
+                        'fecha_emision' => $row['fecha'],
+                        'fecha_dmy' => !empty($row['fecha']) ? date('d/m/Y', strtotime($row['fecha'])) : '',
+                        'moneda' => 'PEN',
+                        'simbolo_moneda' => 'S/',
+                        'guia_remision' => '',
+                        'total_letras' => '',
+                        'hash_sunat' => $row['cdr']
+                    ],
+                    'totales' => [
+                        'subtotal' => $row['subtotal'],
+                        'descuento' => 0,
+                        'igv' => $row['igv'],
+                        'total' => $row['importe']
+                    ],
+                    'items' => [
+                        [
+                            'item' => 1,
+                            'codigo' => 'PROD',
+                            'descripcion' => 'Venta según factura StarSoft',
+                            'cantidad' => 1,
+                            'unidad' => 'NIU',
+                            'precio_unitario' => $row['subtotal'],
+                            'precio_referencial' => $row['importe'],
+                            'descuento' => 0,
+                            'subtotal' => $row['subtotal'],
+                            'igv' => $row['igv'],
+                            'total' => $row['importe']
+                        ]
+                    ]
+                ];
+            }
+
+            // Consultar si ya tiene registro de Aprobación en cPanel
+            $docKey = $serie . '-' . $numero;
+            $aprobadas = obtenerFacturasAprobadas();
+            $datosAprobacion = $aprobadas[$docKey] ?? null;
+
+            echo json_encode([
+                'success' => true,
+                'documento' => $serie . '-' . $numero,
+                'serie' => $serie,
+                'numero' => $numero,
+                'detalle' => $detalleXml,
+                'aprobado_crm' => !empty($datosAprobacion),
+                'datos_aprobacion' => $datosAprobacion
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'mensaje' => 'Error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+
+    // 0.3 GUARDAR FACTURA APROBADA EN CPANEL CON SELLO DE AUDITORÍA
+    if ($action === 'guardar_factura_aprobada') {
+        header('Content-Type: application/json; charset=utf-8');
+        $serie = preg_replace('/[^A-Za-z0-9]/', '', trim($_POST['serie'] ?? ''));
+        $numero = preg_replace('/[^A-Za-z0-9]/', '', trim($_POST['numero'] ?? ''));
+        $banco = trim($_POST['banco'] ?? 'BCP');
+        $nroOperacion = trim($_POST['nro_operacion'] ?? '');
+        $validador = trim($_POST['validador'] ?? 'Nayeli (Reportería)');
+        $nota = trim($_POST['nota'] ?? 'Pago verificado y conciliado');
+        $montoTotal = floatval($_POST['monto_total'] ?? 0);
+        $clienteNombre = trim($_POST['cliente_nombre'] ?? '');
+        $clienteRuc = trim($_POST['cliente_ruc'] ?? '');
+
+        if (empty($serie) || empty($numero)) {
+            echo json_encode(['success' => false, 'mensaje' => 'Serie y número de documento son requeridos.']);
+            exit;
+        }
+
+        $docKey = $serie . '-' . $numero;
+        $registro = [
+            'documento' => $docKey,
+            'serie' => $serie,
+            'numero' => $numero,
+            'fecha_aprobacion' => date('Y-m-d H:i:s'),
+            'fecha_dmy' => date('d/m/Y H:i'),
+            'validador' => $validador,
+            'banco' => $banco,
+            'nro_operacion' => $nroOperacion,
+            'nota' => $nota,
+            'monto_total' => $montoTotal,
+            'cliente_nombre' => $clienteNombre,
+            'cliente_ruc' => $clienteRuc,
+            'estado_crm' => 'APROBADO_CONCILIADO'
+        ];
+
+        $ok = guardarFacturaAprobadaRecord($registro);
+        if ($ok) {
+            echo json_encode([
+                'success' => true,
+                'mensaje' => "¡Comprobante {$docKey} aprobado y registrado en cPanel exitosamente!",
+                'registro' => $registro
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode(['success' => false, 'mensaje' => 'No se pudo registrar la aprobación en cPanel.']);
+        }
+        exit;
+    }
+
+    // 0.4 LISTAR TODAS LAS FACTURAS APROBADAS EN CPANEL
+    if ($action === 'listar_facturas_aprobadas_crm') {
+        header('Content-Type: application/json; charset=utf-8');
+        $aprobadas = obtenerFacturasAprobadas();
+        echo json_encode([
+            'success' => true,
+            'total' => count($aprobadas),
+            'facturas' => array_values($aprobadas)
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
 
     // 1. LISTAR PAGOS Y COMPROBANTES
