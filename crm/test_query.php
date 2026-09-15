@@ -37,36 +37,28 @@ try {
         return $res;
     }
 
-    // 1. Conteo exacto de todas las tablas
-    echo "=== CONTEO DE REGISTROS EN TODAS LAS TABLAS DE BDTPED_SSA ===\n";
-    $tablas = [
-        'COTCAB' => 'Cotizaciones (Cabecera)',
-        'COTDET' => 'Cotizaciones (Detalle Ítems)',
-        'PEDCAB' => 'Pedidos de Venta (Cabecera)',
-        'PEDDET' => 'Pedidos de Venta (Detalle Ítems)',
-        'FACCAB' => 'Facturación (Cabecera)',
-        'FACDET' => 'Facturación (Detalle Ítems)',
-        'GREMISION_CAB' => 'Guías de Remisión (Cabecera)',
-        'GREMISION_DET' => 'Guías de Remisión (Detalle)',
-        'LISPROART' => 'Lista de Precios / Artículos',
-        'BDT_VENDEDORCUOTA' => 'Cuotas / Metas de Vendedores',
-        'USUARIO_BS' => 'Usuarios del Sistema BS',
-        'PROMOCAB' => 'Promociones (Cabecera)',
-        'PROMODET' => 'Promociones (Detalle)',
-        'lugares' => 'Lugares de Entrega / Despacho',
-        'TIPODESP' => 'Tipos de Despacho',
-        'TipoCompra' => 'Tipos de Compra / Pago'
-    ];
+    // 1. Tablas relacionadas a Facturación Electrónica, Rutas o Parámetros
+    echo "=== TABLAS DE RUTAS / FACTURACIÓN / PARÁMETROS ===\n";
+    $qpaths = runQuery($conn, "SELECT TABLE_CATALOG, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%RUTA%' OR TABLE_NAME LIKE '%PARAM%' OR TABLE_NAME LIKE '%CONF%' OR TABLE_NAME LIKE '%ELECT%' OR TABLE_NAME LIKE '%FACT%' UNION SELECT TABLE_CATALOG, TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%RUTA%' OR TABLE_NAME LIKE '%PARAM%' OR TABLE_NAME LIKE '%CONF%' OR TABLE_NAME LIKE '%ELECT%' OR TABLE_NAME LIKE '%FACT%'");
+    print_r($qpaths);
 
-    foreach ($tablas as $tbl => $desc) {
-        try {
-            $r = runQuery($conn, "SELECT COUNT(*) as c FROM $tbl");
-            $cnt = $r[0]['c'] ?? 0;
-            echo sprintf("  %-18s: %7s registros (%s)\n", $tbl, number_format($cnt), $desc);
-        } catch (Exception $e) {
-            echo "  $tbl: Error ({$e->getMessage()})\n";
-        }
-    }
+    // 2. Tablas de comprobantes en 003BDCOMUN
+    echo "\n=== TABLAS DE COMPROBANTES EN 003BDCOMUN ===\n";
+    $qcomp = runQuery($conn, "SELECT TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%COMPROBANTE%'");
+    print_r($qcomp);
+
+    // 3. Revisar si hay campos de ruta de archivo en FACCAB o COMPROBANTE_CAB
+    echo "\n=== COLUMNAS DE FACCAB Y COMPROBANTECAB ===\n";
+    try {
+        $c1 = runQuery($conn, "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='FACCAB' AND (COLUMN_NAME LIKE '%RUT%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%ARCH%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%')");
+        print_r($c1);
+    } catch(Exception $e) {}
+
+    try {
+        $c2 = runQuery($conn, "SELECT COLUMN_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='COMPROBANTECAB' AND (COLUMN_NAME LIKE '%RUT%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%ARCH%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%')");
+        print_r($c2);
+    } catch(Exception $e) {}
+
 
     // 2. Vistas en BDTPED_SSA
     echo "\n=== VISTAS EN BDTPED_SSA ===\n";
