@@ -98,21 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ]);
         exit;
     }
-
-    // 3. ENVIAR MENSAJE AL CHAT CON REPORTERÍA
-    if ($action === 'enviar_chat_reporteria') {
-        $mensaje = $_POST['mensaje'] ?? '';
-        $asesor = $_POST['asesor'] ?? 'Endrina';
-        $fecha = date('H:i');
-
-        echo json_encode([
-            'success' => true,
-            'mensaje' => $mensaje,
-            'asesor' => $asesor,
-            'hora' => $fecha
-        ]);
-        exit;
-    }
 }
 
 // Obtener siguiente correlativo oficial de cotización automáticamente
@@ -1043,98 +1028,6 @@ if (file_exists($fileCotizPath)) {
             border-color: #2F323A;
         }
 
-        /* ================= CHAT EN EL CENTRO ================= */
-        .chat-center-container {
-            background: #FFF;
-            border-radius: var(--card-radius);
-            border: 1px solid var(--border-soft);
-            display: flex;
-            flex-direction: column;
-            height: 600px;
-            overflow: hidden;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.02);
-        }
-        body.dark-mode .chat-center-container {
-            background: #18191D;
-            border-color: #272A30;
-        }
-        .chat-center-header {
-            padding: 18px 24px;
-            border-bottom: 1px solid var(--border-soft);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #FAF7F2;
-        }
-        body.dark-mode .chat-center-header {
-            background: #202227;
-            border-color: #272A30;
-        }
-        .chat-center-messages {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            background: #FAF7F2;
-        }
-        body.dark-mode .chat-center-messages {
-            background: #141518;
-        }
-        .chat-bubble {
-            max-width: 75%;
-            padding: 12px 18px;
-            border-radius: 18px;
-            font-size: 0.84rem;
-            line-height: 1.45;
-        }
-        .chat-bubble.reporteria {
-            background: #FFF;
-            align-self: flex-start;
-            border: 1px solid var(--border-soft);
-            color: var(--text-dark);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        body.dark-mode .chat-bubble.reporteria {
-            background: #1F2026;
-            color: #FFF;
-            border-color: #2C2F38;
-        }
-        .chat-bubble.asesor {
-            background: var(--accent-tan);
-            color: #161719;
-            align-self: flex-end;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(199, 155, 88, 0.2);
-        }
-        .chat-center-footer {
-            padding: 16px 20px;
-            border-top: 1px solid var(--border-soft);
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            background: #FFF;
-        }
-        body.dark-mode .chat-center-footer {
-            background: #18191D;
-            border-color: #272A30;
-        }
-        .chat-center-footer input {
-            flex: 1;
-            padding: 12px 18px;
-            border-radius: var(--pill-radius);
-            border: 1px solid var(--border-soft);
-            background: #FAF7F2;
-            outline: none;
-            font-size: 0.88rem;
-        }
-        body.dark-mode .chat-center-footer input {
-            background: #23252B;
-            border-color: #2F323A;
-            color: #FFF;
-        }
-
         /* ================= COMPROBANTES EN EL CENTRO ================= */
         .vouchers-grid {
             display: grid;
@@ -1696,12 +1589,6 @@ if (file_exists($fileCotizPath)) {
                     <span class="nav-badge" id="badgeCarteraTotal" style="background:var(--accent-tan); color:#161719; font-weight:700;">45</span>
                 </div>
 
-                <div class="nav-item" id="nav-chat" onclick="cambiarVistaVentas('chat', this)">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Chat Reportería</span>
-                    <span class="nav-badge" id="chatBadgeNum" style="background:#EF4444; color:#FFF;">2</span>
-                </div>
-
                 <div class="nav-item" id="nav-comprobantes" onclick="cambiarVistaVentas('comprobantes', this)">
                     <i class="fa-solid fa-receipt"></i>
                     <span>Comprobantes</span>
@@ -1804,7 +1691,7 @@ if (file_exists($fileCotizPath)) {
                         </div>
                     </div>
 
-                    <div class="stat-card-mini" onclick="cambiarVistaVentas('chat')">
+                    <div class="stat-card-mini" onclick="cambiarVistaVentas('comprobantes')">
                         <div class="stat-mini-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                         <div class="stat-mini-info">
                             <h4 id="statPendientesRep">3</h4>
@@ -2748,68 +2635,6 @@ if (file_exists($fileCotizPath)) {
                 </div>
             </div>
 
-            <!-- ================= VISTA 5: CHAT CON REPORTERÍA (EN EL MEDIO) ================= -->
-            <div id="vista-chat" class="vista-seccion" style="display:none;">
-                <div class="main-header">
-                    <div>
-                        <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Comunicación Interna</span>
-                        <h1 style="margin-top:2px;">Chat Oficial con Reportería</h1>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
-                            <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
-                        </button>
-                    </div>
-                </div>
-
-                <div class="chat-center-container">
-                    <div class="chat-center-header">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div class="status-dot"></div>
-                            <div>
-                                <strong style="color:var(--text-dark); font-size:0.9rem;">Área de Reportería & Finanzas (Nayeli)</strong>
-                                <p style="font-size:0.7rem; color:var(--text-muted);">Canal directo • Endrina (Sucursal Chorrillos)</p>
-                            </div>
-                        </div>
-                        <span class="badge-tag-activo">En línea</span>
-                    </div>
-
-                    <div class="chat-center-messages" id="chatCenterMessages">
-                        <div class="chat-bubble reporteria">
-                            <strong>Área de Reportería:</strong><br>
-                            Hola Endrina, recibimos la Factura F001-00892 por S/ 14,400.00 de Cosapi S.A. El comprobante BCP #849201 ha sido <strong>ACEPTADO Y REGISTRADO</strong> exitosamente en banco. ✅
-                            <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">11:42 AM</div>
-                        </div>
-
-                        <div class="chat-bubble asesor">
-                            <strong>Tú (Endrina):</strong><br>
-                            Excelente equipo, acabo de emitir la Factura F001-00891 de Consorcio Vial Piura por S/ 6,800.00 con voucher BBVA. ¿Podrían confirmarme apenas esté validado?
-                            <div style="font-size:0.65rem; opacity:0.8; margin-top:4px;">11:45 AM</div>
-                        </div>
-
-                        <div class="chat-bubble reporteria">
-                            <strong>Área de Reportería:</strong><br>
-                            Está en cola de revisión bancaria. Recuerda enviar también tu consolidado de ventas del día antes de las 6:00 PM para el cierre.
-                            <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">11:47 AM</div>
-                        </div>
-                    </div>
-
-                    <!-- Botones de respuesta rápida -->
-                    <div style="display:flex; gap:8px; padding:10px 20px; background:#FAF7F2; overflow-x:auto; border-top:1px solid var(--border-soft);">
-                        <button class="cartera-pill" onclick="insertarTextoChat('¿Pudieron verificar el voucher de Consorcio Vial?')">¿Verificaron voucher Consorcio?</button>
-                        <button class="cartera-pill" onclick="insertarTextoChat('Adjunto nuevo comprobante BCP para validación')">Adjunto nuevo voucher BCP</button>
-                        <button class="cartera-pill" onclick="insertarTextoChat('Acabo de enviar el consolidado de ventas del día')">Consolidado del día enviado</button>
-                    </div>
-
-                    <div class="chat-center-footer">
-                        <input type="text" id="inputChatMsg" placeholder="Escribe un mensaje o consulta a Reportería..." onkeypress="if(event.key==='Enter') enviarMensajeChat()">
-                        <button class="btn-pill-white primary" style="padding:10px 22px;" onclick="enviarMensajeChat()">
-                            <i class="fa-solid fa-paper-plane"></i> Enviar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <!-- ================= VISTA 6: COMPROBANTES (EN EL MEDIO) ================= -->
             <div id="vista-comprobantes" class="vista-seccion" style="display:none;">
                 <div class="main-header">
@@ -2898,7 +2723,7 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                <div class="activity-card" onclick="cambiarVistaVentas('chat')">
+                <div class="activity-card" onclick="cambiarVistaVentas('comprobantes')">
                     <div class="date-badge">
                         <span class="day">12</span>
                         <span class="month">MAR</span>
@@ -2910,14 +2735,14 @@ if (file_exists($fileCotizPath)) {
                 </div>
             </div>
 
-            <!-- BLOQUE 3: NOTIFICACIONES & CHAT CON REPORTERÍA -->
+            <!-- BLOQUE 3: NOTIFICACIONES & REPORTERÍA -->
             <div class="activity-block">
                 <div class="activity-block-header">
                     <h4>Latest shoutouts</h4>
-                    <a onclick="cambiarVistaVentas('chat')">View all</a>
+                    <a onclick="cambiarVistaVentas('comprobantes')">View all</a>
                 </div>
 
-                <div class="shoutout-item" onclick="cambiarVistaVentas('chat')">
+                <div class="shoutout-item" onclick="cambiarVistaVentas('comprobantes')">
                     <div class="shoutout-avatar-box">
                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Adam">
                         <div class="shoutout-online-dot"></div>
@@ -2928,7 +2753,7 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                <div class="shoutout-item" onclick="cambiarVistaVentas('chat')">
+                <div class="shoutout-item" onclick="cambiarVistaVentas('comprobantes')">
                     <div class="shoutout-avatar-box">
                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Johnny">
                         <div class="shoutout-online-dot"></div>
@@ -4434,12 +4259,11 @@ if (file_exists($fileCotizPath)) {
                 ventasHoyCount++;
                 document.getElementById('statVentasHoy').textContent = ventasHoyCount;
                 
-                alert(`✅ ¡Facturación ${nro} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} registrada!\n\n1. El comprobante y voucher fueron guardados en el servidor.\n2. Se notificó automáticamente al Chat de Nayeli (Reportería) con la tarjeta de la factura para la validación del pago.`);
+                alert(`✅ ¡Facturación ${nro} por S/ ${monto.toLocaleString('en-US', {minimumFractionDigits:2})} registrada!\n\nEl comprobante y voucher fueron guardados en el servidor para validación en Reportería.`);
 
-                // Recargar comprobantes y conmutar a la vista chat
+                // Recargar comprobantes y conmutar a la vista comprobantes
                 cargarComprobantesVentas();
-                cargarChatVentas();
-                cambiarVistaVentas('chat');
+                cambiarVistaVentas('comprobantes');
 
                 // Limpiar formulario y regenerar número
                 document.getElementById('facCliente').value = '';
@@ -4453,8 +4277,7 @@ if (file_exists($fileCotizPath)) {
             .catch(err => {
                 alert('Facturación registrada localmente.');
                 cargarComprobantesVentas();
-                cargarChatVentas();
-                cambiarVistaVentas('chat');
+                cambiarVistaVentas('comprobantes');
             });
         }
 
@@ -4476,196 +4299,11 @@ if (file_exists($fileCotizPath)) {
             .then(res => res.json())
             .then(data => {
                 alert(`📤 ¡Cierre del día enviado exitosamente a Nayeli (Reportería / Finanzas)!\n\nSe ha consolidado un total de S/ 32,708.00 (${ventasHoyCount || 4} ventas) para Sucursal Chorrillos. Nayeli auditará el cuadre de caja en su panel.`);
-                cargarChatVentas();
-                cambiarVistaVentas('chat');
+                cambiarVistaVentas('comprobantes');
             })
             .catch(() => {
                 alert('📤 Cierre del día enviado a Reportería.');
-                cargarChatVentas();
-                cambiarVistaVentas('chat');
-            });
-        }
-
-        // CHAT SINCRONIZADO CON REPORTERÍA
-        function cargarChatVentas() {
-            fetch('crm_backend.php?action=listar_mensajes')
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success || !data.mensajes) return;
-                const container = document.getElementById('chatCenterMessages');
-                if (!container) return;
-                
-                // Filtrar los mensajes de la conversación entre Endrina y Reportería (Nayeli)
-                const misMensajes = data.mensajes.filter(m => {
-                    return (m.asesor === 'Endrina') || (!m.asesor && (m.remitente.includes('Endrina') || m.rol === 'Ventas'));
-                });
-
-                container.innerHTML = '';
-                misMensajes.forEach(m => {
-                    const isMio = (m.rol === 'Ventas' || (m.remitente && m.remitente.includes('Endrina')));
-                    const bubble = document.createElement('div');
-                    bubble.className = `chat-bubble ${isMio ? 'asesor' : 'reporteria'}`;
-                    
-                    if (m.tipo === 'factura_notif' && m.factura_data) {
-                        const fd = m.factura_data;
-                        const montoFmt = parseFloat(fd.monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        bubble.style.borderLeft = isMio ? '4px solid #f59e0b' : '4px solid #38bdf8';
-                        bubble.innerHTML = `
-                            <div style="font-weight:700; font-size:0.83rem; color:${isMio ? '#f59e0b' : '#38bdf8'}; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
-                                <span>📄</span> <span>${isMio ? 'Tú (Endrina)' : m.remitente}</span>
-                                <span style="background:rgba(245,158,11,0.2); color:#fbbf24; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:600; margin-left:auto;">Comprobante</span>
-                            </div>
-                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px;">${m.mensaje}</div>
-                            <div style="background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
-                                <div><strong style="color:#cbd5e1;">Factura:</strong> <span style="font-family:monospace; color:#38bdf8; font-weight:700;">${fd.nro_factura || ''}</span></div>
-                                <div><strong style="color:#cbd5e1;">Cliente:</strong> ${fd.cliente || ''} (${fd.ruc || ''})</div>
-                                <div><strong style="color:#cbd5e1;">Monto Total:</strong> <span style="color:#4ade80; font-weight:700;">S/ ${montoFmt}</span></div>
-                                <div><strong style="color:#cbd5e1;">Operación:</strong> ${fd.banco || ''} • <span style="font-family:monospace;">${fd.nro_operacion || ''}</span></div>
-                            </div>
-                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
-                        `;
-                    } else if (m.tipo === 'pago_aceptado') {
-                        const fd = m.factura_data || {};
-                        const montoFmt = parseFloat(fd.monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        const clienteSafe = (fd.cliente || '').replace(/'/g, "\\'");
-                        bubble.style.borderLeft = '4px solid #10b981';
-                        bubble.innerHTML = `
-                            <div style="font-weight:700; font-size:0.83rem; color:#34d399; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
-                                <span>✅</span> <span>Nayeli (Reportería)</span>
-                                <span style="background:rgba(16,185,129,0.25); color:#6ee7b7; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">PAGO CONCILIADO</span>
-                            </div>
-                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
-                            <div style="background:rgba(6,78,59,0.35); border:1px solid rgba(16,185,129,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
-                                <div><strong style="color:#a7f3d0;">Factura:</strong> <span style="font-family:monospace; color:#34d399; font-weight:700;">${fd.nro_factura || ''}</span></div>
-                                <div><strong style="color:#a7f3d0;">Cliente:</strong> ${fd.cliente || ''}</div>
-                                <div><strong style="color:#a7f3d0;">Monto Aprobado:</strong> <span style="color:#4ade80; font-weight:700;">S/ ${montoFmt}</span></div>
-                                <div><strong style="color:#a7f3d0;">Banco:</strong> ${fd.banco || ''} • <span style="font-family:monospace;">${fd.nro_operacion || ''}</span></div>
-                            </div>
-                            <div style="margin-top:8px; display:flex; gap:6px;">
-                                <button type="button" onclick="procederDespachoDesdeChat('${fd.nro_factura || ''}', '${clienteSafe}')" style="background:#10b981; color:#0e1210; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                                    <i class="fa-solid fa-truck-fast"></i> Despachar Pedido
-                                </button>
-                            </div>
-                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
-                        `;
-                    } else if (m.tipo === 'pago_observado') {
-                        const fd = m.factura_data || {};
-                        const montoFmt = parseFloat(fd.monto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        bubble.style.borderLeft = '4px solid #ef4444';
-                        bubble.innerHTML = `
-                            <div style="font-weight:700; font-size:0.83rem; color:#f87171; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
-                                <span>⚠️</span> <span>Nayeli (Reportería)</span>
-                                <span style="background:rgba(239,68,68,0.25); color:#fca5a5; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">PAGO OBSERVADO</span>
-                            </div>
-                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
-                            <div style="background:rgba(127,29,29,0.35); border:1px solid rgba(239,68,68,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
-                                <div><strong style="color:#fecaca;">Factura:</strong> <span style="font-family:monospace; color:#f87171; font-weight:700;">${fd.nro_factura || ''}</span></div>
-                                <div><strong style="color:#fecaca;">Cliente:</strong> ${fd.cliente || ''}</div>
-                                <div><strong style="color:#fecaca;">Observación:</strong> <span style="color:#fca5a5; font-weight:600;">${fd.motivo || 'Verificar comprobante bancario'}</span></div>
-                            </div>
-                            <div style="margin-top:8px; display:flex; gap:6px;">
-                                <button type="button" onclick="insertarTextoChat('Hola Nayeli, ya me comuniqué con el cliente de ${fd.nro_factura || ''} para coordinar el nuevo voucher.')" style="background:#ef4444; color:#fff; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                                    <i class="fa-solid fa-reply"></i> Responder a Nayeli
-                                </button>
-                            </div>
-                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
-                        `;
-                    } else if (m.tipo === 'cierre_notif') {
-                        const cd = m.cierre_data || {};
-                        const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        bubble.style.borderLeft = isMio ? '4px solid #f59e0b' : '4px solid #38bdf8';
-                        bubble.innerHTML = `
-                            <div style="font-weight:700; font-size:0.83rem; color:#fbbf24; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
-                                <span>📊</span> <span>${isMio ? 'Tú (Endrina)' : m.remitente}</span>
-                                <span style="background:rgba(245,158,11,0.25); color:#fde68a; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">CIERRE DIARIO ENVIADO</span>
-                            </div>
-                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
-                            <div style="background:rgba(120,53,15,0.25); border:1px solid rgba(245,158,11,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
-                                <div><strong style="color:#fde68a;">Sucursal:</strong> Sucursal Chorrillos</div>
-                                <div><strong style="color:#fde68a;">Monto Reportado:</strong> <span style="color:#fbbf24; font-weight:700;">S/ ${montoFmt}</span></div>
-                                <div><strong style="color:#fde68a;">Operaciones:</strong> ${cd.total_ventas || 4} comprobantes</div>
-                                <div><strong style="color:#fde68a;">Estado:</strong> <span style="color:#38bdf8; font-weight:600;">⏳ En Conciliación por Nayeli</span></div>
-                            </div>
-                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
-                        `;
-                    } else if (m.tipo === 'cierre_aprobado') {
-                        const cd = m.cierre_data || {};
-                        const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        bubble.style.borderLeft = '4px solid #10b981';
-                        bubble.innerHTML = `
-                            <div style="font-weight:700; font-size:0.83rem; color:#34d399; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
-                                <span>🎉</span> <span>Nayeli (Reportería)</span>
-                                <span style="background:rgba(16,185,129,0.25); color:#6ee7b7; font-size:0.68rem; padding:1px 6px; border-radius:10px; font-weight:700; margin-left:auto;">CUADRE APROBADO</span>
-                            </div>
-                            <div style="font-size:0.83rem; line-height:1.35; margin-bottom:6px; color:#f1f5f9;">${m.mensaje}</div>
-                            <div style="background:rgba(6,78,59,0.35); border:1px solid rgba(16,185,129,0.25); border-radius:6px; padding:8px 10px; font-size:0.78rem; display:grid; gap:3px;">
-                                <div><strong style="color:#a7f3d0;">Sucursal:</strong> Sucursal Chorrillos</div>
-                                <div><strong style="color:#a7f3d0;">Monto Aprobado:</strong> <span style="color:#4ade80; font-weight:700;">S/ ${montoFmt}</span></div>
-                                <div><strong style="color:#a7f3d0;">Auditoría:</strong> <span style="color:#6ee7b7; font-weight:600;">Caja conforme sin diferencias</span></div>
-                            </div>
-                            <div style="margin-top:8px; display:flex; gap:6px;">
-                                <button type="button" onclick="alert('✅ Cierre de ventas conforme. Cuadre de caja validado por Nayeli.')" style="background:#10b981; color:#0e1210; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                                    <i class="fa-solid fa-stamp"></i> Cuadre Conforme
-                                </button>
-                            </div>
-                            <div style="font-size:0.65rem; opacity:0.75; margin-top:5px; text-align:right;">${m.hora || ''}</div>
-                        `;
-                    } else {
-                        bubble.innerHTML = `
-                            <strong style="color:${isMio ? '#93c5fd' : '#cbd5e1'}; font-size:0.8rem;">${isMio ? 'Tú (Endrina)' : m.remitente}:</strong><br>
-                            <span style="font-size:0.85rem; line-height:1.4;">${m.mensaje}</span>
-                            <div style="font-size:0.65rem; opacity:0.75; margin-top:4px; text-align:right;">${m.hora || ''}</div>
-                        `;
-                    }
-                    container.appendChild(bubble);
-                });
-                container.scrollTop = container.scrollHeight;
-
-                // Actualizar badge de notificaciones del chat
-                const countNaye = misMensajes.filter(m => (m.remitente || '').includes('Nayeli') || m.rol === 'Reportería').length;
-                const badgeEl = document.getElementById('chatBadgeNum');
-                if (badgeEl) {
-                    badgeEl.textContent = countNaye > 0 ? countNaye : '0';
-                    badgeEl.style.display = countNaye > 0 ? 'inline-flex' : 'none';
-                }
-            })
-            .catch(err => console.log('Error listar chat:', err));
-        }
-
-        function procederDespachoDesdeChat(nroFactura, cliente) {
-            alert(`📦 ¡DESPACHO AUTORIZADO!\n\nLa factura ${nroFactura} de ${cliente} ya cuenta con validación bancaria de Nayeli.\nSe ha generado la autorización de salida para almacén en Sucursal Chorrillos.`);
-        }
-
-        function insertarTextoChat(texto) {
-            document.getElementById('inputChatMsg').value = texto;
-            document.getElementById('inputChatMsg').focus();
-        }
-
-        function enviarMensajeChat() {
-            const input = document.getElementById('inputChatMsg');
-            const texto = input.value.trim();
-            if (!texto) return;
-
-            const formData = new FormData();
-            formData.append('action', 'enviar_chat');
-            formData.append('remitente', 'Endrina');
-            formData.append('asesor', 'Endrina');
-            formData.append('sucursal', 'Sucursal Chorrillos');
-            formData.append('rol', 'Ventas');
-            formData.append('mensaje', texto);
-
-            fetch('crm_backend.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                input.value = '';
-                cargarChatVentas();
-            })
-            .catch(err => {
-                input.value = '';
-                cargarChatVentas();
+                cambiarVistaVentas('comprobantes');
             });
         }
 
@@ -4678,10 +4316,8 @@ if (file_exists($fileCotizPath)) {
             cargarCotizaciones();
             cargarCarteraClientes();
             cargarComprobantesVentas();
-            cargarChatVentas();
             setInterval(() => {
                 cargarComprobantesVentas();
-                cargarChatVentas();
             }, 4500);
         });
     </script>

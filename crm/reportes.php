@@ -84,22 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ]);
         exit;
     }
-
-    if ($action === 'enviar_chat_asesor') {
-        $mensaje = $_POST['mensaje'] ?? '';
-        $asesor = $_POST['asesor'] ?? 'Asesor Comercial';
-        $remitente = 'Nayeli (Reportería)';
-        $hora = date('H:i');
-
-        echo json_encode([
-            'success' => true,
-            'mensaje' => $mensaje,
-            'asesor' => $asesor,
-            'remitente' => $remitente,
-            'hora' => $hora
-        ]);
-        exit;
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -869,534 +853,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-        }
-
-        /* ================= CHAT TIPO WHATSAPP (REPORTERÍA & FINANZAS) ================= */
-        .chat-full-container {
-            display: grid;
-            grid-template-columns: 340px 1fr;
-            height: 650px;
-            background: #FFF;
-            border-radius: var(--card-radius);
-            border: 1px solid var(--border-soft);
-            overflow: hidden;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.04);
-        }
-        body.dark-mode .chat-full-container {
-            background: #111B21;
-            border-color: #222E35;
-        }
-
-        /* Barra lateral izquierda */
-        .chat-sidebar-list {
-            border-right: 1px solid var(--border-soft);
-            display: flex;
-            flex-direction: column;
-            background: #F0F2F5;
-            height: 100%;
-            overflow: hidden;
-        }
-        body.dark-mode .chat-sidebar-list {
-            background: #111B21;
-            border-color: #222E35;
-        }
-        .chat-sidebar-header-wa {
-            padding: 12px 16px;
-            background: #F0F2F5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-        }
-        body.dark-mode .chat-sidebar-header-wa {
-            background: #202C33;
-            border-color: #222E35;
-        }
-        .btn-refresh-chat {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-        .btn-refresh-chat:hover {
-            background: rgba(0,0,0,0.06);
-            color: var(--text-dark);
-        }
-
-        /* Buscador de chat */
-        .chat-search-bar-wa {
-            padding: 8px 14px;
-            background: #FFF;
-            border-bottom: 1px solid var(--border-soft);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        body.dark-mode .chat-search-bar-wa {
-            background: #111B21;
-            border-color: #222E35;
-        }
-        .chat-search-bar-wa i {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-        .chat-search-bar-wa input {
-            width: 100%;
-            border: none;
-            background: #F0F2F5;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.82rem;
-            outline: none;
-            color: var(--text-dark);
-        }
-        body.dark-mode .chat-search-bar-wa input {
-            background: #202C33;
-            color: #E9EDEF;
-        }
-
-        /* Lista de conversaciones */
-        .chat-conversations-scroll {
-            flex: 1;
-            overflow-y: auto;
-            background: #FFF;
-        }
-        body.dark-mode .chat-conversations-scroll {
-            background: #111B21;
-        }
-        .chat-user-item {
-            padding: 12px 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-            position: relative;
-        }
-        body.dark-mode .chat-user-item {
-            border-color: rgba(255,255,255,0.03);
-        }
-        .chat-user-item:hover {
-            background: #F5F6F6;
-        }
-        .chat-user-item.active {
-            background: #EBEFEB;
-            border-left: 4px solid var(--accent-green);
-        }
-        body.dark-mode .chat-user-item:hover {
-            background: #202C33;
-        }
-        body.dark-mode .chat-user-item.active {
-            background: #2A3942;
-            border-left: 4px solid var(--accent-green);
-        }
-
-        .chat-user-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .chat-user-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .chat-user-dot {
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            background: #22C55E;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            border: 2px solid #FFF;
-        }
-        body.dark-mode .chat-user-dot { border-color: #111B21; }
-
-        .chat-user-meta {
-            flex: 1;
-            min-width: 0;
-        }
-        .chat-user-meta-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2px;
-        }
-        .chat-user-meta-top h5 {
-            margin: 0;
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        body.dark-mode .chat-user-meta-top h5 { color: #E9EDEF; }
-        .chat-user-meta-top .chat-time {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        /* Badge de Sucursal en la fila del chat */
-        .badge-sucursal-chat {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.68rem;
-            font-weight: 700;
-            background: rgba(16, 185, 129, 0.1);
-            color: #059669;
-            padding: 2px 7px;
-            border-radius: 6px;
-            margin-bottom: 4px;
-        }
-        body.dark-mode .badge-sucursal-chat {
-            background: rgba(16, 185, 129, 0.2);
-            color: #34D399;
-        }
-
-        .chat-user-meta p {
-            margin: 0;
-            font-size: 0.76rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        body.dark-mode .chat-user-meta p { color: #8696A0; }
-
-        /* Área de conversación estilo WhatsApp */
-        .chat-conversation-area {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            background: #EFEAE2;
-            position: relative;
-        }
-        body.dark-mode .chat-conversation-area {
-            background: #0B141A;
-        }
-
-        .chat-conv-header-wa {
-            padding: 10px 20px;
-            background: #F0F2F5;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 2;
-        }
-        body.dark-mode .chat-conv-header-wa {
-            background: #202C33;
-            border-color: #222E35;
-        }
-        .chat-conv-user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .badge-sucursal-destacada {
-            background: #059669;
-            color: #FFF;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .btn-pill-wa {
-            background: #FFF;
-            border: 1px solid var(--border-soft);
-            color: var(--text-dark);
-            font-size: 0.76rem;
-            font-weight: 700;
-            padding: 7px 14px;
-            border-radius: var(--pill-radius);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
-        body.dark-mode .btn-pill-wa {
-            background: #111B21;
-            border-color: #222E35;
-            color: #E9EDEF;
-        }
-        .btn-pill-wa:hover {
-            border-color: var(--accent-green);
-        }
-
-        /* Mensajes scroll WhatsApp */
-        .chat-messages-scroll-wa {
-            flex: 1;
-            padding: 16px 24px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: #EFEAE2;
-            background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 0);
-            background-size: 16px 16px;
-        }
-        body.dark-mode .chat-messages-scroll-wa {
-            background: #0B141A;
-            background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0);
-            background-size: 16px 16px;
-        }
-
-        .msg-bubble-wa {
-            max-width: 68%;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            position: relative;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.12);
-        }
-        .msg-bubble-wa.received {
-            background: #FFF;
-            color: #111B21;
-            align-self: flex-start;
-            border-top-left-radius: 0;
-        }
-        body.dark-mode .msg-bubble-wa.received {
-            background: #202C33;
-            color: #E9EDEF;
-        }
-        .msg-bubble-wa.sent {
-            background: #D9FDD3;
-            color: #111B21;
-            align-self: flex-end;
-            border-top-right-radius: 0;
-        }
-        body.dark-mode .msg-bubble-wa.sent {
-            background: #005C4B;
-            color: #E9EDEF;
-        }
-        .msg-sender-tag {
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: #059669;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        body.dark-mode .msg-sender-tag {
-            color: #34D399;
-        }
-        .msg-time-wa {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            float: right;
-            margin-left: 12px;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        body.dark-mode .msg-time-wa { color: #8696A0; }
-
-        /* Tarjeta de factura interactiva en el chat */
-        .card-factura-chat {
-            background: #F8FAFC;
-            border: 1.5px solid #CBD5E1;
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-        }
-        body.dark-mode .card-factura-chat {
-            background: #111B21;
-            border-color: #2A3942;
-        }
-        .card-factura-chat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 800;
-            font-size: 0.78rem;
-            color: #0F172A;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-            padding-bottom: 6px;
-            margin-bottom: 8px;
-        }
-        body.dark-mode .card-factura-chat-header { color: #F1F5F9; border-color: rgba(255,255,255,0.06); }
-        .card-factura-chat-body {
-            font-size: 0.8rem;
-            color: #334155;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        body.dark-mode .card-factura-chat-body { color: #CBD5E1; }
-        .card-factura-chat-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .btn-chat-action-green {
-            background: #10B981;
-            color: #FFF;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: var(--transition);
-        }
-        .btn-chat-action-green:hover {
-            background: #059669;
-        }
-        .btn-chat-action-outline {
-            background: #FFF;
-            border: 1px solid #CBD5E1;
-            color: #1E293B;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: var(--transition);
-        }
-        body.dark-mode .btn-chat-action-outline {
-            background: #202C33;
-            border-color: #2A3942;
-            color: #FFF;
-        }
-        .btn-chat-action-red {
-            background: #EF4444;
-            color: #FFF;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: var(--transition);
-        }
-        .btn-chat-action-red:hover {
-            background: #DC2626;
-            transform: translateY(-1px);
-        }
-        .card-pago-status-wa {
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-        }
-        .card-pago-status-wa.aceptado {
-            background: #ECFDF5;
-            border: 1.5px solid #6EE7B7;
-        }
-        body.dark-mode .card-pago-status-wa.aceptado {
-            background: rgba(16, 185, 129, 0.12);
-            border-color: rgba(16, 185, 129, 0.35);
-        }
-        .card-pago-status-wa.observado {
-            background: #FEF2F2;
-            border: 1.5px solid #FCA5A5;
-        }
-        body.dark-mode .card-pago-status-wa.observado {
-            background: rgba(239, 68, 68, 0.12);
-            border-color: rgba(239, 68, 68, 0.35);
-        }
-
-        /* Barra de entrada WhatsApp */
-        .chat-input-bar-wa {
-            padding: 10px 18px;
-            background: #F0F2F5;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-top: 1px solid rgba(0,0,0,0.06);
-        }
-        body.dark-mode .chat-input-bar-wa {
-            background: #202C33;
-            border-color: #222E35;
-        }
-        .chat-input-bar-wa input {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: none;
-            background: #FFF;
-            outline: none;
-            font-size: 0.88rem;
-            color: var(--text-dark);
-        }
-        body.dark-mode .chat-input-bar-wa input {
-            background: #2A3942;
-            color: #E9EDEF;
-        }
-        .btn-chat-send-wa {
-            background: #10B981;
-            color: #FFF;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        .btn-chat-send-wa:hover {
-            background: #059669;
-            transform: scale(1.05);
-        }
-
-        .chat-quick-replies {
-            padding: 8px 20px;
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            background: #F0F2F5;
-            border-top: 1px solid rgba(0,0,0,0.04);
-        }
-        body.dark-mode .chat-quick-replies { background: #1C2620; border-color: #27362E; }
-        .quick-reply-chip {
-            background: #FFF;
-            border: 1px solid var(--border-soft);
-            padding: 5px 12px;
-            border-radius: var(--pill-radius);
-            font-size: 0.74rem;
-            color: var(--text-dark);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: var(--transition);
-        }
-        body.dark-mode .quick-reply-chip { background: #202C33; border-color: #27362E; color: #FFF; }
-        .quick-reply-chip:hover {
-            background: var(--accent-green);
-            color: #0E1210;
         }
 
         /* ================= SIDEBAR DERECHA ================= */
@@ -2207,11 +1663,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <span class="nav-badge" id="badgeCpeTotal" style="background:#0284C7; color:#FFF; font-weight:700;">PROD</span>
                 </div>
 
-                <div class="nav-item" id="nav-chat" onclick="cambiarVistaReporteria('chat', this)">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Chat con Ventas</span>
-                </div>
-
                 <div class="nav-item" id="nav-sucursales" onclick="cambiarVistaReporteria('sucursales', this)">
                     <i class="fa-solid fa-building-columns"></i>
                     <span>Metas de Sucursal</span>
@@ -2676,103 +2127,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </div>
 
             <!-- ==========================================
-                 VISTA 5: CHAT CON ASESORES DE VENTAS (TIPO WHATSAPP)
-            =========================================== -->
-            <div class="vista-seccion" id="vista-chat" style="display:none;">
-                <div class="chat-full-container">
-                    <!-- Panel lateral izquierdo estilo WhatsApp -->
-                    <div class="chat-sidebar-list">
-                        <!-- Cabecera de usuario Reportería -->
-                        <div class="chat-sidebar-header-wa">
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <div class="chat-user-avatar" style="width:38px; height:38px;">
-                                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Nayeli">
-                                    <div class="chat-user-dot"></div>
-                                </div>
-                                <div>
-                                    <h5 style="margin:0; font-size:0.86rem; font-weight:800; color:var(--text-dark);">Nayeli • Finanzas</h5>
-                                    <span style="font-size:0.68rem; color:#10B981; font-weight:700;"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> En línea (Reportería)</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn-refresh-chat" onclick="cargarChatReporteria()" title="Actualizar chats en tiempo real">
-                                <i class="fa-solid fa-rotate"></i>
-                            </button>
-                        </div>
-
-                        <!-- Barra de búsqueda tipo WhatsApp -->
-                        <div class="chat-search-bar-wa">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="inputBuscarAsesorChat" placeholder="Buscar asesor o sucursal..." oninput="filtrarConversacionesChatWhatsApp(this.value)">
-                        </div>
-
-                        <!-- Lista dinámica de conversaciones ordenada por últimos mensajes -->
-                        <div class="chat-conversations-scroll" id="chatConversationsList">
-                            <!-- Se renderiza dinámicamente con renderListaConversacionesWhatsApp() -->
-                        </div>
-                    </div>
-
-                    <!-- Área de conversación activa tipo WhatsApp -->
-                    <div class="chat-conversation-area">
-                        <!-- Cabecera de la conversación activa -->
-                        <div class="chat-conv-header-wa">
-                            <div class="chat-conv-user-info">
-                                <div class="chat-user-avatar" style="width:42px; height:42px;">
-                                    <img id="chatActiveAdvisorAvatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="Asesor">
-                                    <div class="chat-user-dot" id="chatActiveAdvisorDot"></div>
-                                </div>
-                                <div>
-                                    <div style="display:flex; align-items:center; gap:8px;">
-                                        <h4 id="chatActiveAdvisorName" style="margin:0; font-size:0.98rem; font-weight:800; color:var(--text-dark);">Endrina</h4>
-                                        <span class="badge-sucursal-destacada" id="chatActiveAdvisorSucursalBadge">
-                                            <i class="fa-solid fa-location-dot"></i> Sucursal Chorrillos
-                                        </span>
-                                    </div>
-                                    <span id="chatActiveAdvisorRole" style="font-size:0.72rem; color:#10B981; font-weight:600;">
-                                        🏢 Sucursal Chorrillos • Asesora de Ventas • En línea
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <button type="button" class="btn-pill-wa" onclick="cambiarVistaReporteria('validacion')" title="Ver comprobantes y pagos pendientes">
-                                    <i class="fa-solid fa-file-invoice-dollar" style="color:var(--accent-green);"></i> Vouchers Pendientes
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Área de mensajes WhatsApp -->
-                        <div class="chat-messages-scroll-wa" id="chatMessagesScroll">
-                            <!-- Se renderiza dinámicamente con renderMensajesConversacionActiva() -->
-                        </div>
-
-                        <!-- Respuestas rápidas de validación -->
-                        <div class="chat-quick-replies">
-                            <span class="quick-reply-chip" onclick="insertarRespuestaRapida('✅ Pago verificado y confirmado en extracto bancario. Pedido liberado para despacho.')">
-                                ✅ Pago verificado en banco
-                            </span>
-                            <span class="quick-reply-chip" onclick="insertarRespuestaRapida('⚠️ Por favor enviar foto del voucher con mayor nitidez o número de operación.')">
-                                ⚠️ Voucher poco legible
-                            </span>
-                            <span class="quick-reply-chip" onclick="insertarRespuestaRapida('🔍 El N° de operación aún no figura en el extracto online, en revisión.')">
-                                🔍 Aún no figura en extracto
-                            </span>
-                            <span class="quick-reply-chip" onclick="insertarRespuestaRapida('📦 Confirmado el abono. Se autoriza la entrega y guía de remisión.')">
-                                📦 Se autoriza entrega
-                            </span>
-                        </div>
-
-                        <!-- Barra de escritura estilo WhatsApp -->
-                        <div class="chat-input-bar-wa">
-                            <input type="text" id="chatInputMessage" placeholder="Escribe un mensaje para Endrina..." onkeypress="if(event.key==='Enter') enviarMensajeChat()">
-                            <button type="button" class="btn-chat-send-wa" onclick="enviarMensajeChat()" title="Enviar mensaje">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ==========================================
                  VISTA 6: METAS Y SUCURSALES
             =========================================== -->
             <div class="vista-seccion" id="vista-sucursales" style="display:none;">
@@ -3099,7 +2453,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div>
                 <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Asesores en Línea</span>
                 <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                    <div class="advisor-online-item" onclick="abrirChatConAsesor('Maria Gomez')">
+                    <div class="advisor-online-item">
                         <div class="advisor-avatar-box">
                             <img src="https://ui-avatars.com/api/?name=Maria+Gomez&background=D1FAE5&color=059669" alt="User">
                             <div class="advisor-online-dot"></div>
@@ -3108,10 +2462,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <h5>Maria Gomez</h5>
                             <p>Lima Corporativo • Activa</p>
                         </div>
-                        <i class="fa-solid fa-comment-dots" style="color:var(--accent-green);"></i>
                     </div>
 
-                    <div class="advisor-online-item" onclick="abrirChatConAsesor('Carlos Ruiz')">
+                    <div class="advisor-online-item">
                         <div class="advisor-avatar-box">
                             <img src="https://ui-avatars.com/api/?name=Carlos+Ruiz&background=FEF3C7&color=D97706" alt="User">
                             <div class="advisor-online-dot"></div>
@@ -3120,10 +2473,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <h5>Carlos Ruiz</h5>
                             <p>Piura Despachos • Activo</p>
                         </div>
-                        <i class="fa-solid fa-comment-dots" style="color:var(--accent-green);"></i>
                     </div>
 
-                    <div class="advisor-online-item" onclick="abrirChatConAsesor('Ana Torres')">
+                    <div class="advisor-online-item">
                         <div class="advisor-avatar-box">
                             <img src="https://ui-avatars.com/api/?name=Ana+Torres&background=E0E7FF&color=4338CA" alt="User">
                             <div class="advisor-online-dot"></div>
@@ -3132,10 +2484,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <h5>Ana Torres</h5>
                             <p>San Borja • Activa</p>
                         </div>
-                        <i class="fa-solid fa-comment-dots" style="color:var(--accent-green);"></i>
                     </div>
 
-                    <div class="advisor-online-item" onclick="abrirChatConAsesor('Endrina')">
+                    <div class="advisor-online-item">
                         <div class="advisor-avatar-box">
                             <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="User">
                             <div class="advisor-online-dot"></div>
@@ -3144,7 +2495,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <h5>Endrina</h5>
                             <p>Sucursal Chorrillos • Activa</p>
                         </div>
-                        <i class="fa-solid fa-comment-dots" style="color:var(--accent-green);"></i>
                     </div>
                 </div>
             </div>
@@ -3985,7 +3335,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'cierres': 'Cierres de Ventas del Día & Auditoría de Caja',
                 'historial': 'Historial de Vouchers y Comprobantes Aprobados',
                 'cpe': 'Consulta de Documentos Electrónicos (CPE StarSoft)',
-                'chat': 'Chat con Asesores de Ventas',
                 'sucursales': 'Control de Metas & Avance de Sucursales'
             };
             if (titles[nombreVista]) {
@@ -4011,7 +3360,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             currentModalPagoId = pagoId;
             currentModalMonto = typeof monto === 'number' ? monto : parseFloat(String(monto).replace(/,/g, ''));
             currentModalCotiz = cotiz;
-            currentModalAsesor = asesor || asesorChatActivo;
+            currentModalAsesor = asesor || 'Endrina';
             currentModalCliente = cliente || '';
             currentModalOp = op || '';
 
@@ -4153,7 +3502,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         // ACEPTAR PAGO DIRECTO
         function confirmarPagoEnFila(id, monto, cotiz, asesor, cliente, banco) {
-            if (!confirm(`¿Confirmar y conciliar el pago de S/ ${parseFloat(monto).toLocaleString()} para la factura ${cotiz}? Se notificará a ${asesor || 'Ventas'} por chat.`)) return;
+            if (!confirm(`¿Confirmar y conciliar el pago de S/ ${parseFloat(monto).toLocaleString()} para la factura ${cotiz}? Se notificará a ${asesor || 'Ventas'}.`)) return;
 
             ejecutarAprobacionPago(id, monto, cotiz, asesor, cliente, banco);
         }
@@ -4171,7 +3520,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             formData.append('pago_id', id);
             formData.append('monto', monto);
             formData.append('cotizacion', cotiz);
-            formData.append('asesor', asesor || asesorChatActivo);
+            formData.append('asesor', asesor || 'Endrina');
             formData.append('cliente', cliente || '');
             formData.append('banco', banco || 'BCP');
             formData.append('validador', 'Nayeli (Reportería)');
@@ -4183,21 +3532,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             })
             .then(res => res.json())
             .then(data => {
-                alert(`✅ ¡Pago de ${cotiz} confirmado exitosamente!\nSe actualizó la base de datos y se notificó inmediatamente a ${asesor || 'Ventas'} por chat para liberar el pedido.`);
+                alert(`✅ ¡Pago de ${cotiz} confirmado exitosamente!\nSe actualizó la base de datos y se notificó inmediatamente a ${asesor || 'Ventas'} para liberar el pedido.`);
                 cargarPagosReporteria();
-                cargarChatReporteria();
             })
             .catch(err => {
                 alert('Pago aceptado localmente.');
                 cargarPagosReporteria();
             });
-        }
-
-        // CONFIRMAR PAGO DIRECTO DESDE LA TARJETA DEL CHAT
-        function confirmarPagoDirectoDesdeChat(nroFactura, cliente, monto, asesor, banco, op) {
-            if (!confirm(`¿Aprobar y conciliar el pago de S/ ${parseFloat(monto).toLocaleString()} de ${cliente} (${nroFactura})?\n\nSe enviará de inmediato la respuesta oficial a ${asesor} por este canal de chat para autorizar el despacho.`)) return;
-
-            ejecutarAprobacionPago(0, monto, nroFactura, asesor, cliente, banco, 'Extracto bancario verificado. Abono conciliado en cuenta corriente. Pedido autorizado para despacho.');
         }
 
         // CARGAR Y AUDITAR CIERRES DE VENTAS DIARIOS
@@ -4251,7 +3592,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         function aprobarCierreDiario(id, asesor, sucursal, monto) {
-            if (!confirm(`¿Auditar y aprobar el Cierre de Ventas de ${asesor} (${sucursal}) por un monto total de S/ ${parseFloat(monto).toLocaleString()}?\n\nSe registrará la conciliación contable de caja y se notificará en tiempo real al asesor por este chat.`)) return;
+            if (!confirm(`¿Auditar y aprobar el Cierre de Ventas de ${asesor} (${sucursal}) por un monto total de S/ ${parseFloat(monto).toLocaleString()}?\n\nSe registrará la conciliación contable de caja.`)) return;
 
             const formData = new FormData();
             formData.append('action', 'aprobar_cierre');
@@ -4264,9 +3605,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             })
             .then(res => res.json())
             .then(data => {
-                alert(`✅ Cierre de ventas de ${asesor} aprobado con éxito.\nSe envió la notificación oficial de cuadre conforme al chat.`);
+                alert(`✅ Cierre de ventas de ${asesor} aprobado con éxito.\nSe registró el cuadre conforme.`);
                 cargarCierresReporteria();
-                cargarChatReporteria();
             })
             .catch(err => {
                 alert('Cierre aprobado exitosamente.');
@@ -4285,7 +3625,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         function observarPagoEnFila(id, cotiz, asesor, cliente, monto, banco) {
             currentObsPagoId = id;
             currentObsCotiz = cotiz;
-            currentObsAsesor = asesor || asesorChatActivo;
+            currentObsAsesor = asesor || 'Endrina';
             currentObsCliente = cliente || '';
             currentObsMonto = monto || 0;
             currentObsBanco = banco || '';
@@ -4302,10 +3642,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
 
             document.getElementById('modalObservarPago').classList.add('open');
-        }
-
-        function observarPagoDirectoDesdeChat(nroFactura, cliente, monto, asesor) {
-            observarPagoEnFila(0, nroFactura, asesor, cliente, monto, 'Banco');
         }
 
         function confirmarObservacionDesdeModal() {
@@ -4340,9 +3676,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             })
             .then(res => res.json())
             .then(data => {
-                alert(`⚠️ Factura ${currentObsCotiz} marcada como Observada.\nMotivo: "${motivo}"\nSe notificó a ${currentObsAsesor} en el chat en tiempo real.`);
+                alert(`⚠️ Factura ${currentObsCotiz} marcada como Observada.\nMotivo: "${motivo}"\nSe notificó al asesor para su corrección.`);
                 cargarPagosReporteria();
-                cargarChatReporteria();
             })
             .catch(err => {
                 alert('Pago marcado como observado.');
@@ -4379,368 +3714,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             rows.forEach(r => {
                 const txt = r.textContent.toLowerCase();
                 r.style.display = txt.includes(val) ? '' : 'none';
-            });
-        }
-
-        // ================= CHAT CON ASESORES TIPO WHATSAPP =================
-        let asesorChatActivo = 'Endrina';
-        let sucursalChatActiva = 'Sucursal Chorrillos';
-        let rolChatActivo = 'Asesora de Ventas';
-        let avatarChatActivo = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80';
-        let listaConversacionesData = [];
-        let listaMensajesChatData = [];
-        let filtroBusquedaChat = '';
-
-        function abrirChatConAsesor(nombreAsesor) {
-            cambiarVistaReporteria('chat');
-            const conv = listaConversacionesData.find(c => c.asesor === nombreAsesor);
-            if (conv) {
-                seleccionarAsesorChat(conv.asesor, conv.sucursal, conv.rol, conv.avatar);
-            } else {
-                seleccionarAsesorChat(nombreAsesor, 'Sucursal Chorrillos', 'Asesora de Ventas', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80');
-            }
-        }
-
-        function seleccionarAsesorChat(nombre, sucursal, rol, avatar) {
-            asesorChatActivo = nombre;
-            sucursalChatActiva = sucursal || 'Sucursal Chorrillos';
-            rolChatActivo = rol || 'Asesora de Ventas';
-            avatarChatActivo = avatar || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80';
-
-            // Actualizar encabezado del chat activo
-            const nameEl = document.getElementById('chatActiveAdvisorName');
-            const sucursalEl = document.getElementById('chatActiveAdvisorSucursalBadge');
-            const roleEl = document.getElementById('chatActiveAdvisorRole');
-            const avatarEl = document.getElementById('chatActiveAdvisorAvatar');
-            const inputMsg = document.getElementById('chatInputMessage');
-
-            if (nameEl) nameEl.textContent = asesorChatActivo;
-            if (sucursalEl) sucursalEl.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${sucursalChatActiva}`;
-            if (roleEl) roleEl.textContent = `🏢 ${sucursalChatActiva} • ${rolChatActivo} • En línea`;
-            if (avatarEl) avatarEl.src = avatarChatActivo;
-            if (inputMsg) inputMsg.placeholder = `Escribe un mensaje para ${asesorChatActivo}...`;
-
-            renderListaConversacionesWhatsApp(listaConversacionesData);
-            renderMensajesConversacionActiva();
-        }
-
-        function filtrarConversacionesChatWhatsApp(q) {
-            filtroBusquedaChat = q.trim().toLowerCase();
-            renderListaConversacionesWhatsApp(listaConversacionesData);
-        }
-
-        function renderListaConversacionesWhatsApp(conversaciones) {
-            const listContainer = document.getElementById('chatConversationsList');
-            if (!listContainer) return;
-
-            if (!Array.isArray(conversaciones) || conversaciones.length === 0) {
-                listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.8rem;">Cargando chats...</div>';
-                return;
-            }
-
-            const filtradas = conversaciones.filter(c => {
-                if (!filtroBusquedaChat) return true;
-                return (c.asesor || '').toLowerCase().includes(filtroBusquedaChat) ||
-                       (c.sucursal || '').toLowerCase().includes(filtroBusquedaChat) ||
-                       (c.ultimo_mensaje || '').toLowerCase().includes(filtroBusquedaChat);
-            });
-
-            if (filtradas.length === 0) {
-                listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.8rem;">No se encontraron chats con ese criterio.</div>';
-                return;
-            }
-
-            listContainer.innerHTML = filtradas.map(c => {
-                const isActive = (c.asesor === asesorChatActivo);
-                const safeNombre = c.asesor.replace(/'/g, "\\'");
-                const safeSucursal = (c.sucursal || '').replace(/'/g, "\\'");
-                const safeRol = (c.rol || '').replace(/'/g, "\\'");
-                const safeAvatar = (c.avatar || '').replace(/'/g, "\\'");
-
-                return `
-                    <div class="chat-user-item ${isActive ? 'active' : ''}" onclick="seleccionarAsesorChat('${safeNombre}', '${safeSucursal}', '${safeRol}', '${safeAvatar}')">
-                        <div class="chat-user-avatar">
-                            <img src="${c.avatar}" alt="${c.asesor}">
-                            ${c.online ? '<div class="chat-user-dot"></div>' : ''}
-                        </div>
-                        <div class="chat-user-meta">
-                            <div class="chat-user-meta-top">
-                                <h5>${c.asesor}</h5>
-                                <span class="chat-time">${c.ultima_hora || ''}</span>
-                            </div>
-                            <div>
-                                <span class="badge-sucursal-chat">
-                                    <i class="fa-solid fa-location-dot"></i> ${c.sucursal}
-                                </span>
-                            </div>
-                            <p title="${c.ultimo_mensaje || ''}">
-                                ${c.ultimo_mensaje || 'Iniciar conversación...'}
-                            </p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderMensajesConversacionActiva() {
-            const scrollBox = document.getElementById('chatMessagesScroll');
-            if (!scrollBox) return;
-
-            // Filtrar mensajes pertenecientes al asesor activo
-            const msgs = listaMensajesChatData.filter(m => {
-                const as = m.asesor || m.remitente || '';
-                return as === asesorChatActivo;
-            });
-
-            if (msgs.length === 0) {
-                scrollBox.innerHTML = `
-                    <div style="margin:auto; text-align:center; padding:30px; background:rgba(255,255,255,0.7); border-radius:16px; max-width:380px;">
-                        <i class="fa-solid fa-comments" style="font-size:2.5rem; color:var(--accent-green); margin-bottom:12px;"></i>
-                        <h4 style="margin:0 0 6px 0; color:var(--text-dark);">Canal con ${asesorChatActivo}</h4>
-                        <p style="margin:0; font-size:0.78rem; color:var(--text-muted);">${sucursalChatActiva}</p>
-                        <p style="margin-top:10px; font-size:0.75rem; color:var(--text-dark);">Escribe un mensaje o responde a las solicitudes de validación comercial.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            scrollBox.innerHTML = msgs.map(m => {
-                const isMio = (m.rol === 'Reportería' || (m.remitente || '').includes('Nayeli'));
-                
-                // 1. Si es notificación de factura emitida con voucher por el asesor
-                if (m.tipo === 'factura_notif' && m.factura_data) {
-                    const fd = m.factura_data;
-                    const montoFmt = parseFloat(fd.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    const clienteSafe = (fd.cliente || '').replace(/'/g, "\\'");
-                    const asesorSafe = (m.asesor || asesorChatActivo).replace(/'/g, "\\'");
-                    const voucherBtn = fd.voucher_url ? `
-                        <button type="button" class="btn-chat-action-outline" onclick="abrirVisorVoucher('${fd.nro_factura}', '${clienteSafe}', '${montoFmt}', '${fd.nro_operacion || ''}', '${asesorSafe}', 1, '${fd.voucher_url}')">
-                            <i class="fa-solid fa-receipt" style="color:var(--accent-green);"></i> Ver Voucher
-                        </button>
-                    ` : '';
-
-                    return `
-                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%;">
-                            <div class="msg-sender-tag">
-                                <i class="fa-solid fa-file-invoice"></i> ${m.remitente} • ${m.sucursal || sucursalChatActiva}
-                            </div>
-                            <div class="card-factura-chat">
-                                <div class="card-factura-chat-header">
-                                    <span>📄 FACTURA POR VALIDAR</span>
-                                    <span style="color:#059669; font-weight:800; font-size:0.88rem;">S/ ${montoFmt}</span>
-                                </div>
-                                <div class="card-factura-chat-body">
-                                    <div><strong>N° Factura:</strong> <span style="font-family:monospace; font-weight:700;">${fd.nro_factura}</span></div>
-                                    <div><strong>Cliente:</strong> ${fd.cliente} (RUC: ${fd.ruc || '-'})</div>
-                                    <div><strong>Banco:</strong> ${fd.banco || 'Banco'} • Op. #${fd.nro_operacion || '-'}</div>
-                                    <div style="font-size:0.75rem; color:#64748B; margin-top:4px;">${m.mensaje}</div>
-                                </div>
-                                <div class="card-factura-chat-actions">
-                                    ${voucherBtn}
-                                    <button type="button" class="btn-chat-action-green" onclick="confirmarPagoDirectoDesdeChat('${fd.nro_factura}', '${clienteSafe}', ${fd.monto}, '${asesorSafe}', '${fd.banco || 'BCP'}', '${fd.nro_operacion || ''}')">
-                                        <i class="fa-solid fa-check-double"></i> Aceptar Pago
-                                    </button>
-                                    <button type="button" class="btn-chat-action-red" onclick="observarPagoDirectoDesdeChat('${fd.nro_factura}', '${clienteSafe}', ${fd.monto}, '${asesorSafe}')">
-                                        <i class="fa-solid fa-circle-exclamation"></i> Observar
-                                    </button>
-                                </div>
-                            </div>
-                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
-                        </div>
-                    `;
-                }
-
-                // 2. Si es confirmación de pago aceptado enviado por Nayeli
-                if (m.tipo === 'pago_aceptado') {
-                    const fd = m.factura_data || {};
-                    const montoFmt = parseFloat(fd.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    return `
-                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #10B981;">
-                            <div class="msg-sender-tag" style="color:#059669; font-weight:700;">
-                                <i class="fa-solid fa-circle-check"></i> ${m.remitente} • Pago Conciliado & Aprobado
-                            </div>
-                            <div class="card-pago-status-wa aceptado">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                    <span style="font-weight:800; color:#065F46; font-size:0.78rem;"><i class="fa-solid fa-check-double"></i> PAGO ACEPTADO EN BANCO</span>
-                                    <span style="font-weight:800; color:#059669; font-size:0.92rem;">S/ ${montoFmt}</span>
-                                </div>
-                                <div style="font-size:0.8rem; line-height:1.4; color:#1F2937;">
-                                    <div><strong>Factura:</strong> <span style="font-family:monospace; font-weight:700; color:#047857;">${fd.nro_factura || ''}</span></div>
-                                    <div><strong>Cliente:</strong> ${fd.cliente || ''}</div>
-                                    <div><strong>Banco / Op:</strong> ${fd.banco || ''} • ${fd.nro_operacion || ''}</div>
-                                    <div style="margin-top:6px; padding:6px 8px; background:rgba(16,185,129,0.15); border-radius:6px; color:#065F46; font-size:0.75rem;">
-                                        <i class="fa-solid fa-truck-fast"></i> ${m.mensaje}
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
-                        </div>
-                    `;
-                }
-
-                // 3. Si es notificación de observación de pago enviada por Nayeli
-                if (m.tipo === 'pago_observado') {
-                    const fd = m.factura_data || {};
-                    const montoFmt = parseFloat(fd.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    return `
-                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #EF4444;">
-                            <div class="msg-sender-tag" style="color:#DC2626; font-weight:700;">
-                                <i class="fa-solid fa-triangle-exclamation"></i> ${m.remitente} • Discrepancia de Pago
-                            </div>
-                            <div class="card-pago-status-wa observado">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                    <span style="font-weight:800; color:#991B1B; font-size:0.78rem;"><i class="fa-solid fa-circle-xmark"></i> OBSERVACIÓN BANCARIA</span>
-                                    <span style="font-weight:800; color:#DC2626; font-size:0.92rem;">S/ ${montoFmt}</span>
-                                </div>
-                                <div style="font-size:0.8rem; line-height:1.4; color:#1F2937;">
-                                    <div><strong>Factura:</strong> <span style="font-family:monospace; font-weight:700; color:#B91C1C;">${fd.nro_factura || ''}</span></div>
-                                    <div><strong>Cliente:</strong> ${fd.cliente || ''}</div>
-                                    <div style="margin-top:6px; padding:6px 8px; background:rgba(239,68,68,0.12); border-radius:6px; color:#991B1B; font-size:0.75rem;">
-                                        <strong>Motivo:</strong> ${fd.motivo || m.mensaje}
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
-                        </div>
-                    `;
-                }
-
-                // 4. Si es notificación de cierre de ventas del día enviado por el asesor
-                if (m.tipo === 'cierre_notif') {
-                    const cd = m.cierre_data || {};
-                    const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    const asesorSafe = (m.asesor || cd.asesor || asesorChatActivo).replace(/'/g, "\\'");
-                    const sucursalSafe = (m.sucursal || cd.sucursal || sucursalChatActiva).replace(/'/g, "\\'");
-                    const cierreId = cd.id || 1;
-
-                    return `
-                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #F59E0B;">
-                            <div class="msg-sender-tag" style="color:#D97706; font-weight:700;">
-                                <i class="fa-solid fa-cash-register"></i> ${m.remitente} • Cierre de Ventas del Día
-                            </div>
-                            <div class="card-factura-chat" style="border-left:none;">
-                                <div class="card-factura-chat-header" style="background:#FFFBEB; border-bottom:1px solid #FEF3C7;">
-                                    <span style="color:#92400E; font-weight:800; font-size:0.8rem;"><i class="fa-solid fa-coins"></i> CONSOLIDADO DE CIERRE</span>
-                                    <span style="color:#B45309; font-weight:800; font-size:0.95rem;">S/ ${montoFmt}</span>
-                                </div>
-                                <div class="card-factura-chat-body">
-                                    <div><strong>Asesor:</strong> ${m.asesor || cd.asesor} (${m.sucursal || cd.sucursal})</div>
-                                    <div><strong>Operaciones:</strong> ${cd.total_ventas || 1} ventas del día</div>
-                                    <div><strong>Hora Envío:</strong> ${m.hora} hrs</div>
-                                    <div style="font-size:0.75rem; color:#64748B; margin-top:4px;">${m.mensaje}</div>
-                                </div>
-                                <div class="card-factura-chat-actions">
-                                    <button type="button" class="btn-chat-action-green" onclick="aprobarCierreDiario(${cierreId}, '${asesorSafe}', '${sucursalSafe}', ${cd.monto_acumulado || 0})">
-                                        <i class="fa-solid fa-stamp"></i> Aprobar Cuadre
-                                    </button>
-                                    <button type="button" class="btn-chat-action-outline" onclick="cambiarVistaReporteria('cierres')">
-                                        <i class="fa-solid fa-table-list"></i> Ver Auditoría
-                                    </button>
-                                </div>
-                            </div>
-                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
-                        </div>
-                    `;
-                }
-
-                // 5. Si es confirmación de cuadre de cierre aprobado por Nayeli
-                if (m.tipo === 'cierre_aprobado') {
-                    const cd = m.cierre_data || {};
-                    const montoFmt = parseFloat(cd.monto_acumulado || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    return `
-                        <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}" style="max-width:88%; border-left:4px solid #10B981;">
-                            <div class="msg-sender-tag" style="color:#059669; font-weight:700;">
-                                <i class="fa-solid fa-clipboard-check"></i> ${m.remitente} • Auditoría Conforme
-                            </div>
-                            <div class="card-pago-status-wa aceptado">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                    <span style="font-weight:800; color:#065F46; font-size:0.78rem;"><i class="fa-solid fa-stamp"></i> CUADRE DE CAJA APROBADO</span>
-                                    <span style="font-weight:800; color:#059669; font-size:0.92rem;">S/ ${montoFmt}</span>
-                                </div>
-                                <div style="font-size:0.8rem; line-height:1.4; color:#1F2937;">
-                                    <div><strong>Asesor:</strong> ${cd.asesor || ''} • ${cd.sucursal || ''}</div>
-                                    <div><strong>Ventas Totales:</strong> ${cd.total_ventas || 1} comprobantes conciliados</div>
-                                    <div style="margin-top:6px; padding:6px 8px; background:rgba(16,185,129,0.15); border-radius:6px; color:#065F46; font-size:0.75rem;">
-                                        <i class="fa-solid fa-circle-check"></i> ${m.mensaje}
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
-                        </div>
-                    `;
-                }
-
-                // 6. Mensaje regular de texto
-                return `
-                    <div class="msg-bubble-wa ${isMio ? 'sent' : 'received'}">
-                        ${!isMio ? `
-                            <div class="msg-sender-tag">
-                                ${m.remitente} <span style="font-weight:normal; font-size:0.68rem; color:var(--text-muted);">(${m.sucursal || sucursalChatActiva})</span>
-                            </div>
-                        ` : ''}
-                        <div>${m.mensaje}</div>
-                        <span class="msg-time-wa">${m.hora} ${isMio ? '<i class="fa-solid fa-check-double" style="color:#53BDEB;"></i>' : ''}</span>
-                    </div>
-                `;
-            }).join('');
-
-            scrollBox.scrollTop = scrollBox.scrollHeight;
-        }
-
-        function irAValidarFacturaDesdeChat(nroFactura, cliente, monto, banco, op, voucherUrl) {
-            cambiarVistaReporteria('validacion');
-            if (voucherUrl) {
-                abrirVisorVoucher(nroFactura, cliente, monto, `${banco} #${op}`, asesorChatActivo, 1, voucherUrl);
-            }
-        }
-
-        function insertarRespuestaRapida(texto) {
-            const inp = document.getElementById('chatInputMessage');
-            if (inp) {
-                inp.value = texto;
-                inp.focus();
-            }
-        }
-
-        function cargarChatReporteria() {
-            fetch('crm_backend.php?action=listar_mensajes')
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) return;
-                listaConversacionesData = data.conversaciones || [];
-                listaMensajesChatData = data.mensajes || [];
-
-                renderListaConversacionesWhatsApp(listaConversacionesData);
-                renderMensajesConversacionActiva();
-            })
-            .catch(err => console.log('Error listar chat reporteria:', err));
-        }
-
-        function enviarMensajeChat() {
-            const input = document.getElementById('chatInputMessage');
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            const formData = new FormData();
-            formData.append('action', 'enviar_chat');
-            formData.append('remitente', 'Nayeli');
-            formData.append('rol', 'Reportería');
-            formData.append('asesor', asesorChatActivo);
-            formData.append('sucursal', sucursalChatActiva);
-            formData.append('mensaje', msg);
-
-            fetch('crm_backend.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                input.value = '';
-                cargarChatReporteria();
-            })
-            .catch(err => {
-                input.value = '';
-                cargarChatReporteria();
             });
         }
 
@@ -5541,12 +4514,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 .replace(/'/g, '&#039;');
         }
 
-        // Cargar paleta, pagos, cierres y chat de reportería al iniciar y cada 4.5 segundos
+        // Cargar paleta, pagos y cierres de reportería al iniciar y cada 4.5 segundos
         window.addEventListener('DOMContentLoaded', () => {
             inicializarPaletaReporteria();
             cargarPagosReporteria();
             cargarCierresReporteria();
-            cargarChatReporteria();
 
             // Si viene con parámetro ?tab=cpe o ?vista=cpe en la URL, abrir directamente la consulta StarSoft
             const urlParams = new URLSearchParams(window.location.search);
@@ -5558,7 +4530,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             setInterval(() => {
                 cargarPagosReporteria();
                 cargarCierresReporteria();
-                cargarChatReporteria();
             }, 4500);
         });
     </script>
