@@ -37,22 +37,35 @@ try {
         return $res;
     }
 
-    // 1. Rutas de facturas en COMPROBANTE_CAB (003BDCOMUN)
-    echo "=== RUTA_COMPROBANTE EN [003BDCOMUN].dbo.COMPROBANTE_CAB ===\n";
+    // 1. Columnas y muestra de COMPROBANTE_CAB
+    echo "=== COLUMNAS Y MUESTRA DE [003BDCOMUN].dbo.COMPROBANTE_CAB ===\n";
     try {
-        $rutas = runQuery($conn, "SELECT TOP 10 TIPODOCSUNAT, TIPODOCVENTAS, CFNUMSER, CFNUMDOC, RUTA_COMPROBANTE, RUTA_CDR, XML, ESTADO FROM [003BDCOMUN].dbo.COMPROBANTE_CAB WHERE RUTA_COMPROBANTE IS NOT NULL AND RUTA_COMPROBANTE <> '' ORDER BY CFNUMDOC DESC");
-        print_r($rutas);
+        $cols = runQuery($conn, "SELECT COLUMN_NAME, DATA_TYPE FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='COMPROBANTE_CAB'");
+        echo "Columnas: " . implode(", ", array_column($cols, 'COLUMN_NAME')) . "\n\n";
+        $rows = runQuery($conn, "SELECT TOP 3 * FROM [003BDCOMUN].dbo.COMPROBANTE_CAB ORDER BY 1 DESC");
+        print_r($rows);
     } catch(Exception $e) {
         echo "Error COMPROBANTE_CAB: " . $e->getMessage() . "\n";
     }
 
-    // 2. Muestra general de COMPROBANTE_CAB sin filtro
-    echo "\n=== MUESTRA GENERAL COMPROBANTE_CAB ===\n";
+    // 2. Rutas no nulas en COMPROBANTE_CAB
+    echo "\n=== RUTA_COMPROBANTE NO NULAS EN COMPROBANTE_CAB ===\n";
     try {
-        $sampleC = runQuery($conn, "SELECT TOP 5 TIPODOCSUNAT, TIPODOCVENTAS, CFNUMSER, CFNUMDOC, RUTA_COMPROBANTE, RUTA_CDR, XML, ESTADO, FECHA_EMISION FROM [003BDCOMUN].dbo.COMPROBANTE_CAB ORDER BY FECHA_EMISION DESC");
-        print_r($sampleC);
+        $rutas = runQuery($conn, "SELECT TOP 5 RUTA_COMPROBANTE, RUTA_CDR, XML FROM [003BDCOMUN].dbo.COMPROBANTE_CAB WHERE RUTA_COMPROBANTE IS NOT NULL AND LTRIM(RTRIM(RUTA_COMPROBANTE)) <> ''");
+        print_r($rutas);
     } catch(Exception $e) {
         echo "Error: " . $e->getMessage() . "\n";
+    }
+
+    // 3. GREMISION_CAB columnas y muestra
+    echo "\n=== GREMISION_CAB COLUMNAS Y MUESTRA ===\n";
+    try {
+        $colsG = runQuery($conn, "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='GREMISION_CAB'");
+        echo "Columnas: " . implode(", ", array_column($colsG, 'COLUMN_NAME')) . "\n\n";
+        $rowsG = runQuery($conn, "SELECT TOP 3 * FROM GREMISION_CAB ORDER BY 1 DESC");
+        print_r($rowsG);
+    } catch(Exception $e) {
+        echo "Error GREMISION_CAB: " . $e->getMessage() . "\n";
     }
 
     // 3. Tablas en BDARCHIVOS_SS y BD_ARCHIVOS
