@@ -37,27 +37,33 @@ try {
         return $res;
     }
 
-    // 1. Tablas relacionadas a Facturación Electrónica, Rutas o Parámetros
-    echo "=== TABLAS DE RUTAS / FACTURACIÓN / PARÁMETROS ===\n";
-    $qpaths = runQuery($conn, "SELECT TABLE_CATALOG, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%RUTA%' OR TABLE_NAME LIKE '%PARAM%' OR TABLE_NAME LIKE '%CONF%' OR TABLE_NAME LIKE '%ELECT%' OR TABLE_NAME LIKE '%FACT%' UNION SELECT TABLE_CATALOG, TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%RUTA%' OR TABLE_NAME LIKE '%PARAM%' OR TABLE_NAME LIKE '%CONF%' OR TABLE_NAME LIKE '%ELECT%' OR TABLE_NAME LIKE '%FACT%'");
-    print_r($qpaths);
-
-    // 2. Tablas de comprobantes en 003BDCOMUN
-    echo "\n=== TABLAS DE COMPROBANTES EN 003BDCOMUN ===\n";
-    $qcomp = runQuery($conn, "SELECT TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%COMPROBANTE%'");
-    print_r($qcomp);
-
-    // 3. Revisar si hay campos de ruta de archivo en FACCAB o COMPROBANTE_CAB
-    echo "\n=== COLUMNAS DE FACCAB Y COMPROBANTECAB ===\n";
+    // 1. CONFIGURACION en 003BDCOMUN
+    echo "=== [003BDCOMUN].dbo.CONFIGURACION ===\n";
     try {
-        $c1 = runQuery($conn, "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='FACCAB' AND (COLUMN_NAME LIKE '%RUT%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%ARCH%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%')");
-        print_r($c1);
-    } catch(Exception $e) {}
+        $qconf = runQuery($conn, "SELECT TOP 10 * FROM [003BDCOMUN].dbo.CONFIGURACION");
+        print_r($qconf);
+    } catch(Exception $e) {
+        echo "Error CONFIGURACION: " . $e->getMessage() . "\n";
+    }
 
+    // 2. COMPROBANTE_FIRMA en 003BDCOMUN
+    echo "\n=== [003BDCOMUN].dbo.COMPROBANTE_FIRMA ===\n";
     try {
-        $c2 = runQuery($conn, "SELECT COLUMN_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='COMPROBANTECAB' AND (COLUMN_NAME LIKE '%RUT%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%ARCH%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%')");
-        print_r($c2);
-    } catch(Exception $e) {}
+        $qfirma = runQuery($conn, "SELECT TOP 5 * FROM [003BDCOMUN].dbo.COMPROBANTE_FIRMA ORDER BY 1 DESC");
+        print_r($qfirma);
+    } catch(Exception $e) {
+        echo "Error COMPROBANTE_FIRMA: " . $e->getMessage() . "\n";
+    }
+
+    // 3. FACTURAS en 003BDCOMUN
+    echo "\n=== [003BDCOMUN].dbo.FACTURAS ===\n";
+    try {
+        $qf = runQuery($conn, "SELECT TOP 5 * FROM [003BDCOMUN].dbo.FACTURAS ORDER BY 1 DESC");
+        print_r($qf);
+    } catch(Exception $e) {
+        echo "Error FACTURAS: " . $e->getMessage() . "\n";
+    }
+
 
 
     // 2. Vistas en BDTPED_SSA
