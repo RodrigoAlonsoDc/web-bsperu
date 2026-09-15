@@ -756,7 +756,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 (LTRIM(RTRIM(COALESCE(c.COD_BAJA, ''))) + ' ' + LTRIM(RTRIM(c.CFNUMSER)) + '-' + LTRIM(RTRIM(c.CFNUMDOC))) as documento_completo,
                 CONVERT(varchar, c.CFFECDOC, 23) as fecha,
                 CONVERT(varchar, c.CFFECDOC, 103) as fecha_dmy,
-                LTRIM(RTRIM(COALESCE(NULLIF(c.NRO_DOC_RECEPTOR, ''), c.CFCODCLI, ''))) as ruc,
+                CASE 
+                    WHEN LEN(LTRIM(RTRIM(COALESCE(c.NRO_DOC_RECEPTOR, '')))) > 4 THEN LTRIM(RTRIM(c.NRO_DOC_RECEPTOR))
+                    ELSE LTRIM(RTRIM(COALESCE(c.CFCODCLI, '')))
+                END as ruc,
                 LTRIM(RTRIM(COALESCE(c.CFCODCLI, ''))) as codigo_cliente,
                 LTRIM(RTRIM(c.CFNOMBRE)) as razon_social,
                 LTRIM(RTRIM(COALESCE(c.TIPO_PAGO, '00'))) as forma_pago,

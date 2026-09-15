@@ -1846,6 +1846,165 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             transform: translateY(0);
             opacity: 1;
         }
+
+        /* ================= ESTILOS VISTA CPE (STARSOFT) ================= */
+        .cpe-toolbar-card {
+            background: #FFFFFF;
+            padding: 18px 22px;
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        body.dark-mode .cpe-toolbar-card {
+            background: #151F2E;
+            border-color: #223854;
+        }
+        .cpe-filters-row {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1.2fr 1fr;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        @media(max-width: 1024px) {
+            .cpe-filters-row { grid-template-columns: 1fr 1fr; }
+        }
+        @media(max-width: 640px) {
+            .cpe-filters-row { grid-template-columns: 1fr; }
+        }
+        .cpe-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .cpe-input-group label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cpe-input-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #F8FAFC;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--pill-radius);
+            padding: 8px 14px;
+            font-size: 0.84rem;
+        }
+        body.dark-mode .cpe-input-box {
+            background: #0F172A;
+            border-color: #334155;
+            color: #F1F5F9;
+        }
+        .cpe-input-box input, .cpe-input-box select {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 0.84rem;
+            color: inherit;
+            font-family: inherit;
+        }
+        .badge-doc-cpe {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+        .badge-doc-ft { background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
+        .badge-doc-bv { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+        .badge-doc-nc { background: #F3E8FF; color: #6B21A8; border: 1px solid #E9D5FF; }
+        .badge-doc-nd { background: #FFEDD5; color: #9A3412; border: 1px solid #FED7AA; }
+        .badge-pv-tag {
+            background: #F1F5F9;
+            color: #334155;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border: 1px solid #CBD5E1;
+        }
+        body.dark-mode .badge-pv-tag {
+            background: #1E293B;
+            color: #94A3B8;
+            border-color: #334155;
+        }
+        .badge-sunat-ok {
+            background: #DCFCE7;
+            color: #15803D;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-sunat-warn {
+            background: #FEF3C7;
+            color: #B45309;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-sunat-err {
+            background: #FEE2E2;
+            color: #B91C1C;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .cpe-action-btn {
+            background: #F8FAFC;
+            border: 1px solid var(--border-soft);
+            color: var(--text-dark);
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .cpe-action-btn:hover {
+            background: var(--color-2);
+            color: #FFF;
+            border-color: var(--color-2);
+        }
+        body.dark-mode .cpe-action-btn {
+            background: #1E293B;
+            color: #E2E8F0;
+            border-color: #334155;
+        }
+        .starsoft-tag-etapa {
+            background: #DC2626;
+            color: #FFFFFF;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -1885,6 +2044,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="nav-item" id="nav-historial" onclick="cambiarVistaReporteria('historial', this)">
                     <i class="fa-solid fa-receipt"></i>
                     <span>Vouchers Aceptados</span>
+                </div>
+
+                <div class="nav-item" id="nav-cpe" onclick="cambiarVistaReporteria('cpe', this)">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Consulta CPE StarSoft</span>
+                    <span class="nav-badge" id="badgeCpeTotal" style="background:#0284C7; color:#FFF; font-weight:700;">PROD</span>
                 </div>
 
                 <div class="nav-item" id="nav-chat" onclick="cambiarVistaReporteria('chat', this)">
@@ -2550,6 +2715,181 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
             </div>
 
+            <!-- ==========================================
+                 VISTA 7: CONSULTA DE DOCUMENTOS CPE (STARSOFT)
+            =========================================== -->
+            <div class="vista-seccion" id="vista-cpe" style="display:none; flex-direction:column; gap:20px;">
+                <!-- CABECERA DE LA VISTA -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <h3 style="font-size:1.35rem; font-family:'Outfit', sans-serif; color:var(--text-dark); margin:0;">
+                                Consulta de Documentos Electrónicos (CPE)
+                            </h3>
+                            <span class="starsoft-tag-etapa">Etapa: PRODUCCIÓN</span>
+                        </div>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:4px 0 0 0;">
+                            Auditoría y consulta en tiempo real desde <strong>StarSoft ERP</strong> (RUC 20609793806 • BUILDING SYSTEMS PERU SAC)
+                        </p>
+                    </div>
+
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button type="button" class="btn-pill-white" onclick="exportarExcelCPE()">
+                            <i class="fa-solid fa-file-excel" style="color:#10B981;"></i> Exportar Excel
+                        </button>
+                        <button type="button" class="btn-pill-white primary" onclick="cargarDocumentosCPE()">
+                            <i class="fa-solid fa-rotate"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RESUMEN EN TARJETAS (KPIS) -->
+                <div class="stats-grid-mini" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="stat-card-mini">
+                        <div class="stat-mini-icon" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-file-invoice"></i></div>
+                        <div class="stat-mini-info">
+                            <h4 id="kpiCpeTotal">0</h4>
+                            <p>Comprobantes Listados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card-mini">
+                        <div class="stat-mini-icon" style="background:#DCFCE7; color:#15803D;"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="stat-mini-info">
+                            <h4 id="kpiCpeMonto">S/ 0.00</h4>
+                            <p>Monto Total Facturado</p>
+                        </div>
+                    </div>
+                    <div class="stat-card-mini">
+                        <div class="stat-mini-icon" style="background:#DCFCE7; color:#166534;"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-mini-info">
+                            <h4 id="kpiCpeAprobados">0</h4>
+                            <p>Aprobados por SUNAT</p>
+                        </div>
+                    </div>
+                    <div class="stat-card-mini">
+                        <div class="stat-mini-icon" style="background:#FEF3C7; color:#B45309;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="stat-mini-info">
+                            <h4 id="kpiCpePendientes">0</h4>
+                            <p>Pendientes / Observados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BARRA DE HERRAMIENTAS Y FILTROS IDÉNTICOS A STARSOFT -->
+                <div class="cpe-toolbar-card">
+                    <div class="cpe-filters-row">
+                        <!-- Buscador por texto -->
+                        <div class="cpe-input-group">
+                            <label><i class="fa-solid fa-magnifying-glass"></i> Buscar Comprobante</label>
+                            <div class="cpe-input-box">
+                                <i class="fa-solid fa-barcode" style="color:var(--text-muted);"></i>
+                                <input type="text" id="inputBuscarCPE" placeholder="N° Documento (ej. F001-0015889), RUC o Cliente..." onkeypress="if(event.key==='Enter') filtrarCPE()">
+                            </div>
+                        </div>
+
+                        <!-- Filtro por Tipo de Documento -->
+                        <div class="cpe-input-group">
+                            <label><i class="fa-solid fa-filter"></i> Documento</label>
+                            <div class="cpe-input-box">
+                                <select id="selectTipoDocCPE" onchange="filtrarCPE()">
+                                    <option value="TODOS">TODOS</option>
+                                    <option value="FACTURA">FACTURA (01)</option>
+                                    <option value="BOLETA">BOLETA (03)</option>
+                                    <option value="NOTA_CREDITO">NOTA DE CRÉDITO (07)</option>
+                                    <option value="NOTA_DEBITO">NOTA DE DÉBITO (08)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Filtro Estado SUNAT -->
+                        <div class="cpe-input-group">
+                            <label><i class="fa-solid fa-shield"></i> Ver (Estado CPE SUNAT)</label>
+                            <div class="cpe-input-box">
+                                <select id="selectEstadoSunatCPE" onchange="filtrarCPE()">
+                                    <option value="TODOS">TODOS</option>
+                                    <option value="APROBADO">APROBADO</option>
+                                    <option value="PENDIENTEXML">PENDIENTEXML</option>
+                                    <option value="RECHAZADO">RECHAZADO</option>
+                                    <option value="ANULADO">ANULADO</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Filtro Punto de Venta (PV) -->
+                        <div class="cpe-input-group">
+                            <label><i class="fa-solid fa-store"></i> Punto de Venta (PV)</label>
+                            <div class="cpe-input-box">
+                                <select id="selectPuntoVentaCPE" onchange="filtrarCPE()">
+                                    <option value="TODOS">TODOS</option>
+                                    <option value="001">PV 01 / Chorrillos (F001)</option>
+                                    <option value="003">PV 03 (F003)</option>
+                                    <option value="004">PV 04 (F004)</option>
+                                    <option value="007">PV 07 / Piura (F007)</option>
+                                    <option value="008">PV 08 (F008)</option>
+                                    <option value="009">PV 09 (F009)</option>
+                                    <option value="010">PV 10 (F010)</option>
+                                    <option value="011">PV 11 (F011)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2: Filtros de fecha y botones de acción -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid var(--border-soft); padding-top:12px;">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Periodo Rápido:</span>
+                            <button type="button" class="btn-pill-white" style="padding:4px 10px; font-size:0.74rem;" onclick="setRangoFechaCPE('hoy')">Hoy</button>
+                            <button type="button" class="btn-pill-white" style="padding:4px 10px; font-size:0.74rem;" onclick="setRangoFechaCPE('7d')">Últimos 7 días</button>
+                            <button type="button" class="btn-pill-white" style="padding:4px 10px; font-size:0.74rem;" onclick="setRangoFechaCPE('mes')">Este Mes</button>
+                            <button type="button" class="btn-pill-white" style="padding:4px 10px; font-size:0.74rem;" onclick="setRangoFechaCPE('anio')">Año 2026</button>
+
+                            <div style="display:flex; align-items:center; gap:6px; margin-left:8px;">
+                                <input type="date" id="inputFechaDesdeCPE" class="cpe-input-box" style="padding:4px 8px; font-size:0.75rem; width:130px;">
+                                <span style="font-size:0.75rem; color:var(--text-muted);">al</span>
+                                <input type="date" id="inputFechaHastaCPE" class="cpe-input-box" style="padding:4px 8px; font-size:0.75rem; width:130px;">
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" class="btn-pill-white" style="font-size:0.78rem; padding:6px 12px;" onclick="limpiarFiltrosCPE()">
+                                <i class="fa-solid fa-rotate-left"></i> Limpiar Filtros
+                            </button>
+                            <button type="button" class="btn-pill-white primary" style="font-size:0.78rem; padding:6px 16px;" onclick="filtrarCPE()">
+                                <i class="fa-solid fa-magnifying-glass"></i> Aplicar Búsqueda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DE DOCUMENTOS ELECTRÓNICOS -->
+                <div class="val-table-wrapper" style="box-shadow: 0 8px 24px rgba(0,0,0,0.04);">
+                    <table class="val-table" id="tablaDocumentosCPE">
+                        <thead>
+                            <tr>
+                                <th style="width:55px; text-align:center;">PV</th>
+                                <th style="min-width:145px;">Documento</th>
+                                <th style="width:95px;">Fecha</th>
+                                <th style="width:115px;">RUC / DNI</th>
+                                <th style="min-width:240px;">Razón Social / Cliente</th>
+                                <th style="width:55px; text-align:center;">FP</th>
+                                <th style="width:65px; text-align:center;">Moneda</th>
+                                <th style="width:110px; text-align:right;">Importe</th>
+                                <th style="width:130px; text-align:center;">Estado SUNAT</th>
+                                <th style="width:125px; text-align:center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cpeTableTbody">
+                            <tr>
+                                <td colspan="10" style="text-align:center; padding:35px; color:var(--text-muted);">
+                                    <i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; color:var(--color-2); margin-bottom:8px; display:block;"></i>
+                                    Cargando comprobantes oficiales desde StarSoft ERP...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
         <!-- ================= SIDEBAR DERECHA: MONITOREO EN VIVO (SOLO DASHBOARD GENERAL) ================= -->
@@ -2973,6 +3313,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- ================= MODAL DETALLE DE DOCUMENTO CPE ================= -->
+    <div class="modal-overlay" id="modalDetalleCPE" style="z-index:99999;">
+        <div class="modal-card" style="max-width:640px;">
+            <div class="modal-header">
+                <div>
+                    <span class="starsoft-tag-etapa">StarSoft Facturación Electrónica</span>
+                    <h3 id="modalCpeTitulo" style="margin:4px 0 0 0; font-size:1.25rem;">Comprobante Electrónico</h3>
+                </div>
+                <button class="modal-close-btn" onclick="cerrarModales()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="modalCpeBody" style="display:flex; flex-direction:column; gap:14px; font-size:0.84rem;">
+                <!-- Cargado dinámicamente con abrirDetalleCPE() -->
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; pt:12px; border-top:1px solid var(--border-soft);">
+                <button type="button" class="btn-pill-white" onclick="cerrarModales()">Cerrar</button>
+                <div style="display:flex; gap:8px;" id="modalCpeBotonesAccion">
+                    <!-- Botón de descargar XML se inyecta aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL VISOR DE XML UBL 2.1 ================= -->
+    <div class="modal-overlay" id="modalVisorXmlCPE" style="z-index:100000;">
+        <div class="modal-card" style="max-width:760px;">
+            <div class="modal-header">
+                <div>
+                    <span style="font-size:0.72rem; color:var(--color-2); font-weight:700; text-transform:uppercase;">XML Oficial UBL 2.1 con Firma Digital</span>
+                    <h3 id="modalXmlTitulo" style="margin:4px 0 0 0; font-size:1.2rem;">XML del Comprobante</h3>
+                </div>
+                <button class="modal-close-btn" onclick="cerrarModales()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div style="position:relative;">
+                <textarea id="modalXmlContent" readonly style="width:100%; height:380px; font-family:Consolas, Monaco, monospace; font-size:0.78rem; background:#0F172A; color:#38BDF8; border-radius:14px; padding:16px; border:1px solid #1E293B; outline:none; resize:none; line-height:1.4;"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+                <button type="button" class="btn-pill-white" onclick="cerrarModales()">Cerrar</button>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn-pill-white" onclick="copiarXmlPortapapeles()">
+                        <i class="fa-solid fa-copy"></i> Copiar XML
+                    </button>
+                    <button type="button" class="btn-pill-white primary" id="btnDescargarXmlModal" style="background:var(--color-2); color:#FFF;">
+                        <i class="fa-solid fa-download"></i> Descargar Archivo .XML
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST NOTIFICACIÓN -->
     <div class="toast-palette-notify" id="toastPaletteNotify">
         <i class="fa-solid fa-circle-check" style="color:var(--color-5); font-size:1.1rem;"></i>
@@ -3211,11 +3604,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'validacion': 'Bandeja de Validación & Aprobación de Pagos',
                 'cierres': 'Cierres de Ventas del Día & Auditoría de Caja',
                 'historial': 'Historial de Vouchers y Comprobantes Aprobados',
+                'cpe': 'Consulta de Documentos Electrónicos (CPE StarSoft)',
                 'chat': 'Chat con Asesores de Ventas',
                 'sucursales': 'Control de Metas & Avance de Sucursales'
             };
             if (titles[nombreVista]) {
                 document.getElementById('pageMainTitle').textContent = titles[nombreVista];
+            }
+
+            // Si entra a CPE por primera vez, cargar datos
+            if (nombreVista === 'cpe' && (!docsCpeCache || docsCpeCache.length === 0)) {
+                cargarDocumentosCPE();
             }
 
             // 5. Scroll al tope
@@ -3982,12 +4381,362 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.body.removeChild(link);
         }
 
+        // ================= GESTOR DE CONSULTA DE DOCUMENTOS CPE STARSOFT =================
+        let docsCpeCache = [];
+        let currentXmlDoc = { serie: '', numero: '', xml: '' };
+
+        function setRangoFechaCPE(periodo) {
+            const d = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            const hoyStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+            const inputDesde = document.getElementById('inputFechaDesdeCPE');
+            const inputHasta = document.getElementById('inputFechaHastaCPE');
+            if (!inputDesde || !inputHasta) return;
+
+            inputHasta.value = hoyStr;
+
+            if (periodo === 'hoy') {
+                inputDesde.value = hoyStr;
+            } else if (periodo === '7d') {
+                const d7 = new Date();
+                d7.setDate(d.getDate() - 7);
+                inputDesde.value = `${d7.getFullYear()}-${pad(d7.getMonth() + 1)}-${pad(d7.getDate())}`;
+            } else if (periodo === 'mes') {
+                inputDesde.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-01`;
+            } else if (periodo === 'anio') {
+                inputDesde.value = `${d.getFullYear()}-01-01`;
+            }
+            filtrarCPE();
+        }
+
+        function limpiarFiltrosCPE() {
+            document.getElementById('inputBuscarCPE').value = '';
+            document.getElementById('selectTipoDocCPE').value = 'TODOS';
+            document.getElementById('selectEstadoSunatCPE').value = 'TODOS';
+            document.getElementById('selectPuntoVentaCPE').value = 'TODOS';
+            document.getElementById('inputFechaDesdeCPE').value = '';
+            document.getElementById('inputFechaHastaCPE').value = '';
+            cargarDocumentosCPE();
+        }
+
+        function filtrarCPE() {
+            const termino = document.getElementById('inputBuscarCPE').value.trim();
+            const tipoDoc = document.getElementById('selectTipoDocCPE').value;
+            const estadoSunat = document.getElementById('selectEstadoSunatCPE').value;
+            const pv = document.getElementById('selectPuntoVentaCPE').value;
+            const fechaDesde = document.getElementById('inputFechaDesdeCPE').value;
+            const fechaHasta = document.getElementById('inputFechaHastaCPE').value;
+
+            cargarDocumentosCPE({
+                termino: termino,
+                tipo_doc: tipoDoc,
+                estado_sunat: estadoSunat,
+                pv: pv,
+                fecha_desde: fechaDesde,
+                fecha_hasta: fechaHasta
+            });
+        }
+
+        function cargarDocumentosCPE(filtros = {}) {
+            const tbody = document.getElementById('cpeTableTbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = `<tr>
+                <td colspan="10" style="text-align:center; padding:35px; color:var(--text-muted);">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; color:var(--color-2); margin-bottom:8px; display:block;"></i>
+                    Consultando documentos oficiales en StarSoft ERP...
+                </td>
+            </tr>`;
+
+            const params = new URLSearchParams();
+            params.append('action', 'consultar_documentos_cpe');
+            params.append('limit', '120');
+
+            if (filtros.termino) params.append('termino', filtros.termino);
+            if (filtros.tipo_doc && filtros.tipo_doc !== 'TODOS') params.append('tipo_doc', filtros.tipo_doc);
+            if (filtros.estado_sunat && filtros.estado_sunat !== 'TODOS') params.append('estado_sunat', filtros.estado_sunat);
+            if (filtros.pv && filtros.pv !== 'TODOS') params.append('pv', filtros.pv);
+            if (filtros.fecha_desde) params.append('fecha_desde', filtros.fecha_desde);
+            if (filtros.fecha_hasta) params.append('fecha_hasta', filtros.fecha_hasta);
+
+            fetch(`crm_backend.php?${params.toString()}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && Array.isArray(data.documentos)) {
+                        docsCpeCache = data.documentos;
+                        renderizarTablaCPE(data.documentos);
+                        actualizarKpisCPE(data.stats, data.documentos.length);
+                    } else {
+                        tbody.innerHTML = `<tr>
+                            <td colspan="10" style="text-align:center; padding:30px; color:#EF4444;">
+                                <i class="fa-solid fa-triangle-exclamation" style="font-size:1.5rem; margin-bottom:6px; display:block;"></i>
+                                ${data.mensaje || 'No se pudieron recuperar los comprobantes.'}
+                            </td>
+                        </tr>`;
+                    }
+                })
+                .catch(err => {
+                    tbody.innerHTML = `<tr>
+                        <td colspan="10" style="text-align:center; padding:30px; color:#EF4444;">
+                            <i class="fa-solid fa-wifi" style="font-size:1.5rem; margin-bottom:6px; display:block;"></i>
+                            Error de conexión al consultar los comprobantes: ${err.message}
+                        </td>
+                    </tr>`;
+                });
+        }
+
+        function actualizarKpisCPE(stats, totalListados) {
+            const kpiTotal = document.getElementById('kpiCpeTotal');
+            const kpiMonto = document.getElementById('kpiCpeMonto');
+            const kpiAprobados = document.getElementById('kpiCpeAprobados');
+            const kpiPendientes = document.getElementById('kpiCpePendientes');
+
+            if (kpiTotal) kpiTotal.textContent = totalListados;
+            if (kpiMonto && stats) kpiMonto.textContent = 'S/ ' + Number(stats.monto_total || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            if (kpiAprobados && stats) kpiAprobados.textContent = stats.aprobados;
+            if (kpiPendientes && stats) kpiPendientes.textContent = stats.pendientes;
+        }
+
+        function renderizarTablaCPE(docs) {
+            const tbody = document.getElementById('cpeTableTbody');
+            if (!tbody) return;
+
+            if (docs.length === 0) {
+                tbody.innerHTML = `<tr>
+                    <td colspan="10" style="text-align:center; padding:35px; color:var(--text-muted);">
+                        <i class="fa-regular fa-folder-open" style="font-size:1.8rem; margin-bottom:8px; display:block;"></i>
+                        No se encontraron comprobantes electrónicos con los filtros especificados.
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            let html = '';
+            docs.forEach((d, idx) => {
+                // Tipo badge
+                let badgeTipo = 'badge-doc-ft';
+                if (d.tipo_cod === '03' || d.cod_baja === 'BV') badgeTipo = 'badge-doc-bv';
+                else if (d.tipo_cod === '07' || d.cod_baja === 'NC') badgeTipo = 'badge-doc-nc';
+                else if (d.tipo_cod === '08' || d.cod_baja === 'ND') badgeTipo = 'badge-doc-nd';
+
+                // Estado SUNAT badge
+                const estUpper = (d.estado_sunat || '').toUpperCase();
+                let badgeSunat = '<span class="badge-sunat-ok"><i class="fa-solid fa-circle-check"></i> APROBADO</span>';
+                if (estUpper.includes('PEND')) {
+                    badgeSunat = '<span class="badge-sunat-warn"><i class="fa-solid fa-clock"></i> PENDIENTE</span>';
+                } else if (estUpper.includes('RECH') || estUpper.includes('ANUL')) {
+                    badgeSunat = '<span class="badge-sunat-err"><i class="fa-solid fa-circle-xmark"></i> ' + estUpper + '</span>';
+                }
+
+                const montoFmt = Number(d.importe || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                const docJsonStr = encodeURIComponent(JSON.stringify(d));
+
+                html += `<tr>
+                    <td style="text-align:center;"><span class="badge-pv-tag">${escapeHtml(d.pv || '01')}</span></td>
+                    <td>
+                        <span class="badge-doc-cpe ${badgeTipo}">
+                            ${escapeHtml(d.cod_baja || 'FT')} ${escapeHtml(d.serie)}-${escapeHtml(d.numero)}
+                        </span>
+                    </td>
+                    <td style="font-size:0.8rem; font-weight:600;">${escapeHtml(d.fecha_dmy || d.fecha)}</td>
+                    <td style="font-family:monospace; font-weight:700; font-size:0.82rem;">${escapeHtml(d.ruc || d.codigo_cliente)}</td>
+                    <td>
+                        <strong style="color:var(--text-dark); display:block; font-size:0.84rem;">${escapeHtml(d.razon_social)}</strong>
+                        ${d.orden_compra ? `<small style="color:var(--text-muted); font-size:0.72rem;"><i class="fa-solid fa-file-lines"></i> OC: ${escapeHtml(d.orden_compra)}</small>` : ''}
+                    </td>
+                    <td style="text-align:center; font-weight:700; font-size:0.78rem;">${escapeHtml(d.forma_pago || '00')}</td>
+                    <td style="text-align:center; font-weight:700; font-size:0.78rem;">${escapeHtml(d.moneda || 'MN')}</td>
+                    <td style="text-align:right; font-weight:800; font-size:0.9rem; color:var(--text-dark);">
+                        ${escapeHtml(d.simbolo_moneda || 'S/')} ${montoFmt}
+                    </td>
+                    <td style="text-align:center;">${badgeSunat}</td>
+                    <td style="text-align:center;">
+                        <div style="display:inline-flex; gap:4px; justify-content:center;">
+                            <button type="button" class="cpe-action-btn" title="Ver Detalle Completo" onclick="abrirDetalleCPE('${docJsonStr}')">
+                                <i class="fa-solid fa-eye" style="color:var(--color-2);"></i>
+                            </button>
+                            ${d.tiene_xml ? `
+                            <button type="button" class="cpe-action-btn" title="Ver / Descargar XML UBL 2.1" onclick="verXmlCPE('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
+                                <i class="fa-solid fa-code" style="color:#0284C7;"></i>
+                            </button>` : ''}
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function abrirDetalleCPE(docJsonEncoded) {
+            try {
+                const d = JSON.parse(decodeURIComponent(docJsonEncoded));
+                document.getElementById('modalCpeTitulo').textContent = `${d.tipo_nombre}: ${d.serie}-${d.numero}`;
+
+                const montoTotalFmt = Number(d.importe || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                const subtotalFmt = Number(d.subtotal || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                const igvFmt = Number(d.igv || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+                const bodyHtml = `
+                    <div style="background:#F8FAFC; border-radius:16px; padding:16px; border:1px solid var(--border-soft); display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                        <div>
+                            <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Cliente / Razón Social</span>
+                            <div style="font-weight:800; color:var(--text-dark); margin-top:2px;">${escapeHtml(d.razon_social)}</div>
+                            <small style="color:var(--text-muted); font-family:monospace;">RUC/DNI: ${escapeHtml(d.ruc)}</small>
+                        </div>
+                        <div>
+                            <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Fecha de Emisión & Punto Venta</span>
+                            <div style="font-weight:800; color:var(--text-dark); margin-top:2px;">${escapeHtml(d.fecha_dmy || d.fecha)}</div>
+                            <small style="color:var(--text-muted);">Punto de Venta: PV ${escapeHtml(d.pv)}</small>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Dirección Fiscal / Destino</span>
+                            <div style="font-size:0.8rem; color:var(--text-dark); margin-top:2px;">${escapeHtml(d.direccion_cliente || 'No registrada')}</div>
+                        </div>
+                    </div>
+
+                    <!-- Desglose Económico -->
+                    <div style="background:#FFFFFF; border-radius:16px; padding:16px; border:1px solid var(--border-soft); display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Moneda & Pago</span>
+                            <div style="font-size:0.85rem; font-weight:700;">${d.moneda === 'ME' ? 'Dólares Americanos ($)' : 'Soles Peruanos (S/)'} • FP: ${escapeHtml(d.forma_pago)}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.78rem; color:var(--text-muted);">Subtotal: <strong>${escapeHtml(d.simbolo_moneda)} ${subtotalFmt}</strong></div>
+                            <div style="font-size:0.78rem; color:var(--text-muted);">IGV (18%): <strong>${escapeHtml(d.simbolo_moneda)} ${igvFmt}</strong></div>
+                            <div style="font-size:1.15rem; font-weight:800; color:var(--color-2); margin-top:4px;">Total: ${escapeHtml(d.simbolo_moneda)} ${montoTotalFmt}</div>
+                        </div>
+                    </div>
+
+                    <!-- Datos Técnicos SUNAT & Servidor -->
+                    <div style="background:#F1F5F9; border-radius:16px; padding:14px; border:1px solid #CBD5E1; font-size:0.78rem; display:flex; flex-direction:column; gap:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span><strong>Estado SUNAT:</strong></span>
+                            <span style="font-weight:700; color:#15803D;">${escapeHtml(d.estado_sunat)}</span>
+                        </div>
+                        ${d.cdr ? `<div><strong>Ticket CDR SUNAT:</strong> <span style="font-family:monospace;">${escapeHtml(d.cdr)}</span></div>` : ''}
+                        ${d.serie_guia ? `<div><strong>Guía de Remisión:</strong> ${escapeHtml(d.serie_guia)}-${escapeHtml(d.nro_guia)}</div>` : ''}
+                        <div style="word-break:break-all; margin-top:4px;">
+                            <strong>Ubicación en Servidor:</strong><br>
+                            <code style="font-size:0.72rem; background:#E2E8F0; padding:2px 6px; border-radius:6px;">${escapeHtml(d.ruta_comprobante || 'E:\\DBSQL\\EF\\20609793806\\2026\\...')}</code>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('modalCpeBody').innerHTML = bodyHtml;
+
+                const btnAcciones = document.getElementById('modalCpeBotonesAccion');
+                if (btnAcciones) {
+                    btnAcciones.innerHTML = `
+                        <button type="button" class="btn-pill-white primary" style="background:var(--color-2); color:#FFF;" onclick="verXmlCPE('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
+                            <i class="fa-solid fa-code"></i> Ver XML UBL 2.1
+                        </button>
+                    `;
+                }
+
+                cerrarModales();
+                document.getElementById('modalDetalleCPE').classList.add('open');
+            } catch(e) {
+                alert('No se pudo abrir el detalle del comprobante: ' + e.message);
+            }
+        }
+
+        function verXmlCPE(serie, numero) {
+            currentXmlDoc = { serie: serie, numero: numero, xml: '' };
+            document.getElementById('modalXmlTitulo').textContent = `XML Comprobante: ${serie}-${numero}`;
+            document.getElementById('modalXmlContent').value = 'Cargando XML oficial UBL 2.1 desde StarSoft ERP...';
+
+            const btnDescarga = document.getElementById('btnDescargarXmlModal');
+            if (btnDescarga) {
+                btnDescarga.onclick = () => {
+                    window.open(`crm_backend.php?action=obtener_xml_cpe&serie=${encodeURIComponent(serie)}&numero=${encodeURIComponent(numero)}&descargar=1`, '_blank');
+                };
+            }
+
+            cerrarModales();
+            document.getElementById('modalVisorXmlCPE').classList.add('open');
+
+            fetch(`crm_backend.php?action=obtener_xml_cpe&serie=${encodeURIComponent(serie)}&numero=${encodeURIComponent(numero)}`)
+                .then(r => r.text())
+                .then(xmlText => {
+                    currentXmlDoc.xml = xmlText;
+                    document.getElementById('modalXmlContent').value = xmlText;
+                })
+                .catch(err => {
+                    document.getElementById('modalXmlContent').value = 'Error al recuperar el XML: ' + err.message;
+                });
+        }
+
+        function copiarXmlPortapapeles() {
+            const xml = document.getElementById('modalXmlContent').value;
+            if (!xml) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(xml).then(() => {
+                    mostrarToastPaleta('📋 ¡XML UBL 2.1 copiado al portapapeles!');
+                });
+            } else {
+                prompt('Copia el código XML:', xml);
+            }
+        }
+
+        function exportarExcelCPE() {
+            if (!docsCpeCache || docsCpeCache.length === 0) {
+                alert('No hay comprobantes cargados para exportar.');
+                return;
+            }
+
+            let csv = "PV,Documento,Fecha,RUC_DNI,Cliente,FormaPago,Moneda,Importe,IGV,Subtotal,Estado_SUNAT,CDR\n";
+            docsCpeCache.forEach(d => {
+                const fila = [
+                    `"${d.pv}"`,
+                    `"${d.documento_completo || (d.serie + '-' + d.numero)}"`,
+                    `"${d.fecha_dmy || d.fecha}"`,
+                    `"${d.ruc}"`,
+                    `"${(d.razon_social || '').replace(/"/g, '""')}"`,
+                    `"${d.forma_pago}"`,
+                    `"${d.moneda}"`,
+                    d.importe,
+                    d.igv,
+                    d.subtotal,
+                    `"${d.estado_sunat}"`,
+                    `"${d.cdr}"`
+                ];
+                csv += fila.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8,\uFEFF" + csv);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `CPE_Starsoft_BSPeru_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         // Cargar paleta, pagos, cierres y chat de reportería al iniciar y cada 4.5 segundos
         window.addEventListener('DOMContentLoaded', () => {
             inicializarPaletaReporteria();
             cargarPagosReporteria();
             cargarCierresReporteria();
             cargarChatReporteria();
+
+            // Si viene con parámetro ?tab=cpe o ?vista=cpe en la URL, abrir directamente la consulta StarSoft
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab') || urlParams.get('vista');
+            if (tabParam === 'cpe') {
+                cambiarVistaReporteria('cpe', document.getElementById('nav-cpe'));
+            }
+
             setInterval(() => {
                 cargarPagosReporteria();
                 cargarCierresReporteria();

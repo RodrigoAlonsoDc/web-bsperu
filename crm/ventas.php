@@ -1706,6 +1706,12 @@ if (file_exists($fileCotizPath)) {
                     <i class="fa-solid fa-receipt"></i>
                     <span>Comprobantes</span>
                 </div>
+
+                <a href="reportes.php?tab=cpe" class="nav-item" style="text-decoration:none; color:inherit;" title="Consulta y Búsqueda de Facturas y CPE en StarSoft ERP">
+                    <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent-tan);"></i>
+                    <span>CPE StarSoft</span>
+                    <span class="nav-badge" style="background:#0284C7; color:#FFF; font-weight:700;">ERP</span>
+                </a>
             </div>
 
             <!-- USER CARD BOTTOM -->
