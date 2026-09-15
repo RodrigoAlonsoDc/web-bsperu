@@ -765,14 +765,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 END as ruc,
                 LTRIM(RTRIM(COALESCE(c.CFCODCLI, ''))) as codigo_cliente,
                 LTRIM(RTRIM(COALESCE(c.CFNOMBRE, ''))) as razon_social,
-                LTRIM(RTRIM(COALESCE(c.CFFORVEN, ''))) as forma_pago,
-                LTRIM(RTRIM(COALESCE(c.TIPOMONEDA, 'MN'))) as moneda,
-                CASE WHEN LTRIM(RTRIM(COALESCE(c.TIPOMONEDA, 'MN'))) = 'ME' THEN '$' ELSE 'S/' END as simbolo_moneda,
-                CAST(COALESCE(c.TOTAL_DOCUMENTO, 0) as float) as importe,
-                CAST(COALESCE(c.IGV, 0) as float) as igv,
-                CAST(COALESCE(c.SUBTOTAL, 0) as float) as subtotal,
-                LTRIM(RTRIM(COALESCE(c.ESTADO_COMPROBANTE, ''))) as estado_sunat,
-                LTRIM(RTRIM(COALESCE(c.TICKET_SUNAT, ''))) as cdr,
+                LTRIM(RTRIM(COALESCE(c.TIPO_PAGO, '00'))) as forma_pago,
+                CASE 
+                    WHEN c.MONEDA = 'USD' OR c.MONEDA = 'ME' THEN 'ME'
+                    ELSE 'MN'
+                END as moneda,
+                CASE 
+                    WHEN c.MONEDA = 'USD' OR c.MONEDA = 'ME' THEN '$'
+                    ELSE 'S/'
+                END as simbolo_moneda,
+                CAST(COALESCE(c.IMPORTE_TOTAL_VENTA, 0) as float) as importe,
+                CAST(COALESCE(c.SUMATORIA_IGV, 0) as float) as igv,
+                CAST(COALESCE(c.TVV_IMP_OPE_GRAVADAS, 0) as float) as subtotal,
+                LTRIM(RTRIM(COALESCE(c.ESTADO_COMPROBANTE, 'PENDIENTE'))) as estado_sunat,
+                LTRIM(RTRIM(COALESCE(c.CDR, ''))) as cdr,
                 LTRIM(RTRIM(COALESCE(c.RUTA_COMPROBANTE, ''))) as ruta_comprobante,
                 LTRIM(RTRIM(COALESCE(c.CORREO, ''))) as correo,
                 LTRIM(RTRIM(COALESCE(c.ORDENCOMPRA, ''))) as orden_compra,
