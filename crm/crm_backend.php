@@ -876,18 +876,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
         try {
             libxml_use_internal_errors(true);
-            $sxml = simplexml_load_string($xmlString);
+            // Eliminar prefijos de namespaces para que el XML sea directamente navegable sin conflictos
+            $cleanXml = preg_replace('/(<\/?)(\w+):([^>]*>)/', '$1$3', $xmlString);
+            $cleanXml = preg_replace('/xmlns[^=]*="[^"]*"/i', '', $cleanXml);
+
+            $sxml = simplexml_load_string($cleanXml);
             if (!$sxml) return null;
-
-            // Registrar namespaces oficiales de UBL 2.1
-            $ns = $sxml->getNamespaces(true);
-            $cbcNs = $ns['cbc'] ?? 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2';
-            $cacNs = $ns['cac'] ?? 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2';
-            $dsNs = $ns['ds'] ?? 'http://www.w3.org/2000/09/xmldsig#';
-
-            $sxml->registerXPathNamespace('cbc', $cbcNs);
-            $sxml->registerXPathNamespace('cac', $cacNs);
-            $sxml->registerXPathNamespace('ds', $dsNs);
 
             $getX = function($query, $default = '') use ($sxml) {
                 $res = $sxml->xpath($query);
@@ -898,54 +892,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             };
 
             // Emisor
-            $emisorRuc = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID', '20609793806');
-            $emisorNombre = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName', 'BUILDING SYSTEMS PERU SAC');
-            $emisorDireccion = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine/cbc:Line', 'AV. LOS FAISANES N° 675');
-            $emisorDistrito = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District', 'CHORRILLOS');
-            $emisorProvincia = $getX('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentity', 'LIMA');
+            $emisorRuc = $getX('//AccountingSupplierParty/Party/PartyIdentification/ID', '20609793806');
+            $emisorNombre = $getX('//AccountingSupplierParty/Party/PartyLegalEntity/RegistrationName', 'BUILDING SYSTEMS PERU SAC');
+            $emisorDireccion = $getX('//AccountingSupplierParty/Party/PartyLegalEntity/RegistrationAddress/AddressLine/Line', 'AV. LOS FAISANES N° 675');
+            $emisorDistrito = $getX('//AccountingSupplierParty/Party/PartyLegalEntity/RegistrationAddress/District', 'CHORRILLOS');
+            $emisorProvincia = $getX('//AccountingSupplierParty/Party/PartyLegalEntity/RegistrationAddress/CountrySubentity', 'LIMA');
 
             // Receptor
-            $receptorRuc = $getX('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID', '');
-            $receptorNombre = $getX('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName', '');
-            $receptorDireccion = $getX('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine/cbc:Line', '');
+            $receptorRuc = $getX('//AccountingCustomerParty/Party/PartyIdentification/ID', '');
+            $receptorNombre = $getX('//AccountingCustomerParty/Party/PartyLegalEntity/RegistrationName', '');
+            $receptorDireccion = $getX('//AccountingCustomerParty/Party/PartyLegalEntity/RegistrationAddress/AddressLine/Line', '');
 
             // Documento
-            $idDoc = $getX('//cbc:ID', '');
-            $fechaEmision = $getX('//cbc:IssueDate', '');
-            $tipoDoc = $getX('//cbc:InvoiceTypeCode', '01');
-            $moneda = $getX('//cbc:DocumentCurrencyCode', 'PEN');
-            $guiaRemision = $getX('//cac:DespatchDocumentReference/cbc:ID', '');
-            $totalLetras = $getX('//cbc:Note', '');
-            $hashSunat = $getX('//ds:DigestValue', '');
+            $idDoc = $getX('//ID', '');
+            $fechaEmision = $getX('//IssueDate', '');
+            $tipoDoc = $getX('//InvoiceTypeCode', '01');
+            $moneda = $getX('//DocumentCurrencyCode', 'PEN');
+            $guiaRemision = $getX('//DespatchDocumentReference/ID', '');
+            $totalLetras = $getX('//Note', '');
+            $hashSunat = $getX('//DigestValue', '');
 
             // Totales
-            $subtotal = floatval($getX('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount', '0'));
-            $igv = floatval($getX('//cac:TaxTotal/cbc:TaxAmount', '0'));
-            $total = floatval($getX('//cac:LegalMonetaryTotal/cbc:PayableAmount', '0'));
-            $descuentoGlobal = floatval($getX('//cac:AllowanceCharge[cbc:ChargeIndicator="false"]/cbc:Amount', '0'));
+            $subtotal = floatval($getX('//LegalMonetaryTotal/LineExtensionAmount', '0'));
+            $igv = floatval($getX('//TaxTotal/TaxAmount', '0'));
+            $total = floatval($getX('//LegalMonetaryTotal/PayableAmount', '0'));
+            $descuentoGlobal = floatval($getX('//AllowanceCharge/Amount', '0'));
 
             // Items
             $items = [];
-            $lineNodes = $sxml->xpath('//cac:InvoiceLine');
+            $lineNodes = $sxml->xpath('//InvoiceLine');
             if (!empty($lineNodes)) {
                 $num = 1;
                 foreach ($lineNodes as $l) {
-                    $l->registerXPathNamespace('cbc', $cbcNs);
-                    $l->registerXPathNamespace('cac', $cacNs);
-
-                    $qNode = $l->xpath('cbc:InvoicedQuantity')[0] ?? null;
+                    $qNode = $l->xpath('InvoicedQuantity')[0] ?? null;
                     $qty = $qNode ? floatval((string)$qNode) : 1;
                     $unit = $qNode ? (string)($qNode['unitCode'] ?? 'NIU') : 'NIU';
 
-                    $cod = (string)($l->xpath('cac:Item/cac:SellersItemIdentification/cbc:ID')[0] ?? '');
-                    $desc = (string)($l->xpath('cac:Item/cbc:Description')[0] ?? '');
-                    $pRef = floatval((string)($l->xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceAmount')[0] ?? 0));
-                    $pUnit = floatval((string)($l->xpath('cac:Price/cbc:PriceAmount')[0] ?? 0));
+                    $cod = (string)($l->xpath('Item/SellersItemIdentification/ID')[0] ?? '');
+                    $desc = (string)($l->xpath('Item/Description')[0] ?? '');
+                    $pRef = floatval((string)($l->xpath('PricingReference/AlternativeConditionPrice/PriceAmount')[0] ?? 0));
+                    $pUnit = floatval((string)($l->xpath('Price/PriceAmount')[0] ?? 0));
                     if ($pRef > 0 && $pUnit <= 0) $pUnit = round($pRef / 1.18, 4);
 
-                    $dscto = floatval((string)($l->xpath('cac:AllowanceCharge[cbc:ChargeIndicator="false"]/cbc:Amount')[0] ?? 0));
-                    $valorVenta = floatval((string)($l->xpath('cbc:LineExtensionAmount')[0] ?? 0));
-                    $igvItem = floatval((string)($l->xpath('cac:TaxTotal/cbc:TaxAmount')[0] ?? 0));
+                    $dscto = floatval((string)($l->xpath('AllowanceCharge/Amount')[0] ?? 0));
+                    $valorVenta = floatval((string)($l->xpath('LineExtensionAmount')[0] ?? 0));
+                    $igvItem = floatval((string)($l->xpath('TaxTotal/TaxAmount')[0] ?? 0));
 
                     $totalItem = $valorVenta + $igvItem;
                     if ($totalItem <= 0 && $pRef > 0) $totalItem = round($qty * $pRef, 2);
