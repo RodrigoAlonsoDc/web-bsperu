@@ -37,24 +37,50 @@ try {
         return $res;
     }
 
-    // 1. Columnas y muestra de COMPROBANTE_CAB
-    echo "=== COLUMNAS Y MUESTRA DE [003BDCOMUN].dbo.COMPROBANTE_CAB ===\n";
+    // 1. Estructura de carpetas por Tipo de Documento y Año
+    echo "=== ESTRUCTURA DE CARPETAS DE FACTURAS Y COMPROBANTES ===\n";
     try {
-        $cols = runQuery($conn, "SELECT COLUMN_NAME, DATA_TYPE FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='COMPROBANTE_CAB'");
-        echo "Columnas: " . implode(", ", array_column($cols, 'COLUMN_NAME')) . "\n\n";
-        $rows = runQuery($conn, "SELECT TOP 3 * FROM [003BDCOMUN].dbo.COMPROBANTE_CAB ORDER BY 1 DESC");
-        print_r($rows);
-    } catch(Exception $e) {
-        echo "Error COMPROBANTE_CAB: " . $e->getMessage() . "\n";
-    }
-
-    // 2. Rutas no nulas en COMPROBANTE_CAB
-    echo "\n=== RUTA_COMPROBANTE NO NULAS EN COMPROBANTE_CAB ===\n";
-    try {
-        $rutas = runQuery($conn, "SELECT TOP 5 RUTA_COMPROBANTE, RUTA_CDR, XML FROM [003BDCOMUN].dbo.COMPROBANTE_CAB WHERE RUTA_COMPROBANTE IS NOT NULL AND LTRIM(RTRIM(RUTA_COMPROBANTE)) <> ''");
-        print_r($rutas);
+        $paths = runQuery($conn, "
+            SELECT 
+                TIPODOC_COMPROBANTE,
+                CASE 
+                    WHEN TIPODOC_COMPROBANTE = '01' THEN 'Factura'
+                    WHEN TIPODOC_COMPROBANTE = '03' THEN 'Boleta'
+                    WHEN TIPODOC_COMPROBANTE = '07' THEN 'Nota de Crédito'
+                    WHEN TIPODOC_COMPROBANTE = '08' THEN 'Nota de Débito'
+                    ELSE TIPODOC_COMPROBANTE 
+                END as tipo_nombre,
+                CFNUMSER,
+                YEAR(CFFECDOC) as anio,
+                COUNT(*) as cantidad,
+                MIN(RUTA_COMPROBANTE) as ejemplo_ruta_1,
+                MAX(RUTA_COMPROBANTE) as ejemplo_ruta_2
+            FROM [003BDCOMUN].dbo.COMPROBANTE_CAB
+            WHERE RUTA_COMPROBANTE IS NOT NULL AND LTRIM(RTRIM(RUTA_COMPROBANTE)) <> ''
+            GROUP BY TIPODOC_COMPROBANTE, CFNUMSER, YEAR(CFFECDOC)
+            ORDER BY anio DESC, TIPODOC_COMPROBANTE, CFNUMSER
+        ");
+        print_r($paths);
     } catch(Exception $e) {
         echo "Error: " . $e->getMessage() . "\n";
+    }
+
+    // 2. Rutas de Guías de Remisión
+    echo "\n=== ESTRUCTURA DE CARPETAS DE GUÍAS DE REMISIÓN ===\n";
+    try {
+        $guias = runQuery($conn, "
+            SELECT TOP 5
+                SERIE,
+                NUMGUIA,
+                RUTA_COMPROBANTE,
+                RUTA_CDR
+            FROM GREMISION_CAB
+            WHERE RUTA_COMPROBANTE IS NOT NULL AND LTRIM(RTRIM(RUTA_COMPROBANTE)) <> ''
+            ORDER BY 1 DESC
+        ");
+        print_r($guias);
+    } catch(Exception $e) {
+        echo "Error Guías: " . $e->getMessage() . "\n";
     }
 
     // 3. GREMISION_CAB columnas y muestra
