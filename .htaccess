@@ -1,5 +1,5 @@
-# ============================================
-# BS PERÚ - Seguridad y HTTPS
+﻿# ============================================
+# BS PERÃš - Seguridad y HTTPS
 # ============================================
 
 # --- Forzar HTTPS ---
@@ -7,6 +7,9 @@
     RewriteEngine On
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # --- Redireccion Catalogo Antiguo al Nuevo Catálogo ---
+    RewriteRule ^views/catalogo\.html$ /productos.html [R=301,L,QSA]
 </IfModule>
 
 # --- Headers de Seguridad ---
@@ -18,7 +21,7 @@
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
 </IfModule>
 
-# --- Compresión GZIP ---
+# --- CompresiÃ³n GZIP ---
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html
     AddOutputFilterByType DEFLATE text/css
@@ -28,7 +31,7 @@
     AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
 
-# --- Caché de recursos estáticos ---
+# --- CachÃ© de recursos estÃ¡ticos ---
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType text/css "access plus 1 month"
@@ -43,3 +46,4 @@
 <IfModule mime_module>
   AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
 </IfModule>
+

@@ -404,7 +404,7 @@ if (scrollArrow) {
 //////////////////////////
 
 let ccCategorias = [
-  { nombre: 'CURADORES', img: '/assets/img principales/logo.png', link: '/views/catalogo.html?cat=CURADORES' }
+  { nombre: 'CURADORES', img: '/assets/img principales/logo.png', link: '/productos.html?cat=CURADORES' }
 ];
 
 let ccInicio = 0;
@@ -519,7 +519,7 @@ function ccConstruirCategoriasDesdeJSON(data) {
       map.set(key, {
         nombre: categoria,
         img: imagen,
-        link: `/views/catalogo.html?cat=${encodeURIComponent(categoria)}`
+        link: `/productos.html?cat=${encodeURIComponent(categoria)}`
       });
     }
   });
@@ -535,7 +535,7 @@ function ccConstruirCategoriasDesdeConfig(data) {
     .map((item) => {
       const nombre = (item?.nombre || item?.categoria || '').toString().trim();
       const img = (item?.img || item?.imagen || '/assets/img principales/logo.png').toString();
-      const link = (item?.link || `/views/catalogo.html?cat=${encodeURIComponent(nombre)}`).toString();
+      const link = (item?.link || `/productos.html?cat=${encodeURIComponent(nombre)}`).toString();
 
       if (!nombre) return null;
 
@@ -862,7 +862,7 @@ function cargarCategoriasSubmenuIndex() {
             const crearColumna = (items) => {
                 if (!items.length) return '';
                 const itemsHTML = items.map(cat => `
-                    <a href="/views/catalogo.html?cat=${encodeURIComponent(cat.nombre)}" class="navbar-bs__submenu-item">
+                    <a href="/productos.html?cat=${encodeURIComponent(cat.nombre)}" class="navbar-bs__submenu-item">
                         ${cat.nombre}
                     </a>
                 `).join('');

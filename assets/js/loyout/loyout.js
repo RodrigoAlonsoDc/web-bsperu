@@ -105,7 +105,7 @@ function inicializarNavbar() {
   
   const layoutMenuLinks = `
     <li class="navbar-bs__item-with-submenu">
-    <a href="/views/catalogo.html" class="navbar-bs__productos-link" id="productosLink">Productos</a>
+    <a href="/productos.html" class="navbar-bs__productos-link" id="productosLink">Productos</a>
     <div class="navbar-bs__submenu" id="productosSubmenu">
       <div class="navbar-bs__submenu-content">
         <div class="submenu-loading">Cargando categorías...</div>
@@ -240,25 +240,25 @@ const drawerHTML = `
           <i class="bi bi-chevron-right"></i>
         </button>
         <div class="navbar-bs__drawer-submenu-panel" id="drawerProductosPanel">
-          <a href="/views/catalogo.html" class="navbar-bs__drawer-submenu-item">Todos</a>
+          <a href="/productos.html" class="navbar-bs__drawer-submenu-item">Todos</a>
           <div class="navbar-bs__drawer-submenu-divider"></div>
-          <a href="/views/catalogo.html?cat=ADHESIVO%20EPOXICO" class="navbar-bs__drawer-submenu-item">Adhesivo Epóxico</a>
-          <a href="/views/catalogo.html?cat=CAPUCHONES" class="navbar-bs__drawer-submenu-item">Capuchones</a>
-          <a href="/views/catalogo.html?cat=CURADORES" class="navbar-bs__drawer-submenu-item">Curadores</a>
-          <a href="/views/catalogo.html?cat=DESMOLDANTES" class="navbar-bs__drawer-submenu-item">Desmoldantes</a>
-          <a href="/views/catalogo.html?cat=FRAGUAS" class="navbar-bs__drawer-submenu-item">Fraguas</a>
-          <a href="/views/catalogo.html?cat=IMPERMEABILIZANTES" class="navbar-bs__drawer-submenu-item">Impermeabilizantes</a>
-          <a href="/views/catalogo.html?cat=INCORPORADOR%20DE%20AIRE" class="navbar-bs__drawer-submenu-item">Incorporador de Aire</a>
-          <a href="/views/catalogo.html?cat=MORTEROS%20DE%20REPARACION" class="navbar-bs__drawer-submenu-item">Morteros de Reparación</a>
-          <a href="/views/catalogo.html?cat=OTROS" class="navbar-bs__drawer-submenu-item">Otros</a>
-          <a href="/views/catalogo.html?cat=PEGAMENTOS" class="navbar-bs__drawer-submenu-item">Pegamentos</a>
-          <a href="/views/catalogo.html?cat=PLASTIFICANTE" class="navbar-bs__drawer-submenu-item">Plastificante</a>
-          <a href="/views/catalogo.html?cat=REMOVEDORES" class="navbar-bs__drawer-submenu-item">Removedores</a>
-          <a href="/views/catalogo.html?cat=RESINAS" class="navbar-bs__drawer-submenu-item">Resinas</a>
-          <a href="/views/catalogo.html?cat=SELLADORES" class="navbar-bs__drawer-submenu-item">Selladores</a>
-          <a href="/views/catalogo.html?cat=SEPARADORES" class="navbar-bs__drawer-submenu-item">Separadores</a>
-          <a href="/views/catalogo.html?cat=SOLVENTES" class="navbar-bs__drawer-submenu-item">Solventes</a>
-          <a href="/views/catalogo.html?cat=WATER%20STOPS" class="navbar-bs__drawer-submenu-item">Water Stops</a>
+          <a href="/productos.html?cat=ADHESIVO%20EPOXICO" class="navbar-bs__drawer-submenu-item">Adhesivo Epóxico</a>
+          <a href="/productos.html?cat=CAPUCHONES" class="navbar-bs__drawer-submenu-item">Capuchones</a>
+          <a href="/productos.html?cat=CURADORES" class="navbar-bs__drawer-submenu-item">Curadores</a>
+          <a href="/productos.html?cat=DESMOLDANTES" class="navbar-bs__drawer-submenu-item">Desmoldantes</a>
+          <a href="/productos.html?cat=FRAGUAS" class="navbar-bs__drawer-submenu-item">Fraguas</a>
+          <a href="/productos.html?cat=IMPERMEABILIZANTES" class="navbar-bs__drawer-submenu-item">Impermeabilizantes</a>
+          <a href="/productos.html?cat=INCORPORADOR%20DE%20AIRE" class="navbar-bs__drawer-submenu-item">Incorporador de Aire</a>
+          <a href="/productos.html?cat=MORTEROS%20DE%20REPARACION" class="navbar-bs__drawer-submenu-item">Morteros de Reparación</a>
+          <a href="/productos.html?cat=OTROS" class="navbar-bs__drawer-submenu-item">Otros</a>
+          <a href="/productos.html?cat=PEGAMENTOS" class="navbar-bs__drawer-submenu-item">Pegamentos</a>
+          <a href="/productos.html?cat=PLASTIFICANTE" class="navbar-bs__drawer-submenu-item">Plastificante</a>
+          <a href="/productos.html?cat=REMOVEDORES" class="navbar-bs__drawer-submenu-item">Removedores</a>
+          <a href="/productos.html?cat=RESINAS" class="navbar-bs__drawer-submenu-item">Resinas</a>
+          <a href="/productos.html?cat=SELLADORES" class="navbar-bs__drawer-submenu-item">Selladores</a>
+          <a href="/productos.html?cat=SEPARADORES" class="navbar-bs__drawer-submenu-item">Separadores</a>
+          <a href="/productos.html?cat=SOLVENTES" class="navbar-bs__drawer-submenu-item">Solventes</a>
+          <a href="/productos.html?cat=WATER%20STOPS" class="navbar-bs__drawer-submenu-item">Water Stops</a>
         </div>
       </li>
 
@@ -1166,7 +1166,7 @@ function renderCategoriasMenu(categorias) {
   menu.innerHTML = items
     .map(cat => {
       const labelUpper = (cat || '').toString().toUpperCase();
-      return `<li><a class="dropdown-item" href="/views/catalogo.html?cat=${encodeURIComponent(cat)}">${labelUpper}</a></li>`;
+      return `<li><a class="dropdown-item" href="/productos.html?cat=${encodeURIComponent(cat)}">${labelUpper}</a></li>`;
     })
     .join('');
 }
@@ -1233,7 +1233,7 @@ function cargarCategoriasSubmenu() {
         
         const itemsHTML = items
           .map(cat => `
-            <a href="/views/catalogo.html?cat=${encodeURIComponent(cat.nombre)}" class="navbar-bs__submenu-item">
+            <a href="/productos.html?cat=${encodeURIComponent(cat.nombre)}" class="navbar-bs__submenu-item">
               ${cat.nombre}
             </a>
           `)
