@@ -1110,7 +1110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             $sql = "SELECT TOP 1 XML, CFNUMSER, CFNUMDOC, RUC_EMISOR, TIPODOC_COMPROBANTE, 
                            CONVERT(varchar, CFFECDOC, 23) as fecha,
                            CONVERT(varchar, CFFECDOC, 103) as fecha_dmy,
-                           CONVERT(varchar, CFFECVEN, 103) as fecha_vcto_dmy,
+                           CONVERT(varchar, CFFECDOC, 103) as fecha_vcto_dmy,
                            LTRIM(RTRIM(COALESCE(TIPO_PAGO, 'CONTADO'))) as forma_pago,
                            LTRIM(RTRIM(COALESCE(CFNUMPED, ''))) as nro_pedido,
                            LTRIM(RTRIM(COALESCE(ORDENCOMPRA, ''))) as orden_compra,
