@@ -37,79 +37,58 @@ try {
         return $res;
     }
 
-    // 1. CONFIGURACION en 003BDCOMUN
-    echo "=== [003BDCOMUN].dbo.CONFIGURACION ===\n";
-    try {
-        $qconf = runQuery($conn, "SELECT TOP 10 * FROM [003BDCOMUN].dbo.CONFIGURACION");
-        print_r($qconf);
-    } catch(Exception $e) {
-        echo "Error CONFIGURACION: " . $e->getMessage() . "\n";
+    // 1. Todas las Bases de Datos en el Servidor SQL
+    echo "=== TODAS LAS BASES DE DATOS EN SQL SERVER ===\n";
+    $dbs = runQuery($conn, "SELECT name, database_id FROM sys.databases ORDER BY name");
+    foreach ($dbs as $d) {
+        echo " - {$d['name']} (ID: {$d['database_id']})\n";
     }
 
-    // 2. COMPROBANTE_FIRMA en 003BDCOMUN
-    echo "\n=== [003BDCOMUN].dbo.COMPROBANTE_FIRMA ===\n";
+    // 2. Tablas en 003BDCOMUN relacionadas a facturas o configuración
+    echo "\n=== TABLAS EN 003BDCOMUN (Facturación / Configuración) ===\n";
     try {
-        $qfirma = runQuery($conn, "SELECT TOP 5 * FROM [003BDCOMUN].dbo.COMPROBANTE_FIRMA ORDER BY 1 DESC");
-        print_r($qfirma);
-    } catch(Exception $e) {
-        echo "Error COMPROBANTE_FIRMA: " . $e->getMessage() . "\n";
-    }
-
-    // 3. FACTURAS en 003BDCOMUN
-    echo "\n=== [003BDCOMUN].dbo.FACTURAS ===\n";
-    try {
-        $qf = runQuery($conn, "SELECT TOP 5 * FROM [003BDCOMUN].dbo.FACTURAS ORDER BY 1 DESC");
-        print_r($qf);
-    } catch(Exception $e) {
-        echo "Error FACTURAS: " . $e->getMessage() . "\n";
-    }
-
-
-
-    // 2. Vistas en BDTPED_SSA
-    echo "\n=== VISTAS EN BDTPED_SSA ===\n";
-    $vistas = runQuery($conn, "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='VIEW'");
-    print_r($vistas);
-
-    // 3. Usuarios en USUARIO_BS
-    echo "\n=== USUARIOS EN USUARIO_BS ===\n";
-    try {
-        $u = runQuery($conn, "SELECT * FROM USUARIO_BS");
-        print_r($u);
+        $tComun = runQuery($conn, "SELECT TABLE_NAME FROM [003BDCOMUN].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND (TABLE_NAME LIKE '%FAC%' OR TABLE_NAME LIKE '%CONF%' OR TABLE_NAME LIKE '%PARAM%' OR TABLE_NAME LIKE '%FE%' OR TABLE_NAME LIKE '%ELECT%' OR TABLE_NAME LIKE '%COMPROB%' OR TABLE_NAME LIKE '%DOC%') ORDER BY TABLE_NAME");
+        echo implode(", ", array_column($tComun, 'TABLE_NAME')) . "\n";
     } catch(Exception $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 
-    // 4. Cuotas de Vendedores (BDT_VENDEDORCUOTA)
-    echo "\n=== CUOTAS DE VENDEDORES (BDT_VENDEDORCUOTA) ===\n";
+    // 3. Columnas con RUTA, PATH, DIR, ARCHIVO, PDF, XML en TODAS las tablas de 003BDCOMUN y BDTPED_SSA
+    echo "\n=== COLUMNAS CON RUTA / PATH / PDF / XML / CARPETA ===\n";
     try {
-        $cuotas = runQuery($conn, "SELECT TOP 10 * FROM BDT_VENDEDORCUOTA");
-        print_r($cuotas);
+        $qRutas = runQuery($conn, "
+            SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+            FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE COLUMN_NAME LIKE '%RUTA%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%CARPETA%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%' OR COLUMN_NAME LIKE '%ARCHIVO%'
+            UNION ALL
+            SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+            FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS 
+            WHERE COLUMN_NAME LIKE '%RUTA%' OR COLUMN_NAME LIKE '%PATH%' OR COLUMN_NAME LIKE '%DIR%' OR COLUMN_NAME LIKE '%CARPETA%' OR COLUMN_NAME LIKE '%PDF%' OR COLUMN_NAME LIKE '%XML%' OR COLUMN_NAME LIKE '%ARCHIVO%'
+        ");
+        print_r($qRutas);
     } catch(Exception $e) {
-        echo "Error: " . $e->getMessage() . "\n";
+        echo "Error Rutas: " . $e->getMessage() . "\n";
     }
 
-    // 5. Columnas exactas de PEDCAB
-    echo "\n=== COLUMNAS EXACTAS DE PEDCAB ===\n";
+    // 4. Columnas y muestra de FACCAB en BDTPED_SSA
+    echo "\n=== COLUMNAS DE FACCAB EN BDTPED_SSA ===\n";
     try {
-        $cols = runQuery($conn, "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'PEDCAB' ORDER BY ORDINAL_POSITION");
-        foreach ($cols as $c) {
-            echo "   {$c['COLUMN_NAME']} ({$c['DATA_TYPE']})\n";
-        }
-        $sample = runQuery($conn, "SELECT TOP 3 * FROM PEDCAB ORDER BY 1 DESC");
-        print_r($sample);
+        $colsFac = runQuery($conn, "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='FACCAB' ORDER BY ORDINAL_POSITION");
+        $cNames = array_column($colsFac, 'COLUMN_NAME');
+        echo implode(", ", $cNames) . "\n";
+        $sampleFac = runQuery($conn, "SELECT TOP 3 * FROM FACCAB ORDER BY 1 DESC");
+        print_r($sampleFac);
     } catch(Exception $e) {
-        echo "Error PEDCAB: " . $e->getMessage() . "\n";
+        echo "Error FACCAB: " . $e->getMessage() . "\n";
     }
 
-
-    // 6. Lista de Precios y Artículos (LISPROART)
-    echo "\n=== MUESTRA DE LISPROART (Catálogo y Precios) ===\n";
+    // 5. Valores en CONFIGURACION o tablas de parámetros en 003BDCOMUN
+    echo "\n=== VALORES DE CONFIGURACION EN 003BDCOMUN ===\n";
     try {
-        $art = runQuery($conn, "SELECT TOP 5 * FROM LISPROART");
-        print_r($art);
+        $conf = runQuery($conn, "SELECT TOP 1 * FROM [003BDCOMUN].dbo.CONFIGURACION");
+        print_r($conf);
     } catch(Exception $e) {
-        echo "Error: " . $e->getMessage() . "\n";
+        echo "Error Config: " . $e->getMessage() . "\n";
     }
 
 
