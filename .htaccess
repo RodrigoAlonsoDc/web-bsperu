@@ -9,7 +9,7 @@
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # --- Redireccion Catalogo Antiguo al Nuevo Catlogo ---
-    RewriteRule ^views/catalogo\.html$ /productos.html [R=301,L,QSA]
+    RewriteRule ^views/catalogo\.html$ / [R=301,L,QSA]
 </IfModule>
 
 # --- Headers de Seguridad ---

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="mocha">
+<html lang="es" data-theme="corporate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BS Perú | Catálogo de Productos Químicos para Construcción</title>
-    <meta name="description" content="Catálogo Z ADITIVOS de BS Perú: impermeabilizantes, selladores, aditivos para concreto, curadores, adhesivos epóxicos y accesorios de obra. Fichas técnicas y asesoría.">
+    <title>BS Perú | Soluciones Químicas para la Construcción y Catálogo Oficial</title>
+    <meta name="description" content="Catálogo y portal oficial de Building Systems Perú (Z ADITIVOS): impermeabilizantes, selladores, aditivos para concreto, curadores, adhesivos epóxicos y asesoría técnica especializada.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://bsperu.pe/productos.html">
+    <link rel="canonical" href="https://bsperu.pe/">
     <link rel="icon" href="/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -777,7 +777,7 @@
     <div class="theme-switcher">
         <div class="theme-menu" id="themeMenu" role="menu" aria-label="Elegir diseño">
             <h4>Elige un Diseño</h4>
-            <button type="button" class="theme-option active" role="menuitemradio" aria-checked="true" data-theme-value="mocha">
+            <button type="button" class="theme-option" role="menuitemradio" aria-checked="false" data-theme-value="mocha">
                 <span class="theme-color-circle" style="background: #1a1410; border-color: #c8a96e;"></span>
                 <span class="theme-name">Mocha Gold (Premium)</span>
             </button>
@@ -793,7 +793,7 @@
                 <span class="theme-color-circle" style="background: #000000; border-color: #06b6d4;"></span>
                 <span class="theme-name">High-Tech</span>
             </button>
-            <button type="button" class="theme-option" role="menuitemradio" aria-checked="false" data-theme-value="corporate">
+            <button type="button" class="theme-option active" role="menuitemradio" aria-checked="true" data-theme-value="corporate">
                 <span class="theme-color-circle" style="background: #f8fafc; border-color: #2563eb;"></span>
                 <span class="theme-name">Clásico Corporativo</span>
             </button>
@@ -810,11 +810,11 @@
 
     <!-- ============ NAVBAR ============ -->
     <nav class="navbar" id="mainNav" aria-label="Navegación principal">
-        <a href="/" class="nav-logo" aria-label="BS Perú - Inicio">
+        <a href="#inicio" class="nav-logo" aria-label="BS Perú - Inicio">
             <img class="brand-logo" src="img/logo_bs.png" alt="BS Perú" width="200" height="46">
         </a>
         <ul class="nav-links">
-            <li><a href="/"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a></li>
+            <li><a href="#inicio">Inicio</a></li>
             <li><a href="#familias">Familias</a></li>
             <li><a href="#catalogo">Catálogo</a></li>
             <li><a href="#destacados">Destacados</a></li>
@@ -837,7 +837,7 @@
             <button class="drawer-close" id="drawerCloseBtn" aria-label="Cerrar menú"><i class="ph ph-x" aria-hidden="true"></i></button>
         </div>
         <ul class="drawer-nav">
-            <li><a href="/"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a></li>
+            <li><a href="#inicio"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a></li>
             <li><a href="#familias"><i class="ph ph-squares-four" aria-hidden="true"></i> Familias de producto</a></li>
             <li><a href="#catalogo"><i class="ph ph-list-magnifying-glass" aria-hidden="true"></i> Catálogo completo</a></li>
             <li><a href="#destacados"><i class="ph ph-star" aria-hidden="true"></i> Destacados</a></li>
@@ -1668,16 +1668,10 @@
             });
             var guardado = null;
             try { guardado = localStorage.getItem('bs-theme'); } catch (e) { /* ignorar */ }
-            if (guardado) {
-                var btn = $('.theme-option[data-theme-value="' + guardado + '"]');
-                if (btn) {
-                    document.documentElement.setAttribute('data-theme', guardado);
-                    $$('.theme-option').forEach(function (o) {
-                        var on = o === btn;
-                        o.classList.toggle('active', on);
-                        o.setAttribute('aria-checked', on ? 'true' : 'false');
-                    });
-                }
+            var temaInicial = guardado || 'corporate';
+            var btn = $('.theme-option[data-theme-value="' + temaInicial + '"]');
+            if (btn) {
+                setTheme(temaInicial, btn);
             }
             $('#themeToggleBtn').addEventListener('click', function () {
                 var menu = $('#themeMenu');
