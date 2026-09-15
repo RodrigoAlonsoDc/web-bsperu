@@ -2825,38 +2825,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                 </div>
 
-                <!-- RESUMEN EN TARJETAS (KPIS) -->
-                <div class="stats-grid-mini" style="grid-template-columns: repeat(4, 1fr);">
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-file-invoice"></i></div>
-                        <div class="stat-mini-info">
-                            <h4 id="kpiCpeTotal">0</h4>
-                            <p>Comprobantes Listados</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon" style="background:#DCFCE7; color:#15803D;"><i class="fa-solid fa-sack-dollar"></i></div>
-                        <div class="stat-mini-info">
-                            <h4 id="kpiCpeMonto">S/ 0.00</h4>
-                            <p>Monto Total Facturado</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon" style="background:#DCFCE7; color:#166534;"><i class="fa-solid fa-circle-check"></i></div>
-                        <div class="stat-mini-info">
-                            <h4 id="kpiCpeAprobados">0</h4>
-                            <p>Aprobados por SUNAT</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon" style="background:#FEF3C7; color:#B45309;"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <div class="stat-mini-info">
-                            <h4 id="kpiCpePendientes">0</h4>
-                            <p>Pendientes / Observados</p>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- BARRA DE HERRAMIENTAS Y FILTROS IDÉNTICOS A STARSOFT -->
                 <div class="cpe-toolbar-card">
                     <div class="cpe-filters-row">
