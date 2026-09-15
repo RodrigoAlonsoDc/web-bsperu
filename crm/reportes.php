@@ -3560,9 +3560,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div id="printFacturaA4" class="hoja-factura-a4">
                 <!-- Encabezado Superior -->
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
-                    <!-- Logo BS PERÚ -->
-                    <div style="width:140px; text-align:left;">
-                        <img src="img/logo_bs.png" alt="BS PERÚ" style="height:56px; max-width:140px; object-fit:contain;" onerror="this.onerror=null; this.src='https://bsperu.pe/assets/img%20principales/logo.png';">
+                    <!-- Logo BS PERÚ Oficial para fondo blanco -->
+                    <div style="width:175px; text-align:left;">
+                        <img src="img/logo_bs_factura.png?v=3" alt="BS PERÚ" style="height:56px; max-width:175px; object-fit:contain;" onerror="this.onerror=null; this.src='img/logo_bs.png';">
                     </div>
 
                     <!-- Datos Centrales de la Empresa -->
@@ -5139,15 +5139,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const cuotas = (detalle && detalle.cuotas) || [];
             const aprobacion = res.datos_aprobacion || res.aprobacion_crm || null;
 
+            // Extraer serie y número con máxima tolerancia para evitar undefined
+            const docNumCompleto = cab.documento_completo || doc.numero_completo || res.documento || '';
+            let serie = cab.serie || res.serie || '';
+            let numero = cab.numero || res.numero || '';
+            if ((!serie || !numero) && docNumCompleto.includes('-')) {
+                const partes = docNumCompleto.split('-');
+                if (!serie) serie = partes[0].trim();
+                if (!numero) numero = partes[1].trim();
+            }
+            if (!serie) serie = 'F001';
+            if (!numero) numero = '0000000';
+
             // Barra superior
             const topbar = document.getElementById('topbarFacturaTitulo');
-            if (topbar) topbar.textContent = `${cab.tipo_nombre || 'COMPROBANTE'}: ${cab.serie}-${cab.numero}`;
+            if (topbar) topbar.textContent = `${cab.tipo_nombre || 'FACTURA ELECTRÓNICA'}: ${serie}-${numero}`;
 
             // Cabecera RUC & Documento
             const elTipoDoc = document.getElementById('a4TipoDocTitulo');
             if (elTipoDoc) elTipoDoc.textContent = (cab.tipo_nombre || 'FACTURA ELECTRONICA').toUpperCase();
             const elNumDoc = document.getElementById('a4NumeroDoc');
-            if (elNumDoc) elNumDoc.textContent = `N° ${cab.serie} - ${cab.numero}`;
+            if (elNumDoc) elNumDoc.textContent = `N° ${serie} - ${numero}`;
 
             // Cuadro Datos Cliente
             const elClienteNom = document.getElementById('a4ClienteNombre');
@@ -5159,15 +5171,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const elFechaEmis = document.getElementById('a4FechaEmision');
             if (elFechaEmis) elFechaEmis.textContent = cab.fecha_dmy || doc.fecha_dmy || cab.fecha || '-';
             const elFechaVcto = document.getElementById('a4FechaVcto');
-            if (elFechaVcto) elFechaVcto.textContent = cab.fecha_vcto_dmy || doc.fecha_vcto || '-';
+            if (elFechaVcto) elFechaVcto.textContent = cab.fecha_vcto_dmy || doc.fecha_vcto || (cuotas && cuotas[0] && cuotas[0].fecha_vcto) || cab.fecha_dmy || '-';
             const elFormaPago = document.getElementById('a4FormaPago');
-            if (elFormaPago) elFormaPago.textContent = cab.forma_pago || doc.forma_pago || 'CONTADO CONTRA ENTREGA';
+            if (elFormaPago) elFormaPago.textContent = (cab.forma_pago && cab.forma_pago !== '00') ? cab.forma_pago : (doc.forma_pago || 'CONTADO CONTRA ENTREGA');
             const elNumPedido = document.getElementById('a4NumeroPedido');
-            if (elNumPedido) elNumPedido.textContent = cab.nro_pedido || '-';
+            if (elNumPedido) elNumPedido.textContent = (cab.nro_pedido && cab.nro_pedido !== '-') ? cab.nro_pedido : (doc.nro_pedido || '-');
             const elOrdenCompra = document.getElementById('a4OrdenCompra');
-            if (elOrdenCompra) elOrdenCompra.textContent = cab.orden_compra || doc.orden_compra || '-';
+            if (elOrdenCompra) elOrdenCompra.textContent = (cab.orden_compra && cab.orden_compra !== '-') ? cab.orden_compra : (doc.orden_compra || '-');
             const elCodVendedor = document.getElementById('a4CodVendedor');
-            if (elCodVendedor) elCodVendedor.textContent = cab.cod_vendedor || '-';
+            if (elCodVendedor) elCodVendedor.textContent = cab.cod_vendedor || doc.cod_vendedor || '07 CARMEN LOLOY';
             const elCotizacion = document.getElementById('a4Cotizacion');
             if (elCotizacion) elCotizacion.textContent = cab.nro_cotizacion || doc.nro_cotizacion || '-';
             const elGuiaRem = document.getElementById('a4GuiaRemision');
