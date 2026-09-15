@@ -1264,6 +1264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $validador = trim($_POST['validador'] ?? 'Nayeli (Reportería)');
         $nota = trim($_POST['nota'] ?? 'Pago verificado y conciliado');
         $montoTotal = floatval($_POST['monto_total'] ?? 0);
+        $montoTexto = trim($_POST['monto_texto'] ?? '');
         $clienteNombre = trim($_POST['cliente_nombre'] ?? '');
         $clienteRuc = trim($_POST['cliente_ruc'] ?? '');
         $fechaCustom = trim($_POST['fecha'] ?? $_POST['fecha_aprobacion'] ?? '');
@@ -1284,6 +1285,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             'banco' => $banco,
             'nro_operacion' => $nroOperacion,
             'numero_operacion' => $nroOperacion,
+            'monto_texto' => $montoTexto,
             'nota' => $nota,
             'monto_total' => $montoTotal,
             'cliente_nombre' => $clienteNombre,

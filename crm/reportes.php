@@ -3548,7 +3548,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
                     <label style="color:#94A3B8; font-size:0.75rem;">N° Operación:</label>
-                    <input type="text" id="inputSelloOperacion" placeholder="Ej. 849201" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:110px;">
+                    <input type="text" id="inputSelloOperacion" placeholder="Ej. 849201" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:100px;">
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="color:#94A3B8; font-size:0.75rem;">Monto:</label>
+                    <input type="text" id="inputSelloMonto" placeholder="Ej. S/ 432.56" oninput="actualizarTextosSello()" style="background:#1E293B; color:#FFF; border:1px solid #334155; border-radius:8px; padding:4px 8px; font-size:0.78rem; width:105px;">
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
                     <label style="color:#94A3B8; font-size:0.75rem;">Validador:</label>
@@ -3644,6 +3648,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="sello-cancelado-line">
                                     <span style="min-width:115px;">N° OPERACIÓN:</span>
                                     <div class="sello-cancelado-dots"><span id="selloOpTxt" class="sello-cancelado-val">849201</span></div>
+                                </div>
+                                <div class="sello-cancelado-line">
+                                    <span style="min-width:65px;">MONTO:</span>
+                                    <div class="sello-cancelado-dots"><span id="selloMontoTxt" class="sello-cancelado-val">S/ 432.56</span></div>
                                 </div>
                                 <div class="sello-cancelado-company">BUILDING SYSTEMS PERU S.A.C.</div>
                             </div>
@@ -5293,6 +5301,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const inputFecha = document.getElementById('inputSelloFecha');
             const inputBanco = document.getElementById('inputSelloBanco');
             const inputOp = document.getElementById('inputSelloOperacion');
+            const inputMonto = document.getElementById('inputSelloMonto');
             const btnGuardar = document.getElementById('btnGuardarAprobacionModal');
 
             if (aprobacion && (aprobacion.aprobado || aprobacion.estado_crm === 'APROBADO_CONCILIADO' || aprobacion.banco)) {
@@ -5300,6 +5309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if (inputFecha) inputFecha.value = aprobacion.fecha_dmy || aprobacion.fecha_aprobacion || cab.fecha_dmy || '';
                 if (inputBanco) inputBanco.value = aprobacion.banco || 'BCP';
                 if (inputOp) inputOp.value = aprobacion.nro_operacion || aprobacion.numero_operacion || '';
+                if (inputMonto) inputMonto.value = aprobacion.monto_texto || (`${simbolo} ${Number(aprobacion.monto_total || totalVal).toFixed(2)}`);
                 if (btnGuardar) btnGuardar.innerHTML = '<i class="fa-solid fa-check"></i> Actualizar en cPanel';
             } else {
                 if (chk) chk.checked = true;
@@ -5312,6 +5322,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     else inputBanco.value = 'BCP';
                 }
                 if (inputOp) inputOp.value = '';
+                if (inputMonto) inputMonto.value = `${simbolo} ${totalVal.toFixed(2)}`;
                 if (btnGuardar) btnGuardar.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Guardar en cPanel';
             }
 
@@ -5335,14 +5346,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const fecha = document.getElementById('inputSelloFecha')?.value || '';
             const banco = document.getElementById('inputSelloBanco')?.value || '';
             const op = document.getElementById('inputSelloOperacion')?.value || '';
+            const monto = document.getElementById('inputSelloMonto')?.value || '';
 
             const elFecha = document.getElementById('selloFechaTxt');
             const elBanco = document.getElementById('selloBancoTxt');
             const elOp = document.getElementById('selloOpTxt');
+            const elMonto = document.getElementById('selloMontoTxt');
 
             if (elFecha) elFecha.textContent = fecha || '-';
             if (elBanco) elBanco.textContent = banco || '-';
             if (elOp) elOp.textContent = op || '-';
+            if (elMonto) elMonto.textContent = monto || '-';
         }
 
         function guardarAprobacionModalActual() {
@@ -5357,6 +5371,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
             btn.disabled = true;
 
+            const montoRaw = document.getElementById('inputSelloMonto')?.value || '';
+            const montoNum = parseFloat(montoRaw.replace(/[^0-9.]/g, '')) || currentA4Data.totales?.total || cab.importe || 0;
+
             const payload = {
                 serie: cab.serie,
                 numero: cab.numero,
@@ -5364,9 +5381,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 banco: document.getElementById('inputSelloBanco')?.value || '',
                 numero_operacion: document.getElementById('inputSelloOperacion')?.value || '',
                 nro_operacion: document.getElementById('inputSelloOperacion')?.value || '',
+                monto_texto: montoRaw,
+                monto_total: montoNum,
                 validador: document.getElementById('inputSelloValidador')?.value || 'Nayeli (Reportería)',
                 nota: 'Pago verificado y conciliado',
-                monto_total: currentA4Data.totales?.total || cab.importe || 0,
                 cliente_nombre: cab.razon_social || '',
                 cliente_ruc: cab.ruc || ''
             };
