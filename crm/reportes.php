@@ -3409,7 +3409,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <i class="fa-solid fa-copy"></i> Copiar XML
                     </button>
                     <button type="button" class="btn-pill-white primary" id="btnDescargarXmlModal" style="background:var(--color-2); color:#FFF;">
-                        <i class="fa-solid fa-download"></i> Descargar Archivo .XML
+                        <i class="fa-solid fa-download"></i> Descargar .XML
+                    </button>
+                    <button type="button" class="btn-pill-white primary" style="background:#15803D; color:#FFF; font-weight:700;" onclick="abrirFacturaA4(currentXmlDoc.serie, currentXmlDoc.numero)">
+                        <i class="fa-solid fa-file-invoice"></i> Ver en Formato Factura A4
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= MODAL FACTURA A4 CON SELLO DE APROBACIÓN ================= -->
     <div class="modal-overlay" id="modalFacturaA4" style="z-index:100010; padding:15px; align-items:flex-start; overflow-y:auto;">
         <div class="modal-card" style="max-width:920px; width:100%; border-radius:24px; padding:0; background:transparent; border:none; box-shadow:none; margin:20px auto;">
@@ -4771,7 +4780,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 html += `<tr>
                     <td style="text-align:center;"><span class="badge-pv-tag">${escapeHtml(d.pv || '01')}</span></td>
                     <td>
-                        <span class="badge-doc-cpe ${badgeTipo}">
+                        <span class="badge-doc-cpe ${badgeTipo}" style="cursor:pointer;" title="Clic para ver Factura A4 oficial" onclick="abrirFacturaA4('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
                             ${escapeHtml(d.cod_baja || 'FT')} ${escapeHtml(d.serie)}-${escapeHtml(d.numero)}
                         </span>
                     </td>
@@ -4796,16 +4805,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </div>` : ''}
                     </td>
                     <td style="text-align:center;">
-                        <div style="display:inline-flex; gap:4px; justify-content:center;">
-                            <button type="button" class="cpe-action-btn" style="color:#15803D; font-size:0.92rem;" title="Ver e Imprimir Factura A4 con Sello" onclick="abrirFacturaA4('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
-                                <i class="fa-solid fa-print"></i>
+                        <div style="display:inline-flex; gap:6px; justify-content:center; align-items:center;">
+                            <button type="button" class="btn-pill-white primary" style="background:#15803D; color:#FFF; font-size:0.75rem; padding:5px 9px; font-weight:800; border:none; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Ver Factura A4 Oficial y Sello de Aprobación" onclick="abrirFacturaA4('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
+                                <i class="fa-solid fa-file-invoice"></i> Ver A4
                             </button>
-                            <button type="button" class="cpe-action-btn" title="Ver Detalle Rápido" onclick="abrirDetalleCPE('${docJsonStr}')">
+                            <button type="button" class="cpe-action-btn" title="Ver Resumen Rápido" onclick="abrirDetalleCPE('${docJsonStr}')">
                                 <i class="fa-solid fa-eye" style="color:var(--color-2);"></i>
                             </button>
                             ${d.tiene_xml ? `
-                            <button type="button" class="cpe-action-btn" title="Ver / Descargar XML UBL 2.1" onclick="verXmlCPE('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
-                                <i class="fa-solid fa-code" style="color:#0284C7;"></i>
+                            <button type="button" class="cpe-action-btn" title="Ver Código Fuente XML UBL 2.1" onclick="verXmlCPE('${escapeHtml(d.serie)}', '${escapeHtml(d.numero)}')">
+                                <i class="fa-solid fa-code" style="color:#64748B;"></i>
                             </button>` : ''}
                         </div>
                     </td>
