@@ -679,9 +679,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             exit;
         }
 
-        try {
+          try {
             $where = ["1=1"];
-            $params = [];
 
             // Filtro por Tipo de Comprobante
             if ($tipo_doc === 'FACTURA' || $tipo_doc === '01') {
@@ -696,45 +695,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
             // Filtro por Estado SUNAT
             if ($estado_sunat !== 'TODOS' && $estado_sunat !== '') {
-                $where[] = "c.ESTADO_COMPROBANTE = ?";
-                $params[] = $estado_sunat;
+                $cleanEstado = preg_replace('/[^A-Za-z0-9_]/', '', $estado_sunat);
+                if (!empty($cleanEstado)) {
+                    $where[] = "c.ESTADO_COMPROBANTE = '$cleanEstado'";
+                }
             }
 
             // Filtro por Punto de Venta (PV)
             if ($pv !== 'TODOS' && $pv !== '') {
-                $where[] = "(c.CODIGOPVENTA = ? OR c.CFNUMSER LIKE ?)";
-                $params[] = $pv;
-                $params[] = '%' . $pv . '%';
+                $cleanPv = preg_replace('/[^A-Za-z0-9]/', '', $pv);
+                if (!empty($cleanPv)) {
+                    $where[] = "(c.CODIGOPVENTA = '$cleanPv' OR c.CFNUMSER LIKE '%$cleanPv%')";
+                }
             }
 
-            // Filtro por Fecha
+            // Filtro por Fecha (Sanitizado para evitar error HY090 de FreeTDS/ODBC)
             if ($fecha_desde !== '') {
-                $where[] = "c.CFFECDOC >= ?";
-                $params[] = $fecha_desde . ' 00:00:00';
+                $cleanDesde = preg_replace('/[^0-9\-]/', '', $fecha_desde);
+                if (!empty($cleanDesde)) {
+                    $where[] = "c.CFFECDOC >= '$cleanDesde 00:00:00'";
+                }
             }
             if ($fecha_hasta !== '') {
-                $where[] = "c.CFFECDOC <= ?";
-                $params[] = $fecha_hasta . ' 23:59:59';
+                $cleanHasta = preg_replace('/[^0-9\-]/', '', $fecha_hasta);
+                if (!empty($cleanHasta)) {
+                    $where[] = "c.CFFECDOC <= '$cleanHasta 23:59:59'";
+                }
             }
 
             // Filtro por Término de Búsqueda (Número de documento, RUC o Cliente)
             if ($termino !== '') {
-                if (strpos($termino, '-') !== false) {
-                    $parts = explode('-', $termino, 2);
-                    $serieSearch = '%' . trim($parts[0]) . '%';
-                    $numClean = ltrim(trim($parts[1]), '0');
-                    $where[] = "((c.CFNUMSER LIKE ? AND (c.CFNUMDOC LIKE ? OR LTRIM(c.CFNUMDOC) LIKE ?)) OR c.NRO_DOC_RECEPTOR LIKE ? OR c.CFNOMBRE LIKE ?)";
-                    $params[] = $serieSearch;
-                    $params[] = '%' . trim($parts[1]) . '%';
-                    $params[] = '%' . $numClean . '%';
-                    $params[] = '%' . $termino . '%';
-                    $params[] = '%' . $termino . '%';
-                } else {
-                    $where[] = "(c.CFNUMDOC LIKE ? OR c.CFNUMSER LIKE ? OR c.NRO_DOC_RECEPTOR LIKE ? OR c.CFNOMBRE LIKE ?)";
-                    $params[] = '%' . $termino . '%';
-                    $params[] = '%' . $termino . '%';
-                    $params[] = '%' . $termino . '%';
-                    $params[] = '%' . $termino . '%';
+                $cleanTermino = str_replace("'", "''", $termino);
+                $cleanTermino = trim(preg_replace('/[\x00-\x1F\x7F]/', '', $cleanTermino));
+                if ($cleanTermino !== '') {
+                    if (strpos($cleanTermino, '-') !== false) {
+                        $parts = explode('-', $cleanTermino, 2);
+                        $serieSearch = str_replace("'", "''", trim($parts[0]));
+                        $numClean = str_replace("'", "''", trim($parts[1]));
+                        $numCleanSinCeros = ltrim($numClean, '0');
+                        $where[] = "((c.CFNUMSER LIKE '%$serieSearch%' AND (c.CFNUMDOC LIKE '%$numClean%' OR c.CFNUMDOC LIKE '%$numCleanSinCeros%')) OR c.NRO_DOC_RECEPTOR LIKE '%$cleanTermino%' OR c.CFNOMBRE LIKE '%$cleanTermino%')";
+                    } else {
+                        $where[] = "(c.CFNUMDOC LIKE '%$cleanTermino%' OR c.CFNUMSER LIKE '%$cleanTermino%' OR c.NRO_DOC_RECEPTOR LIKE '%$cleanTermino%' OR c.CFNOMBRE LIKE '%$cleanTermino%')";
+                    }
                 }
             }
 
@@ -758,24 +760,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 CONVERT(varchar, c.CFFECDOC, 103) as fecha_dmy,
                 CASE 
                     WHEN LEN(LTRIM(RTRIM(COALESCE(c.NRO_DOC_RECEPTOR, '')))) > 4 THEN LTRIM(RTRIM(c.NRO_DOC_RECEPTOR))
-                    ELSE LTRIM(RTRIM(COALESCE(c.CFCODCLI, '')))
+                    WHEN LEN(LTRIM(RTRIM(COALESCE(c.CFCODCLI, '')))) > 4 THEN LTRIM(RTRIM(c.CFCODCLI))
+                    ELSE LTRIM(RTRIM(COALESCE(c.NRO_DOC_RECEPTOR, '')))
                 END as ruc,
                 LTRIM(RTRIM(COALESCE(c.CFCODCLI, ''))) as codigo_cliente,
-                LTRIM(RTRIM(c.CFNOMBRE)) as razon_social,
-                LTRIM(RTRIM(COALESCE(c.TIPO_PAGO, '00'))) as forma_pago,
-                CASE 
-                    WHEN c.MONEDA = 'USD' OR c.MONEDA = 'ME' THEN 'ME'
-                    ELSE 'MN'
-                END as moneda,
-                CASE 
-                    WHEN c.MONEDA = 'USD' OR c.MONEDA = 'ME' THEN '$'
-                    ELSE 'S/'
-                END as simbolo_moneda,
-                CAST(COALESCE(c.IMPORTE_TOTAL_VENTA, 0) as float) as importe,
-                CAST(COALESCE(c.SUMATORIA_IGV, 0) as float) as igv,
-                CAST(COALESCE(c.TVV_IMP_OPE_GRAVADAS, 0) as float) as subtotal,
-                LTRIM(RTRIM(COALESCE(c.ESTADO_COMPROBANTE, 'PENDIENTE'))) as estado_sunat,
-                LTRIM(RTRIM(COALESCE(c.CDR, ''))) as cdr,
+                LTRIM(RTRIM(COALESCE(c.CFNOMBRE, ''))) as razon_social,
+                LTRIM(RTRIM(COALESCE(c.CFFORVEN, ''))) as forma_pago,
+                LTRIM(RTRIM(COALESCE(c.TIPOMONEDA, 'MN'))) as moneda,
+                CASE WHEN LTRIM(RTRIM(COALESCE(c.TIPOMONEDA, 'MN'))) = 'ME' THEN '$' ELSE 'S/' END as simbolo_moneda,
+                CAST(COALESCE(c.TOTAL_DOCUMENTO, 0) as float) as importe,
+                CAST(COALESCE(c.IGV, 0) as float) as igv,
+                CAST(COALESCE(c.SUBTOTAL, 0) as float) as subtotal,
+                LTRIM(RTRIM(COALESCE(c.ESTADO_COMPROBANTE, ''))) as estado_sunat,
+                LTRIM(RTRIM(COALESCE(c.TICKET_SUNAT, ''))) as cdr,
                 LTRIM(RTRIM(COALESCE(c.RUTA_COMPROBANTE, ''))) as ruta_comprobante,
                 LTRIM(RTRIM(COALESCE(c.CORREO, ''))) as correo,
                 LTRIM(RTRIM(COALESCE(c.ORDENCOMPRA, ''))) as orden_compra,
@@ -787,9 +784,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             WHERE $whereSql
             ORDER BY c.CFFECDOC DESC, c.CFNUMDOC DESC";
 
-            $stmt = $dbConn->prepare($sql);
-            $stmt->execute($params);
-            $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // En FreeTDS/PDO_ODBC, $dbConn->query($sql) evita el error HY090 de asignación de buffer en prepared statements
+            $stmt = $dbConn->query($sql);
+            $docs = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
 
             // Resumen de estadísticas
             $totales = 0;
@@ -833,8 +830,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
     // 0.1 DESCARGAR / OBTENER XML FIRMADO DEL CPE
     if ($action === 'obtener_xml_cpe') {
-        $serie = trim($_REQUEST['serie'] ?? '');
-        $numero = trim($_REQUEST['numero'] ?? '');
+        $serie = preg_replace('/[^A-Za-z0-9]/', '', trim($_REQUEST['serie'] ?? ''));
+        $numero = preg_replace('/[^A-Za-z0-9]/', '', trim($_REQUEST['numero'] ?? ''));
         $descargar = isset($_REQUEST['descargar']);
 
         $dbConn = $db ?: (function_exists('getStarsoftDB') ? getStarsoftDB() : null);
@@ -845,9 +842,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         }
 
         try {
-            $stmt = $dbConn->prepare("SELECT TOP 1 XML, CFNUMSER, CFNUMDOC, RUC_EMISOR, TIPODOC_COMPROBANTE FROM [003BDCOMUN].dbo.COMPROBANTE_CAB WHERE CFNUMSER = ? AND (CFNUMDOC = ? OR LTRIM(CFNUMDOC) = ?)");
-            $stmt->execute([$serie, $numero, ltrim($numero, '0')]);
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $numCleanSinCeros = ltrim($numero, '0');
+            $sql = "SELECT TOP 1 XML, CFNUMSER, CFNUMDOC, RUC_EMISOR, TIPODOC_COMPROBANTE 
+                    FROM [003BDCOMUN].dbo.COMPROBANTE_CAB 
+                    WHERE CFNUMSER = '$serie' AND (CFNUMDOC = '$numero' OR LTRIM(CFNUMDOC) = '$numero' OR LTRIM(CFNUMDOC) = '$numCleanSinCeros')";
+            $stmt = $dbConn->query($sql);
+            $row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
 
             if ($row && !empty($row['XML'])) {
                 $xml = $row['XML'];
