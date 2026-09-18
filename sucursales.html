@@ -13,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -309,43 +308,46 @@
         .mini-btn:hover { border-color: var(--accent); color: var(--accent); }
         .mini-btn.wa:hover { border-color: #25d366; color: #25d366; }
 
-        /* ============ MAPA ============ */
+        /* ============ MAPA GOOGLE MAPS EMBED ============ */
         .map-panel { position: sticky; top: 90px; }
-        #map {
-            width: 100%; height: 720px; border-radius: var(--radius-md);
-            border: 1px solid var(--border-color); background: var(--bg-medium); z-index: 1;
+        .map-wrapper {
+            position: relative;
+            width: 100%; height: 720px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: var(--bg-medium);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+            display: flex; flex-direction: column;
         }
-        /* Los tiles de OSM son claros: se atenúan en los temas oscuros para que no encandilen */
-        .leaflet-tile-pane { filter: brightness(calc(1 - var(--map-shade) * 0.35)) saturate(calc(1 - var(--map-shade) * 0.45)); }
-        .leaflet-container { font-family: 'Inter', sans-serif; border-radius: var(--radius-md); }
-        .leaflet-popup-content-wrapper { border-radius: 12px; }
-        .leaflet-popup-content { margin: 14px 16px; font-size: 13px; }
-        .leaflet-popup-content strong { display: block; font-size: 14px; margin-bottom: 4px; color: #0f172a; }
-        .leaflet-popup-content .pop-addr { color: #475569; line-height: 1.45; }
-        .leaflet-popup-content a { color: #2563eb; font-weight: 700; text-decoration: none; }
-
-        .pin {
-            width: 30px; height: 30px; border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg); border: 2px solid #fff;
-            box-shadow: 0 3px 9px rgba(0,0,0,0.45);
-            display: flex; align-items: center; justify-content: center;
+        #mapFrame {
+            width: 100%; flex: 1; border: none;
+            background: #e5e3df;
         }
-        .pin span { transform: rotate(45deg); font-size: 12px; font-weight: 900; color: #fff; }
-        .pin.branch { background: #475569; }
-        .pin.is-nearest { background: var(--accent); width: 38px; height: 38px; }
-        .pin.is-nearest span { color: #1a1410; font-size: 15px; }
-        .pin.user { background: #2563eb; border-radius: 50%; transform: none; }
-        .pin.user span { transform: none; }
-
-        .map-legend {
-            display: flex; gap: 18px; flex-wrap: wrap; justify-content: center;
-            margin-top: 14px; font-size: 12px; color: var(--text-muted); font-weight: 600;
+        .map-info-bar {
+            display: flex; align-items: center; justify-content: space-between; gap: 14px;
+            padding: 14px 20px; background: var(--bg-card);
+            border-top: 1px solid var(--border-color); z-index: 2;
         }
-        .map-legend span { display: inline-flex; align-items: center; gap: 7px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-        .dot.b { background: #475569; }
-        .dot.n { background: var(--accent); }
-        .dot.u { background: #2563eb; }
+        .map-info-text { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .map-info-text i { color: var(--accent); font-size: 24px; flex-shrink: 0; }
+        .map-info-text strong {
+            display: block; font-size: 14.5px; font-weight: 800; color: var(--title-color);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .map-info-text span {
+            display: block; font-size: 12.5px; color: var(--text-muted);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .map-external-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 15px; border-radius: 8px;
+            background: var(--accent); color: var(--bg-dark);
+            font-size: 12px; font-weight: 700; text-decoration: none;
+            white-space: nowrap; flex-shrink: 0; transition: all 0.25s;
+        }
+        .map-external-btn:hover { background: var(--accent-light); transform: translateY(-1px); }
 
         /* ============ ESTADO VACÍO / AVISO ============ */
         .notice {
@@ -405,10 +407,8 @@
             .nav-links, .nav-actions { display: none; }
             .nav-hamburger { display: flex; }
             .locator-layout { grid-template-columns: 1fr; }
-            /* En movil la lista va primero: la respuesta que busca el usuario
-               es la primera tarjeta, no el mapa. */
             .map-panel { position: static; }
-            #map { height: 420px; }
+            .map-wrapper { height: 460px; }
             .branch-list { max-height: none; overflow: visible; padding-right: 0; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
             .footer-brand { grid-column: 1 / -1; }
@@ -417,6 +417,9 @@
             .shell { padding: 0 18px; }
             .hero { padding: 110px 0 50px; }
             .locator-btn { width: 100%; justify-content: center; }
+            .map-wrapper { height: 380px; }
+            .map-info-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+            .map-external-btn { justify-content: center; }
             .branch-card { grid-template-columns: 64px 1fr; }
             .branch-thumb { width: 64px; height: 64px; }
             .footer-grid { grid-template-columns: 1fr; text-align: center; }
@@ -526,12 +529,28 @@
                 </p>
             </section>
 
-            <section class="map-panel" aria-label="Mapa de sucursales">
-                <div id="map"></div>
-                <div class="map-legend">
-                    <span><i class="dot b"></i> Sucursal</span>
-                    <span><i class="dot n"></i> La más cercana</span>
-                    <span><i class="dot u"></i> Tu ubicación</span>
+            <section class="map-panel" aria-label="Mapa de Google Maps">
+                <div class="map-wrapper">
+                    <iframe id="mapFrame"
+                            title="Ubicación de la sucursal en Google Maps"
+                            src="about:blank"
+                            loading="lazy"
+                            allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                    <div class="map-info-bar" id="mapInfoBar">
+                        <div class="map-info-text">
+                            <i class="ph-fill ph-map-pin" aria-hidden="true"></i>
+                            <div>
+                                <strong id="mapStoreName">Selecciona una sucursal</strong>
+                                <span id="mapStoreAddr">Ubicación exacta en Google Maps</span>
+                            </div>
+                        </div>
+                        <a id="mapExternalLink" class="map-external-btn" href="#" target="_blank" rel="noopener" aria-label="Ver en Google Maps">
+                            <span>Ver en Google Maps</span>
+                            <i class="ph ph-arrow-square-out" aria-hidden="true"></i>
+                        </a>
+                    </div>
                 </div>
             </section>
 
@@ -583,7 +602,7 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
     <script>
     (function () {
         'use strict';
@@ -664,8 +683,6 @@
         /* ===================== ESTADO ===================== */
         var SUCURSALES = [];
         var origen = null;          // {lat, lng, etiqueta}
-        var mapa = null, capaMarcadores = null, marcadorUsuario = null;
-        var marcadores = {};        // key -> L.marker
         var seleccionada = null;
 
         /* ===================== CARGA ===================== */
@@ -693,6 +710,7 @@
                     alt: s.alt || ('Sucursal ' + (s.nombre || '')),
                     lat: typeof s.lat === 'number' ? s.lat : null,
                     lng: typeof s.lng === 'number' ? s.lng : null,
+                    urlMap: s.urlMap || ('https://www.google.com/maps?q=' + encodeURIComponent((s.direccion || '') + ', ' + (s.nombre || '') + ', Perú') + '&output=embed'),
                     distancia: null
                 };
             });
@@ -787,107 +805,44 @@
             panelCountEl.textContent = visibles.length + (visibles.length === 1 ? ' sucursal' : ' sucursales');
 
             $$('.branch-card', listEl).forEach(function (card) {
-                function activar() { seleccionar(card.dataset.key, true); }
+                function activar() { seleccionar(card.dataset.key, false); }
                 card.addEventListener('click', activar);
                 card.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activar(); }
                 });
             });
-        }
 
-        /* ===================== MAPA ===================== */
-        function iconoSucursal(s, esCercana, numero) {
-            return L.divIcon({
-                className: '',
-                html: '<div class="pin branch' + (esCercana ? ' is-nearest' : '') + '"><span>' +
-                      (esCercana ? '★' : numero) + '</span></div>',
-                iconSize: esCercana ? [38, 38] : [30, 30],
-                iconAnchor: esCercana ? [19, 38] : [15, 30],
-                popupAnchor: [0, esCercana ? -36 : -28]
-            });
-        }
-
-        function popupHTML(s) {
-            return '<strong>' + esc(titulo(s.nombre)) + '</strong>' +
-                '<div class="pop-addr">' + esc(s.direccion || '') + '</div>' +
-                (s.distancia != null ? '<div class="pop-addr">a ' + formatoKm(s.distancia) + ' en línea recta</div>' : '') +
-                '<div style="margin-top:8px"><a href="' + esc(comoLlegar(s)) + '" target="_blank" rel="noopener">Cómo llegar &rarr;</a></div>';
-        }
-
-        function initMapa() {
-            mapa = L.map('map', { scrollWheelZoom: false, zoomControl: true })
-                    .setView([-9.19, -75.02], 5);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(mapa);
-            /* El scroll de la pagina no debe quedar atrapado por el mapa */
-            mapa.on('click', function () { mapa.scrollWheelZoom.enable(); });
-            mapa.on('mouseout', function () { mapa.scrollWheelZoom.disable(); });
-            capaMarcadores = L.layerGroup().addTo(mapa);
-        }
-
-        function renderMapa(ajustarVista) {
-            if (!mapa) return;
-            capaMarcadores.clearLayers();
-            marcadores = {};
-            var visibles = obtenerSucursalesVisibles();
-            var cercana = masCercana();
-            var puntos = [];
-
-            visibles.forEach(function (s, i) {
-                if (s.lat == null || s.lng == null) return;
-                var esCercana = !!(cercana && s.key === cercana.key);
-                var m = L.marker([s.lat, s.lng], {
-                    icon: iconoSucursal(s, esCercana, i + 1),
-                    title: titulo(s.nombre),
-                    zIndexOffset: esCercana ? 1000 : 0
-                }).bindPopup(popupHTML(s));
-                m.on('click', function () { seleccionar(s.key, false); });
-                m.addTo(capaMarcadores);
-                marcadores[s.key] = m;
-                puntos.push([s.lat, s.lng]);
-            });
-
-            if (marcadorUsuario) { mapa.removeLayer(marcadorUsuario); marcadorUsuario = null; }
-            if (origen) {
-                marcadorUsuario = L.marker([origen.lat, origen.lng], {
-                    icon: L.divIcon({
-                        className: '',
-                        html: '<div class="pin user"><span><i class="ph-fill ph-user"></i></span></div>',
-                        iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -16]
-                    }),
-                    zIndexOffset: 2000
-                }).bindPopup('<strong>' + esc(origen.etiqueta) + '</strong>').addTo(mapa);
-                puntos.push([origen.lat, origen.lng]);
-            }
-
-            if (ajustarVista && puntos.length) {
-                if (origen && cercana && visibles.some(function(v){ return v.key === cercana.key; })) {
-                    mapa.fitBounds(L.latLngBounds([[origen.lat, origen.lng], [cercana.lat, cercana.lng]]), { padding: [70, 70], maxZoom: 13 });
-                } else if (puntos.length === 1) {
-                    mapa.setView(puntos[0], 15);
-                } else {
-                    mapa.fitBounds(L.latLngBounds(puntos), { padding: [40, 40] });
-                }
-            }
-
-            if (visibles.length === 1 && marcadores[visibles[0].key]) {
+            if (seleccionada && visibles.some(function (x) { return x.key === seleccionada; })) {
+                seleccionar(seleccionada, false);
+            } else if (visibles.length > 0) {
                 seleccionar(visibles[0].key, false);
             }
         }
 
-        function seleccionar(key, centrar) {
+        /* ===================== MAPA GOOGLE EMBED ===================== */
+        function seleccionar(key, scroll) {
             seleccionada = key;
-            $$('.branch-card').forEach(function (c) { c.classList.toggle('active', c.dataset.key === key); });
             var s = SUCURSALES.filter(function (x) { return x.key === key; })[0];
             if (!s) return;
-            var m = marcadores[key];
-            if (m) {
-                if (centrar && s.lat != null) mapa.setView([s.lat, s.lng], 15, { animate: true });
-                m.openPopup();
+
+            $$('.branch-card').forEach(function (c) {
+                c.classList.toggle('active', c.dataset.key === key);
+            });
+
+            var frame = $('#mapFrame');
+            if (frame && frame.getAttribute('data-current') !== key) {
+                frame.setAttribute('data-current', key);
+                frame.src = s.urlMap;
             }
-            if (!centrar) {
+
+            var nameEl = $('#mapStoreName');
+            var addrEl = $('#mapStoreAddr');
+            var linkEl = $('#mapExternalLink');
+            if (nameEl) nameEl.textContent = titulo(s.nombre);
+            if (addrEl) addrEl.textContent = s.direccion + (s.referencia ? ' (' + s.referencia + ')' : '');
+            if (linkEl) linkEl.href = comoLlegar(s);
+
+            if (scroll) {
                 var card = $('.branch-card[data-key="' + key + '"]');
                 if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
@@ -904,12 +859,11 @@
             origen = nuevo;
             recalcular();
             renderLista();
-            renderMapa(true);
             var c = masCercana();
             if (c) {
                 estado('ok', etiquetaEstado + ' · La más cercana es ' + titulo(c.nombre) +
                        ', a ' + formatoKm(c.distancia) + ' en línea recta', 'ph-check-circle');
-                seleccionar(c.key, false);
+                seleccionar(c.key, true);
             } else {
                 estado('', etiquetaEstado, 'ph-info');
             }
@@ -961,7 +915,6 @@
                 textoBusqueda = input.value;
                 clearBtn.hidden = !textoBusqueda;
                 renderLista();
-                renderMapa(true);
 
                 var visibles = obtenerSucursalesVisibles();
                 if (!textoBusqueda.trim()) {
@@ -1053,13 +1006,14 @@
                     if (!Array.isArray(raw) || !raw.length) throw new Error('sin sucursales');
                     SUCURSALES = preparar(raw);
                     $('#heroCount').textContent = SUCURSALES.length;
-                    initMapa();
                     revisarCoordenadas();
                     if (!restaurarOrigen()) {
                         recalcular();
                         renderLista();
-                        renderMapa(true);
                         estado('', 'Mostrando las ' + SUCURSALES.length + ' sucursales', 'ph-info');
+                        if (SUCURSALES.length > 0) {
+                            seleccionar(SUCURSALES[0].key, false);
+                        }
                     }
                 })
                 .catch(function (err) {
