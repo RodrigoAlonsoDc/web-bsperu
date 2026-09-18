@@ -10,6 +10,7 @@
 
     # --- Redireccion Catalogo Antiguo al Nuevo Catlogo ---
     RewriteRule ^views/catalogo\.html$ / [R=301,L,QSA]
+    RewriteRule ^views/ubicacion\.html$ /sucursales.html [R=301,L,QSA]
 </IfModule>
 
 # --- Headers de Seguridad ---
