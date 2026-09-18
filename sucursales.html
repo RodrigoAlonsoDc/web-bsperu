@@ -200,18 +200,40 @@
         .locator-btn:disabled { opacity: 0.65; cursor: progress; }
         .locator-btn i { font-size: 20px; }
 
-        .locator-manual { display: flex; align-items: center; gap: 10px; min-width: 0; }
-        .locator-manual label {
-            font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
-            color: var(--text-muted); font-weight: 700; white-space: nowrap;
+        .locator-search { min-width: 0; width: 100%; }
+        .search-input-wrap { position: relative; width: 100%; display: flex; align-items: center; }
+        .search-input-wrap .search-icon {
+            position: absolute; left: 14px; color: var(--accent); font-size: 19px; pointer-events: none;
         }
-        .locator-manual select {
-            flex: 1; min-width: 0; font-family: inherit; font-size: 14px; font-weight: 600;
+        .search-input-wrap input {
+            width: 100%; font-family: inherit; font-size: 14px; font-weight: 500;
             color: var(--text); background: var(--bg-dark); border: 1px solid var(--border-color);
-            border-radius: 10px; padding: 12px 14px; outline: none; cursor: pointer;
+            border-radius: 10px; padding: 12px 38px 12px 42px; outline: none; transition: all 0.25s;
         }
-        .locator-manual select:focus { border-color: var(--accent); }
-        .locator-manual select option { background: var(--bg-dark); color: var(--text); }
+        .search-input-wrap input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: var(--bg-medium);
+        }
+        .search-input-wrap input::placeholder {
+            color: var(--text-muted); opacity: 0.85;
+        }
+        .search-clear-btn {
+            position: absolute; right: 8px; background: none; border: none;
+            color: var(--text-muted); font-size: 18px; cursor: pointer;
+            width: 28px; height: 28px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .search-clear-btn:hover { color: var(--text); background: rgba(128,128,128,0.15); }
+
+        .branch-empty {
+            padding: 36px 20px; text-align: center; color: var(--text-muted);
+            background: var(--bg-card); border: 1px dashed var(--border-color);
+            border-radius: var(--radius-sm); display: flex; flex-direction: column;
+            align-items: center; gap: 10px;
+        }
+        .branch-empty i { font-size: 32px; color: var(--accent); opacity: 0.85; }
+        .branch-empty p { font-size: 13.5px; line-height: 1.55; margin: 0; }
 
         .locator-status {
             font-size: 13px; font-weight: 600; color: var(--text-muted);
@@ -366,40 +388,7 @@
         }
         .wa-float:hover { transform: scale(1.1); }
 
-        .theme-switcher { position: fixed; bottom: 30px; right: 30px; z-index: 1000; }
-        .theme-toggle-btn {
-            width: 54px; height: 54px; border-radius: 50%; background: var(--bg-card); color: var(--accent);
-            border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center;
-            font-size: 28px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-        }
-        .theme-toggle-btn:hover {
-            transform: rotate(90deg) scale(1.1); background: var(--accent);
-            color: var(--bg-dark); border-color: var(--accent);
-        }
-        .theme-menu {
-            position: absolute; bottom: 70px; right: 0; background: var(--bg-card);
-            border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 15px; width: 232px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4); transform: translateY(20px); opacity: 0;
-            pointer-events: none; transition: all 0.3s; display: flex; flex-direction: column; gap: 6px;
-        }
-        .theme-menu.active { transform: translateY(0); opacity: 1; pointer-events: all; }
-        .theme-menu h4 {
-            font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
-            color: var(--text-muted); text-align: center; font-weight: 700;
-        }
-        .theme-option {
-            display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px;
-            border-radius: 8px; cursor: pointer; transition: background 0.3s; border: 1px solid transparent;
-            background: transparent; font-family: inherit; text-align: left;
-        }
-        .theme-option:hover { background: var(--bg-card-hover); }
-        .theme-option.active { border-color: var(--accent); background: rgba(128,128,128,0.08); }
-        .theme-color-circle {
-            width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
-            border: 2px solid rgba(255,255,255,0.25);
-        }
-        .theme-name { font-size: 13px; font-weight: 600; color: var(--text); }
+
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -427,15 +416,12 @@
         @media (max-width: 620px) {
             .shell { padding: 0 18px; }
             .hero { padding: 110px 0 50px; }
-            .locator-manual { flex-direction: column; align-items: stretch; gap: 7px; }
-            .locator-manual label { text-align: left; }
             .locator-btn { width: 100%; justify-content: center; }
             .branch-card { grid-template-columns: 64px 1fr; }
             .branch-thumb { width: 64px; height: 64px; }
             .footer-grid { grid-template-columns: 1fr; text-align: center; }
             .footer-social { justify-content: center; }
             .wa-float { bottom: 22px; left: 22px; width: 50px; height: 50px; font-size: 26px; }
-            .theme-switcher { bottom: 22px; right: 22px; }
         }
     </style>
 </head>
@@ -443,35 +429,6 @@
 
     <a href="#sucursales" class="skip-link">Saltar a las sucursales</a>
 
-    <!-- ============ THEME SWITCHER ============ -->
-    <div class="theme-switcher">
-        <div class="theme-menu" id="themeMenu" role="menu" aria-label="Elegir diseño">
-            <h4>Elige un Diseño</h4>
-            <button type="button" class="theme-option" role="menuitemradio" aria-checked="false" data-theme-value="mocha">
-                <span class="theme-color-circle" style="background:#1a1410; border-color:#c8a96e;"></span>
-                <span class="theme-name">Mocha Gold (Premium)</span>
-            </button>
-            <button type="button" class="theme-option" role="menuitemradio" aria-checked="false" data-theme-value="industrial">
-                <span class="theme-color-circle" style="background:#0f172a; border-color:#f97316;"></span>
-                <span class="theme-name">Industrial</span>
-            </button>
-            <button type="button" class="theme-option" role="menuitemradio" aria-checked="false" data-theme-value="eco">
-                <span class="theme-color-circle" style="background:#062412; border-color:#4ade80;"></span>
-                <span class="theme-name">Ecológico</span>
-            </button>
-            <button type="button" class="theme-option" role="menuitemradio" aria-checked="false" data-theme-value="hightech">
-                <span class="theme-color-circle" style="background:#000000; border-color:#06b6d4;"></span>
-                <span class="theme-name">High-Tech</span>
-            </button>
-            <button type="button" class="theme-option active" role="menuitemradio" aria-checked="true" data-theme-value="corporate">
-                <span class="theme-color-circle" style="background:#f8fafc; border-color:#2563eb;"></span>
-                <span class="theme-name">Clásico Corporativo</span>
-            </button>
-        </div>
-        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar diseño de la página" aria-expanded="false">
-            <i class="ph-fill ph-palette" aria-hidden="true"></i>
-        </button>
-    </div>
 
     <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú">
         <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
@@ -535,11 +492,14 @@
                 <button type="button" class="locator-btn" id="btnGeo">
                     <i class="ph-fill ph-crosshair" aria-hidden="true"></i> Usar mi ubicación
                 </button>
-                <div class="locator-manual">
-                    <label for="selDepto">O elige tu departamento</label>
-                    <select id="selDepto">
-                        <option value="">Selecciona…</option>
-                    </select>
+                <div class="locator-search">
+                    <div class="search-input-wrap">
+                        <i class="ph ph-magnifying-glass search-icon" aria-hidden="true"></i>
+                        <input type="text" id="branchSearch" placeholder="Buscar por ciudad, distrito o dirección (ej. Chorrillos, Piura, Faisanes...)" autocomplete="off" aria-label="Buscar sucursales">
+                        <button type="button" id="clearSearchBtn" class="search-clear-btn" aria-label="Limpiar búsqueda" hidden>
+                            <i class="ph ph-x" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </div>
                 <p class="locator-status" id="locStatus" role="status" aria-live="polite">
                     <i class="ph ph-info" aria-hidden="true"></i>
@@ -631,36 +591,41 @@
         var WA_NUMBER = '51914776669';
         var DATA_URLS = ['/assets/Data/sucursales.json', '../assets/Data/sucursales.json'];
 
-        /* Referencias aproximadas (centro de la capital de cada departamento).
-           Sirven solo para elegir entre sucursales separadas por cientos de km,
-           asi que un margen de +/- 20 km no cambia el resultado. */
-        var DEPARTAMENTOS = [
-            ['Amazonas (Chachapoyas)', -6.23, -77.87],
-            ['Áncash (Huaraz)', -9.53, -77.53],
-            ['Apurímac (Abancay)', -13.63, -72.88],
-            ['Arequipa', -16.41, -71.54],
-            ['Ayacucho', -13.16, -74.22],
-            ['Cajamarca', -7.16, -78.51],
-            ['Callao', -12.06, -77.14],
-            ['Cusco', -13.53, -71.97],
-            ['Huancavelica', -12.79, -74.97],
-            ['Huánuco', -9.93, -76.24],
-            ['Ica', -14.07, -75.73],
-            ['Junín (Huancayo)', -12.07, -75.21],
-            ['La Libertad (Trujillo)', -8.11, -79.03],
-            ['Lambayeque (Chiclayo)', -6.77, -79.84],
-            ['Lima', -12.05, -77.04],
-            ['Loreto (Iquitos)', -3.75, -73.25],
-            ['Madre de Dios (Pto. Maldonado)', -12.60, -69.19],
-            ['Moquegua', -17.19, -70.94],
-            ['Pasco (Cerro de Pasco)', -10.68, -76.26],
-            ['Piura', -5.19, -80.63],
-            ['Puno', -15.84, -70.03],
-            ['San Martín (Moyobamba)', -6.03, -76.97],
-            ['Tacna', -18.01, -70.25],
-            ['Tumbes', -3.57, -80.46],
-            ['Ucayali (Pucallpa)', -8.38, -74.55]
-        ];
+        var textoBusqueda = '';
+
+        function normalizar(str) {
+            return (str || '')
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .trim();
+        }
+
+        /* Palabras clave adicionales por sucursal para facilitar la búsqueda */
+        var METADATA_SEDES = {
+            'callao': 'callao bellavista faucett aeroparque aeropuerto lima',
+            'chorrillos': 'chorrillos lima sur faisanes huaylas matellini cedros villa',
+            'lima': 'san borja lima san luis javier prado aviacion angamos surquillo la victoria',
+            'sullana': 'sullana piura norte jose de lama bellavista',
+            'piuraee': 'piura norte manuel seone castilla catacaos',
+            'trujillo': 'trujillo la libertad norte america oeste victor larco mansiche',
+            'chiclayo': 'chiclayo lambayeque norte los tumbos leonardo ortiz balta pimentel',
+            'tacna': 'tacna sur ramon copaja coronel albarracin centro bolognesi',
+            'arequipa': 'arequipa sur mariano melgar paucarpata jesus goyeneche yanahuara'
+        };
+
+        function obtenerSucursalesVisibles() {
+            var q = normalizar(textoBusqueda);
+            if (!q) return SUCURSALES;
+            var terminos = q.split(/\s+/).filter(Boolean);
+            return SUCURSALES.filter(function (s) {
+                var extra = METADATA_SEDES[s.key] || '';
+                var texto = normalizar(s.nombre + ' ' + s.direccion + ' ' + s.referencia + ' ' + extra);
+                return terminos.every(function (t) {
+                    return texto.indexOf(t) !== -1;
+                });
+            });
+        }
 
         var $  = function (s, c) { return (c || document).querySelector(s); };
         var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
@@ -799,14 +764,29 @@
         }
 
         function renderLista() {
+            var visibles = obtenerSucursalesVisibles();
             var cercana = masCercana();
-            $('#branchList').innerHTML = SUCURSALES.map(function (s) {
+            var listEl = $('#branchList');
+            var panelCountEl = $('#panelCount');
+
+            if (visibles.length === 0) {
+                listEl.innerHTML =
+                    '<div class="branch-empty">' +
+                        '<i class="ph ph-magnifying-glass" aria-hidden="true"></i>' +
+                        '<p>No encontramos ninguna sucursal para "<strong>' + esc(textoBusqueda) + '</strong>".<br>' +
+                        'Prueba buscando por ciudad (ej. Lima, Piura, Arequipa) o distrito.</p>' +
+                    '</div>';
+                panelCountEl.textContent = '0 resultados';
+                return;
+            }
+
+            listEl.innerHTML = visibles.map(function (s) {
                 return tarjeta(s, cercana && s.key === cercana.key);
             }).join('');
 
-            $('#panelCount').textContent = SUCURSALES.length + ' en todo el país';
+            panelCountEl.textContent = visibles.length + (visibles.length === 1 ? ' sucursal' : ' sucursales');
 
-            $$('.branch-card').forEach(function (card) {
+            $$('.branch-card', listEl).forEach(function (card) {
                 function activar() { seleccionar(card.dataset.key, true); }
                 card.addEventListener('click', activar);
                 card.addEventListener('keydown', function (e) {
@@ -851,10 +831,11 @@
             if (!mapa) return;
             capaMarcadores.clearLayers();
             marcadores = {};
+            var visibles = obtenerSucursalesVisibles();
             var cercana = masCercana();
             var puntos = [];
 
-            SUCURSALES.forEach(function (s, i) {
+            visibles.forEach(function (s, i) {
                 if (s.lat == null || s.lng == null) return;
                 var esCercana = !!(cercana && s.key === cercana.key);
                 var m = L.marker([s.lat, s.lng], {
@@ -882,11 +863,17 @@
             }
 
             if (ajustarVista && puntos.length) {
-                if (origen && cercana) {
+                if (origen && cercana && visibles.some(function(v){ return v.key === cercana.key; })) {
                     mapa.fitBounds(L.latLngBounds([[origen.lat, origen.lng], [cercana.lat, cercana.lng]]), { padding: [70, 70], maxZoom: 13 });
+                } else if (puntos.length === 1) {
+                    mapa.setView(puntos[0], 15);
                 } else {
                     mapa.fitBounds(L.latLngBounds(puntos), { padding: [40, 40] });
                 }
+            }
+
+            if (visibles.length === 1 && marcadores[visibles[0].key]) {
+                seleccionar(visibles[0].key, false);
             }
         }
 
@@ -943,7 +930,9 @@
             navigator.geolocation.getCurrentPosition(
                 function (pos) {
                     btn.disabled = false;
-                    $('#selDepto').value = '';
+                    var input = $('#branchSearch');
+                    if (input) { input.value = ''; $('#clearSearchBtn').hidden = true; }
+                    textoBusqueda = '';
                     aplicarOrigen({
                         lat: pos.coords.latitude,
                         lng: pos.coords.longitude,
@@ -952,33 +941,44 @@
                 },
                 function (err) {
                     btn.disabled = false;
-                    var msg = 'No pudimos obtener tu ubicación. Elige tu departamento en la lista.';
-                    if (err && err.code === 1) msg = 'Permiso denegado. Elige tu departamento en la lista.';
-                    else if (err && err.code === 3) msg = 'La búsqueda tardó demasiado. Elige tu departamento.';
+                    var msg = 'No pudimos obtener tu ubicación. Escribe tu ciudad o distrito en el buscador.';
+                    if (err && err.code === 1) msg = 'Permiso denegado. Escribe tu ciudad o distrito en el buscador.';
+                    else if (err && err.code === 3) msg = 'La búsqueda tardó demasiado. Usa el buscador.';
                     estado('err', msg, 'ph-warning-circle');
-                    $('#selDepto').focus();
+                    var input = $('#branchSearch');
+                    if (input) input.focus();
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
             );
         }
 
-        function initDepartamentos() {
-            var sel = $('#selDepto');
-            DEPARTAMENTOS.forEach(function (d, i) {
-                var o = document.createElement('option');
-                o.value = String(i); o.textContent = d[0];
-                sel.appendChild(o);
-            });
-            sel.addEventListener('change', function () {
-                if (this.value === '') {
-                    origen = null;
-                    try { localStorage.removeItem('bs-origen'); } catch (e) { /* ignorar */ }
-                    recalcular(); renderLista(); renderMapa(true);
+        function initBuscador() {
+            var input = $('#branchSearch');
+            var clearBtn = $('#clearSearchBtn');
+            if (!input) return;
+
+            function ejecutarBusqueda() {
+                textoBusqueda = input.value;
+                clearBtn.hidden = !textoBusqueda;
+                renderLista();
+                renderMapa(true);
+
+                var visibles = obtenerSucursalesVisibles();
+                if (!textoBusqueda.trim()) {
                     estado('', 'Mostrando las ' + SUCURSALES.length + ' sucursales', 'ph-info');
-                    return;
+                } else if (visibles.length === 0) {
+                    estado('err', 'Sin resultados para "' + textoBusqueda.trim() + '"', 'ph-warning-circle');
+                } else {
+                    estado('ok', visibles.length + (visibles.length === 1 ? ' sucursal encontrada' : ' sucursales encontradas'), 'ph-check-circle');
                 }
-                var d = DEPARTAMENTOS[Number(this.value)];
-                aplicarOrigen({ lat: d[1], lng: d[2], etiqueta: d[0] }, 'Referencia: ' + d[0]);
+            }
+
+            input.addEventListener('input', ejecutarBusqueda);
+
+            clearBtn.addEventListener('click', function () {
+                input.value = '';
+                input.focus();
+                ejecutarBusqueda();
             });
         }
 
@@ -999,37 +999,7 @@
             if (notice) notice.hidden = true;
         }
 
-        /* ===================== TEMA / NAV ===================== */
-        function initTema() {
-            function aplicar(name, btn) {
-                document.documentElement.setAttribute('data-theme', name);
-                $$('.theme-option').forEach(function (o) {
-                    var on = o === btn;
-                    o.classList.toggle('active', on);
-                    o.setAttribute('aria-checked', on ? 'true' : 'false');
-                });
-            }
-            $$('.theme-option').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    aplicar(btn.dataset.themeValue, btn);
-                    try { localStorage.setItem('bs-theme', btn.dataset.themeValue); } catch (e) { /* ignorar */ }
-                    setTimeout(function () {
-                        $('#themeMenu').classList.remove('active');
-                        $('#themeToggleBtn').setAttribute('aria-expanded', 'false');
-                    }, 250);
-                });
-            });
-            var guardado = null;
-            try { guardado = localStorage.getItem('bs-theme'); } catch (e) { /* ignorar */ }
-            if (guardado) {
-                var b = $('.theme-option[data-theme-value="' + guardado + '"]');
-                if (b) aplicar(guardado, b);
-            }
-            $('#themeToggleBtn').addEventListener('click', function () {
-                var abierto = $('#themeMenu').classList.toggle('active');
-                this.setAttribute('aria-expanded', abierto ? 'true' : 'false');
-            });
-        }
+
 
         function initNav() {
             var nav = $('#mainNav');
@@ -1057,8 +1027,6 @@
             document.addEventListener('keydown', function (e) {
                 if (e.key !== 'Escape') return;
                 cerrar();
-                $('#themeMenu').classList.remove('active');
-                $('#themeToggleBtn').setAttribute('aria-expanded', 'false');
             });
         }
 
@@ -1075,9 +1043,9 @@
         function init() {
             $('#year').textContent = new Date().getFullYear();
             $('#waFloat').href = waLink('Hola BS Perú, quisiera saber cuál es la sucursal más cercana a mi obra.');
-            initTema();
+            document.documentElement.setAttribute('data-theme', 'corporate');
             initNav();
-            initDepartamentos();
+            initBuscador();
             $('#btnGeo').addEventListener('click', pedirGeolocalizacion);
 
             cargar()
