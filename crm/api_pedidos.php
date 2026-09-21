@@ -47,6 +47,15 @@ if ($action === 'test_db') {
         $socketErrors['port_1433'] = "$errstr1433 ($errno1433)";
     }
 
+    $port8089_open = false;
+    $s8089 = @fsockopen($host, 8089, $errno8089, $errstr8089, 1.0);
+    if ($s8089) {
+        $port8089_open = true;
+        fclose($s8089);
+    } else {
+        $socketErrors['port_8089'] = "$errstr8089 ($errno8089)";
+    }
+
     // 3. Seleccionar únicamente DSN de puertos accesibles
     $dsnCandidates = [];
     if ($port80_open) {
@@ -107,6 +116,7 @@ if ($action === 'test_db') {
             "ip_hosting" => $hostingIp,
             "puerto_80_abierto" => $port80_open,
             "puerto_1433_abierto" => $port1433_open,
+            "puerto_8089_abierto" => $port8089_open,
             "errores_socket" => $socketErrors,
             "drivers_pdo_php" => PDO::getAvailableDrivers(),
             "mensaje" => (!$port80_open && !$port1433_open)
