@@ -1,4 +1,5 @@
 <?php
+// crm/api_pedidos.php - Integración Starsoft ERP & Gestión de Cotizaciones / Pedidos
 session_start();
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     http_response_code(401);
@@ -6,9 +7,47 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-$dataFile = '../assets/Data/pedidos.json';
+require_once __DIR__ . '/config/database.php';
+$dataFile = __DIR__ . '/../assets/Data/pedidos.json';
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
+// Obtener conexión a Starsoft SQL Server
+$db = function_exists('getStarsoftDB') ? getStarsoftDB() : null;
+
+// ==========================================
+// ACCIÓN: DIAGNÓSTICO DE CONEXIÓN
+// ==========================================
+if ($action === 'test_db') {
+    header('Content-Type: application/json');
+    if ($db) {
+        try {
+            $stmt = $db->query("EXEC RPT_Vta_BuscaNroCot");
+            $res = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+            $siguienteNro = $res['CCNUMDOC'] ?? 'Desconocido';
+            echo json_encode([
+                "success" => true,
+                "conexion" => "OK",
+                "motor" => "SQL Server Azure (BDTPED_SSA)",
+                "siguiente_coti" => $siguienteNro
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "error" => "Error ejecutando SP: " . $e->getMessage()
+            ]);
+        }
+    } else {
+        echo json_encode([
+            "success" => false,
+            "error" => "No se pudo conectar a SQL Server en 48.216.211.109:1433/80"
+        ]);
+    }
+    exit;
+}
+
+// ==========================================
+// ACCIÓN: LISTAR COTIZACIONES
+// ==========================================
 if ($action === 'list') {
     header('Content-Type: application/json');
     if (file_exists($dataFile)) {
@@ -19,63 +58,167 @@ if ($action === 'list') {
     exit;
 }
 
+// ==========================================
+// ACCIÓN: GUARDAR COTIZACIÓN (STARSOFT SP)
+// ==========================================
 if ($action === 'save') {
+    header('Content-Type: application/json');
+
     // 1. Cabecera Izquierda
     $fecha_doc = trim($_POST['fecha_doc'] ?? date("Y-m-d"));
-    $sucursal = trim($_POST['sucursal'] ?? '');
-    $forma_pago = trim($_POST['forma_pago'] ?? '');
-    $gestor_campo = trim($_POST['gestor_campo'] ?? '');
+    $sucursal = trim($_POST['sucursal'] ?? '01');
+    $forma_pago = trim($_POST['forma_pago'] ?? '01');
+    $gestor_campo = trim($_POST['gestor_campo'] ?? 'OFICINA');
     $gestor_tienda = trim($_POST['gestor_tienda'] ?? '');
     $cliente = trim($_POST['cliente'] ?? ''); // Razón Social
-    $documento = trim($_POST['documento'] ?? ''); // RUC
-    $descuento = trim($_POST['descuento'] ?? '0');
+    $documento = trim($_POST['documento'] ?? ''); // RUC / DNI
+    $descuento = floatval($_POST['descuento'] ?? 0);
     $direccion = trim($_POST['direccion'] ?? '');
     $lugar_entrega = trim($_POST['lugar_entrega'] ?? '');
     $departamento = trim($_POST['departamento'] ?? '');
 
     // 2. Cabecera Centro
     $lugar_compra = trim($_POST['lugar_compra'] ?? '');
-    $tiempo_entrega = trim($_POST['tiempo_entrega'] ?? '');
-    $tipo_despacho = trim($_POST['tipo_despacho'] ?? '');
+    $tiempo_entrega = trim($_POST['tiempo_entrega'] ?? 'INMEDIATO');
+    $tipo_despacho = trim($_POST['tipo_despacho'] ?? 'ENTREGA');
     $glosa = trim($_POST['glosa'] ?? '');
     $comentario = trim($_POST['comentario'] ?? '');
 
     // 3. CRM
-    $fecha_uso = trim($_POST['fecha_uso'] ?? '');
-    $fecha_compra = trim($_POST['fecha_compra'] ?? '');
-    $fecha_llamada = trim($_POST['fecha_llamada'] ?? '');
+    $fecha_uso = trim($_POST['fecha_uso'] ?? date("Y-m-d"));
+    $fecha_compra = trim($_POST['fecha_compra'] ?? date("Y-m-d"));
+    $fecha_llamada = trim($_POST['fecha_llamada'] ?? date("Y-m-d"));
     $otro_proveedor = trim($_POST['otro_proveedor'] ?? '');
 
     // 4. Contacto
     $telefono = trim($_POST['telefono'] ?? '');
     $contacto = trim($_POST['contacto'] ?? '');
-    $tipo_control = trim($_POST['tipo_control'] ?? '');
+    $tipo_control = trim($_POST['tipo_control'] ?? 'NORMAL');
 
     // 5. Productos y Totales
-    $productos_json = $_POST['productos'] ?? '[]';
+    $productos_raw = $_POST['productos'] ?? '[]';
+    $productos = is_array($productos_raw) ? $productos_raw : (json_decode($productos_raw, true) ?: []);
     $subtotal = floatval($_POST['subtotal'] ?? 0);
     $igv = floatval($_POST['igv'] ?? 0);
     $total = floatval($_POST['total'] ?? 0);
-    
-    if (empty($cliente) || empty($productos_json) || $productos_json === '[]') {
+
+    if (empty($cliente) || empty($productos)) {
         echo json_encode(["success" => false, "error" => "El cliente y al menos un producto son obligatorios"]);
         exit;
     }
-    
+
+    $currentUser = $_SESSION['admin_user'] ?? 'SOPORTE';
+    $nroCotizacion = '';
+    $starsoftOk = false;
+    $starsoftError = '';
+
+    // Intentar registrar en SQL Server (Starsoft Stored Procedures)
+    if ($db) {
+        try {
+            // A. Cabecera ADD_CotCab
+            $f_fecdoc    = addslashes($fecha_doc);
+            $f_valofer   = '15 DIAS';
+            $f_vende     = addslashes($gestor_campo ?: '01');
+            $f_punven    = addslashes($sucursal ?: '01');
+            $f_codcli    = addslashes($documento);
+            $f_direcc    = addslashes($direccion);
+            $f_ruc       = addslashes($documento);
+            $f_pordescl  = $descuento;
+            $f_importe   = $total;
+            $f_forven    = addslashes($forma_pago ?: '01');
+            $f_tipcam    = 3.75;
+            $f_codmon    = 'MN';
+            $f_rftd      = '';
+            $f_rfnumdoc  = '';
+            $f_user      = addslashes($currentUser);
+            $f_comenta   = addslashes($comentario);
+            $f_estado    = '0'; // 0 = Creado
+            $f_glosa     = addslashes($glosa);
+            $f_desval    = 0.00;
+            $f_igv       = $igv;
+            $f_forimp    = '1';
+            $f_lugent    = addslashes($lugar_entrega);
+            $f_tiempent  = addslashes($tiempo_entrega);
+            $f_telefono  = addslashes($telefono);
+            $f_contacto  = addslashes($contacto);
+            $f_tipo      = 'NORMAL';
+            $f_fechauso  = addslashes($fecha_uso);
+            $f_fechacomp = addslashes($fecha_compra);
+            $f_fechallam = addslashes($fecha_llamada);
+            $f_otroprov  = addslashes($otro_proveedor);
+            $f_tipocontrol = addslashes($tipo_control);
+            $f_vencam    = addslashes($gestor_campo ?: '01');
+            $f_desglo    = 0.00;
+            $f_tipdes    = addslashes($tipo_despacho);
+            $f_tipcom    = '';
+            $f_lugcom    = addslashes($lugar_compra);
+
+            $sqlCab = "SET NOCOUNT ON; EXEC ADD_CotCab '$f_fecdoc', '$f_valofer', '$f_vende', '$f_punven', '$f_codcli', '$f_direcc', '$f_ruc', $f_pordescl, $f_importe, '$f_forven', $f_tipcam, '$f_codmon', '$f_rftd', '$f_rfnumdoc', '$f_user', '$f_comenta', '$f_estado', '$f_glosa', $f_desval, $f_igv, '$f_forimp', '$f_lugent', '$f_tiempent', '$f_telefono', '$f_contacto', '$f_tipo', '$f_fechauso', '$f_fechacomp', '$f_fechallam', '$f_otroprov', '$f_tipocontrol', '$f_vencam', $f_desglo, '$f_tipdes', '$f_tipcom', '$f_lugcom'";
+            $db->query($sqlCab);
+
+            // B. Obtener correlativo oficial generado
+            $stmtNro = $db->query("EXEC RPT_Vta_BuscaNroCot");
+            if ($stmtNro) {
+                $rowNro = $stmtNro->fetch(PDO::FETCH_ASSOC);
+                $nroCotizacion = $rowNro['CCNUMDOC'] ?? '';
+                $stmtNro->closeCursor();
+            }
+
+            // C. Insertar detalles de productos con ADD_CotDet
+            foreach ($productos as $p) {
+                $cd_codigo = addslashes($p['codigo'] ?? ($p['producto_id'] ?? ($p['id'] ?? '')));
+                $cd_cant   = floatval($p['cantidad'] ?? 1);
+                $cd_prec_v = floatval($p['precio'] ?? 0);
+                $cd_prec_o = floatval($p['precio_ori'] ?? $cd_prec_v);
+                $cd_pordes = floatval($p['descuento'] ?? 0);
+                $cd_descto = $cd_cant * $cd_prec_o * ($cd_pordes / 100);
+                $cd_impmn  = $cd_cant * $cd_prec_v;
+                $cd_igv    = $cd_impmn - ($cd_impmn / 1.18);
+                $cd_alma   = addslashes($p['almacen'] ?? '01');
+                $cd_lista  = addslashes($p['lista_precio'] ?? '01');
+
+                if ($cd_cant > 0 && !empty($cd_codigo)) {
+                    $sqlDet = "SET NOCOUNT ON; EXEC ADD_CotDet '$cd_codigo', $cd_cant, $cd_prec_v, $cd_prec_o, $cd_descto, $cd_pordes, $cd_igv, $f_tipcam, $cd_impmn, '$cd_alma', $cd_prec_o, '$cd_lista', '$f_user'";
+                    $db->query($sqlDet);
+                }
+            }
+
+            // D. Actualizar promociones
+            if (!empty($nroCotizacion)) {
+                foreach ($productos as $p) {
+                    $cd_codigo = addslashes($p['codigo'] ?? ($p['producto_id'] ?? ($p['id'] ?? '')));
+                    if (!empty($cd_codigo)) {
+                        $db->query("SET NOCOUNT ON; EXEC RPT_Vta_UpdateAutorizaPromo '$nroCotizacion', '$cd_codigo'");
+                    }
+                }
+            }
+
+            $starsoftOk = true;
+        } catch (Exception $e) {
+            $starsoftError = $e->getMessage();
+        }
+    }
+
+    // Guardar respaldo local en JSON
     $pedidos = [];
     if (file_exists($dataFile)) {
         $pedidos = json_decode(file_get_contents($dataFile), true) ?? [];
     }
-    
-    // Generar ID
-    $last_id = 51700;
-    if (count($pedidos) > 0) {
-        $last_id = intval($pedidos[0]['id']) + 1;
+
+    // Si Starsoft generó el correlativo, usarlo; de lo contrario generar uno local
+    if (!empty($nroCotizacion)) {
+        $nuevo_id = $nroCotizacion;
+    } else {
+        $last_id = 51700;
+        if (count($pedidos) > 0) {
+            $last_id = intval($pedidos[0]['id']) + 1;
+        }
+        $nuevo_id = str_pad($last_id, 7, "0", STR_PAD_LEFT);
     }
-    $nuevo_id = str_pad($last_id, 7, "0", STR_PAD_LEFT);
 
     $nuevoPedido = [
         "id" => $nuevo_id,
+        "nro_starsoft" => $nroCotizacion,
         "fecha_doc" => $fecha_doc,
         "fecha_sys" => date("Y-m-d H:i:s"),
         "sucursal" => $sucursal,
@@ -105,37 +248,102 @@ if ($action === 'save') {
         "contacto" => $contacto,
         "tipo_control" => $tipo_control,
 
-        "productos" => json_decode($productos_json, true),
+        "productos" => $productos,
         "subtotal" => $subtotal,
         "igv" => $igv,
         "total" => $total,
         
-        "estado" => "AUTORIZADO",
-        "detalle" => "STARSOFT",
-        "doc_sts" => "null"
+        "estado" => "CREADO",
+        "detalle" => $starsoftOk ? "SINCRONIZADO_STARSOFT" : ($starsoftError ? "LOCAL_ERROR_SQL" : "LOCAL"),
+        "doc_sts" => $nroCotizacion ?: "null",
+        "error_sql" => $starsoftError
     ];
-    
+
     array_unshift($pedidos, $nuevoPedido);
-    
-    file_put_contents($dataFile, json_encode($pedidos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    echo json_encode(["success" => true, "id" => $nuevoPedido['id']]);
+    @file_put_contents($dataFile, json_encode($pedidos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+
+    echo json_encode([
+        "success" => true,
+        "id" => $nuevoPedido['id'],
+        "nro_starsoft" => $nroCotizacion,
+        "starsoft_sync" => $starsoftOk,
+        "error_sql" => $starsoftError
+    ]);
     exit;
 }
 
+// ==========================================
+// ACCIÓN: APROBAR / AUTORIZAR (ENVIAR A STARSOFT)
+// ==========================================
+if ($action === 'aprobar' || $action === 'autorizar') {
+    header('Content-Type: application/json');
+    $id = trim($_POST['id'] ?? '');
+    $user = $_SESSION['admin_user'] ?? 'ADMIN';
+
+    if (empty($id)) {
+        echo json_encode(["success" => false, "error" => "ID de cotización no proporcionado"]);
+        exit;
+    }
+
+    $spOk = false;
+    $spMsg = '';
+
+    if ($db) {
+        try {
+            // Ejecutar Stored Procedure de Aprobación
+            $db->query("SET NOCOUNT ON; EXEC UPD_VTA_AprobarCotiza '$id', '$user'");
+            $spOk = true;
+        } catch (Exception $e) {
+            $spMsg = $e->getMessage();
+        }
+    }
+
+    // Actualizar estado en el archivo JSON
+    $pedidos = [];
+    if (file_exists($dataFile)) {
+        $pedidos = json_decode(file_get_contents($dataFile), true) ?? [];
+    }
+    foreach ($pedidos as &$p) {
+        if ($p['id'] === $id) {
+            $p['estado'] = "AUTORIZADO";
+            $p['detalle'] = "STARSOFT";
+            break;
+        }
+    }
+    @file_put_contents($dataFile, json_encode(array_values($pedidos), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+
+    echo json_encode([
+        "success" => true,
+        "mensaje" => "Cotización $id autorizada exitosamente",
+        "starsoft_updated" => $spOk,
+        "error_sql" => $spMsg
+    ]);
+    exit;
+}
+
+// ==========================================
+// ACCIÓN: ELIMINAR COTIZACIÓN
+// ==========================================
 if ($action === 'delete') {
+    header('Content-Type: application/json');
     $id = $_POST['id'] ?? '';
-    
     if (!$id) {
         echo json_encode(["success" => false]);
         exit;
     }
-    
+
+    if ($db) {
+        try {
+            $db->query("SET NOCOUNT ON; EXEC UPD_VTA_EliminaCoti '$id'");
+        } catch (Exception $e) {}
+    }
+
     $pedidos = json_decode(file_get_contents($dataFile), true) ?? [];
     $pedidos = array_filter($pedidos, function($p) use ($id) {
         return $p['id'] !== $id;
     });
-    
-    file_put_contents($dataFile, json_encode(array_values($pedidos), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+    file_put_contents($dataFile, json_encode(array_values($pedidos), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
     echo json_encode(["success" => true]);
     exit;
 }
