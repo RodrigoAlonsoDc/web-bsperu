@@ -1,24 +1,50 @@
 <?php
 // crm/api_pedidos.php - Integración Starsoft ERP & Gestión de Cotizaciones / Pedidos
 session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode(["error" => "No autorizado"]);
-    exit;
-}
-
-require_once __DIR__ . '/config/database.php';
-$dataFile = __DIR__ . '/../assets/Data/pedidos.json';
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
-
-// Obtener conexión a Starsoft SQL Server
-$db = function_exists('getStarsoftDB') ? getStarsoftDB() : null;
+require_once __DIR__ . '/config/database.php';
 
 // ==========================================
-// ACCIÓN: DIAGNÓSTICO DE CONEXIÓN
+// ACCIÓN: DIAGNÓSTICO DE CONEXIÓN (PÚBLICO PARA TESTING)
 // ==========================================
 if ($action === 'test_db') {
-    header('Content-Type: application/json');
+    header('Content-Type: application/json; charset=utf-8');
+    
+    // Probar candidatos de conexión y guardar errores de diagnóstico
+    $host = '48.216.211.109';
+    $dbName = 'BDTPED_SSA';
+    $user = 'SOPORTE';
+    $pass = 'SOPORTE';
+
+    $dsnCandidates = [
+        "odbc:Driver=FreeTDS;Server=$host;Port=1433;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;",
+        "odbc:Driver=FreeTDS;Server=$host,1433;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;",
+        "dblib:host=$host:1433;dbname=$dbName;charset=UTF-8",
+        "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;",
+        "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.3;ClientCharset=UTF-8;",
+        "odbc:Driver=FreeTDS;Server=$host,80;Database=$dbName;",
+        "sqlsrv:Server=$host,1433;Database=$dbName;TrustServerCertificate=true;Encrypt=false",
+        "odbc:Driver=ODBC Driver 18 for SQL Server;Server=$host,1433;Database=$dbName;TrustServerCertificate=yes;Encrypt=no;",
+        "odbc:Driver=ODBC Driver 17 for SQL Server;Server=$host,1433;Database=$dbName;TrustServerCertificate=yes;Encrypt=no;"
+    ];
+
+    $db = null;
+    $intentos = [];
+    foreach ($dsnCandidates as $dsn) {
+        try {
+            $conn = new PDO($dsn, $user, $pass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT => 4,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]);
+            $db = $conn;
+            $intentos[] = ["dsn" => $dsn, "status" => "CONECTADO"];
+            break;
+        } catch (Exception $e) {
+            $intentos[] = ["dsn" => $dsn, "error" => $e->getMessage()];
+        }
+    }
+
     if ($db) {
         try {
             $stmt = $db->query("EXEC RPT_Vta_BuscaNroCot");
@@ -28,22 +54,39 @@ if ($action === 'test_db') {
                 "success" => true,
                 "conexion" => "OK",
                 "motor" => "SQL Server Azure (BDTPED_SSA)",
-                "siguiente_coti" => $siguienteNro
-            ]);
+                "siguiente_coti_starsoft" => $siguienteNro,
+                "detalles" => $intentos
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         } catch (Exception $e) {
             echo json_encode([
                 "success" => false,
-                "error" => "Error ejecutando SP: " . $e->getMessage()
-            ]);
+                "conexion" => "CONECTADO_PERO_FALLA_QUERY",
+                "error" => $e->getMessage(),
+                "detalles" => $intentos
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
     } else {
         echo json_encode([
             "success" => false,
-            "error" => "No se pudo conectar a SQL Server en 48.216.211.109:1433/80"
-        ]);
+            "conexion" => "FALLA_CONEXION",
+            "error" => "No se pudo conectar a SQL Server en 48.216.211.109",
+            "intentos" => $intentos
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
     exit;
 }
+
+// Para las demás acciones (save, list, delete, aprobar) se requiere autenticación
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    http_response_code(401);
+    echo json_encode(["error" => "No autorizado. Inicie sesión en el CRM."]);
+    exit;
+}
+
+$dataFile = __DIR__ . '/../assets/Data/pedidos.json';
+
+// Obtener conexión a Starsoft SQL Server
+$db = function_exists('getStarsoftDB') ? getStarsoftDB() : null;
 
 // ==========================================
 // ACCIÓN: LISTAR COTIZACIONES
