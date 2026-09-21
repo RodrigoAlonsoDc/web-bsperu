@@ -10,23 +10,55 @@ require_once __DIR__ . '/config/database.php';
 if ($action === 'test_db') {
     header('Content-Type: application/json; charset=utf-8');
     
-    // Probar candidatos de conexión y guardar errores de diagnóstico
     $host = '48.216.211.109';
     $dbName = 'BDTPED_SSA';
     $user = 'SOPORTE';
     $pass = 'SOPORTE';
 
-    $dsnCandidates = [
-        "odbc:Driver=FreeTDS;Server=$host;Port=1433;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;",
-        "odbc:Driver=FreeTDS;Server=$host,1433;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;",
-        "dblib:host=$host:1433;dbname=$dbName;charset=UTF-8",
-        "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;",
-        "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.3;ClientCharset=UTF-8;",
-        "odbc:Driver=FreeTDS;Server=$host,80;Database=$dbName;",
-        "sqlsrv:Server=$host,1433;Database=$dbName;TrustServerCertificate=true;Encrypt=false",
-        "odbc:Driver=ODBC Driver 18 for SQL Server;Server=$host,1433;Database=$dbName;TrustServerCertificate=yes;Encrypt=no;",
-        "odbc:Driver=ODBC Driver 17 for SQL Server;Server=$host,1433;Database=$dbName;TrustServerCertificate=yes;Encrypt=no;"
-    ];
+    // 1. Detección rápida de IP pública del hosting cPanel (para Azure NSG)
+    $hostingIp = 'Desconocida';
+    try {
+        $ctx = stream_context_create(['http' => ['timeout' => 1.5]]);
+        $ipFetch = @file_get_contents('https://api.ipify.org', false, $ctx);
+        if ($ipFetch) $hostingIp = trim($ipFetch);
+        else $hostingIp = $_SERVER['SERVER_ADDR'] ?? 'Desconocida';
+    } catch(Exception $e) {
+        $hostingIp = $_SERVER['SERVER_ADDR'] ?? 'Desconocida';
+    }
+
+    // 2. Pre-chequeo ultrarrápido de sockets TCP (timeout 1.0s) para evitar Gateway Timeout 504
+    $port80_open = false;
+    $port1433_open = false;
+    $socketErrors = [];
+
+    $s80 = @fsockopen($host, 80, $errno80, $errstr80, 1.0);
+    if ($s80) {
+        $port80_open = true;
+        fclose($s80);
+    } else {
+        $socketErrors['port_80'] = "$errstr80 ($errno80)";
+    }
+
+    $s1433 = @fsockopen($host, 1433, $errno1433, $errstr1433, 1.0);
+    if ($s1433) {
+        $port1433_open = true;
+        fclose($s1433);
+    } else {
+        $socketErrors['port_1433'] = "$errstr1433 ($errno1433)";
+    }
+
+    // 3. Seleccionar únicamente DSN de puertos accesibles
+    $dsnCandidates = [];
+    if ($port80_open) {
+        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
+        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.3;ClientCharset=UTF-8;";
+        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host,80;Database=$dbName;";
+    }
+    if ($port1433_open) {
+        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=1433;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
+        $dsnCandidates[] = "dblib:host=$host:1433;dbname=$dbName;charset=UTF-8";
+        $dsnCandidates[] = "sqlsrv:Server=$host,1433;Database=$dbName;TrustServerCertificate=true;Encrypt=false";
+    }
 
     $db = null;
     $intentos = [];
@@ -34,7 +66,7 @@ if ($action === 'test_db') {
         try {
             $conn = new PDO($dsn, $user, $pass, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_TIMEOUT => 4,
+                PDO::ATTR_TIMEOUT => 2,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
             ]);
             $db = $conn;
@@ -55,12 +87,15 @@ if ($action === 'test_db') {
                 "conexion" => "OK",
                 "motor" => "SQL Server Azure (BDTPED_SSA)",
                 "siguiente_coti_starsoft" => $siguienteNro,
+                "ip_hosting" => $hostingIp,
+                "puertos" => ["80" => $port80_open, "1433" => $port1433_open],
                 "detalles" => $intentos
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         } catch (Exception $e) {
             echo json_encode([
                 "success" => false,
                 "conexion" => "CONECTADO_PERO_FALLA_QUERY",
+                "ip_hosting" => $hostingIp,
                 "error" => $e->getMessage(),
                 "detalles" => $intentos
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -68,8 +103,15 @@ if ($action === 'test_db') {
     } else {
         echo json_encode([
             "success" => false,
-            "conexion" => "FALLA_CONEXION",
-            "error" => "No se pudo conectar a SQL Server en 48.216.211.109",
+            "conexion" => "PUERTOS_NO_ACCESIBLES",
+            "ip_hosting" => $hostingIp,
+            "puerto_80_abierto" => $port80_open,
+            "puerto_1433_abierto" => $port1433_open,
+            "errores_socket" => $socketErrors,
+            "drivers_pdo_php" => PDO::getAvailableDrivers(),
+            "mensaje" => (!$port80_open && !$port1433_open)
+                ? "El servidor de cPanel no puede alcanzar la IP 48.216.211.109 por los puertos 80 ni 1433. Debe autorizarse la IP de cPanel ($hostingIp) en Azure NSG."
+                : "No se pudo autenticar con las credenciales SOPORTE/SOPORTE.",
             "intentos" => $intentos
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
