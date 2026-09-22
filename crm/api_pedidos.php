@@ -46,12 +46,7 @@ if ($action === 'test_db') {
     $curl443Info = curl_getinfo($ch443);
     curl_close($ch443);
 
-    // Diagnóstico de ruta de red (ping / traceroute) desde cPanel hacia Azure
-    $pingOut = @shell_exec("ping -c 2 -W 2 $host 2>&1");
-    $traceOut = @shell_exec("traceroute -n -m 8 $host 2>&1");
-    if (!$traceOut) {
-        $traceOut = @shell_exec("tracepath -n -m 8 $host 2>&1");
-    }
+    // Fin pre-chequeo de sockets
 
     $port50027_open = false;
     $s50027 = @fsockopen($host, 50027, $errno50027, $errstr50027, 1.0);
@@ -158,8 +153,6 @@ if ($action === 'test_db') {
             "puerto_50027_abierto" => $port50027_open,
             "errores_socket" => $socketErrors,
             "curl_443_error" => $curl443Error,
-            "ping_azure" => $pingOut,
-            "traceroute_azure" => $traceOut,
             "diagnostico_red_cpanel" => $diagnostico_red_hosting,
             "drivers_pdo_php" => PDO::getAvailableDrivers(),
             "mensaje" => (!$port80_open && !$port1433_open)
