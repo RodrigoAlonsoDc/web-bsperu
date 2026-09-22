@@ -25,28 +25,25 @@ try {
         exit;
     }
 
-    if ($action === 'databases') {
-        $stmt = $conn->query('SELECT name FROM sys.databases');
-        echo json_encode($stmt->fetchAll(PDO::FETCH_COLUMN));
+    if ($action === 'maecli_cols') {
+        $stmt = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='MAECLI'");
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
         exit;
     }
 
-    if ($action === 'cotcab_vendedores') {
-        $stmt = $conn->query('SELECT DISTINCT TOP 30 CFVENDE FROM COTCAB');
-        echo json_encode($stmt->fetchAll(PDO::FETCH_COLUMN));
+    if ($action === 'maecli_sample') {
+        $stmt = $conn->query("SELECT TOP 5 * FROM [003BDCOMUN].dbo.MAECLI");
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
         exit;
     }
 
-    if ($action === 'query') {
-        $sql = $_GET['q'] ?? '';
-        if ($sql) {
-            $stmt = $conn->query($sql);
-            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-            exit;
-        }
+    if ($action === 'maecli_vendedores') {
+        $stmt = $conn->query("SELECT DISTINCT CCODVEN, COUNT(*) as cant FROM [003BDCOMUN].dbo.MAECLI GROUP BY CCODVEN ORDER BY cant DESC");
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        exit;
     }
 
-    echo json_encode(['status' => 'ready', 'actions' => ['usuarios', 'vendedores', 'databases', 'cotcab_vendedores', 'query']]);
+    echo json_encode(['status' => 'ready']);
 } catch (Throwable $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }
