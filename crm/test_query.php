@@ -2,7 +2,7 @@
 header('Content-Type: text/plain; charset=utf-8');
 
 $host = '48.216.211.109';
-$port = 80;
+$port = 443;
 $db = 'BDTPED_SSA';
 $user = 'SOPORTE';
 $pass = 'SOPORTE';
