@@ -47,14 +47,29 @@ if ($action === 'test_db') {
         $socketErrors['port_1433'] = "$errstr1433 ($errno1433)";
     }
 
-    $port8089_open = false;
-    $s8089 = @fsockopen($host, 8089, $errno8089, $errstr8089, 1.0);
-    if ($s8089) {
-        $port8089_open = true;
-        fclose($s8089);
+    $port50027_open = false;
+    $s50027 = @fsockopen($host, 50027, $errno50027, $errstr50027, 1.0);
+    if ($s50027) {
+        $port50027_open = true;
+        fclose($s50027);
     } else {
-        $socketErrors['port_8089'] = "$errstr8089 ($errno8089)";
+        $socketErrors['port_50027'] = "$errstr50027 ($errno50027)";
     }
+
+    // Proba de fuego: ¿El hosting permite conexiones salientes al puerto 1433 o su firewall (CSF) lo rechaza?
+    $s_out_1433 = @fsockopen('1.1.1.1', 1433, $errnoOut, $errstrOut, 1.0);
+    $cpanel_bloquea_salida_1433 = ($errnoOut === 111);
+    if ($s_out_1433) fclose($s_out_1433);
+
+    $s_google = @fsockopen('google.com', 443, $errnoG, $errstrG, 1.0);
+    $salida_general_ok = ($s_google !== false);
+    if ($s_google) fclose($s_google);
+
+    $diagnostico_red_hosting = [
+        "salida_https_ok" => $salida_general_ok,
+        "cpanel_bloquea_puerto_1433_saliente" => $cpanel_bloquea_salida_1433,
+        "detalle_test_1433_externo" => "$errstrOut ($errnoOut)"
+    ];
 
     // 3. Seleccionar únicamente DSN de puertos accesibles
     $dsnCandidates = [];
@@ -116,11 +131,12 @@ if ($action === 'test_db') {
             "ip_hosting" => $hostingIp,
             "puerto_80_abierto" => $port80_open,
             "puerto_1433_abierto" => $port1433_open,
-            "puerto_8089_abierto" => $port8089_open,
+            "puerto_50027_abierto" => $port50027_open,
             "errores_socket" => $socketErrors,
+            "diagnostico_red_cpanel" => $diagnostico_red_hosting,
             "drivers_pdo_php" => PDO::getAvailableDrivers(),
             "mensaje" => (!$port80_open && !$port1433_open)
-                ? "El servidor de cPanel no puede alcanzar la IP 48.216.211.109 por los puertos 80 ni 1433. Debe autorizarse la IP de cPanel ($hostingIp) en Azure NSG."
+                ? "El servidor de cPanel no puede alcanzar la IP 48.216.211.109."
                 : "No se pudo autenticar con las credenciales SOPORTE/SOPORTE.",
             "intentos" => $intentos
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
