@@ -48,13 +48,13 @@ if ($action === 'test_db') {
 
     // Fin pre-chequeo de sockets
 
-    $port50027_open = false;
-    $s50027 = @fsockopen($host, 50027, $errno50027, $errstr50027, 1.0);
-    if ($s50027) {
-        $port50027_open = true;
-        fclose($s50027);
+    $port3389_open = false;
+    $s3389 = @fsockopen($host, 3389, $errno3389, $errstr3389, 2.0);
+    if ($s3389) {
+        $port3389_open = true;
+        fclose($s3389);
     } else {
-        $socketErrors['port_50027'] = "$errstr50027 ($errno50027)";
+        $socketErrors['port_3389'] = "$errstr3389 ($errno3389)";
     }
 
     // Proba de fuego: ¿Qué puertos permite salir cPanel?
