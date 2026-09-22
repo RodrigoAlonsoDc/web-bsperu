@@ -56,19 +56,29 @@ if ($action === 'test_db') {
         $socketErrors['port_50027'] = "$errstr50027 ($errno50027)";
     }
 
-    // Proba de fuego: ¿El hosting permite conexiones salientes al puerto 1433 o su firewall (CSF) lo rechaza?
-    $s_out_1433 = @fsockopen('1.1.1.1', 1433, $errnoOut, $errstrOut, 1.0);
-    $cpanel_bloquea_salida_1433 = ($errnoOut === 111);
-    if ($s_out_1433) fclose($s_out_1433);
-
-    $s_google = @fsockopen('google.com', 443, $errnoG, $errstrG, 1.0);
-    $salida_general_ok = ($s_google !== false);
-    if ($s_google) fclose($s_google);
+    // Proba de fuego: ¿Qué puertos permite salir cPanel?
+    $testPorts = [80, 443, 8080, 8443, 8888, 2083, 2087, 1433, 3306];
+    $salidaPuertos = [];
+    foreach ($testPorts as $p) {
+        $s = @fsockopen('1.1.1.1', $p, $pErrNo, $pErrStr, 0.8);
+        if ($s) {
+            $salidaPuertos[$p] = "ABIERTO";
+            fclose($s);
+        } else {
+            // Si el error es 111 (Connection Refused), el firewall local de cPanel lo RECHAZÓ
+            // Si el error es 110 (Timeout), el paquete SALIÓ a Internet y llegó al destino (que lo ignoró)
+            if ($pErrNo === 111) {
+                $salidaPuertos[$p] = "BLOQUEADO_POR_CPANEL (Refused 111)";
+            } else if ($pErrNo === 110) {
+                $salidaPuertos[$p] = "PERMITIDO_SALIENTE (Timeout 110 en destino)";
+            } else {
+                $salidaPuertos[$p] = "$pErrStr ($pErrNo)";
+            }
+        }
+    }
 
     $diagnostico_red_hosting = [
-        "salida_https_ok" => $salida_general_ok,
-        "cpanel_bloquea_puerto_1433_saliente" => $cpanel_bloquea_salida_1433,
-        "detalle_test_1433_externo" => "$errstrOut ($errnoOut)"
+        "cpanel_salida_puertos" => $salidaPuertos
     ];
 
     // 3. Seleccionar únicamente DSN de puertos accesibles
