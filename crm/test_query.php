@@ -1,43 +1,42 @@
 <?php
-header('Content-Type: text/plain; charset=utf-8');
-
-$host = '48.216.211.109';
-$port = 443;
-$db = 'BDTPED_SSA';
-$user = 'SOPORTE';
-$pass = 'SOPORTE';
-
-$dsn = "odbc:Driver=FreeTDS;Server=$host;Port=$port;Database=$db;TDS_Version=7.4;ClientCharset=UTF-8;";
-
-try {
-    $conn = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_TIMEOUT => 8
-    ]);
-    echo "CONEXIÓN EXITOSA A BDTPED_SSA!\n\n";
-
-    // 1. Estadísticas Generales de BDTPED_SSA
-    echo "=== RESUMEN GENERAL DE TABLAS EN BDTPED_SSA ===\n";
-    $qtables = $conn->query("SELECT TABLE_TYPE, COUNT(*) as cantidad FROM INFORMATION_SCHEMA.TABLES GROUP BY TABLE_TYPE");
-    print_r($qtables->fetchAll(PDO::FETCH_ASSOC));
-
-    // 2. Todas las tablas en BDTPED_SSA agrupadas por nombre
-    echo "\n=== TODAS LAS TABLAS BASE EN BDTPED_SSA ===\n";
-    $qall = $conn->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME");
-    $tables = $qall->fetchAll(PDO::FETCH_COLUMN);
-    echo "Total Tablas: " . count($tables) . "\n";
-    echo implode(", ", $tables) . "\n\n";
-
-    // Helper seguro para ejecutar queries con closeCursor
-    function runQuery($conn, $sql) {
-        $stmt = $conn->query($sql);
-        if (!$stmt) return [];
-        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-        return $res;
-    }
-
-    echo "OK - Conexión activa a StarSoft BDTPED_SSA.\n";
-} catch (Exception $e) {
-    echo "ERROR GLOBAL: " . $e->getMessage() . "\n";
+header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/config/database.php';
+$conn = getStarsoftDB();
+if (!$conn) {
+    echo json_encode(['error' => 'No DB connection']);
+    exit;
 }
+
+$action = $_GET['a'] ?? 'summary';
+
+if ($action === 'databases') {
+    $stmt = $conn->query('SELECT name FROM sys.databases');
+    echo json_encode($stmt->fetchAll(PDO::FETCH_COLUMN));
+    exit;
+}
+
+if ($action === 'usuarios') {
+    $stmt = $conn->query('SELECT * FROM USUARIO_BS');
+    echo json_encode($stmt->fetchAll(PDO::FETCHA_SSOC));
+    exit;
+}
+
+if ($action === 'vendedores') {
+    $stmt = $conn->query('SELECT * FROM BDT_VENDEDORCUOTA');
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    exit;
+}
+
+if ($action === 'cotcab_cols') {
+    $stmt = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='COTCAB'");
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    exit;
+}
+
+if ($action === 'cotcab_vendedores') {
+    $stmt = $conn->query('SELECT DISTINCT TOP 20 CFVENDE FROM COTCAB');
+    exho json_encode($stmt->fetchAll(PDO::FETCHA_COLUMN));
+    exit;
+}
+
+echo json_encode(['status' => 'ready', 'actions' => ['databases', 'usuarios', 'vendedores', 'cotcab_cols', 'cotcab_vendedores']]);
