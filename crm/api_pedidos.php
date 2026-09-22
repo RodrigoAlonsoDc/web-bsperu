@@ -26,9 +26,18 @@ if ($action === 'test_db') {
         $hostingIp = $_SERVER['SERVER_ADDR'] ?? 'Desconocida';
     }
 
-    // 2. Pre-chequeo ultrarrápido de sockets TCP (timeout 1.0s) para evitar Gateway Timeout 504
+    // 2. Pre-chequeo directo a los puertos de Azure (1433 y 443)
+    $port1433_open = false;
+    $s1433 = @fsockopen($host, 1433, $errno1433, $errstr1433, 2.5);
+    if ($s1433) {
+        $port1433_open = true;
+        fclose($s1433);
+    } else {
+        $socketErrors['port_1433'] = "$errstr1433 ($errno1433)";
+    }
+
     $port443_open = false;
-    $s443 = @fsockopen($host, 443, $errno443, $errstr443, 3.5);
+    $s443 = @fsockopen($host, 443, $errno443, $errstr443, 2.5);
     if ($s443) {
         $port443_open = true;
         fclose($s443);
