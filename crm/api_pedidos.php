@@ -90,25 +90,13 @@ if ($action === 'test_db') {
         "cpanel_salida_puertos" => $salidaPuertos
     ];
 
-    // 3. Seleccionar únicamente DSN de puertos accesibles
-    $dsnCandidates = [];
-    if ($port443_open) {
-        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=443;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
-        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=443;Database=$dbName;TDS_Version=7.3;ClientCharset=UTF-8;";
-        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host,443;Database=$dbName;";
-        $dsnCandidates[] = "dblib:host=$host:443;dbname=$dbName;charset=UTF-8";
-    }
-    if ($port80_open) {
-        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
-        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.3;ClientCharset=UTF-8;";
-        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host,80;Database=$dbName;";
-        $dsnCandidates[] = "dblib:host=$host:80;dbname=$dbName;charset=UTF-8";
-    }
-    if ($port1433_open) {
-        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=1433;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
-        $dsnCandidates[] = "dblib:host=$host:1433;dbname=$dbName;charset=UTF-8";
-        $dsnCandidates[] = "sqlsrv:Server=$host,1433;Database=$dbName;TrustServerCertificate=true;Encrypt=false";
-    }
+    // 3. Forzar candidatos DSN en puerto 443 directamente hacia StarSoft
+    $dsnCandidates = [
+        "odbc:Driver=FreeTDS;Server=$host;Port=443;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;",
+        "odbc:Driver=FreeTDS;Server=$host,443;Database=$dbName;",
+        "dblib:host=$host:443;dbname=$dbName;charset=UTF-8",
+        "sqlsrv:Server=$host,443;Database=$dbName;TrustServerCertificate=true;Encrypt=false"
+    ];
 
     $db = null;
     $intentos = [];
