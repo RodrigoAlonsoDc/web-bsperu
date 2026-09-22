@@ -13,32 +13,14 @@ try {
 
     $action = $_GET['a'] ?? 'summary';
 
-    if ($action === 'usuarios') {
-        $stmt = $conn->query('SELECT * FROM USUARIO_BS');
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-        exit;
-    }
-
-    if ($action === 'vendedores') {
-        $stmt = $conn->query('SELECT * FROM BDT_VENDEDORCUOTA');
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-        exit;
-    }
-
-    if ($action === 'maecli_cols') {
-        $stmt = $conn->query("SELECT COLUMN_NAME, DATA_TYPE FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='MAECLI'");
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-        exit;
-    }
-
-    if ($action === 'maecli_sample') {
-        $stmt = $conn->query("SELECT TOP 5 * FROM [003BDCOMUN].dbo.MAECLI");
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-        exit;
-    }
-
     if ($action === 'maecli_vendedores') {
-        $stmt = $conn->query("SELECT DISTINCT CCODVEN, COUNT(*) as cant FROM [003BDCOMUN].dbo.MAECLI GROUP BY CCODVEN ORDER BY cant DESC");
+        $stmt = $conn->query("SELECT DISTINCT CVENDE, COUNT(*) as cant FROM [003BDCOMUN].dbo.MAECLI GROUP BY CVENDE ORDER BY cant DESC");
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        exit;
+    }
+
+    if ($action === 'maecli_endrina') {
+        $stmt = $conn->query("SELECT TOP 5 CCODCLI, CNOMCLI, CNUMRUC, CVENDE, CUSUARI FROM [003BDCOMUN].dbo.MAECLI WHERE CVENDE = '01' OR CUSUARI LIKE '%ENDRINA%'");
         echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
         exit;
     }
