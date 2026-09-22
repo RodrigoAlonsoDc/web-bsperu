@@ -27,33 +27,22 @@ if ($action === 'test_db') {
     }
 
     // 2. Pre-chequeo ultrarrápido de sockets TCP (timeout 1.0s) para evitar Gateway Timeout 504
-    $port80_open = false;
-    $port1433_open = false;
-    $socketErrors = [];
-
-    $s80 = @fsockopen($host, 80, $errno80, $errstr80, 1.0);
-    if ($s80) {
-        $port80_open = true;
-        fclose($s80);
-    } else {
-        $socketErrors['port_80'] = "$errstr80 ($errno80)";
-    }
-
-    $s1433 = @fsockopen($host, 1433, $errno1433, $errstr1433, 1.0);
-    if ($s1433) {
-        $port1433_open = true;
-        fclose($s1433);
-    } else {
-        $socketErrors['port_1433'] = "$errstr1433 ($errno1433)";
-    }
-
     $port443_open = false;
-    $s443 = @fsockopen($host, 443, $errno443, $errstr443, 1.0);
+    $s443 = @fsockopen($host, 443, $errno443, $errstr443, 3.5);
     if ($s443) {
         $port443_open = true;
         fclose($s443);
     } else {
         $socketErrors['port_443'] = "$errstr443 ($errno443)";
+    }
+
+    $port80_open = false;
+    $s80 = @fsockopen($host, 80, $errno80, $errstr80, 2.0);
+    if ($s80) {
+        $port80_open = true;
+        fclose($s80);
+    } else {
+        $socketErrors['port_80'] = "$errstr80 ($errno80)";
     }
 
     $port50027_open = false;
