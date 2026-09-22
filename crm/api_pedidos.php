@@ -47,6 +47,15 @@ if ($action === 'test_db') {
         $socketErrors['port_1433'] = "$errstr1433 ($errno1433)";
     }
 
+    $port443_open = false;
+    $s443 = @fsockopen($host, 443, $errno443, $errstr443, 1.0);
+    if ($s443) {
+        $port443_open = true;
+        fclose($s443);
+    } else {
+        $socketErrors['port_443'] = "$errstr443 ($errno443)";
+    }
+
     $port50027_open = false;
     $s50027 = @fsockopen($host, 50027, $errno50027, $errstr50027, 1.0);
     if ($s50027) {
@@ -83,10 +92,17 @@ if ($action === 'test_db') {
 
     // 3. Seleccionar únicamente DSN de puertos accesibles
     $dsnCandidates = [];
+    if ($port443_open) {
+        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=443;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
+        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=443;Database=$dbName;TDS_Version=7.3;ClientCharset=UTF-8;";
+        $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host,443;Database=$dbName;";
+        $dsnCandidates[] = "dblib:host=$host:443;dbname=$dbName;charset=UTF-8";
+    }
     if ($port80_open) {
         $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
         $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$dbName;TDS_Version=7.3;ClientCharset=UTF-8;";
         $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host,80;Database=$dbName;";
+        $dsnCandidates[] = "dblib:host=$host:80;dbname=$dbName;charset=UTF-8";
     }
     if ($port1433_open) {
         $dsnCandidates[] = "odbc:Driver=FreeTDS;Server=$host;Port=1433;Database=$dbName;TDS_Version=7.4;ClientCharset=UTF-8;";
@@ -122,7 +138,7 @@ if ($action === 'test_db') {
                 "motor" => "SQL Server Azure (BDTPED_SSA)",
                 "siguiente_coti_starsoft" => $siguienteNro,
                 "ip_hosting" => $hostingIp,
-                "puertos" => ["80" => $port80_open, "1433" => $port1433_open],
+                "puertos" => ["443" => $port443_open, "80" => $port80_open, "1433" => $port1433_open],
                 "detalles" => $intentos
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         } catch (Exception $e) {
@@ -139,6 +155,7 @@ if ($action === 'test_db') {
             "success" => false,
             "conexion" => "PUERTOS_NO_ACCESIBLES",
             "ip_hosting" => $hostingIp,
+            "puerto_443_abierto" => $port443_open,
             "puerto_80_abierto" => $port80_open,
             "puerto_1433_abierto" => $port1433_open,
             "puerto_50027_abierto" => $port50027_open,

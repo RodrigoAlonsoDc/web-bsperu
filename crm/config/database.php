@@ -17,6 +17,11 @@ function getStarsoftDB() {
         "odbc:Driver=FreeTDS;Server=$host;Port=1433;Database=$db;TDS_Version=7.4;ClientCharset=UTF-8;",
         "odbc:Driver=FreeTDS;Server=$host,1433;Database=$db;TDS_Version=7.4;ClientCharset=UTF-8;",
         "dblib:host=$host:1433;dbname=$db;charset=UTF-8",
+        // Puerto 443 (HTTPS alternativo libre de bloqueos de hosting)
+        "odbc:Driver=FreeTDS;Server=$host;Port=443;Database=$db;TDS_Version=7.4;ClientCharset=UTF-8;",
+        "odbc:Driver=FreeTDS;Server=$host;Port=443;Database=$db;TDS_Version=7.3;ClientCharset=UTF-8;",
+        "odbc:Driver=FreeTDS;Server=$host,443;Database=$db;",
+        "dblib:host=$host:443;dbname=$db;charset=UTF-8",
         // Puerto 80 (FreeTDS proxy)
         "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$db;TDS_Version=7.4;ClientCharset=UTF-8;",
         "odbc:Driver=FreeTDS;Server=$host;Port=80;Database=$db;TDS_Version=7.3;ClientCharset=UTF-8;",
