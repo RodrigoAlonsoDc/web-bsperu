@@ -36,6 +36,16 @@ if ($action === 'test_db') {
         $socketErrors['port_443'] = "$errstr443 ($errno443)";
     }
 
+    // Probar con cURL hacia 443 para ver código de error exacto
+    $ch443 = curl_init("http://$host:443/");
+    curl_setopt($ch443, CURLOPT_TIMEOUT, 3);
+    curl_setopt($ch443, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch443, CURLOPT_CONNECTTIMEOUT, 3);
+    curl_exec($ch443);
+    $curl443Error = curl_error($ch443);
+    $curl443Info = curl_getinfo($ch443);
+    curl_close($ch443);
+
     $port80_open = false;
     $s80 = @fsockopen($host, 80, $errno80, $errstr80, 2.0);
     if ($s80) {
@@ -149,6 +159,7 @@ if ($action === 'test_db') {
             "puerto_1433_abierto" => $port1433_open,
             "puerto_50027_abierto" => $port50027_open,
             "errores_socket" => $socketErrors,
+            "curl_443_error" => $curl443Error,
             "diagnostico_red_cpanel" => $diagnostico_red_hosting,
             "drivers_pdo_php" => PDO::getAvailableDrivers(),
             "mensaje" => (!$port80_open && !$port1433_open)
