@@ -1,0 +1,22 @@
+# robots.txt para Building Systems Perú (https://bsperu.pe)
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /productos.html
+Allow: /sucursales.html
+Allow: /views/
+Allow: /img/
+Allow: /assets/
+Allow: /guardar_consulta.php
+
+# Proteger áreas privadas y de desarrollo
+Disallow: /crm/
+Disallow: /Pruebas/
+Disallow: /instrucciones/
+Disallow: /scratch/
+Disallow: /config/
+Disallow: /*test_*.php
+Disallow: /*_antiguo.html
+
+# Mapa de Sitio Oficial (Sitemap)
+Sitemap: https://bsperu.pe/sitemap.xml
