@@ -1,4 +1,5 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 // crm_backend.php - Núcleo de datos y sincronización para Ventas & Reportería BS Perú
 
 header('Access-Control-Allow-Origin: *');
