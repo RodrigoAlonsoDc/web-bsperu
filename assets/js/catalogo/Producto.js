@@ -693,14 +693,103 @@ function encontrarProducto(sku) {
 // =============================
 // RENDER PRINCIPAL (CORREGIDO)
 // =============================
+
+// =============================
+// SEO DINAMICO PARA GOOGLE Y WHATSAPP
+// =============================
+function actualizarSEOProducto(prod) {
+    if (!prod) return;
+    const nombre = (prod.nombre || "").trim();
+    const codigo = (prod.sku || prod.codigo || "").trim();
+    const categoria = (prod.categoria || "Qu\u00edmicos para la Construcci\u00f3n").trim();
+    const marca = (prod.marca || "Z ADITIVOS").trim();
+    const url = "https://bsperu.pe/views/producto.html?sku=" + encodeURIComponent(codigo);
+    
+    // 1. T\u00edtulo de la pesta\u00f1a
+    const pageTitle = `${nombre} | Z Aditivos Oficial - BS Per\u00fa`;
+    document.title = pageTitle;
+    const ptEl = document.getElementById("pageTitle");
+    if (ptEl) ptEl.textContent = pageTitle;
+
+    // 2. Meta descripci\u00f3n optimizada para Google
+    const metaDesc = `Venta de ${nombre} original de ${marca} en Per\u00fa. Asesor\u00eda t\u00e9cnica, fichas t\u00e9cnicas y distribuci\u00f3n a nivel nacional por Building Systems Per\u00fa. Cotiza aqu\u00ed.`;
+    let mDesc = document.querySelector('meta[name="description"]');
+    if (mDesc) mDesc.setAttribute("content", metaDesc);
+
+    // 3. Canonical URL
+    let canLink = document.querySelector('link[rel="canonical"]');
+    if (canLink) canLink.setAttribute("href", url);
+
+    // 4. Imagen principal absoluta
+    let imgAbsoluta = "https://bsperu.pe/img/impermeabilizantes.jpg";
+    if (Array.isArray(prod.imagenes) && prod.imagenes.length > 0 && prod.imagenes[0]) {
+        const raw = prod.imagenes[0];
+        imgAbsoluta = raw.startsWith("http") ? raw : "https://bsperu.pe" + (raw.startsWith("/") ? "" : "/") + raw;
+    }
+
+    // 5. OpenGraph (WhatsApp, Facebook, LinkedIn)
+    const setMetaProp = (prop, val) => {
+        let el = document.querySelector(`meta[property="${prop}"]`);
+        if (el) el.setAttribute("content", val);
+    };
+    setMetaProp("og:title", `${nombre} | Z Aditivos Per\u00fa`);
+    setMetaProp("og:description", metaDesc);
+    setMetaProp("og:url", url);
+    setMetaProp("og:image", imgAbsoluta);
+
+    // 6. Twitter Card
+    const setMetaName = (name, val) => {
+        let el = document.querySelector(`meta[name="${name}"]`);
+        if (el) el.setAttribute("content", val);
+    };
+    setMetaName("twitter:title", `${nombre} | Z Aditivos Per\u00fa`);
+    setMetaName("twitter:description", metaDesc);
+    setMetaName("twitter:image", imgAbsoluta);
+
+    // 7. Schema.org Product JSON-LD (Estructura de Google para Rich Snippets)
+    const jsonLdEl = document.getElementById("productSchemaJson");
+    if (jsonLdEl) {
+        const schema = {
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": nombre,
+            "image": [imgAbsoluta],
+            "description": prod.descripcion || prod.descripcion_larga || metaDesc,
+            "sku": codigo,
+            "mpn": codigo,
+            "brand": {
+                "@type": "Brand",
+                "name": marca
+            },
+            "category": categoria,
+            "offers": {
+                "@type": "Offer",
+                "url": url,
+                "priceCurrency": "PEN",
+                "price": prod.precio ? String(prod.precio) : "0.00",
+                "priceValidUntil": "2027-12-31",
+                "itemCondition": "https://schema.org/NewCondition",
+                "availability": "https://schema.org/InStock",
+                "seller": {
+                    "@type": "Organization",
+                    "name": "Building Systems Per\u00fa",
+                    "url": "https://bsperu.pe"
+                }
+            }
+        };
+        jsonLdEl.textContent = JSON.stringify(schema, null, 2);
+    }
+}
+
 function renderProducto() {
     if (!productoActual) {
         $(".producto-wrapper").innerHTML =
             `<div class="text-center py-5 text-muted">
-                No se encontró el producto solicitado.
+                No se encontr\u00f3 el producto solicitado.
              </div>`;
         return;
     }
+    actualizarSEOProducto(productoActual);
 
     // Título
     $("#tituloProducto").textContent = productoActual.nombre || "Producto sin nombre";
