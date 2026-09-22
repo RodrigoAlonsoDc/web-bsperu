@@ -1,4 +1,6 @@
-﻿<?php
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/config/database.php';
 
@@ -46,6 +48,5 @@ try {
 
     echo json_encode(['status' => 'ready', 'actions' => ['usuarios', 'vendedores', 'databases', 'cotcab_vendedores', 'query']]);
 } catch (Throwable $e) {
-    http_response_code(200);
     echo json_encode(['error' => $e->getMessage()]);
 }
