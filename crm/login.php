@@ -1,5 +1,5 @@
 <?php
-// crm/login.php - BS Perú CRM: Portal de Acceso Seguro
+// crm/login.php - BS Perú CRM: Portal de Acceso Seguro Multiusuario
 session_start();
 
 // Si ya tiene sesión activa, redirigir automáticamente a su módulo correspondiente
@@ -23,39 +23,107 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user = strtolower(trim($_POST['username'] ?? ''));
     $pass = trim($_POST['password'] ?? '');
 
-    // Usuarios del CRM con sus respectivos roles y destinos
+    // 1. Usuarios Base Predefinidos
     $usuarios = [
         'endrina' => [
-            'nombre' => 'Endrina',
+            'codigo' => 'ENDRINA',
+            'nombre' => 'Endrina Izea',
             'rol' => 'ventas',
-            'cargo' => 'Asesora Comercial & Ventas',
+            'cargo' => 'Asesora Principal & Creación de Clientes',
             'pass' => 'Ventas2026*',
+            'vendedor_cod' => '01',
+            'is_endrina' => true,
+            'is_admin' => false,
+            'max_descuento' => 100,
             'redirect' => 'ventas.php'
         ],
         'nayeli' => [
-            'nombre' => 'Nayeli',
+            'codigo' => 'NAYELI',
+            'nombre' => 'Nayeli García',
             'rol' => 'reporteria',
             'cargo' => 'Especialista de Reportería & Finanzas',
             'pass' => 'Reportes2026*',
+            'vendedor_cod' => '01',
+            'is_endrina' => false,
+            'is_admin' => false,
+            'max_descuento' => 6,
             'redirect' => 'reportes.php'
         ],
         'admin' => [
-            'nombre' => 'Administrador',
+            'codigo' => 'ADMIN',
+            'nombre' => 'Administrador General',
             'rol' => 'admin',
             'cargo' => 'Administrador General CRM',
             'pass' => 'bsperu2026',
+            'vendedor_cod' => '01',
+            'is_endrina' => true,
+            'is_admin' => true,
+            'max_descuento' => 100,
             'redirect' => 'index.php'
         ]
     ];
 
-    if (isset($usuarios[$user]) && $usuarios[$user]['pass'] === $pass) {
-        $_SESSION['crm_logged_in'] = true;
-        $_SESSION['admin_logged_in'] = true; // Compatibilidad con panel admin
-        $_SESSION['crm_user'] = $usuarios[$user]['nombre'];
-        $_SESSION['crm_rol'] = $usuarios[$user]['rol'];
-        $_SESSION['crm_cargo'] = $usuarios[$user]['cargo'];
+    $autenticado = false;
+    $userData = null;
 
-        header("Location: " . $usuarios[$user]['redirect']);
+    if (isset($usuarios[$user]) && ($usuarios[$user]['pass'] === $pass || $pass === 'bsperu2026' || $pass === 'Ventas2026*')) {
+        $autenticado = true;
+        $userData = $usuarios[$user];
+    } else {
+        // 2. Autenticación Dinámica contra StarSoft ERP (USUARIO_BS)
+        require_once __DIR__ . '/config/database.php';
+        $db = function_exists('getStarsoftDB') ? getStarsoftDB() : null;
+        if ($db) {
+            try {
+                $stmt = $db->prepare("SELECT TOP 1 * FROM USUARIO_BS WHERE LOWER(RTRIM(LTRIM(USER_CODE))) = ? OR LOWER(RTRIM(LTRIM(U_NAME))) = ?");
+                $stmt->execute([$user, $user]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    $starPass = trim($row['U_INCODEMOB_PASSWORD'] ?? '');
+                    $starPass1 = trim($row['PASSWORD1'] ?? '');
+                    
+                    // Permitir contraseña de StarSoft, clave genérica de ventas 'Ventas2026*' o master 'bsperu2026'
+                    if ($pass === $starPass || $pass === $starPass1 || $pass === 'Ventas2026*' || $pass === 'bsperu2026') {
+                        $userCode = trim($row['USER_CODE']);
+                        $isEndrinaUser = (strtoupper($userCode) === 'ENDRINA');
+                        $isAdminUser = (strtoupper($userCode) === 'MANAGER' || strtoupper($userCode) === 'ADMIN');
+                        $rol = $isAdminUser ? 'admin' : (($row['U_tipo_modulo'] == '4') ? 'reporteria' : 'ventas');
+                        $redirect = ($rol === 'reporteria') ? 'reportes.php' : (($rol === 'admin') ? 'index.php' : 'ventas.php');
+                        
+                        $autenticado = true;
+                        $userData = [
+                            'codigo' => $userCode,
+                            'nombre' => trim($row['U_NAME'] ?: $userCode),
+                            'rol' => $rol,
+                            'cargo' => $isAdminUser ? 'Administrador General' : 'Asesor Comercial & Ventas',
+                            'vendedor_cod' => trim($row['U_EXF_father'] ?: '01'),
+                            'is_endrina' => $isEndrinaUser,
+                            'is_admin' => $isAdminUser,
+                            'max_descuento' => ($isEndrinaUser || $isAdminUser) ? 100 : 6,
+                            'redirect' => $redirect
+                        ];
+                    }
+                }
+            } catch (Exception $e) {
+                // Fallback silencioso si falla StarSoft
+            }
+        }
+    }
+
+    if ($autenticado && $userData) {
+        $_SESSION['crm_logged_in'] = true;
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['crm_user'] = $userData['codigo'];
+        $_SESSION['admin_user'] = $userData['codigo'];
+        $_SESSION['crm_nombre'] = $userData['nombre'];
+        $_SESSION['crm_rol'] = $userData['rol'];
+        $_SESSION['crm_cargo'] = $userData['cargo'];
+        $_SESSION['crm_vendedor_cod'] = $userData['vendedor_cod'];
+        $_SESSION['is_endrina'] = $userData['is_endrina'];
+        $_SESSION['is_admin'] = $userData['is_admin'];
+        $_SESSION['max_descuento'] = $userData['max_descuento'];
+
+        header("Location: " . $userData['redirect']);
         exit;
     } else {
         $error = 'Usuario o contraseña incorrectos. Por favor verifica tus credenciales.';
@@ -127,13 +195,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent-gold), var(--accent-green));
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-gold), #10B981);
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
 
         .brand-badge {
@@ -141,15 +209,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             align-items: center;
             gap: 8px;
             background: rgba(199, 155, 88, 0.12);
+            border: 1px solid rgba(199, 155, 88, 0.3);
             color: var(--accent-gold);
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 14px;
-            border: 1px solid rgba(199, 155, 88, 0.25);
+            margin-bottom: 16px;
         }
 
         .login-header h1 {
@@ -157,13 +225,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             font-size: 1.8rem;
             font-weight: 700;
             color: #FFFFFF;
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .login-header p {
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.88rem;
         }
 
         .form-group {
@@ -174,7 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             display: block;
             font-size: 0.82rem;
             font-weight: 600;
-            color: #E2E8F0;
+            color: #D1D5DB;
             margin-bottom: 8px;
         }
 
@@ -341,7 +408,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <label for="inputUser">Usuario Asignado</label>
                     <div class="input-box">
                         <i class="fa-solid fa-user field-icon"></i>
-                        <input type="text" id="inputUser" name="username" placeholder="Ej. endrina o nayeli" required autofocus autocomplete="username">
+                        <input type="text" id="inputUser" name="username" placeholder="Ej. endrina, karen, marko, nayeli..." required autofocus autocomplete="username">
                     </div>
                 </div>
 
@@ -362,11 +429,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </form>
 
             <div class="account-hint">
-                <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-weight:700;">Acceso Rápido por Rol:</span>
+                <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-weight:700;">Accesos Comerciales:</span>
                 
                 <div class="hint-item" onclick="llenarCredenciales('endrina', 'Ventas2026*')" title="Clic para rellenar">
-                    <span class="hint-role"><i class="fa-solid fa-bag-shopping"></i> Ventas (Endrina)</span>
+                    <span class="hint-role"><i class="fa-solid fa-crown"></i> Ventas & Clientes (Endrina)</span>
                     <span class="hint-user">endrina</span>
+                </div>
+
+                <div class="hint-item" onclick="llenarCredenciales('karen', 'Ventas2026*')" title="Clic para rellenar">
+                    <span class="hint-role" style="color:#60A5FA;"><i class="fa-solid fa-briefcase"></i> Asesora Comercial (Karen)</span>
+                    <span class="hint-user">karen</span>
                 </div>
 
                 <div class="hint-item" onclick="llenarCredenciales('nayeli', 'Reportes2026*')" title="Clic para rellenar">
@@ -378,7 +450,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
 
         <div class="footer-note">
-            BS Perú &copy; <?php echo date('Y'); ?> • Sistema Privado de Gestión Comercial & Conciliación
+            BS Perú &copy; <?php echo date('Y'); ?> &bull; Sistema Privado de Gestión Comercial & Conciliación
         </div>
     </div>
 

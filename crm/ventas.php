@@ -15,6 +15,11 @@ if (isset($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'reporteria') {
 }
 
 $currentUser = $_SESSION['crm_user'] ?? 'Endrina';
+$currentNombre = $_SESSION['crm_nombre'] ?? $currentUser;
+$currentVendedorCod = $_SESSION['crm_vendedor_cod'] ?? '01';
+$isEndrina = !empty($_SESSION['is_endrina']) || strtolower($currentUser) === 'endrina';
+$isAdmin = !empty($_SESSION['is_admin']) || (isset($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'admin');
+$maxDescuentoPermitido = ($isEndrina || $isAdmin) ? 100 : 6;
 
 // Conexión opcional a base de datos con fallback automático
 $db = null;
@@ -1605,9 +1610,9 @@ if (file_exists($fileCotizPath)) {
             <div class="user-pill" onclick="abrirLogoutModal()" title="Clic para cerrar sesión de Ventas" style="cursor:pointer;">
                 <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" alt="Endrina" class="user-pill-avatar">
                 <div class="user-pill-info">
-                    <div class="user-pill-name"><?php echo htmlspecialchars($currentUser); ?></div>
+                    <div class="user-pill-name"><?php echo htmlspecialchars($currentNombre); ?></div>
                     <div class="user-pill-status">
-                        <div class="status-dot"></div> Asesora de Ventas
+                        <div class="status-dot"></div> <?php echo $isEndrina ? '👑 Asesora Principal (Clientes)' : ('💼 Asesor (Cod: ' . htmlspecialchars($currentVendedorCod) . ')'); ?>
                     </div>
                 </div>
                 <i class="fa-solid fa-arrow-right-from-bracket user-pill-chevron" style="color:#EF4444; font-size:0.9rem;" title="Cerrar sesión"></i>
@@ -1863,7 +1868,13 @@ if (file_exists($fileCotizPath)) {
                             <!-- ALERTA SI EL CLIENTE NO SE ENCUENTRA REGISTRADO -->
                             <div id="msgAlertaClienteNoRegistrado" style="display:none; margin-top:8px; padding:10px 14px; background:#FEF2F2; border:1px solid #FCA5A5; border-radius:10px; color:#DC2626; font-size:0.84rem; font-weight:700; display:flex; align-items:center; gap:8px;">
                                 <i class="fa-solid fa-circle-xmark" style="font-size:1.1rem;"></i>
-                                <span>No se registra en la cartera. Debe añadirlo primero en <strong>Mi Cartera de Clientes</strong> con el botón "+ Nuevo Cliente".</span>
+                                <span>
+                                    <?php if ($isEndrina || $isAdmin): ?>
+                                        No se registra en la cartera. Puede añadirlo primero en <strong>Mi Cartera de Clientes</strong> con el botón "+ Nuevo Cliente".
+                                    <?php else: ?>
+                                        El cliente no figura en su cartera asignada (Vendedor <?php echo htmlspecialchars($currentVendedorCod); ?>). Solicite su asignación o creación a <strong>Endrina Izea</strong>.
+                                    <?php endif; ?>
+                                </span>
                             </div>
                             <!-- CONFIRMACIÓN CUANDO EL CLIENTE ES DE CARTERA -->
                             <div id="msgClienteVerificado" style="display:none; margin-top:8px; padding:8px 14px; background:#ECFDF5; border:1px solid #A7F3D0; border-radius:10px; color:#065F46; font-size:0.82rem; font-weight:700; display:flex; align-items:center; gap:8px;">
@@ -2275,9 +2286,15 @@ if (file_exists($fileCotizPath)) {
                         <h1 style="margin-top:2px;">Mi Cartera de Clientes</h1>
                     </div>
                     <div class="header-actions">
-                        <button class="btn-add-cliente" onclick="toggleFormNuevoCliente()">
-                            <i class="fa-solid fa-user-plus"></i> <span id="btnTextNuevoCli">+ Nuevo Cliente</span>
-                        </button>
+                        <?php if ($isEndrina || $isAdmin): ?>
+                            <button class="btn-add-cliente" onclick="toggleFormNuevoCliente()">
+                                <i class="fa-solid fa-user-plus"></i> <span id="btnTextNuevoCli">+ Nuevo Cliente</span>
+                            </button>
+                        <?php else: ?>
+                            <div style="background:rgba(199,155,88,0.12); border:1px solid var(--accent-tan); border-radius:12px; padding:8px 16px; font-size:0.8rem; color:var(--accent-tan); font-weight:700; display:inline-flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-lock"></i> Creación de clientes reservada para Endrina
+                            </div>
+                        <?php endif; ?>
                         <button class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
                             <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
                         </button>
@@ -2844,6 +2861,14 @@ if (file_exists($fileCotizPath)) {
             closeModals();
         }
 
+                // ================= DATOS DE SESIÓN Y USUARIO COMERCIAL =================
+        const CURRENT_USER = <?php echo json_encode($currentUser); ?>;
+        const CURRENT_NOMBRE = <?php echo json_encode($currentNombre); ?>;
+        const CURRENT_VENDEDOR_COD = <?php echo json_encode($currentVendedorCod); ?>;
+        const IS_ENDRINA = <?php echo ($isEndrina || $isAdmin) ? 'true' : 'false'; ?>;
+        const IS_ADMIN = <?php echo $isAdmin ? 'true' : 'false'; ?>;
+        const MAX_DESCUENTO_PERMITIDO = <?php echo $maxDescuentoPermitido; ?>;
+
         // ================= DATOS Y LÓGICA DE COTIZACIONES =================
         let CARTERA_CLIENTES = [
             {
@@ -3304,7 +3329,7 @@ if (file_exists($fileCotizPath)) {
                     <input type="number" step="0.0001" min="0" class="cotiz-input-cell cotiz-item-preorig" value="${parseFloat(item.preOrig).toFixed(4)}" oninput="recalcularFilaCotiz(this)" style="text-align:right;">
                 </td>
                 <td>
-                    <input type="number" step="0.1" min="0" max="100" class="cotiz-input-cell cotiz-item-descto" value="${parseFloat(item.descto).toFixed(2)}" oninput="recalcularFilaCotiz(this)" style="text-align:right; font-weight:700;" title="Hasta 6% directo. Más de 6% requiere autorización.">
+                    <input type="number" step="0.1" min="0" max="${MAX_DESCUENTO_PERMITIDO}" class="cotiz-input-cell cotiz-item-descto" value="${parseFloat(item.descto).toFixed(2)}" oninput="recalcularFilaCotiz(this)" style="text-align:right; font-weight:700;" title="${IS_ENDRINA || IS_ADMIN ? 'Descuento total permitido' : 'Descuento comercial permitido: hasta 6.00%'}">
                 </td>
                 <td style="text-align:right; font-family:monospace; font-size:0.85rem;" class="cotiz-item-prectotal">
                     ${precTotal.toFixed(4)}
@@ -3357,6 +3382,13 @@ if (file_exists($fileCotizPath)) {
             const cant = parseFloat(row.querySelector('.cotiz-item-cant').value) || 0;
             const preOrig = parseFloat(row.querySelector('.cotiz-item-preorig').value) || 0;
             const descto = parseFloat(row.querySelector('.cotiz-item-descto').value) || 0;
+
+            // REGLA COMERCIAL: Descuento máximo hasta 6% para asesores comerciales
+            if (!IS_ENDRINA && !IS_ADMIN && descto > 6.0) {
+                descto = 6.0;
+                row.querySelector('.cotiz-item-descto').value = 6.0;
+                mostrarToast('warning', 'Límite de Descuento (6%)', 'Como asesor comercial tu descuento máximo autorizado es del 6.00%.');
+            }
 
             const precTotal = preOrig * (1 - (descto / 100));
             const subtotal = precTotal * cant;
@@ -3541,7 +3573,7 @@ if (file_exists($fileCotizPath)) {
                 email: document.getElementById('cotizEmail').value.trim(),
                 telefono: document.getElementById('cotizTelefono').value.trim(),
                 contacto: document.getElementById('cotizContacto').value.trim(),
-                asesor: 'Endrina',
+                asesor: CURRENT_NOMBRE, vendedor_cod: CURRENT_VENDEDOR_COD,
                 forma_pago: document.getElementById('cotizFormaPago').value,
                 vigencia: document.getElementById('cotizVigencia').value,
                 subtotal: subtotalSum,
@@ -3582,6 +3614,11 @@ if (file_exists($fileCotizPath)) {
 
         // GUARDAR COTIZACIÓN EN BACKEND
         function guardarCotizacionActual(silencioso = false) {
+            const dataPre = obtenerDatosCotizacionFormulario();
+            if (!IS_ENDRINA && !IS_ADMIN && dataPre.descuento_max > 6.0001) {
+                alert('No se puede emitir la cotización: El descuento máximo permitido para su usuario es de 6.00%. Ha ingresado ' + dataPre.descuento_max.toFixed(2) + '%.');
+                return;
+            }
             const data = obtenerDatosCotizacionFormulario();
             if (!data.cliente_nombre || data.cliente_nombre === 'No se registra' || !data.ruc_dni) {
                 alert('No se puede guardar la cotización: El cliente no se encuentra registrado en la cartera. Por favor busque y seleccione un cliente de la cartera en el apartado superior.');
@@ -3987,6 +4024,11 @@ if (file_exists($fileCotizPath)) {
 
         // GUARDAR NUEVO CLIENTE EN CARTERA
         function guardarNuevoCliente(e) {
+            e.preventDefault();
+            if (!IS_ENDRINA && !IS_ADMIN) {
+                mostrarToast('error', 'Acción no permitida', 'Endrina es la única persona autorizada para registrar clientes en el sistema.');
+                return;
+            }
             e.preventDefault();
             const empresa = document.getElementById('newCliEmpresa').value.trim();
             const ruc = document.getElementById('newCliRuc').value.trim();

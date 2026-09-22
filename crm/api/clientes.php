@@ -20,6 +20,17 @@ try {
     }
 
     if ($action === 'save') {
+        // REGLA: Exclusividad de Creación de Clientes para Endrina
+        $isEndrina = !empty($_SESSION['is_endrina']) || (!empty($_SESSION['crm_user']) && strtolower($_SESSION['crm_user']) === 'endrina');
+        $isAdmin = !empty($_SESSION['is_admin']) || (!empty($_SESSION['crm_rol']) && $_SESSION['crm_rol']) === 'admin';
+        if (!$isEndrina && !$isAdmin) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Acción restringida: Endrina es la única persona autorizada para registrar clientes en el sistema.'
+            ]);
+            exit;
+        }
         $id = $_POST['id'] ?? '';
         $ruc_dni = trim($_POST['ruc_dni'] ?? '');
         $razon_social = trim($_POST['razon_social'] ?? '');

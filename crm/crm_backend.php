@@ -525,22 +525,47 @@ function guardarCotizaciones($cots) {
 
 function obtenerClientes() {
     global $clientesFile, $db;
+
+    $isEndrina = !empty($_SESSION['is_endrina']) || (!empty($_SESSION['crm_user']) && strtolower($_SESSION['crm_user']) === 'endrina');
+    $isAdmin = !empty($_SESSION['is_admin']) || (!empty($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'admin');
+    $vendedorCod = $_SESSION['crm_vendedor_cod'] ?? ($isEndrina ? '01' : '');
+
     if ($db) {
         try {
-            $sql = "SELECT TOP 100
-                COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
-                LTRIM(RTRIM(CNOMCLI)) as nombre,
-                LTRIM(RTRIM(CDIRCLI)) as direccion,
-                LTRIM(RTRIM(CTELEFO)) as telefono,
-                LTRIM(RTRIM(CEMAIL)) as email,
-                LTRIM(RTRIM(CNOMREP)) as contacto,
-                LTRIM(RTRIM(CDEPT)) as departamento,
-                LTRIM(RTRIM(CPROV)) as provincia
-            FROM [003BDCOMUN].dbo.MAECLI
-            WHERE CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
-            ORDER BY DFECCRE DESC, CCODCLI DESC";
+            // Si es un asesor regular (no Endrina ni Admin), filtrar estrictamente por su código de vendedor asignado en StarSoft (MAECLI.CVENDE)
+            if (!$isEndrina && !$isAdmin && !empty($vendedorCod)) {
+                $sql = "SELECT TOP 300
+                    COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
+                    LTRIM(RTRIM(CNOMCLI)) as nombre,
+                    LTRIM(RTRIM(CDIRCLI)) as direccion,
+                    LTRIM(RTRIM(CTELEFO)) as telefono,
+                    LTRIM(RTRIM(CEMAIL)) as email,
+                    LTRIM(RTRIM(CNOMREP)) as contacto,
+                    LTRIM(RTRIM(CDEPT)) as departamento,
+                    LTRIM(RTRIM(CPROV)) as provincia,
+                    LTRIM(RTRIM(CVENDE)) as vendedor
+                FROM [003BDCOMUN].dbo.MAECLI
+                WHERE CVENDE = ? AND CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
+                ORDER BY DFECCRE DESC, CCODCLI DESC";
+                $stmt = $db->prepare($sql);
+                $stmt->execute([$vendedorCod]);
+            } else {
+                $sql = "SELECT TOP 300
+                    COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
+                    LTRIM(RTRIM(CNOMCLI)) as nombre,
+                    LTRIM(RTRIM(CDIRCLI)) as direccion,
+                    LTRIM(RTRIM(CTELEFO)) as telefono,
+                    LTRIM(RTRIM(CEMAIL)) as email,
+                    LTRIM(RTRIM(CNOMREP)) as contacto,
+                    LTRIM(RTRIM(CDEPT)) as departamento,
+                    LTRIM(RTRIM(CPROV)) as provincia,
+                    LTRIM(RTRIM(CVENDE)) as vendedor
+                FROM [003BDCOMUN].dbo.MAECLI
+                WHERE CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
+                ORDER BY DFECCRE DESC, CCODCLI DESC";
+                $stmt = $db->query($sql);
+            }
 
-            $stmt = $db->query($sql);
             if ($stmt) {
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 if (!empty($rows)) {
@@ -556,11 +581,11 @@ function obtenerClientes() {
                             'email' => $r['email'] ?: '',
                             'contacto' => !empty($r['contacto']) ? $r['contacto'] : 'Contacto Comercial',
                             'categoria' => 'Activo',
+                            'vendedor' => $r['vendedor'] ?? '',
                             'total_cotizaciones' => 1,
                             'monto_acumulado' => 0
                         ];
                     }
-                    file_put_contents($clientesFile, json_encode($clientes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
                     return $clientes;
                 }
             }
@@ -1886,6 +1911,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $igv = floatval($_POST['igv'] ?? 0);
         $total = floatval($_POST['total'] ?? ($subtotal + $igv));
         $descuento_max = floatval($_POST['descuento_max'] ?? 0);
+        
+        // REGLA COMERCIAL: Validar que asesores comerciales no excedan el 6% de descuento
+        $isEndrina = !empty($_SESSION['is_endrina']) || (!empty($_SESSION['crm_user']) && strtolower($_SESSION['crm_user']) === 'endrina');
+        $isAdmin = !empty($_SESSION['is_admin']) || (!empty($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'admin');
+        
+        if (!$isEndrina && !$isAdmin && $descuento_max > 6.0001) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error' => 'El descuento máximo permitido para su usuario comercial es de 6.00%. Ha ingresado ' . number_format($descuento_max, 2) . '%.'
+            ]);
+            exit;
+        }
+
         $requiere_autorizacion = ($descuento_max > 6.0);
         $autorizado_por = trim($_POST['autorizado_por'] ?? '');
 
@@ -2049,9 +2088,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         exit;
     }
 
-    // 11. GUARDAR NUEVO CLIENTE PERMANENTE
+    // 11. GUARDAR NUEVO CLIENTE PERMANENTE (SOLO ENDRINA O ADMIN)
     if ($action === 'guardar_cliente') {
         header('Content-Type: application/json');
+        
+        $isEndrina = !empty($_SESSION['is_endrina']) || (!empty($_SESSION['crm_user']) && strtolower($_SESSION['crm_user']) === 'endrina');
+        $isAdmin = !empty($_SESSION['is_admin']) || (!empty($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'admin');
+        
+        if (!$isEndrina && !$isAdmin) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Acción no permitida: Endrina es la única persona autorizada para registrar clientes en el sistema.'
+            ]);
+            exit;
+        }
+
         $razon = trim($_POST['razon'] ?? '');
         $ruc = trim($_POST['ruc'] ?? '');
         $direccion = trim($_POST['direccion'] ?? '');

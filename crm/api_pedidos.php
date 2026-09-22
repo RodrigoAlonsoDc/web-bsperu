@@ -234,7 +234,22 @@ if ($action === 'save') {
         exit;
     }
 
-    $currentUser = $_SESSION['admin_user'] ?? 'SOPORTE';
+    // REGLA COMERCIAL: Solo Endrina o Administrador pueden superar el 6% de descuento
+    $isPrivileged = !empty($_SESSION['is_endrina']) || !empty($_SESSION['is_admin']) || (!empty($_SESSION['crm_user']) && strtolower($_SESSION['crm_user']) === 'endrina');
+    if (!$isPrivileged && $descuento > 6.0001) {
+        echo json_encode([
+            "success" => false,
+            "error" => "El descuento máximo permitido para su cuenta comercial es de 6.00%. Ha intentado aplicar " . number_format($descuento, 2) . "%."
+        ]);
+        exit;
+    }
+
+    // Vincular automáticamente el código de vendedor asignado en sesión StarSoft
+    if (!empty($_SESSION['crm_vendedor_cod'])) {
+        $gestor_campo = $_SESSION['crm_vendedor_cod'];
+    }
+
+    $currentUser = $_SESSION['crm_user'] ?? ($_SESSION['admin_user'] ?? 'SOPORTE');
     $nroCotizacion = '';
     $starsoftOk = false;
     $starsoftError = '';
