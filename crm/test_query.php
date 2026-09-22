@@ -11,21 +11,22 @@ try {
         exit;
     }
 
-    $action = $_GET['a'] ?? 'summary';
+    $vende = $_GET['v'] ?? '04'; // Karen
+    $sql = "SELECT TOP 5 
+        COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
+        LTRIM(RTRIM(CNOMCLI)) as nombre,
+        LTRIM(RTRIM(CDIRCLI)) as direccion,
+        LTRIM(RTRIM(CTELEFO)) as telefono,
+        LTRIM(RTRIM(CEMAIL)) as email,
+        LTRIM(RTRIM(CNOMREP)) as contacto,
+        CVENDE as vendedor
+    FROM [003BDCOMUN].dbo.MAECLI 
+    WHERE CVENDE = ? AND CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
+    ORDER BY DFECCRE DESC";
 
-    if ($action === 'maecli_vendedores') {
-        $stmt = $conn->query("SELECT DISTINCT CVENDE, COUNT(*) as cant FROM [003BDCOMUN].dbo.MAECLI GROUP BY CVENDE ORDER BY cant DESC");
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-        exit;
-    }
-
-    if ($action === 'maecli_endrina') {
-        $stmt = $conn->query("SELECT TOP 5 CCODCLI, CNOMCLI, CNUMRUC, CVENDE, CUSUARI FROM [003BDCOMUN].dbo.MAECLI WHERE CVENDE = '01' OR CUSUARI LIKE '%ENDRINA%'");
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-        exit;
-    }
-
-    echo json_encode(['status' => 'ready']);
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$vende]);
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 } catch (Throwable $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }
