@@ -26,24 +26,23 @@ if ($action === 'test_db') {
         $hostingIp = $_SERVER['SERVER_ADDR'] ?? 'Desconocida';
     }
 
-    // 2. Pre-chequeo directo a los puertos de Azure (1433 y 443)
-    $port1433_open = false;
-    $s1433 = @fsockopen($host, 1433, $errno1433, $errstr1433, 2.5);
-    if ($s1433) {
-        $port1433_open = true;
-        fclose($s1433);
-    } else {
-        $socketErrors['port_1433'] = "$errstr1433 ($errno1433)";
+    // 2. Pre-chequeo directo a los puertos de Azure (8089, 80, 443, 1433)
+    $puertosAzure = [8089, 80, 443, 1433, 86];
+    $azureStatus = [];
+    foreach ($puertosAzure as $pz) {
+        $s = @fsockopen($host, $pz, $errnoZ, $errstrZ, 2.0);
+        if ($s) {
+            $azureStatus[$pz] = "ABIERTO_CONECTADO";
+            fclose($s);
+        } else {
+            $azureStatus[$pz] = "$errstrZ ($errnoZ)";
+        }
     }
-
-    $port443_open = false;
-    $s443 = @fsockopen($host, 443, $errno443, $errstr443, 2.5);
-    if ($s443) {
-        $port443_open = true;
-        fclose($s443);
-    } else {
-        $socketErrors['port_443'] = "$errstr443 ($errno443)";
-    }
+    $socketErrors['azure_ports'] = $azureStatus;
+    $port443_open = ($azureStatus[443] ?? '') === 'ABIERTO_CONECTADO';
+    $port80_open  = ($azureStatus[80] ?? '') === 'ABIERTO_CONECTADO';
+    $port1433_open = ($azureStatus[1433] ?? '') === 'ABIERTO_CONECTADO';
+    $port8089_open = ($azureStatus[8089] ?? '') === 'ABIERTO_CONECTADO';
 
     // Probar con cURL hacia 443 para ver código de error exacto
     $ch443 = curl_init("http://$host:443/");
