@@ -1,7 +1,8 @@
 ﻿<?php
 require_once __DIR__ . '/config/database.php';
 $db = getDB();
-$stmt = $db->query("SELECT CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CEMAIL, CNOMREP, CVENDE, CUSUARI, CESTADO, DFECCRE FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = '20602591990' OR CNUMRUC = '20602591990'");
-$row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+$c1 = $db->query("SELECT COUNT(*) as c FROM [003BDCOMUN].dbo.MAECLI")->fetch(PDO::FETCH_ASSOC);
+$c2 = $db->query("SELECT COUNT(*) as c FROM [003BDCOMUN].dbo.MAECLI WHERE CVENDE = '01'")->fetch(PDO::FETCH_ASSOC);
+$c3 = $db->query("SELECT COUNT(*) as c FROM [003BDCOMUN].dbo.MAECLI WHERE CVENDE = '99'")->fetch(PDO::FETCH_ASSOC);
 header('Content-Type: application/json');
-echo json_encode($row);
+echo json_encode(['total' => $c1['c'], 'endrina' => $c2['c'], 'vende99' => $c3['c']]);
