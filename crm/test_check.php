@@ -1,7 +1,7 @@
 ﻿<?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-$_GET['action'] = 'consultar_documento';
-$_GET['numero'] = '20602591990';
-require_once __DIR__ . '/crm_backend.php';
+require_once __DIR__ . '/config/database.php';
+$db = getDB();
+$stmt = $db->query("SELECT CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CEMAIL, CNOMREP, CVENDE, CUSUARI, CESTADO, DFECCRE FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = '20602591990' OR CNUMRUC = '20602591990'");
+$row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+header('Content-Type: application/json');
+echo json_encode($row);
