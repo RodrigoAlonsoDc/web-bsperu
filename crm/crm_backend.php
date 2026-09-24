@@ -2177,18 +2177,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             // Sincronización directa en StarSoft ERP (MAECLI en Azure) con escape seguro
             $dbError = null;
             if ($db) {
-                try {
-                    $qRuc = escSql($ruc);
-                    $qRazon = escSql($razon);
-                    $qDir = escSql($direccion);
-                    $qTel = escSql($telefono);
-                    $qEmail = escSql($email);
-                    $qContacto = escSql($contacto);
-                    $qVende = escSql($vendedorAsignado);
                     $isDni = (strlen($ruc) === 8);
                     $tipoDocVal = $isDni ? '1' : ((strlen($ruc) === 11) ? '6' : '0');
-                    $qTipoDoc = escSql($tipoDocVal);
                     $hoy = date('Y-m-d H:i:s');
+
+                    // Truncado defensivo estricto para no superar el ancho de columnas en StarSoft MAECLI
+                    $cleanRuc = mb_substr(trim($ruc), 0, 11);
+                    $cleanRazon = mb_substr(trim($razon), 0, 100);
+                    $cleanDir = mb_substr(trim($direccion), 0, 100);
+                    $cleanTel = mb_substr(trim($telefono), 0, 30);
+                    $cleanEmail = mb_substr(trim($email), 0, 200);
+                    $cleanContacto = mb_substr(trim($contacto ?: $razon), 0, 30); // CNOMREP es VARCHAR(30)
+                    $cleanVende = mb_substr(trim($vendedorAsignado ?: '01'), 0, 2);
+
+                    $qRuc = escSql($cleanRuc);
+                    $qRazon = escSql($cleanRazon);
+                    $qDir = escSql($cleanDir);
+                    $qTel = escSql($cleanTel);
+                    $qEmail = escSql($cleanEmail);
+                    $qContacto = escSql($cleanContacto);
+                    $qVende = escSql($cleanVende);
+                    $qTipoDoc = escSql($tipoDocVal);
                     $qHoy = escSql($hoy);
 
                     // Verificar si ya existe en MAECLI usando consulta directa segura
@@ -2197,11 +2206,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     if ($chkStmt) $chkStmt->closeCursor();
 
                     if ($isDni) {
-                        list($apePat, $apeMat, $priNom, $segNom) = parseNombrePeruano($razon);
-                        $qApePat = escSql($apePat);
-                        $qApeMat = escSql($apeMat);
-                        $qPriNom = escSql($priNom);
-                        $qSegNom = escSql($segNom);
+                        list($apePat, $apeMat, $priNom, $segNom) = parseNombrePeruano($cleanRazon);
+                        $qApePat = escSql(mb_substr($apePat, 0, 20));
+                        $qApeMat = escSql(mb_substr($apeMat, 0, 20));
+                        $qPriNom = escSql(mb_substr($priNom, 0, 20));
+                        $qSegNom = escSql(mb_substr($segNom, 0, 20));
                         $qGirneg = "'08'";
                         $qNumRuc = "''";
                         $qDocIden = $qRuc;
@@ -2248,6 +2257,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     $dbError = $e->getMessage();
                     error_log("Error guardando cliente en StarSoft: " . $dbError);
                 }
+            }
+
+            if ($dbError) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Error al guardar en StarSoft ERP: ' . $dbError
+                ]);
+                exit;
             }
 
             $nuevoCliente = [
@@ -2429,7 +2446,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                             'razon' => $nombreCompleto,
                             'ruc' => $doc,
                             'direccion' => $info['direccion'] ?? '',
-                            'contacto' => $nombreCompleto,
+                            'contacto' => mb_substr($nombreCompleto, 0, 30),
                             'telefono' => '',
                             'email' => '',
                             'categoria' => 'Activo'

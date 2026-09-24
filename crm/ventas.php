@@ -2338,7 +2338,7 @@ if (file_exists($fileCotizPath)) {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Contacto / Residente de Obra</label>
-                                    <input type="text" id="newCliContacto" placeholder="Ej: Ing. Jorge Ramirez">
+                                    <input type="text" id="newCliContacto" maxlength="30" placeholder="Ej: Ing. Jorge Ramirez">
                                 </div>
                                 <div class="form-group">
                                     <label>Teléfono / WhatsApp *</label>
@@ -4060,7 +4060,7 @@ if (file_exists($fileCotizPath)) {
 
             const empresa = document.getElementById('newCliEmpresa').value.trim();
             const ruc = document.getElementById('newCliRuc').value.trim();
-            const contacto = document.getElementById('newCliContacto').value.trim() || 'Encargado de Compras';
+            const contacto = (document.getElementById('newCliContacto').value.trim() || 'Encargado de Compras').substring(0, 30);
             const tel = document.getElementById('newCliTelefono').value.trim();
             const cat = document.getElementById('newCliCategoria').value;
             const dir = document.getElementById('newCliDireccion').value.trim();
