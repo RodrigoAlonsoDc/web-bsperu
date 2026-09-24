@@ -9,33 +9,20 @@ try {
         exit;
     }
 
-    // 1. Clientes asignados a la cartera de Endrina (CVENDE = '01')
-    $stmt1 = $conn->query("SELECT COUNT(*) FROM [003BDCOMUN].dbo.MAECLI WHERE CVENDE = '01'");
-    $totalCartera = $stmt1->fetchColumn();
+    $sql = "
+        SELECT 
+            COUNT(CASE WHEN CVENDE = '01' THEN 1 END) as total_cartera_endrina,
+            COUNT(CASE WHEN CVENDE = '01' AND CESTADO = 'V' THEN 1 END) as activos_cartera_endrina,
+            COUNT(CASE WHEN CUSUARI LIKE '%ENDRINA%' THEN 1 END) as creados_por_endrina_total,
+            COUNT(CASE WHEN CUSUARI LIKE '%ENDRINA%' AND YEAR(DFECCRE) = 2026 THEN 1 END) as creados_endrina_2026,
+            COUNT(CASE WHEN CVENDE = '01' AND YEAR(DFECCRE) = 2026 THEN 1 END) as cartera_endrina_2026
+        FROM [003BDCOMUN].dbo.MAECLI
+    ";
+    $stmt = $conn->query($sql);
+    $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
 
-    // 2. Clientes asignados a Endrina con estado Vigente ('V')
-    $stmt2 = $conn->query("SELECT COUNT(*) FROM [003BDCOMUN].dbo.MAECLI WHERE CVENDE = '01' AND CESTADO = 'V'");
-    $activosCartera = $stmt2->fetchColumn();
-
-    // 3. Clientes creados en el sistema por el usuario ENDRINA (en todas las carteras)
-    $stmt3 = $conn->query("SELECT COUNT(*) FROM [003BDCOMUN].dbo.MAECLI WHERE CUSUARI LIKE '%ENDRINA%'");
-    $creadosPorEndrina = $stmt3->fetchColumn();
-
-    // 4. Clientes creados por Endrina en el año 2026
-    $stmt4 = $conn->query("SELECT COUNT(*) FROM [003BDCOMUN].dbo.MAECLI WHERE CUSUARI LIKE '%ENDRINA%' AND YEAR(DFECCRE) = 2026");
-    $creados2026 = $stmt4->fetchColumn();
-
-    // 5. Clientes de la cartera de Endrina creados en el 2026
-    $stmt5 = $conn->query("SELECT COUNT(*) FROM [003BDCOMUN].dbo.MAECLI WHERE CVENDE = '01' AND YEAR(DFECCRE) = 2026");
-    $cartera2026 = $stmt5->fetchColumn();
-
-    echo json_encode([
-        'total_cartera_endrina_01' => (int)$totalCartera,
-        'activos_cartera_endrina' => (int)$activosCartera,
-        'total_creados_por_endrina' => (int)$creadosPorEndrina,
-        'creados_por_endrina_2026' => (int)$creados2026,
-        'cartera_endrina_2026' => (int)$cartera2026
-    ], JSON_PRETTY_PRINT);
+    echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }
