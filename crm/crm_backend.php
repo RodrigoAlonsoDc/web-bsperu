@@ -2267,68 +2267,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         }
 
         // 3. Consulta externa a RENIEC (8 dígitos) o SUNAT (11 dígitos)
+        // 3. Consulta externa a RENIEC (8 dÃ­gitos) o SUNAT (11 dÃ­gitos)
         $tipo = (strlen($doc) === 8) ? 'dni' : ((strlen($doc) === 11) ? 'ruc' : '');
         if ($tipo) {
+            $info = null;
             $url = "https://api.apis.net.pe/v1/{$tipo}?numero={$doc}";
-            $ctx = stream_context_create([
-                'http' => [
-                    'timeout' => 4,
-                    'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n"
-                ],
-                'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false
-                ]
-            ]);
-            $res = @file_get_contents($url, false, $ctx);
-            if ($res) {
-                $info = json_decode($res, true);
-                if ($info && !empty($info)) {
-                    if ($tipo === 'dni') {
+
+            if (function_exists('curl_init')) {
+                $ch = curl_init();
+                curl_setopt_array($ch, [
+                    CURLOPT_URL => $url,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 4,
+                    CURLOPT_CONNECTTIMEOUT => 3,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_SSL_VERIFYHOST => false,
+                    CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+                ]);
+                $raw = curl_exec($ch);
+                $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                if ($code === 200 && !empty($raw)) {
+                    $info = json_decode($raw, true);
+                }
+            }
+
+            if (!$info) {
+                $ctx = stream_context_create([
+                    'http' => [
+                        'timeout' => 4,
+                        'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n"
+                    ],
+                    'ssl' => ['verify_peer' => false, 'verify_peer_name' => false]
+                ]);
+                $raw = @file_get_contents($url, false, $ctx);
+                if (!empty($raw)) {
+                    $info = json_decode($raw, true);
+                }
+            }
+
+            if ($info && is_array($info)) {
+                if ($tipo === 'dni') {
+                    $nombreCompleto = trim($info['nombre'] ?? '');
+                    if (empty($nombreCompleto)) {
                         $nombreCompleto = trim(($info['nombres'] ?? '') . ' ' . ($info['apellidoPaterno'] ?? '') . ' ' . ($info['apellidoMaterno'] ?? ''));
-                        if (!empty($nombreCompleto)) {
-                            $nuevoCli = [
-                                'razon' => $nombreCompleto,
-                                'ruc' => $doc,
-                                'direccion' => $info['direccion'] ?? '',
-                                'contacto' => $nombreCompleto,
-                                'telefono' => '',
-                                'email' => '',
-                                'categoria' => 'Activo'
-                            ];
-                            echo json_encode([
-                                'success' => true,
-                                'fuente' => 'reniec',
-                                'cliente' => $nuevoCli
-                            ]);
-                            exit;
-                        }
-                    } elseif ($tipo === 'ruc') {
-                        $razonSunat = trim($info['nombre'] ?? '');
-                        if (!empty($razonSunat)) {
-                            $dirPartes = array_filter([
-                                $info['direccion'] ?? '',
-                                $info['distrito'] ?? '',
-                                $info['provincia'] ?? '',
-                                $info['departamento'] ?? ''
-                            ]);
-                            $direccionCompleta = implode(' - ', $dirPartes);
-                            $nuevoCli = [
-                                'razon' => $razonSunat,
-                                'ruc' => $doc,
-                                'direccion' => $direccionCompleta,
-                                'contacto' => 'Encargado de Compras',
-                                'telefono' => '',
-                                'email' => '',
-                                'categoria' => 'Activo'
-                            ];
-                            echo json_encode([
-                                'success' => true,
-                                'fuente' => 'sunat',
-                                'cliente' => $nuevoCli
-                            ]);
-                            exit;
-                        }
+                    }
+                    if (!empty($nombreCompleto)) {
+                        $nuevoCli = [
+                            'razon' => $nombreCompleto,
+                            'ruc' => $doc,
+                            'direccion' => $info['direccion'] ?? '',
+                            'contacto' => $nombreCompleto,
+                            'telefono' => '',
+                            'email' => '',
+                            'categoria' => 'Activo'
+                        ];
+                        echo json_encode([
+                            'success' => true,
+                            'fuente' => 'reniec',
+                            'cliente' => $nuevoCli
+                        ], JSON_UNESCAPED_UNICODE);
+                        exit;
+                    }
+                } elseif ($tipo === 'ruc') {
+                    $razonSunat = trim($info['nombre'] ?? '');
+                    if (!empty($razonSunat)) {
+                        $dirPartes = array_filter([
+                            $info['direccion'] ?? '',
+                            $info['distrito'] ?? '',
+                            $info['provincia'] ?? '',
+                            $info['departamento'] ?? ''
+                        ]);
+                        $direccionCompleta = implode(' - ', $dirPartes);
+                        $nuevoCli = [
+                            'razon' => $razonSunat,
+                            'ruc' => $doc,
+                            'direccion' => $direccionCompleta,
+                            'contacto' => 'Encargado de Compras',
+                            'telefono' => '',
+                            'email' => '',
+                            'categoria' => 'Activo'
+                        ];
+                        echo json_encode([
+                            'success' => true,
+                            'fuente' => 'sunat',
+                            'cliente' => $nuevoCli
+                        ], JSON_UNESCAPED_UNICODE);
+                        exit;
                     }
                 }
             }
@@ -2336,8 +2361,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
         echo json_encode([
             'success' => false,
-            'error' => 'No se encontraron datos automáticos para el DNI/RUC: ' . $doc . '. Puedes registrarlos manualmente en el formulario.'
-        ]);
+            'error' => 'No se encontraron datos automÃ¡ticos para el DNI/RUC: ' . $doc . '. Puedes registrarlos manualmente en el formulario.'
+        ], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
