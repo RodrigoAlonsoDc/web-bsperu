@@ -2944,6 +2944,15 @@ if (file_exists($fileCotizPath)) {
                     if (data.success && Array.isArray(data.clientes) && data.clientes.length > 0) {
                         CARTERA_CLIENTES = data.clientes;
                         renderTablaCarteraClientes(CARTERA_CLIENTES);
+
+                        // Actualizar contadores oficiales de StarSoft en la interfaz
+                        const totalCli = CARTERA_CLIENTES.length;
+                        const statEl = document.getElementById('statClientesActivos');
+                        if (statEl) statEl.textContent = totalCli;
+                        const badgeTotal = document.getElementById('badgeCarteraTotal');
+                        if (badgeTotal) badgeTotal.textContent = totalCli;
+                        const filtroTodos = document.getElementById('countFiltroTodos');
+                        if (filtroTodos) filtroTodos.textContent = totalCli;
                     }
                 })
                 .catch(err => console.log('Uso de cartera cliente local'));
