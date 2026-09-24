@@ -1,11 +1,12 @@
 <?php
-require_once __DIR__ . '/config/database.php';
-$db = getDB();
-$sql = "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE 
-        FROM [003BDCOMUN].INFORMATION_SCHEMA.COLUMNS 
-        WHERE TABLE_NAME = 'MAECLI'
-          AND COLUMN_NAME IN ('CCODCLI', 'CNOMCLI', 'CDIRCLI', 'CTELEFO', 'CNUMRUC', 'CDOCIDEN', 'CVENDE', 'CUSUARI', 'CESTADO', 'CTIPVTA', 'CTIPO_DOCUMENTO', 'CEMAIL', 'CNOMREP', 'CAPELLIDO_PATERNO', 'CAPELLIDO_MATERNO', 'CPRIMER_NOMBRE', 'CSEGUNDO_NOMBRE', 'CGIRNEG', 'TCL_CODIGO', 'CCODCLAS', 'CONTACTO_COBRANZA')
-        ORDER BY ORDINAL_POSITION";
-$cols = $db ? $db->query($sql)->fetchAll(PDO::FETCH_ASSOC) : [];
+$jsonPath = __DIR__ . '/crm_data/clientes.json';
+$content = file_exists($jsonPath) ? file_get_contents($jsonPath) : '';
+$found = [];
+$lines = file('/home/ene27bspe5226d/logs/bsperu_pe.php.error.log');
+$recentErrors = array_slice($lines, -40);
 header('Content-Type: application/json');
-echo json_encode($cols, JSON_PRETTY_PRINT);
+echo json_encode([
+    'recent_errors' => $recentErrors,
+    'has_delgado' => stripos($content, 'DELGADO') !== false,
+    'has_villalobos' => stripos($content, 'VILLALOBOS') !== false
+], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
