@@ -2132,8 +2132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                         $upd->execute([$razon, $direccion, $telefono, $email, $contacto, $vendedorAsignado, $existe['CCODCLI']]);
                     } else {
                         $ins = $db->prepare("INSERT INTO [003BDCOMUN].dbo.MAECLI 
-                            (CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CNUMRUC, CVENDE, CUSUARI, CESTADO, CTIPVTA, CTIPO_DOCUMENTO, DFECCRE, CEMAIL, CNOMREP) 
-                            VALUES (?, ?, ?, ?, ?, ?, 'ENDRINA', 'V', '00', ?, ?, ?, ?)");
+                            (CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CNUMRUC, CVENDE, CUSUARI, CESTADO, CTIPVTA, CTIPO_DOCUMENTO, DFECCRE, DFECINS, CEMAIL, CNOMREP, CPAIS, MONCRE, CFLAGPRIN, TCL_CODIGO)
+                            VALUES (?, ?, ?, ?, ?, ?, 'ENDRINA', 'V', '00', ?, ?, ?, ?, ?, 'PERU', 'MN', 1, '1');
                         $ins->execute([
                             $ruc,
                             $razon,
@@ -2143,6 +2143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                             $vendedorAsignado,
                             $tipoDoc,
                             $hoy,
+                            $hoy,
+
                             $email,
                             $contacto
                         ]);
