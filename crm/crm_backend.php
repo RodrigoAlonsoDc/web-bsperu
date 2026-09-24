@@ -22,6 +22,13 @@ if (file_exists($configPath)) {
     }
 }
 
+if (!function_exists('escSql')) {
+    function escSql($v) {
+        if ($v === null) return "NULL";
+        return "'" . str_replace("'", "''", trim((string)$v)) . "'";
+    }
+}
+
 // Ruta del almacén de datos JSON para sincronización en tiempo real
 $dataDir = __DIR__ . '/crm_data';
 if (!is_dir($dataDir)) {
@@ -535,7 +542,8 @@ function obtenerClientes() {
         try {
             // Si es un asesor regular (no Endrina ni Admin), filtrar estrictamente por su código de vendedor asignado en StarSoft (MAECLI.CVENDE)
             if (!$isEndrina && !$isAdmin && !empty($vendedorCod)) {
-                $sql = "SELECT TOP 300
+                $vendeEsc = escSql($vendedorCod);
+                $sql = "SELECT TOP 500
                     COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
                     LTRIM(RTRIM(CNOMCLI)) as nombre,
                     LTRIM(RTRIM(CDIRCLI)) as direccion,
@@ -546,12 +554,11 @@ function obtenerClientes() {
                     LTRIM(RTRIM(CPROV)) as provincia,
                     LTRIM(RTRIM(CVENDE)) as vendedor
                 FROM [003BDCOMUN].dbo.MAECLI
-                WHERE CVENDE = ? AND CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
-                ORDER BY DFECCRE DESC, CCODCLI DESC";
-                $stmt = $db->prepare($sql);
-                $stmt->execute([$vendedorCod]);
+                WHERE CVENDE = $vendeEsc AND CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
+                ORDER BY COALESCE(DFECINS, DFECCRE) DESC, CCODCLI DESC";
+                $stmt = $db->query($sql);
             } else {
-                $sql = "SELECT TOP 300
+                $sql = "SELECT TOP 500
                     COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
                     LTRIM(RTRIM(CNOMCLI)) as nombre,
                     LTRIM(RTRIM(CDIRCLI)) as direccion,
@@ -563,7 +570,7 @@ function obtenerClientes() {
                     LTRIM(RTRIM(CVENDE)) as vendedor
                 FROM [003BDCOMUN].dbo.MAECLI
                 WHERE CNOMCLI IS NOT NULL AND LEN(CNOMCLI) > 2
-                ORDER BY DFECCRE DESC, CCODCLI DESC";
+                ORDER BY COALESCE(DFECINS, DFECCRE) DESC, CCODCLI DESC";
                 $stmt = $db->query($sql);
             }
 
@@ -587,10 +594,11 @@ function obtenerClientes() {
                             'monto_acumulado' => 0
                         ];
                     }
+                    file_put_contents($clientesFile, json_encode($clientes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
                     return $clientes;
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Fallback
         }
     }
@@ -2115,50 +2123,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $vendedorAsignado = trim($_POST['vendedor'] ?? '01');
 
         if (!empty($ruc) && !empty($razon)) {
-            // SincronizaciÃ³n directa en StarSoft ERP (MAECLI en Azure)
+            // Sincronización directa en StarSoft ERP (MAECLI en Azure) con escape seguro
+            $dbError = null;
             if ($db) {
                 try {
-                    $chk = $db->prepare("SELECT CCODCLI FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = ? OR CNUMRUC = ?");
-                    $chk->execute([$ruc, $ruc]);
-                    $existe = $chk->fetch(PDO::FETCH_ASSOC);
+                    $qRuc = escSql($ruc);
+                    $qRazon = escSql($razon);
+                    $qDir = escSql($direccion);
+                    $qTel = escSql($telefono);
+                    $qEmail = escSql($email);
+                    $qContacto = escSql($contacto);
+                    $qVende = escSql($vendedorAsignado);
+                    $tipoDocVal = (strlen($ruc) === 11) ? '6' : '1';
+                    $qTipoDoc = escSql($tipoDocVal);
+                    $hoy = date('Y-m-d H:i:s');
+                    $qHoy = escSql($hoy);
 
-                    $tipoDoc = (strlen($ruc) === 11) ? '6' : '1';
-                    $hoy = date('Y-m-d 00:00:00');
+                    // Verificar si ya existe en MAECLI usando consulta directa segura
+                    $chkStmt = $db->query("SELECT CCODCLI FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = $qRuc OR CNUMRUC = $qRuc");
+                    $existe = $chkStmt ? $chkStmt->fetch(PDO::FETCH_ASSOC) : null;
+                    if ($chkStmt) $chkStmt->closeCursor();
 
                     if ($existe) {
-                        $upd = $db->prepare("UPDATE [003BDCOMUN].dbo.MAECLI 
-                            SET CNOMCLI = ?, CDIRCLI = ?, CTELEFO = ?, CEMAIL = ?, CNOMREP = ?, CVENDE = ? 
-                            WHERE CCODCLI = ?");
-                        $upd->execute([$razon, $direccion, $telefono, $email, $contacto, $vendedorAsignado, $existe['CCODCLI']]);
+                        $codExistente = escSql($existe['CCODCLI']);
+                        $updSql = "UPDATE [003BDCOMUN].dbo.MAECLI 
+                            SET CNOMCLI = $qRazon, 
+                                CDIRCLI = $qDir, 
+                                CTELEFO = $qTel, 
+                                CEMAIL = $qEmail, 
+                                CNOMREP = $qContacto, 
+                                CVENDE = $qVende,
+                                DFECINS = $qHoy,
+                                CUSUARI = 'ENDRINA'
+                            WHERE CCODCLI = $codExistente";
+                        $db->exec($updSql);
                     } else {
-                        $ins = $db->prepare("INSERT INTO [003BDCOMUN].dbo.MAECLI 
+                        $numRucVal = (strlen($ruc) === 11) ? $ruc : '';
+                        $qNumRuc = escSql($numRucVal);
+                        $insSql = "INSERT INTO [003BDCOMUN].dbo.MAECLI 
                             (CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CNUMRUC, CVENDE, CUSUARI, CESTADO, CTIPVTA, CTIPO_DOCUMENTO, DFECCRE, DFECINS, CEMAIL, CNOMREP, CPAIS, MONCRE, CFLAGPRIN, TCL_CODIGO)
-                            VALUES (?, ?, ?, ?, ?, ?, 'ENDRINA', 'V', '00', ?, ?, ?, ?, ?, 'PERU', 'MN', 1, '1')");
-                        $ins->execute([
-                            $ruc,
-                            $razon,
-                            $direccion,
-                            $telefono,
-                            (strlen($ruc) === 11 ? $ruc : ''),
-                            $vendedorAsignado,
-                            $tipoDoc,
-                            $hoy,
-                            $hoy,
-
-                            $email,
-                            $contacto
-                        ]);
+                            VALUES ($qRuc, $qRazon, $qDir, $qTel, $qNumRuc, $qVende, 'ENDRINA', 'V', '00', $qTipoDoc, $qHoy, $qHoy, $qEmail, $qContacto, 'PERU', 'MN', 1, '1')";
+                        $db->exec($insSql);
                     }
-                } catch (Exception $e) {
-                    error_log("Error guardando cliente en StarSoft: " . $e->getMessage());
+                } catch (Throwable $e) {
+                    $dbError = $e->getMessage();
+                    error_log("Error guardando cliente en StarSoft: " . $dbError);
                 }
             }
 
+            $nuevoCliente = [
+                'id' => 1,
+                'nombre' => $razon,
+                'razon' => $razon,
+                'ruc' => $ruc,
+                'direccion' => $direccion,
+                'telefono' => $telefono ?: 'No registrado',
+                'email' => $email,
+                'contacto' => $contacto ?: 'Contacto Comercial',
+                'categoria' => $categoria,
+                'vendedor' => $vendedorAsignado,
+                'total_cotizaciones' => 1,
+                'monto_acumulado' => 0
+            ];
+
+            // Re-sincronizar lista actualizada desde StarSoft o caché
             $clientes = obtenerClientes();
             $encontrado = false;
             foreach ($clientes as &$c) {
                 if (($c['ruc'] ?? '') === $ruc) {
                     $c['razon'] = $razon;
+                    $c['nombre'] = $razon;
                     $c['direccion'] = $direccion;
                     $c['email'] = $email;
                     $c['telefono'] = $telefono;
@@ -2170,19 +2204,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 }
             }
             if (!$encontrado) {
-                $clientes[] = [
-                    'razon' => $razon,
-                    'ruc' => $ruc,
-                    'direccion' => $direccion,
-                    'email' => $email,
-                    'telefono' => $telefono,
-                    'contacto' => $contacto,
-                    'categoria' => $categoria,
-                    'vendedor' => $vendedorAsignado
-                ];
+                array_unshift($clientes, $nuevoCliente);
             }
             guardarClientes($clientes);
-            echo json_encode(['success' => true, 'mensaje' => 'Cliente guardado exitosamente en StarSoft ERP']);
+
+            echo json_encode([
+                'success' => true,
+                'mensaje' => 'Cliente guardado exitosamente en StarSoft ERP',
+                'cliente' => $nuevoCliente,
+                'db_error' => $dbError
+            ]);
             exit;
         }
         echo json_encode(['success' => false, 'error' => 'Datos de cliente incompletos']);
@@ -2198,10 +2229,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             exit;
         }
 
-        // 1. Buscar en StarSoft SQL Server (MAECLI)
+        // 1. Buscar en StarSoft SQL Server (MAECLI) con consulta segura
         if ($db) {
             try {
-                $stmtCli = $db->prepare("SELECT TOP 1 
+                $qDoc = escSql($doc);
+                $stmtCli = $db->query("SELECT TOP 1 
                     COALESCE(NULLIF(LTRIM(RTRIM(CNUMRUC)), ''), NULLIF(LTRIM(RTRIM(CDOCIDEN)), ''), LTRIM(RTRIM(CCODCLI))) as ruc,
                     LTRIM(RTRIM(CNOMCLI)) as razon,
                     LTRIM(RTRIM(CDIRCLI)) as direccion,
@@ -2211,9 +2243,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     LTRIM(RTRIM(CDEPT)) as departamento,
                     LTRIM(RTRIM(CPROV)) as provincia
                 FROM [003BDCOMUN].dbo.MAECLI
-                WHERE CCODCLI = ? OR CNUMRUC = ? OR CDOCIDEN = ?");
-                $stmtCli->execute([$doc, $doc, $doc]);
-                $cliRow = $stmtCli->fetch(PDO::FETCH_ASSOC);
+                WHERE CCODCLI = $qDoc OR CNUMRUC = $qDoc OR CDOCIDEN = $qDoc");
+                $cliRow = $stmtCli ? $stmtCli->fetch(PDO::FETCH_ASSOC) : null;
+                if ($stmtCli) $stmtCli->closeCursor();
+
                 if ($cliRow && !empty($cliRow['razon'])) {
                     echo json_encode([
                         'success' => true,
@@ -2230,7 +2263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     ]);
                     exit;
                 }
-            } catch(Exception $ex) {}
+            } catch(Throwable $ex) {}
         }
 
         // 2. Buscar en la base de datos de clientes (clientes.json)

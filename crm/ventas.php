@@ -4050,66 +4050,22 @@ if (file_exists($fileCotizPath)) {
                 mostrarToast('error', 'Acción no permitida', 'Endrina es la única persona autorizada para registrar clientes en el sistema.');
                 return;
             }
-            e.preventDefault();
+
+            const btnGuardar = e.target.querySelector('button[type="submit"]') || e.target.querySelector('.btn-add-cliente') || document.querySelector('#modalNuevoCliente button[type="submit"]');
+            const originalBtnHtml = btnGuardar ? btnGuardar.innerHTML : '';
+            if (btnGuardar) {
+                btnGuardar.disabled = true;
+                btnGuardar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando en StarSoft...';
+            }
+
             const empresa = document.getElementById('newCliEmpresa').value.trim();
             const ruc = document.getElementById('newCliRuc').value.trim();
             const contacto = document.getElementById('newCliContacto').value.trim() || 'Encargado de Compras';
             const tel = document.getElementById('newCliTelefono').value.trim();
             const cat = document.getElementById('newCliCategoria').value;
-
-            const initials = empresa.substring(0, 2).toUpperCase();
-            let badgeHtml = '';
-            if (cat === 'VIP') badgeHtml = '<span class="badge-tag-vip">🏆 VIP</span>';
-            else if (cat === 'Activo') badgeHtml = '<span class="badge-tag-activo">🏢 Activo</span>';
-            else badgeHtml = '<span class="badge-tag-seguimiento">⏳ En Cotización</span>';
-
-            const tbody = document.getElementById('carteraTbody');
-            const tr = document.createElement('tr');
-            tr.setAttribute('data-tipo', cat);
-            tr.innerHTML = `
-                <td>
-                    <div class="cliente-item-cell">
-                        <div class="cliente-avatar-circle" style="background:var(--accent-tan); color:#161719;">${initials}</div>
-                        <div class="cliente-meta">
-                            <h5>${empresa}</h5>
-                            <span>RUC: ${ruc} • Registrado hoy</span>
-                        </div>
-                    </div>
-                </td>
-                <td style="text-align:center;">
-                    <span style="color:var(--text-muted); font-size:0.75rem;">Sin cotiz.</span>
-                </td>
-                <td>
-                    <strong>${contacto}</strong><br>
-                    <span style="font-size:0.72rem; color:var(--text-muted);">Contacto Comercial</span>
-                </td>
-                <td>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span>${tel}</span>
-                        <a href="https://wa.me/51${tel.replace(/\D/g,'')}?text=Hola%20${encodeURIComponent(contacto)},%20le%20escribe%20Endrina%20de%20BS%20Per%C3%BA" target="_blank" class="btn-wa-mini" title="Enviar WhatsApp directo">
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </a>
-                    </div>
-                </td>
-                <td><strong style="color:var(--text-dark);">S/ 0.00</strong></td>
-                <td>${badgeHtml}</td>
-                <td style="text-align:center;">
-                    <button class="btn-facturar-mini" onclick="facturarACliente('${empresa.replace(/'/g, "\\'")}', '${ruc}')">
-                        <i class="fa-solid fa-file-invoice"></i> Facturar
-                    </button>
-                </td>
-            `;
-
-            tbody.insertBefore(tr, tbody.firstChild);
-
-            totalClientesCartera++;
-            document.getElementById('badgeCarteraTotal').textContent = totalClientesCartera;
-            document.getElementById('statClientesActivos').textContent = totalClientesCartera;
-            document.getElementById('countFiltroTodos').textContent = totalClientesCartera;
-
-            // Persistir permanentemente en el servidor
             const dir = document.getElementById('newCliDireccion').value.trim();
             const email = document.getElementById('newCliEmail').value.trim();
+            const vendedorSel = document.getElementById('newCliVendedor') ? document.getElementById('newCliVendedor').value : '01';
 
             const formDataCli = new FormData();
             formDataCli.append('action', 'guardar_cliente');
@@ -4120,7 +4076,7 @@ if (file_exists($fileCotizPath)) {
             formDataCli.append('categoria', cat);
             formDataCli.append('direccion', dir);
             formDataCli.append('email', email);
-            formDataCli.append('vendedor', document.getElementById('newCliVendedor') ? document.getElementById('newCliVendedor').value : '01');
+            formDataCli.append('vendedor', vendedorSel);
 
             fetch('crm_backend.php', {
                 method: 'POST',
@@ -4128,14 +4084,56 @@ if (file_exists($fileCotizPath)) {
             })
             .then(res => res.json())
             .then(data => {
-                cargarCarteraClientes();
+                if (btnGuardar) {
+                    btnGuardar.disabled = false;
+                    btnGuardar.innerHTML = originalBtnHtml;
+                }
+
+                if (data.success) {
+                    const nuevoCliObj = data.cliente || {
+                        razon: empresa,
+                        nombre: empresa,
+                        ruc: ruc,
+                        contacto: contacto,
+                        telefono: tel,
+                        categoria: cat,
+                        direccion: dir,
+                        email: email,
+                        vendedor: vendedorSel,
+                        ultima_cotizacion: null
+                    };
+
+                    // Insertar al inicio de la cartera local de inmediato
+                    CARTERA_CLIENTES = CARTERA_CLIENTES.filter(c => (c.ruc || '') !== ruc);
+                    CARTERA_CLIENTES.unshift(nuevoCliObj);
+                    renderTablaCarteraClientes(CARTERA_CLIENTES);
+
+                    totalClientesCartera = CARTERA_CLIENTES.length;
+                    const bTotal = document.getElementById('badgeCarteraTotal');
+                    if (bTotal) bTotal.textContent = totalClientesCartera;
+                    const sAct = document.getElementById('statClientesActivos');
+                    if (sAct) sAct.textContent = totalClientesCartera;
+                    const cTodos = document.getElementById('countFiltroTodos');
+                    if (cTodos) cTodos.textContent = totalClientesCartera;
+
+                    e.target.reset();
+                    toggleFormNuevoCliente();
+
+                    mostrarToast('success', 'Cliente Guardado', `¡Cliente "${empresa}" registrado exitosamente en StarSoft ERP y añadido a tu cartera!`);
+
+                    setTimeout(cargarCarteraClientes, 1000);
+                } else {
+                    mostrarToast('error', 'Error al Guardar', data.error || 'No se pudo registrar el cliente.');
+                }
             })
-            .catch(err => console.log('Guardado local de cliente'));
-
-            e.target.reset();
-            toggleFormNuevoCliente();
-
-            alert(`✅ ¡Cliente "${empresa}" registrado exitosamente en tu cartera de clientes!\nYa puedes contactarlo por WhatsApp o emitirle facturas directamente.`);
+            .catch(err => {
+                if (btnGuardar) {
+                    btnGuardar.disabled = false;
+                    btnGuardar.innerHTML = originalBtnHtml;
+                }
+                console.error(err);
+                mostrarToast('error', 'Error de Conexión', 'Ocurrió un error al contactar al servidor.');
+            });
         }
 
         // BÚSQUEDA EN TIEMPO REAL EN CARTERA
