@@ -617,17 +617,154 @@
             font-size: 12.5px; color: #64748b;
         }
 
-        /* WhatsApp flotante */
-        .wa-float {
-            position: fixed; bottom: 26px; right: 26px; z-index: 99;
-            width: 58px; height: 58px; border-radius: 50%;
-            background: var(--wa-color); color: #ffffff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 30px; text-decoration: none;
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* ============ STACK FLOTANTE: REDES SOCIALES + WHATSAPP ============ */
+        .floating-contact-stack {
+            position: fixed;
+            bottom: 26px;
+            right: 26px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
-        .wa-float:hover { transform: scale(1.1); }
+
+        .floating-social-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-float-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 20px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
+            position: relative;
+        }
+        .social-float-btn:hover {
+            transform: scale(1.15) translateX(-4px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Colores de marca */
+        .social-float-btn.fb { background: #1877f2; }
+        .social-float-btn.ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); }
+        .social-float-btn.tk { background: #000000; border: 1.5px solid rgba(255,255,255,0.25); }
+        .social-float-btn.yt { background: #ff0000; }
+        .social-float-btn.li { background: #0077b5; }
+
+        .social-float-btn .tooltip-label {
+            position: absolute;
+            right: 52px;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 9px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(6px);
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+        }
+        .social-float-btn:hover .tooltip-label {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .wa-float {
+            position: relative;
+            bottom: auto;
+            right: auto;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--wa-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+        }
+        .wa-float:hover {
+            transform: scale(1.12);
+            box-shadow: 0 8px 26px rgba(37, 211, 102, 0.55);
+        }
+        .wa-float::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid #25d366;
+            opacity: 0.8;
+            animation: waRadarPulse 2.4s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+            pointer-events: none;
+        }
+        @keyframes waRadarPulse {
+            0% { transform: scale(0.95); opacity: 0.85; }
+            70% { transform: scale(1.3); opacity: 0; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        /* ============ FILA DE REDES SOCIALES EN FICHA ============ */
+        .product-social-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .social-row-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .social-row-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .social-row-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 17px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .social-row-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+        }
+        .social-row-badge.fb { background: #1877f2; }
+        .social-row-badge.ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); }
+        .social-row-badge.tk { background: #000000; }
+        .social-row-badge.yt { background: #ff0000; }
+        .social-row-badge.li { background: #0077b5; }
 
         /* Responsive */
         @media (max-width: 900px) {
@@ -777,6 +914,28 @@
                         <span>55 Galones (Cilindro)</span>
                         <span class="peso">Aprox. 252 kg</span>
                     </button>
+                </div>
+
+                <!-- Redes Sociales / Síguenos (Encima del botón WhatsApp) -->
+                <div class="product-social-row">
+                    <span class="social-row-label"><i class="ph ph-share-network" aria-hidden="true"></i> Síguenos:</span>
+                    <div class="social-row-badges">
+                        <a href="https://www.facebook.com/people/Bsperu/100090456091171/" target="_blank" rel="noopener noreferrer" class="social-row-badge fb" aria-label="Facebook BS Perú" title="Facebook">
+                            <i class="ph-fill ph-facebook-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.instagram.com/bsp.peru/" target="_blank" rel="noopener noreferrer" class="social-row-badge ig" aria-label="Instagram BS Perú" title="Instagram">
+                            <i class="ph-fill ph-instagram-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@bs_peru?_t=ZS-90uDwonltem&_r=1" target="_blank" rel="noopener noreferrer" class="social-row-badge tk" aria-label="TikTok BS Perú" title="TikTok">
+                            <i class="ph-fill ph-tiktok-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@bsperu-BSP" target="_blank" rel="noopener noreferrer" class="social-row-badge yt" aria-label="YouTube BS Perú" title="YouTube">
+                            <i class="ph-fill ph-youtube-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/bs-per%C3%BA/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-row-badge li" aria-label="LinkedIn BS Perú" title="LinkedIn">
+                            <i class="ph-fill ph-linkedin-logo" aria-hidden="true"></i>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Botones de Acción -->
@@ -1013,10 +1172,34 @@
         </div>
     </footer>
 
-    <!-- WhatsApp Flotante -->
-    <a class="wa-float" id="waFloat" href="https://wa.me/51914776669" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú">
-        <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
-    </a>
+    <!-- Contacto Flotante: Redes Sociales encima del botón de WhatsApp -->
+    <aside class="floating-contact-stack" aria-label="Canales de contacto y redes sociales">
+        <div class="floating-social-group">
+            <a href="https://www.facebook.com/people/Bsperu/100090456091171/" target="_blank" rel="noopener noreferrer" class="social-float-btn fb" aria-label="Facebook BS Perú" title="Facebook">
+                <i class="ph-fill ph-facebook-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">Facebook</span>
+            </a>
+            <a href="https://www.instagram.com/bsp.peru/" target="_blank" rel="noopener noreferrer" class="social-float-btn ig" aria-label="Instagram BS Perú" title="Instagram">
+                <i class="ph-fill ph-instagram-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">Instagram</span>
+            </a>
+            <a href="https://www.tiktok.com/@bs_peru?_t=ZS-90uDwonltem&_r=1" target="_blank" rel="noopener noreferrer" class="social-float-btn tk" aria-label="TikTok BS Perú" title="TikTok">
+                <i class="ph-fill ph-tiktok-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">TikTok</span>
+            </a>
+            <a href="https://www.youtube.com/@bsperu-BSP" target="_blank" rel="noopener noreferrer" class="social-float-btn yt" aria-label="YouTube BS Perú" title="YouTube">
+                <i class="ph-fill ph-youtube-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">YouTube</span>
+            </a>
+            <a href="https://www.linkedin.com/company/bs-per%C3%BA/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-float-btn li" aria-label="LinkedIn BS Perú" title="LinkedIn">
+                <i class="ph-fill ph-linkedin-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">LinkedIn</span>
+            </a>
+        </div>
+        <a class="wa-float" id="waFloat" href="https://wa.me/51914776669" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú" title="WhatsApp Oficial">
+            <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
+        </a>
+    </aside>
 
     <!-- ============ LÓGICA JAVASCRIPT ============ -->
     <script>
