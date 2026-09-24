@@ -2177,6 +2177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             // Sincronización directa en StarSoft ERP (MAECLI en Azure) con escape seguro
             $dbError = null;
             if ($db) {
+                try {
                     $isDni = (strlen($ruc) === 8);
                     $tipoDocVal = $isDni ? '1' : ((strlen($ruc) === 11) ? '6' : '0');
                     $hoy = date('Y-m-d H:i:s');

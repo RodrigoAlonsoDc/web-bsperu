@@ -1,8 +1,60 @@
 <?php
 require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/crm_backend.php';
-
 $db = getDB();
+
+function escSql($v) {
+    if ($v === null) return "NULL";
+    return "'" . str_replace("'", "''", trim((string)$v)) . "'";
+}
+
+function parseNombrePeruano($texto) {
+    $texto = trim(preg_replace('/\s+/', ' ', $texto));
+    if (empty($texto)) return ['', '', '', ''];
+    $palabras = explode(' ', $texto);
+    $n = count($palabras);
+    if ($n === 1) return [$palabras[0], '', '', ''];
+    if ($n === 2) return [$palabras[0], '', $palabras[1], ''];
+    if ($n === 3) {
+        $p0 = strtoupper($palabras[0]);
+        $p1 = strtoupper($palabras[1]);
+        if (in_array($p0, ['DE', 'DEL']) && in_array($p1, ['LA', 'LAS', 'LOS'])) {
+            return [$palabras[0] . ' ' . $palabras[1] . ' ' . $palabras[2], '', '', ''];
+        }
+        return [$palabras[0], $palabras[1], $palabras[2], ''];
+    }
+    $idx = 0;
+    $p0 = strtoupper($palabras[0]);
+    $p1 = strtoupper($palabras[1] ?? '');
+    if ($p0 === 'DE' && in_array($p1, ['LA', 'LAS', 'LOS']) && isset($palabras[2])) {
+        $paterno = $palabras[0] . ' ' . $palabras[1] . ' ' . $palabras[2];
+        $idx = 3;
+    } elseif (in_array($p0, ['DE', 'DEL', 'SAN', 'SANTA']) && isset($palabras[1])) {
+        $paterno = $palabras[0] . ' ' . $palabras[1];
+        $idx = 2;
+    } else {
+        $paterno = $palabras[0];
+        $idx = 1;
+    }
+    $materno = '';
+    if ($idx < $n) {
+        $m0 = strtoupper($palabras[$idx]);
+        $m1 = strtoupper($palabras[$idx + 1] ?? '');
+        if ($m0 === 'DE' && in_array($m1, ['LA', 'LAS', 'LOS']) && isset($palabras[$idx + 2])) {
+            $materno = $palabras[$idx] . ' ' . $palabras[$idx + 1] . ' ' . $palabras[$idx + 2];
+            $idx += 3;
+        } elseif (in_array($m0, ['DE', 'DEL', 'SAN', 'SANTA']) && isset($palabras[$idx + 1])) {
+            $materno = $palabras[$idx] . ' ' . $palabras[$idx + 1];
+            $idx += 2;
+        } else {
+            $materno = $palabras[$idx];
+            $idx += 1;
+        }
+    }
+    $nombres = array_slice($palabras, $idx);
+    $priNom = $nombres[0] ?? '';
+    $segNom = implode(' ', array_slice($nombres, 1));
+    return [$paterno, $materno, $priNom, $segNom];
+}
 
 function saveCli($db, $ruc, $razon, $contacto, $dir, $tel, $email, $vende) {
     $isDni = (strlen($ruc) === 8);
@@ -86,7 +138,7 @@ function saveCli($db, $ruc, $razon, $contacto, $dir, $tel, $email, $vende) {
 $res1 = saveCli($db, '74585705', 'DELGADO DE LA FLOR QUISPE LUZ NAIDA', 'DELGADO DE LA FLOR QUISPE LUZ', 'LIMA', '', '', '01');
 $res2 = saveCli($db, '20100047218', 'BANCO DE CREDITO DEL PERU', 'VILLALOBOS OVIEDO JOAQUIN ALBE', 'JR. CENTENARIO NRO 156 URB. LADERAS DE MELGAREJO - LA MOLINA - LIMA', '', '', '01');
 
-$rows = $db->query("SELECT CCODCLI, CNOMCLI, CDOCIDEN, CNUMRUC, CTIPO_DOCUMENTO, CNOMREP, CVENDE FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI IN ('74585705', '20100047218')")->fetchAll(PDO::FETCH_ASSOC);
+$rows = $db->query("SELECT CCODCLI, CNOMCLI, CDOCIDEN, CNUMRUC, CTIPO_DOCUMENTO, CNOMREP, CVENDE, CAPELLIDO_PATERNO, CAPELLIDO_MATERNO, CPRIMER_NOMBRE FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI IN ('74585705', '20100047218')")->fetchAll(PDO::FETCH_ASSOC);
 
 header('Content-Type: application/json');
 echo json_encode(['res1' => $res1, 'res2' => $res2, 'rows' => $rows], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
