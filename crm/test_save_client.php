@@ -5,6 +5,11 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/config/database.php';
 $db = getDB();
 
+function escSql($v) {
+    if ($v === null) return "NULL";
+    return "'" . str_replace("'", "''", trim((string)$v)) . "'";
+}
+
 $razon = 'PRUEBA VERIFICACION CLIENTE SAC';
 $ruc = '20999111222';
 $direccion = 'CALLE PRUEBA 123';
@@ -16,29 +21,41 @@ $vendedorAsignado = '01';
 $tipoDoc = '6';
 $hoy = date('Y-m-d 00:00:00');
 
-// Test 1: Direct SQL query with quote()
-echo "--- TEST DIRECT SQL ---\n";
+echo "--- TEST ESCAPED SQL ---\n";
 try {
-    $qRuc = $db->quote($ruc);
-    $qRazon = $db->quote($razon);
-    $qDir = $db->quote($direccion);
-    $qTel = $db->quote($telefono);
-    $qVende = $db->quote($vendedorAsignado);
-    $qTipoDoc = $db->quote($tipoDoc);
-    $qHoy = $db->quote($hoy);
-    $qEmail = $db->quote($email);
-    $qContacto = $db->quote($contacto);
+    $qRuc = escSql($ruc);
+    $qRazon = escSql($razon);
+    $qDir = escSql($direccion);
+    $qTel = escSql($telefono);
+    $qVende = escSql($vendedorAsignado);
+    $qTipoDoc = escSql($tipoDoc);
+    $qHoy = escSql($hoy);
+    $qEmail = escSql($email);
+    $qContacto = escSql($contacto);
 
-    $sql = "INSERT INTO [003BDCOMUN].dbo.MAECLI 
+    // 1. SELECT check
+    $checkSql = "SELECT CCODCLI FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = $qRuc OR CNUMRUC = $qRuc";
+    $stmt = $db->query($checkSql);
+    $existe = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+    echo "Existe: " . ($existe ? "SI" : "NO") . "\n";
+
+    // 2. INSERT
+    $insertSql = "INSERT INTO [003BDCOMUN].dbo.MAECLI 
         (CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CNUMRUC, CVENDE, CUSUARI, CESTADO, CTIPVTA, CTIPO_DOCUMENTO, DFECCRE, DFECINS, CEMAIL, CNOMREP, CPAIS, MONCRE, CFLAGPRIN, TCL_CODIGO)
         VALUES ($qRuc, $qRazon, $qDir, $qTel, $qRuc, $qVende, 'ENDRINA', 'V', '00', $qTipoDoc, $qHoy, $qHoy, $qEmail, $qContacto, 'PERU', 'MN', 1, '1')";
     
-    $affected = $db->exec($sql);
-    echo "Direct SQL Affected: $affected\n";
+    $affected = $db->exec($insertSql);
+    echo "INSERT Affected: $affected\n";
+
+    // 3. Verify inserted row
+    $verifyStmt = $db->query("SELECT CCODCLI, CNOMCLI, CVENDE FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = $qRuc");
+    $insertedRow = $verifyStmt->fetch(PDO::FETCH_ASSOC);
+    echo "VERIFIED: " . json_encode($insertedRow) . "\n";
 
     // Clean up test row
     $db->exec("DELETE FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = $qRuc");
-    echo "Test row deleted cleanly\n";
+    echo "Cleaned up test row\n";
+
 } catch (Throwable $e) {
-    echo "ERROR DIRECT SQL: " . $e->getMessage() . "\n";
+    echo "ERROR: " . $e->getMessage() . "\n";
 }
