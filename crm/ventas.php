@@ -2359,6 +2359,18 @@ if (file_exists($fileCotizPath)) {
                                         <option value="Seguimiento">⏳ En Seguimiento / Cotización</option>
                                     </select>
                                 </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-user-tag" style="color:var(--accent-tan);"></i> Asignar a Cartera de Vendedor</label>
+                                    <select id="newCliVendedor">
+                                        <option value="01" selected>Endrina (01) - Cartera Principal</option>
+                                        <option value="04">Karen (04)</option>
+                                        <option value="03">Marko (03)</option>
+                                        <option value="02">Patricia (02)</option>
+                                        <option value="05">Helen (05)</option>
+                                        <option value="07">Carmen (07)</option>
+                                        <option value="37">Leonardo (37)</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -4108,6 +4120,7 @@ if (file_exists($fileCotizPath)) {
             formDataCli.append('categoria', cat);
             formDataCli.append('direccion', dir);
             formDataCli.append('email', email);
+            formDataCli.append('vendedor', document.getElementById('newCliVendedor') ? document.getElementById('newCliVendedor').value : '01');
 
             fetch('crm_backend.php', {
                 method: 'POST',

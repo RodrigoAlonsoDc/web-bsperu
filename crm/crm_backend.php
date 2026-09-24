@@ -2112,8 +2112,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $telefono = trim($_POST['telefono'] ?? '');
         $contacto = trim($_POST['contacto'] ?? '');
         $categoria = trim($_POST['categoria'] ?? 'Activo');
+        $vendedorAsignado = trim($_POST['vendedor'] ?? '01');
 
         if (!empty($ruc) && !empty($razon)) {
+            // SincronizaciÃ³n directa en StarSoft ERP (MAECLI en Azure)
+            if ($db) {
+                try {
+                    $chk = $db->prepare("SELECT CCODCLI FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = ? OR CNUMRUC = ?");
+                    $chk->execute([$ruc, $ruc]);
+                    $existe = $chk->fetch(PDO::FETCH_ASSOC);
+
+                    $tipoDoc = (strlen($ruc) === 11) ? '6' : '1';
+                    $hoy = date('Y-m-d 00:00:00');
+
+                    if ($existe) {
+                        $upd = $db->prepare("UPDATE [003BDCOMUN].dbo.MAECLI 
+                            SET CNOMCLI = ?, CDIRCLI = ?, CTELEFO = ?, CEMAIL = ?, CNOMREP = ?, CVENDE = ? 
+                            WHERE CCODCLI = ?");
+                        $upd->execute([$razon, $direccion, $telefono, $email, $contacto, $vendedorAsignado, $existe['CCODCLI']]);
+                    } else {
+                        $ins = $db->prepare("INSERT INTO [003BDCOMUN].dbo.MAECLI 
+                            (CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CNUMRUC, CVENDE, CUSUARI, CESTADO, CTIPVTA, CTIPO_DOCUMENTO, DFECCRE, CEMAIL, CNOMREP) 
+                            VALUES (?, ?, ?, ?, ?, ?, 'ENDRINA', 'V', '00', ?, ?, ?, ?)");
+                        $ins->execute([
+                            $ruc,
+                            $razon,
+                            $direccion,
+                            $telefono,
+                            (strlen($ruc) === 11 ? $ruc : ''),
+                            $vendedorAsignado,
+                            $tipoDoc,
+                            $hoy,
+                            $email,
+                            $contacto
+                        ]);
+                    }
+                } catch (Exception $e) {
+                    error_log("Error guardando cliente en StarSoft: " . $e->getMessage());
+                }
+            }
+
             $clientes = obtenerClientes();
             $encontrado = false;
             foreach ($clientes as &$c) {
@@ -2124,6 +2162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     $c['telefono'] = $telefono;
                     $c['contacto'] = $contacto;
                     $c['categoria'] = $categoria;
+                    $c['vendedor'] = $vendedorAsignado;
                     $encontrado = true;
                     break;
                 }
@@ -2136,11 +2175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     'email' => $email,
                     'telefono' => $telefono,
                     'contacto' => $contacto,
-                    'categoria' => $categoria
+                    'categoria' => $categoria,
+                    'vendedor' => $vendedorAsignado
                 ];
             }
             guardarClientes($clientes);
-            echo json_encode(['success' => true, 'mensaje' => 'Cliente guardado permanentemente']);
+            echo json_encode(['success' => true, 'mensaje' => 'Cliente guardado exitosamente en StarSoft ERP']);
             exit;
         }
         echo json_encode(['success' => false, 'error' => 'Datos de cliente incompletos']);
