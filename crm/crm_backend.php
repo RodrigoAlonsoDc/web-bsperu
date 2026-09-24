@@ -29,6 +29,57 @@ if (!function_exists('escSql')) {
     }
 }
 
+if (!function_exists('parseNombrePeruano')) {
+    function parseNombrePeruano($texto) {
+        $texto = trim(preg_replace('/\s+/', ' ', $texto));
+        if (empty($texto)) return ['', '', '', ''];
+        $palabras = explode(' ', $texto);
+        $n = count($palabras);
+        if ($n === 1) return [$palabras[0], '', '', ''];
+        if ($n === 2) return [$palabras[0], '', $palabras[1], ''];
+        if ($n === 3) {
+            $p0 = strtoupper($palabras[0]);
+            $p1 = strtoupper($palabras[1]);
+            if (in_array($p0, ['DE', 'DEL']) && in_array($p1, ['LA', 'LAS', 'LOS'])) {
+                return [$palabras[0] . ' ' . $palabras[1] . ' ' . $palabras[2], '', '', ''];
+            }
+            return [$palabras[0], $palabras[1], $palabras[2], ''];
+        }
+        $idx = 0;
+        $p0 = strtoupper($palabras[0]);
+        $p1 = strtoupper($palabras[1] ?? '');
+        if ($p0 === 'DE' && in_array($p1, ['LA', 'LAS', 'LOS']) && isset($palabras[2])) {
+            $paterno = $palabras[0] . ' ' . $palabras[1] . ' ' . $palabras[2];
+            $idx = 3;
+        } elseif (in_array($p0, ['DE', 'DEL', 'SAN', 'SANTA']) && isset($palabras[1])) {
+            $paterno = $palabras[0] . ' ' . $palabras[1];
+            $idx = 2;
+        } else {
+            $paterno = $palabras[0];
+            $idx = 1;
+        }
+        $materno = '';
+        if ($idx < $n) {
+            $m0 = strtoupper($palabras[$idx]);
+            $m1 = strtoupper($palabras[$idx + 1] ?? '');
+            if ($m0 === 'DE' && in_array($m1, ['LA', 'LAS', 'LOS']) && isset($palabras[$idx + 2])) {
+                $materno = $palabras[$idx] . ' ' . $palabras[$idx + 1] . ' ' . $palabras[$idx + 2];
+                $idx += 3;
+            } elseif (in_array($m0, ['DE', 'DEL', 'SAN', 'SANTA']) && isset($palabras[$idx + 1])) {
+                $materno = $palabras[$idx] . ' ' . $palabras[$idx + 1];
+                $idx += 2;
+            } else {
+                $materno = $palabras[$idx];
+                $idx += 1;
+            }
+        }
+        $nombres = array_slice($palabras, $idx);
+        $priNom = $nombres[0] ?? '';
+        $segNom = implode(' ', array_slice($nombres, 1));
+        return [$paterno, $materno, $priNom, $segNom];
+    }
+}
+
 // Ruta del almacén de datos JSON para sincronización en tiempo real
 $dataDir = __DIR__ . '/crm_data';
 if (!is_dir($dataDir)) {
@@ -2134,15 +2185,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                     $qEmail = escSql($email);
                     $qContacto = escSql($contacto);
                     $qVende = escSql($vendedorAsignado);
-                    $tipoDocVal = (strlen($ruc) === 11) ? '6' : '1';
+                    $isDni = (strlen($ruc) === 8);
+                    $tipoDocVal = $isDni ? '1' : ((strlen($ruc) === 11) ? '6' : '0');
                     $qTipoDoc = escSql($tipoDocVal);
                     $hoy = date('Y-m-d H:i:s');
                     $qHoy = escSql($hoy);
 
                     // Verificar si ya existe en MAECLI usando consulta directa segura
-                    $chkStmt = $db->query("SELECT CCODCLI FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = $qRuc OR CNUMRUC = $qRuc");
+                    $chkStmt = $db->query("SELECT CCODCLI FROM [003BDCOMUN].dbo.MAECLI WHERE CCODCLI = $qRuc OR CNUMRUC = $qRuc OR CDOCIDEN = $qRuc");
                     $existe = $chkStmt ? $chkStmt->fetch(PDO::FETCH_ASSOC) : null;
                     if ($chkStmt) $chkStmt->closeCursor();
+
+                    if ($isDni) {
+                        list($apePat, $apeMat, $priNom, $segNom) = parseNombrePeruano($razon);
+                        $qApePat = escSql($apePat);
+                        $qApeMat = escSql($apeMat);
+                        $qPriNom = escSql($priNom);
+                        $qSegNom = escSql($segNom);
+                        $qGirneg = "'08'";
+                        $qNumRuc = "''";
+                        $qDocIden = $qRuc;
+                    } else {
+                        $qApePat = "''";
+                        $qApeMat = "''";
+                        $qPriNom = "''";
+                        $qSegNom = "''";
+                        $qGirneg = "'01'";
+                        $qNumRuc = $qRuc;
+                        $qDocIden = "''";
+                    }
 
                     if ($existe) {
                         $codExistente = escSql($existe['CCODCLI']);
@@ -2154,15 +2225,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                                 CNOMREP = $qContacto, 
                                 CVENDE = $qVende,
                                 DFECINS = $qHoy,
-                                CUSUARI = 'ENDRINA'
+                                CUSUARI = 'ENDRINA',
+                                CTIPO_DOCUMENTO = $qTipoDoc,
+                                CNUMRUC = $qNumRuc,
+                                CDOCIDEN = $qDocIden,
+                                CAPELLIDO_PATERNO = $qApePat,
+                                CAPELLIDO_MATERNO = $qApeMat,
+                                CPRIMER_NOMBRE = $qPriNom,
+                                CSEGUNDO_NOMBRE = $qSegNom,
+                                CGIRNEG = $qGirneg,
+                                RETEN = '0',
+                                SIN_CONTROL_LIMCREDITO = '0'
                             WHERE CCODCLI = $codExistente";
                         $db->exec($updSql);
                     } else {
-                        $numRucVal = (strlen($ruc) === 11) ? $ruc : '';
-                        $qNumRuc = escSql($numRucVal);
                         $insSql = "INSERT INTO [003BDCOMUN].dbo.MAECLI 
-                            (CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CNUMRUC, CVENDE, CUSUARI, CESTADO, CTIPVTA, CTIPO_DOCUMENTO, DFECCRE, DFECINS, CEMAIL, CNOMREP, CPAIS, MONCRE, CFLAGPRIN, TCL_CODIGO)
-                            VALUES ($qRuc, $qRazon, $qDir, $qTel, $qNumRuc, $qVende, 'ENDRINA', 'V', '00', $qTipoDoc, $qHoy, $qHoy, $qEmail, $qContacto, 'PERU', 'MN', 1, '1')";
+                            (CCODCLI, CNOMCLI, CDIRCLI, CTELEFO, CNUMRUC, CDOCIDEN, CVENDE, CUSUARI, CESTADO, CTIPVTA, CTIPO_DOCUMENTO, DFECCRE, DFECINS, CEMAIL, CNOMREP, CPAIS, MONCRE, CFLAGPRIN, TCL_CODIGO, CAPELLIDO_PATERNO, CAPELLIDO_MATERNO, CPRIMER_NOMBRE, CSEGUNDO_NOMBRE, CGIRNEG, RETEN, SIN_CONTROL_LIMCREDITO)
+                            VALUES ($qRuc, $qRazon, $qDir, $qTel, $qNumRuc, $qDocIden, $qVende, 'ENDRINA', 'V', '00', $qTipoDoc, $qHoy, $qHoy, $qEmail, $qContacto, 'PERU', 'MN', 1, '1', $qApePat, $qApeMat, $qPriNom, $qSegNom, $qGirneg, '0', '0')";
                         $db->exec($insSql);
                     }
                 } catch (Throwable $e) {
