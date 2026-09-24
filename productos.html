@@ -1536,7 +1536,7 @@
                 '</div>' +
                 '<div class="p-body">' +
                     '<p class="p-cat">' + esc(p.categoriaLabel) + '</p>' +
-                    '<h3>' + esc(p.nombre) + '</h3>' +
+                    '<h3><a href="producto.html?sku=' + encodeURIComponent(p.sku) + '" style="color:inherit;text-decoration:none;" title="Ver ficha completa de ' + esc(p.nombre) + '">' + esc(p.nombre) + '</a></h3>' +
                     '<p class="p-desc">' + esc(desc) + '</p>' +
                     '<p class="p-meta">' +
                         '<span><i class="ph ph-barcode" aria-hidden="true"></i> ' + esc(p.sku) + '</span>' +
@@ -1638,6 +1638,7 @@
             var acciones = '<a class="p-btn primary" href="' +
                 esc(waLink('Hola BS Perú, quisiera cotizar: ' + p.nombre + ' (SKU ' + p.sku + ').')) +
                 '" target="_blank" rel="noopener"><i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i> Cotizar</a>';
+            acciones += '<a class="p-btn secondary" href="producto.html?sku=' + encodeURIComponent(p.sku) + '"><i class="ph ph-arrow-square-out" aria-hidden="true"></i> Ver producto completo</a>';
             if (p.ficha) {
                 acciones += '<a class="p-btn" href="' + esc(p.ficha) + '" target="_blank" rel="noopener">' +
                     '<i class="ph ph-file-pdf" aria-hidden="true"></i> Ficha técnica</a>';
