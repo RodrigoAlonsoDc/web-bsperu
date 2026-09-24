@@ -1,12 +1,15 @@
 <?php
-$jsonPath = __DIR__ . '/crm_data/clientes.json';
-$clients = file_exists($jsonPath) ? json_decode(file_get_contents($jsonPath), true) : [];
-$found = [];
-foreach ($clients as $c) {
-    $str = json_encode($c);
-    if (stripos($str, 'DELGADO') !== false || stripos($str, 'VILLALOBOS') !== false) {
-        $found[] = $c;
+$dir = '/home/ene27bspe5226d/logs/';
+$files = is_dir($dir) ? scandir($dir) : [];
+$accessLog = '';
+foreach ($files as $f) {
+    if (stripos($f, 'access') !== false || stripos($f, 'bsperu') !== false) {
+        $p = $dir . $f;
+        if (is_file($p)) {
+            $lines = file($p);
+            $accessLog .= "=== $p ===\n" . implode('', array_slice($lines, -15)) . "\n";
+        }
     }
 }
 header('Content-Type: application/json');
-echo json_encode($found, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+echo json_encode(['files' => $files, 'logs' => $accessLog]);
