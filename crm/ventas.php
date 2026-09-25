@@ -1616,10 +1616,19 @@ if (file_exists($fileCotizPath)) {
                     <span>Dashboard</span>
                 </div>
 
-                <div class="nav-item" id="nav-cotizaciones" onclick="cambiarVistaVentas('cotizaciones', this)">
+                <div class="nav-item" style="pointer-events: none; opacity: 0.7; margin-bottom: 2px;">
                     <i class="fa-solid fa-file-signature"></i>
-                    <span>Cotizaciones</span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Cotizaciones</span>
+                </div>
+                <div class="nav-item" id="nav-cotiz-nueva" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('nueva');" style="padding-left: 42px;">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                    <span>Emitir Nueva</span>
+                </div>
+                <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 42px;">
+                    <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                    <span>Buscar / Facturar</span>
                     <span class="nav-badge" id="badgeCotizacionesTotal" style="background:#D1FAE5; color:#065F46; font-weight:700;">3</span>
+                    <span id="countCotizHistorialBadge" style="display:none;">3</span>
                 </div>
 
                 <div class="nav-item" id="nav-facturacion" onclick="cambiarVistaVentas('facturacion', this)">
@@ -1861,15 +1870,7 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                <!-- SUB-TABS: EMITIR NUEVA COTIZACIÓN vs BUSCAR COTIZACIÓN PARA FACTURAR -->
-                <div class="cotiz-tabs">
-                    <button type="button" class="cotiz-tab-btn active" id="tabBtnNuevaCotiz" onclick="alternarTabCotizaciones('nueva')">
-                        <i class="fa-solid fa-file-circle-plus"></i> 1. Emitir Nueva Cotización
-                    </button>
-                    <button type="button" class="cotiz-tab-btn" id="tabBtnHistorialCotiz" onclick="alternarTabCotizaciones('facturar')">
-                        <i class="fa-solid fa-magnifying-glass-dollar"></i> 2. Buscar Cotización para Facturar (<span id="countCotizHistorialBadge">3</span>)
-                    </button>
-                </div>
+                <!-- LOS SUB-TABS FUERON MOVIDOS AL MENÚ LATERAL -->
 
                 <!-- PANEL 1: GENERADOR DE COTIZACIÓN (HOJA OFICIAL) -->
                 <div id="panelNuevaCotizacion">
@@ -3065,13 +3066,13 @@ if (file_exists($fileCotizPath)) {
             const pnlHist = document.getElementById('panelHistorialCotizaciones');
 
             if (tab === 'nueva') {
-                btnNueva.classList.add('active');
-                btnHist.classList.remove('active');
+                if (btnNueva) btnNueva.classList.add('active');
+                if (btnHist) btnHist.classList.remove('active');
                 pnlNueva.style.display = 'block';
                 pnlHist.style.display = 'none';
             } else {
-                btnHist.classList.add('active');
-                btnNueva.classList.remove('active');
+                if (btnHist) btnHist.classList.add('active');
+                if (btnNueva) btnNueva.classList.remove('active');
                 pnlHist.style.display = 'block';
                 pnlNueva.style.display = 'none';
                 cargarCotizaciones();
