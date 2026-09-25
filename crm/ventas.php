@@ -211,7 +211,7 @@ if (file_exists($fileCotizPath)) {
 
         /* ================= SIDEBAR IZQUIERDA ================= */
         .sidebar {
-            width: 250px;
+            width: 280px;
             background: var(--sidebar-bg);
             border-radius: 0;
             display: flex;
@@ -262,8 +262,8 @@ if (file_exists($fileCotizPath)) {
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 18px;
+            gap: 10px;
+            padding: 12px 14px;
             border-radius: var(--pill-radius);
             color: var(--text-muted);
             font-size: 0.88rem;
@@ -1554,7 +1554,7 @@ if (file_exists($fileCotizPath)) {
                 gap: 20px;
             }
             .sidebar {
-                width: 250px;
+                width: 270px;
                 padding: 20px 14px;
             }
             .stats-grid {
