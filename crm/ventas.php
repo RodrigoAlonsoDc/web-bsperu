@@ -1554,7 +1554,7 @@ if (file_exists($fileCotizPath)) {
                 gap: 20px;
             }
             .sidebar {
-                width: 220px;
+                width: 250px;
                 padding: 20px 14px;
             }
             .stats-grid {
@@ -1622,14 +1622,14 @@ if (file_exists($fileCotizPath)) {
                     <i class="fa-solid fa-chevron-down" style="margin-left: auto; font-size: 0.75rem;"></i>
                 </div>
                 <div id="submenu-cotizaciones" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 8px;">
-                    <div class="nav-item" id="nav-cotiz-nueva" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('nueva');" style="padding-left: 42px;">
+                    <div class="nav-item" id="nav-cotiz-nueva" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('nueva');" style="padding-left: 32px; font-size: 0.82rem;">
                         <i class="fa-solid fa-file-circle-plus"></i>
                         <span>Emitir Nueva</span>
                     </div>
-                    <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 42px;">
+                    <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 32px; font-size: 0.82rem;">
                         <i class="fa-solid fa-magnifying-glass-dollar"></i>
                         <span>Buscar / Facturar</span>
-                        <span class="nav-badge" id="badgeCotizacionesTotal" style="background:#D1FAE5; color:#065F46; font-weight:700;">3</span>
+                        <span class="nav-badge" id="badgeCotizacionesTotal" style="background:#D1FAE5; color:#065F46; font-weight:700; margin-left: auto;">3</span>
                         <span id="countCotizHistorialBadge" style="display:none;">3</span>
                     </div>
                 </div>
