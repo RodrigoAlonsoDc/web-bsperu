@@ -286,12 +286,12 @@ if (file_exists($fileCotizPath)) {
         }
         .nav-item.active {
             background: var(--accent-tan);
-            color: #161719;
+            color: #FFFFFF;
             font-weight: 600;
-            box-shadow: 0 8px 20px rgba(199, 155, 88, 0.3);
+            box-shadow: 0 8px 20px rgba(27, 64, 121, 0.3);
         }
         .nav-item.active i {
-            color: #161719;
+            color: #FFFFFF;
         }
         .nav-badge {
             margin-left: auto;
@@ -378,7 +378,7 @@ if (file_exists($fileCotizPath)) {
         }
         .theme-btn.active {
             background: var(--accent-tan);
-            color: #161719;
+            color: #FFFFFF;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
