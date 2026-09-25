@@ -1616,19 +1616,22 @@ if (file_exists($fileCotizPath)) {
                     <span>Dashboard</span>
                 </div>
 
-                <div class="nav-item" style="pointer-events: none; opacity: 0.7; margin-bottom: 2px;">
+                <div class="nav-item" id="nav-cotizaciones-main" onclick="toggleSubmenu('submenu-cotizaciones')" style="cursor: pointer;">
                     <i class="fa-solid fa-file-signature"></i>
-                    <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Cotizaciones</span>
+                    <span>Cotizaciones</span>
+                    <i class="fa-solid fa-chevron-down" style="margin-left: auto; font-size: 0.75rem;"></i>
                 </div>
-                <div class="nav-item" id="nav-cotiz-nueva" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('nueva');" style="padding-left: 42px;">
-                    <i class="fa-solid fa-file-circle-plus"></i>
-                    <span>Emitir Nueva</span>
-                </div>
-                <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 42px;">
-                    <i class="fa-solid fa-magnifying-glass-dollar"></i>
-                    <span>Buscar / Facturar</span>
-                    <span class="nav-badge" id="badgeCotizacionesTotal" style="background:#D1FAE5; color:#065F46; font-weight:700;">3</span>
-                    <span id="countCotizHistorialBadge" style="display:none;">3</span>
+                <div id="submenu-cotizaciones" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                    <div class="nav-item" id="nav-cotiz-nueva" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('nueva');" style="padding-left: 42px;">
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                        <span>Emitir Nueva</span>
+                    </div>
+                    <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 42px;">
+                        <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                        <span>Buscar / Facturar</span>
+                        <span class="nav-badge" id="badgeCotizacionesTotal" style="background:#D1FAE5; color:#065F46; font-weight:700;">3</span>
+                        <span id="countCotizHistorialBadge" style="display:none;">3</span>
+                    </div>
                 </div>
 
                 <div class="nav-item" id="nav-facturacion" onclick="cambiarVistaVentas('facturacion', this)">
@@ -3021,6 +3024,14 @@ if (file_exists($fileCotizPath)) {
                 }
             })
             .catch(() => {});
+
+        // TOGGLE SUBMENUS LATERALES
+        function toggleSubmenu(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'flex' : 'none';
+            }
+        }
 
         // CAMBIAR VISTA EN EL MEDIO (SPA)
         function cambiarVistaVentas(nombreVista, elNav) {
