@@ -1546,6 +1546,51 @@ if (file_exists($fileCotizPath)) {
         .toast-content { flex: 1; overflow: hidden; }
         .toast-content h5 { font-size: 0.88rem; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
         .toast-content p { font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* ================= RESPONSIVE MEDIA QUERIES (LAPTOPS & TABLETS) ================= */
+        @media (max-width: 1440px) {
+            .main-content {
+                padding: 24px 30px;
+                gap: 20px;
+            }
+            .sidebar {
+                width: 220px;
+                padding: 20px 14px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .executive-content {
+                gap: 24px;
+            }
+            .welcome-card {
+                padding: 24px 32px;
+            }
+        }
+        
+        @media (max-width: 1100px) {
+            .executive-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .donut-chart-container {
+                width: 150px;
+                height: 150px;
+                align-self: center;
+            }
+            .category-list {
+                width: 100%;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .welcome-content {
+                max-width: 100%;
+            }
+            .welcome-avatar-wrapper {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
