@@ -509,9 +509,21 @@ function guardarPagos($pagos) {
 
 function obtenerCotizaciones() {
     global $cotizacionesFile, $db;
+    $currentUser = $_SESSION['crm_user'] ?? '';
+    $isAdmin = !empty($_SESSION['is_admin']) || (isset($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'admin');
+
     if ($db) {
         try {
-            $sql = "SELECT TOP 60 
+            $limit = $isAdmin ? "TOP 300" : "TOP 200";
+            $whereClause = "";
+            $params = [];
+            
+            if (!$isAdmin && !empty($currentUser)) {
+                $whereClause = "WHERE c.CCUSER = :user";
+                $params[':user'] = $currentUser;
+            }
+
+            $sql = "SELECT $limit 
                 c.CCNUMDOC as codigo,
                 CONVERT(varchar, c.CCFECDOC, 23) as fecha,
                 LTRIM(RTRIM(c.CCNOMBRE)) as cliente_nombre,
@@ -529,9 +541,11 @@ function obtenerCotizaciones() {
                     ELSE 'Emitida'
                 END as estado
             FROM COTCAB c 
+            $whereClause
             ORDER BY c.CCFECDOC DESC, c.CCNUMDOC DESC";
 
-            $stmt = $db->query($sql);
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
             if ($stmt) {
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 if (!empty($rows)) {
