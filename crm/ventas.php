@@ -136,17 +136,17 @@ if (file_exists($fileCotizPath)) {
     
     <style>
         :root {
-            --outer-bg: #C09553;
-            --outer-bg-dark: #1F1B16;
+            --outer-bg: #1B4079;
+            --outer-bg-dark: #102A54;
             --app-frame: #161719;
             --sidebar-bg: #161719;
             --main-bg: #FFFFFF;
-            --right-bg: #FAF7F2;
+            --right-bg: #F4F7FA;
             
-            --accent-tan: #C79B58;
-            --accent-tan-light: #DFC394;
-            --accent-tan-dark: #9E7434;
-            --accent-tan-soft: #F6F1EA;
+            --accent-tan: #1B4079;
+            --accent-tan-light: #4D7C8A;
+            --accent-tan-dark: #132E59;
+            --accent-tan-soft: #E8F0F8;
             
             --text-dark: #1E2024;
             --text-muted: #8E9299;
@@ -233,7 +233,7 @@ if (file_exists($fileCotizPath)) {
         .brand-logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #C79B58 0%, #E5C38C 100%);
+            background: linear-gradient(135deg, #1B4079 0%, #4D7C8A 100%);
             border-radius: 12px;
             display: flex;
             justify-content: center;
@@ -2698,114 +2698,7 @@ if (file_exists($fileCotizPath)) {
 
         </div>
 
-        <!-- ================= PANEL DERECHO: MY ACTIVITY ================= -->
-        <div class="right-sidebar">
-            <div class="right-header">
-                <h3>My activity</h3>
-            </div>
-
-            <!-- BLOQUE 1: FACTURACIONES PENDIENTES DE VALIDAR -->
-            <div class="activity-block">
-                <div class="activity-block-header">
-                    <h4>Upcoming talks</h4>
-                    <a onclick="cambiarVistaVentas('facturacion')">View all</a>
-                </div>
-
-                <div class="activity-card" onclick="verComprobanteDetalle('F001-00892', 'Cosapi S.A.', '14,400.00', 'BCP #849201')">
-                    <div class="date-badge">
-                        <span class="day">13</span>
-                        <span class="month">MAY</span>
-                    </div>
-                    <div class="activity-card-info">
-                        <h5>Real Talk - Cosapi S.A.</h5>
-                        <p>1:00 PM – 1:30 PM • Mary Rose</p>
-                    </div>
-                </div>
-
-                <div class="activity-card" onclick="verComprobanteDetalle('F001-00891', 'Consorcio Vial Piura', '6,800.00', 'BBVA #902184')">
-                    <div class="date-badge">
-                        <span class="day">5</span>
-                        <span class="month">APR</span>
-                    </div>
-                    <div class="activity-card-info">
-                        <h5>Relationship Expectations</h5>
-                        <p>4:00 PM – 4:30 PM • Jerome Brown</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BLOQUE 2: COMPROBANTES Y VALIDACIÓN -->
-            <div class="activity-block">
-                <div class="activity-block-header">
-                    <h4>Comprobantes recientes</h4>
-                    <a onclick="cambiarVistaVentas('comprobantes')">Ver todos</a>
-                </div>
-
-                <div class="activity-card" onclick="cambiarVistaVentas('comprobantes')">
-                    <div class="date-badge">
-                        <span class="day">10</span>
-                        <span class="month">MAR</span>
-                    </div>
-                    <div class="activity-card-info">
-                        <h5>Facturas en validación</h5>
-                        <p>Estado de conciliación</p>
-                    </div>
-                </div>
-
-                <div class="activity-card" onclick="cambiarVistaVentas('comprobantes')">
-                    <div class="date-badge">
-                        <span class="day">12</span>
-                        <span class="month">MAR</span>
-                    </div>
-                    <div class="activity-card-info">
-                        <h5>Team building meetup</h5>
-                        <p>12:00 PM – 12:30 PM</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BLOQUE 3: NOTIFICACIONES & REPORTERÍA -->
-            <div class="activity-block">
-                <div class="activity-block-header">
-                    <h4>Latest shoutouts</h4>
-                    <a onclick="cambiarVistaVentas('comprobantes')">View all</a>
-                </div>
-
-                <div class="shoutout-item" onclick="cambiarVistaVentas('comprobantes')">
-                    <div class="shoutout-avatar-box">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Adam">
-                        <div class="shoutout-online-dot"></div>
-                    </div>
-                    <div class="shoutout-content">
-                        <h5>Área de Reportería</h5>
-                        <p>Confirmó pago F001-00892 (S/ 14,400)</p>
-                    </div>
-                </div>
-
-                <div class="shoutout-item" onclick="cambiarVistaVentas('comprobantes')">
-                    <div class="shoutout-avatar-box">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Johnny">
-                        <div class="shoutout-online-dot"></div>
-                    </div>
-                    <div class="shoutout-content">
-                        <h5>Validador Finanzas</h5>
-                        <p>Recibió el consolidado del día</p>
-                    </div>
-                </div>
-
-                <div class="shoutout-item" onclick="cambiarVistaVentas('cartera')">
-                    <div class="shoutout-avatar-box">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="Alice">
-                        <div class="shoutout-online-dot"></div>
-                    </div>
-                    <div class="shoutout-content">
-                        <h5>Cartera de Clientes</h5>
-                        <p>45 Constructoras activas en cartera</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <!-- PANEL DERECHO ELIMINADO POR REQUERIMIENTO -->
 
     </div>
 
