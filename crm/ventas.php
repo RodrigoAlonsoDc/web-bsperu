@@ -2087,19 +2087,7 @@ if (file_exists($fileCotizPath)) {
                 <!-- PANEL 2: BUSCAR COTIZACIÓN PARA FACTURAR -->
                 <div id="panelHistorialCotizaciones" style="display:none;">
                     <div class="card-seccion-centro">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:18px; border-bottom:1px solid var(--border-soft); padding-bottom:14px;">
-                            <div>
-                                <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-dark); margin:0; display:flex; align-items:center; gap:8px;">
-                                    <i class="fa-solid fa-magnifying-glass-dollar" style="color:var(--accent-tan);"></i> Buscar Cotización para Facturar
-                                </h3>
-                                <p style="font-size:0.78rem; color:var(--text-muted); margin:4px 0 0 0;">
-                                    Ubica la cotización del cliente (por código correlativo, RUC o empresa) y haz clic en <strong>"Facturar Cotización"</strong> para transferirla inmediatamente y adjuntar el voucher.
-                                </p>
-                            </div>
-                            <button type="button" class="btn-pill-white primary" onclick="alternarTabCotizaciones('nueva')">
-                                <i class="fa-solid fa-plus"></i> + Emitir Nueva Cotización
-                            </button>
-                        </div>
+
 
                         <!-- BARRA DE BÚSQUEDA Y FILTROS RÁPIDOS -->
                         <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
