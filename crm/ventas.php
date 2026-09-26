@@ -3812,6 +3812,10 @@ if (file_exists($fileCotizPath)) {
             const c = listaCotizacionesData.find(item => item.codigo === codigo);
             if (!c) return;
 
+            if (!confirm(`¿Estás seguro de que deseas facturar la cotización N° ${codigo} de ${c.cliente_nombre}?`)) {
+                return;
+            }
+
             document.getElementById('facNumero').value = 'FAC-' + c.codigo;
             document.getElementById('facCliente').value = c.cliente_nombre;
             document.getElementById('facRuc').value = c.ruc_dni;
@@ -4006,6 +4010,9 @@ if (file_exists($fileCotizPath)) {
 
         // FACTURAR DIRECTAMENTE A UN CLIENTE DE LA CARTERA (REDIRECCIÓN EN EL MEDIO)
         function facturarACliente(nombre, ruc) {
+            if (!confirm(`¿Estás seguro de que deseas facturar al cliente ${nombre}?`)) {
+                return;
+            }
             cambiarVistaVentas('facturacion');
             document.getElementById('facCliente').value = nombre;
             document.getElementById('facRuc').value = ruc;
