@@ -879,17 +879,10 @@ if (file_exists($fileCotizPath)) {
             transform: translateY(-2px);
         }
         .cartera-table-wrapper {
-            background: #FFF;
-            border-radius: 20px;
-            border: 1px solid var(--border-soft);
-            overflow: hidden;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.02);
-            max-height: 520px;
-            overflow-y: auto;
+            width: 100%;
+            overflow-x: auto;
         }
         body.dark-mode .cartera-table-wrapper {
-            background: #18191D;
-            border-color: #2F323A;
         }
         .cartera-table {
             width: 100%;
