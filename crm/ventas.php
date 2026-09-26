@@ -1639,7 +1639,6 @@ if (file_exists($fileCotizPath)) {
                 <div class="nav-item" id="nav-cartera" onclick="cambiarVistaVentas('cartera', this)">
                     <i class="fa-solid fa-address-book"></i>
                     <span>Cartera de Clientes</span>
-                    <span class="nav-badge" id="badgeCarteraTotal" style="background:var(--accent-tan); color:#161719; font-weight:700;">45</span>
                 </div>
 
                 <div class="nav-item" id="nav-comprobantes" onclick="cambiarVistaVentas('comprobantes', this)">
