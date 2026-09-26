@@ -1636,9 +1636,20 @@ if (file_exists($fileCotizPath)) {
                 </div>
 
 
-                <div class="nav-item" id="nav-cartera" onclick="cambiarVistaVentas('cartera', this)">
+                <div class="nav-item" id="nav-cartera-main" onclick="toggleSubmenu('submenu-cartera')" style="cursor: pointer;">
                     <i class="fa-solid fa-address-book"></i>
                     <span>Cartera de Clientes</span>
+                    <i class="fa-solid fa-chevron-down" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </div>
+                <div id="submenu-cartera" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                    <div class="nav-item" id="nav-cartera-buscar" onclick="navegarCartera('buscar', this);" style="padding-left: 32px; font-size: 0.82rem;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Buscar Clientes</span>
+                    </div>
+                    <div class="nav-item" id="nav-cartera-nuevo" onclick="navegarCartera('nuevo', this);" style="padding-left: 32px; font-size: 0.82rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Añadir Cliente</span>
+                    </div>
                 </div>
 
                 <div class="nav-item" id="nav-comprobantes" onclick="cambiarVistaVentas('comprobantes', this)">
@@ -2919,6 +2930,21 @@ if (file_exists($fileCotizPath)) {
             const el = document.getElementById(id);
             if (el) {
                 el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'flex' : 'none';
+            }
+        }
+
+        function navegarCartera(modo, el) {
+            cambiarVistaVentas('cartera', el);
+            const box = document.getElementById('boxFormNuevoCliente');
+            const btnText = document.getElementById('btnTextNuevoCli');
+            if(box) {
+                if (modo === 'nuevo') {
+                    box.style.display = 'block';
+                    if(btnText) btnText.textContent = 'Ocultar Formulario';
+                } else {
+                    box.style.display = 'none';
+                    if(btnText) btnText.textContent = '+ Nuevo Cliente';
+                }
             }
         }
 
