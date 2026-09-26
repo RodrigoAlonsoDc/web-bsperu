@@ -1635,10 +1635,6 @@ if (file_exists($fileCotizPath)) {
                     <span class="nav-badge">+</span>
                 </div>
 
-                <div class="nav-item" id="nav-ventas-dia" onclick="cambiarVistaVentas('ventas-dia', this)">
-                    <i class="fa-solid fa-paper-plane"></i>
-                    <span>Ventas del Día</span>
-                </div>
 
                 <div class="nav-item" id="nav-cartera" onclick="cambiarVistaVentas('cartera', this)">
                     <i class="fa-solid fa-address-book"></i>
@@ -2220,107 +2216,6 @@ if (file_exists($fileCotizPath)) {
                 </div>
             </div>
 
-            <!-- ================= VISTA 3: VENTAS DEL DÍA (EN EL MEDIO) ================= -->
-            <div id="vista-ventas-dia" class="vista-seccion" style="display:none;">
-                <div class="main-header">
-                    <div>
-                        <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Cierre Diario</span>
-                        <h1 style="margin-top:2px;">Ventas del Día & Consolidado</h1>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
-                            <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
-                        </button>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon"><i class="fa-solid fa-wallet"></i></div>
-                        <div class="stat-mini-info">
-                            <h4>S/ 32,708</h4>
-                            <p>Total Facturado Hoy</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon"><i class="fa-solid fa-receipt"></i></div>
-                        <div class="stat-mini-info">
-                            <h4 id="statVentasDiaNum">4</h4>
-                            <p>Operaciones Emitidas</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon"><i class="fa-solid fa-images"></i></div>
-                        <div class="stat-mini-info">
-                            <h4>4</h4>
-                            <p>Vouchers Adjuntos</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-mini">
-                        <div class="stat-mini-icon"><i class="fa-solid fa-user-check"></i></div>
-                        <div class="stat-mini-info">
-                            <h4>100%</h4>
-                            <p>Cuadrado</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-seccion-centro">
-                    <h3 style="font-family:'Outfit',sans-serif; font-size:1.15rem; color:var(--text-dark);"><i class="fa-solid fa-list-check" style="color:var(--accent-tan);"></i> Operaciones a Enviar a Reportería</h3>
-                    <div class="cartera-table-wrapper">
-                        <table class="cartera-table">
-                            <thead>
-                                <tr>
-                                    <th>N° Comprobante</th>
-                                    <th>Cliente</th>
-                                    <th>Monto</th>
-                                    <th>Método / Op.</th>
-                                    <th>Voucher</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>F001-00892</strong></td>
-                                    <td>Cosapi S.A.</td>
-                                    <td><strong style="color:#10B981;">S/ 14,400.00</strong></td>
-                                    <td>BCP #849201</td>
-                                    <td><span class="badge-tag-activo">Adjunto ✅</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>F001-00891</strong></td>
-                                    <td>Consorcio Vial Piura</td>
-                                    <td><strong style="color:var(--text-dark);">S/ 6,800.00</strong></td>
-                                    <td>BBVA #902184</td>
-                                    <td><span class="badge-tag-activo">Adjunto ✅</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>F001-00890</strong></td>
-                                    <td>Edificaciones Pacífico S.A.C.</td>
-                                    <td><strong style="color:var(--text-dark);">S/ 3,658.00</strong></td>
-                                    <td>Interbank #109281</td>
-                                    <td><span class="badge-tag-activo">Adjunto ✅</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>F001-00895</strong></td>
-                                    <td>Constructora Los Andes S.A.C.</td>
-                                    <td><strong style="color:var(--text-dark);">S/ 7,850.00</strong></td>
-                                    <td>BCP #782910</td>
-                                    <td><span class="badge-tag-activo">Adjunto ✅</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="form-group" style="margin-top:10px;">
-                        <label>Mensaje y Observaciones para el Equipo de Reportería</label>
-                        <textarea id="notaVentasDia" rows="3" style="width:100%;">Buenas tardes equipo de Reportería, adjunto el reporte oficial de ventas del día con los 4 comprobantes bancarios correspondientes para su verificación y aceptación en el sistema.</textarea>
-                    </div>
-
-                    <button class="btn-submit-action" onclick="confirmarEnvioVentasDia()">
-                        <i class="fa-solid fa-check-double"></i> Enviar Reporte del Día a Reportería
-                    </button>
-                </div>
-            </div>
 
             <!-- ================= VISTA 4: CARTERA DE CLIENTES (EN EL MEDIO) ================= -->
             <div id="vista-cartera" class="vista-seccion" style="display:none;">
