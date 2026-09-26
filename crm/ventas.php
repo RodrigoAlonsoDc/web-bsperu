@@ -2086,7 +2086,7 @@ if (file_exists($fileCotizPath)) {
 
                 <!-- PANEL 2: BUSCAR COTIZACIÓN PARA FACTURAR -->
                 <div id="panelHistorialCotizaciones" style="display:none;">
-                    <div class="card-seccion-centro">
+                    <div>
 
 
                         <!-- BARRA DE BÚSQUEDA Y FILTROS RÁPIDOS -->
