@@ -1625,13 +1625,13 @@ if (file_exists($fileCotizPath)) {
                     </div>
                     <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 32px; font-size: 0.82rem;">
                         <i class="fa-solid fa-magnifying-glass-dollar"></i>
-                        <span>Buscar / Facturar</span>
+                        <span>Buscar Cotización</span>
                     </div>
                 </div>
 
                 <div class="nav-item" id="nav-facturacion" onclick="cambiarVistaVentas('facturacion', this)">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Nueva Factura</span>
+                    <span>Facturar</span>
                     <span class="nav-badge">+</span>
                 </div>
 
