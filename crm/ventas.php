@@ -1621,7 +1621,7 @@ if (file_exists($fileCotizPath)) {
                 <div id="submenu-cotizaciones" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 8px;">
                     <div class="nav-item" id="nav-cotiz-nueva" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('nueva');" style="padding-left: 32px; font-size: 0.82rem;">
                         <i class="fa-solid fa-file-circle-plus"></i>
-                        <span>Emitir Nueva</span>
+                        <span>Crear Cotización</span>
                     </div>
                     <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 32px; font-size: 0.82rem;">
                         <i class="fa-solid fa-magnifying-glass-dollar"></i>
