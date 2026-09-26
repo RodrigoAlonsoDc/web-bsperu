@@ -1629,8 +1629,6 @@ if (file_exists($fileCotizPath)) {
                     <div class="nav-item" id="nav-cotiz-historial" onclick="cambiarVistaVentas('cotizaciones', this); alternarTabCotizaciones('facturar');" style="padding-left: 32px; font-size: 0.82rem;">
                         <i class="fa-solid fa-magnifying-glass-dollar"></i>
                         <span>Buscar / Facturar</span>
-                        <span class="nav-badge" id="badgeCotizacionesTotal" style="background:#D1FAE5; color:#065F46; font-weight:700; margin-left: auto;">3</span>
-                        <span id="countCotizHistorialBadge" style="display:none;">3</span>
                     </div>
                 </div>
 
