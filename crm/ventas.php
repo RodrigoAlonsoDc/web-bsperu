@@ -1603,11 +1603,8 @@ if (file_exists($fileCotizPath)) {
         
         <!-- ================= SIDEBAR IZQUIERDA ================= -->
         <div class="sidebar">
-            <a href="ventas.php" class="brand-logo">
-                <div class="brand-logo-icon">
-                    <i class="fa-solid fa-horse-head"></i>
-                </div>
-                <div class="brand-logo-text">PBD</div>
+            <a href="ventas.php" class="brand-logo" style="padding: 6px 12px 24px 12px; justify-content: center;">
+                <img src="../img/logo_bs.png" alt="BS Peru" style="height: 45px; width: auto; object-fit: contain;" />
             </a>
 
             <div class="nav-menu">
