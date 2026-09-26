@@ -2228,30 +2228,21 @@ if (file_exists($fileCotizPath)) {
 
 
             <!-- ================= VISTA 4: CARTERA DE CLIENTES (EN EL MEDIO) ================= -->
-            <div id="vista-cartera" class="vista-seccion" style="display:none;">
+            <div id="vista-cartera-nuevo" class="vista-seccion" style="display:none;">
                 <div class="main-header">
                     <div>
                         <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Gestión de Clientes</span>
-                        <h1 style="margin-top:2px;">Mi Cartera de Clientes</h1>
+                        <h1 style="margin-top:2px;">Añadir Nuevo Cliente</h1>
                     </div>
                     <div class="header-actions">
-                        <?php if ($isEndrina || $isAdmin): ?>
-                            <button class="btn-add-cliente" onclick="toggleFormNuevoCliente()">
-                                <i class="fa-solid fa-user-plus"></i> <span id="btnTextNuevoCli">+ Nuevo Cliente</span>
-                            </button>
-                        <?php else: ?>
-                            <div style="background:rgba(199,155,88,0.12); border:1px solid var(--accent-tan); border-radius:12px; padding:8px 16px; font-size:0.8rem; color:var(--accent-tan); font-weight:700; display:inline-flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-lock"></i> Creación de clientes reservada para Endrina
-                            </div>
-                        <?php endif; ?>
-                        <button class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
-                            <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
+                        <button class="btn-pill-white" onclick="cambiarVistaVentas('cartera')">
+                            <i class="fa-solid fa-arrow-left"></i> Volver a Cartera
                         </button>
                     </div>
                 </div>
-
-                <!-- FORMULARIO DESPLEGABLE: REGISTRAR NUEVO CLIENTE -->
-                <div class="form-new-cliente-box" id="boxFormNuevoCliente">
+                
+                <?php if ($isEndrina || $isAdmin): ?>
+                <div class="form-new-cliente-box" style="display:block;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                         <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-dark); margin:0; display:flex; align-items:center; gap:8px;">
                             <i class="fa-solid fa-building-circle-check" style="color:var(--accent-tan);"></i> Registrar Nuevo Cliente a mi Cartera
@@ -2328,13 +2319,37 @@ if (file_exists($fileCotizPath)) {
                             </div>
 
                             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
-                                <button type="button" class="btn-pill-white" onclick="toggleFormNuevoCliente()">Cancelar</button>
+                                <button type="button" class="btn-pill-white" onclick="cambiarVistaVentas('cartera')">Cancelar</button>
                                 <button type="submit" class="btn-pill-white primary">
                                     <i class="fa-solid fa-save"></i> Guardar en mi Cartera
                                 </button>
                             </div>
                         </div>
                     </form>
+                </div>
+                <?php else: ?>
+                    <div style="margin-top:20px; background:rgba(199,155,88,0.12); border:1px solid var(--accent-tan); border-radius:12px; padding:16px 20px; font-size:0.9rem; color:var(--accent-tan); font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px;">
+                        <i class="fa-solid fa-lock" style="font-size:1.2rem;"></i> Creación de clientes reservada para Endrina. Comunícate con ella para añadir nuevos clientes.
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div id="vista-cartera" class="vista-seccion" style="display:none;">
+                <div class="main-header">
+                    <div>
+                        <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Gestión de Clientes</span>
+                        <h1 style="margin-top:2px;">Mi Cartera de Clientes</h1>
+                    </div>
+                    <div class="header-actions">
+                        <?php if ($isEndrina || $isAdmin): ?>
+                            <button class="btn-add-cliente" onclick="cambiarVistaVentas('cartera-nuevo')">
+                                <i class="fa-solid fa-user-plus"></i> <span>+ Nuevo Cliente</span>
+                            </button>
+                        <?php endif; ?>
+                        <button class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
+                            <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
+                        </button>
+                    </div>
                 </div>
 
                 <!-- BARRA DE BÚSQUEDA Y FILTROS -->
@@ -2934,17 +2949,10 @@ if (file_exists($fileCotizPath)) {
         }
 
         function navegarCartera(modo, el) {
-            cambiarVistaVentas('cartera', el);
-            const box = document.getElementById('boxFormNuevoCliente');
-            const btnText = document.getElementById('btnTextNuevoCli');
-            if(box) {
-                if (modo === 'nuevo') {
-                    box.style.display = 'block';
-                    if(btnText) btnText.textContent = 'Ocultar Formulario';
-                } else {
-                    box.style.display = 'none';
-                    if(btnText) btnText.textContent = '+ Nuevo Cliente';
-                }
+            if (modo === 'nuevo') {
+                cambiarVistaVentas('cartera-nuevo', el);
+            } else {
+                cambiarVistaVentas('cartera', el);
             }
         }
 
@@ -3834,18 +3842,7 @@ if (file_exists($fileCotizPath)) {
         }
 
         // CARTERA DE CLIENTES: FORMULARIO DESPLEGABLE
-        function toggleFormNuevoCliente() {
-            const box = document.getElementById('boxFormNuevoCliente');
-            const btnText = document.getElementById('btnTextNuevoCli');
-            if (box.style.display === 'block') {
-                box.style.display = 'none';
-                btnText.textContent = '+ Nuevo Cliente';
-            } else {
-                box.style.display = 'block';
-                btnText.textContent = 'Ocultar Formulario';
-                document.getElementById('newCliRuc').focus();
-            }
-        }
+
 
         // BÚSQUEDA Y JALADO EN FORMULARIO "REGISTRAR NUEVO CLIENTE" (LUPA SUNAT / RENIEC)
         function buscarClienteNuevoPorDocumento() {
@@ -3982,7 +3979,7 @@ if (file_exists($fileCotizPath)) {
                     if (cTodos) cTodos.textContent = totalClientesCartera;
 
                     e.target.reset();
-                    toggleFormNuevoCliente();
+                    cambiarVistaVentas('cartera');
 
                     mostrarToast('success', 'Cliente Guardado', `¡Cliente "${empresa}" registrado exitosamente en StarSoft ERP y añadido a tu cartera!`);
 
