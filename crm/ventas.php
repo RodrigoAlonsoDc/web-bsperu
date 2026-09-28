@@ -926,20 +926,6 @@ if (file_exists($fileCotizPath)) {
             align-items: center;
             gap: 12px;
         }
-        .cliente-avatar-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 14px;
-            background: var(--accent-tan-soft);
-            color: var(--accent-tan);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 800;
-            font-size: 0.95rem;
-            border: 1px solid var(--border-soft);
-            flex-shrink: 0;
-        }
         .cliente-meta h5 {
             font-size: 0.88rem;
             font-weight: 700;
@@ -2327,7 +2313,6 @@ if (file_exists($fileCotizPath)) {
                             <tr data-tipo="VIP">
                                 <td>
                                     <div class="cliente-item-cell">
-                                        <div class="cliente-avatar-circle">CS</div>
                                         <div class="cliente-meta">
                                             <h5>Cosapi S.A.</h5>
                                             <span>RUC: 20100038146 • Lima</span>
@@ -2363,7 +2348,6 @@ if (file_exists($fileCotizPath)) {
                             <tr data-tipo="VIP">
                                 <td>
                                     <div class="cliente-item-cell">
-                                        <div class="cliente-avatar-circle" style="background:#E0E7FF; color:#4338CA;">GM</div>
                                         <div class="cliente-meta">
                                             <h5>Graña & Montero Ingeniería</h5>
                                             <span>RUC: 20100109850 • Callao</span>
@@ -2397,7 +2381,6 @@ if (file_exists($fileCotizPath)) {
                             <tr data-tipo="Activo">
                                 <td>
                                     <div class="cliente-item-cell">
-                                        <div class="cliente-avatar-circle" style="background:#FEF3C7; color:#B45309;">CV</div>
                                         <div class="cliente-meta">
                                             <h5>Consorcio Vial Piura</h5>
                                             <span>RUC: 20601849201 • Piura</span>
@@ -2431,7 +2414,6 @@ if (file_exists($fileCotizPath)) {
                             <tr data-tipo="Activo">
                                 <td>
                                     <div class="cliente-item-cell">
-                                        <div class="cliente-avatar-circle" style="background:#DCFCE7; color:#15803D;">EP</div>
                                         <div class="cliente-meta">
                                             <h5>Edificaciones Pacífico S.A.C.</h5>
                                             <span>RUC: 20554189012 • Miraflores</span>
@@ -2465,7 +2447,6 @@ if (file_exists($fileCotizPath)) {
                             <tr data-tipo="VIP">
                                 <td>
                                     <div class="cliente-item-cell">
-                                        <div class="cliente-avatar-circle" style="background:#FCE7F3; color:#BE185D;">JC</div>
                                         <div class="cliente-meta">
                                             <h5>JJC Contratistas Generales</h5>
                                             <span>RUC: 20100142806 • Surco</span>
@@ -2499,7 +2480,6 @@ if (file_exists($fileCotizPath)) {
                             <tr data-tipo="Seguimiento">
                                 <td>
                                     <div class="cliente-item-cell">
-                                        <div class="cliente-avatar-circle" style="background:#F3E8FF; color:#7E22CE;">BE</div>
                                         <div class="cliente-meta">
                                             <h5>Besco Inmobiliaria & Construcción</h5>
                                             <span>RUC: 20419283011 • San Isidro</span>
@@ -2535,7 +2515,6 @@ if (file_exists($fileCotizPath)) {
                             <tr data-tipo="Activo">
                                 <td>
                                     <div class="cliente-item-cell">
-                                        <div class="cliente-avatar-circle" style="background:#E0F2FE; color:#0369A1;">LA</div>
                                         <div class="cliente-meta">
                                             <h5>Constructora Los Andes S.A.C.</h5>
                                             <span>RUC: 20604819204 • Arequipa</span>
@@ -2809,7 +2788,6 @@ if (file_exists($fileCotizPath)) {
                     <tr data-tipo="${cat}">
                         <td>
                             <div class="cliente-item-cell">
-                                <div class="cliente-avatar-circle" style="background:var(--accent-tan); color:#161719;">${initials}</div>
                                 <div class="cliente-meta">
                                     <h5>${razon}</h5>
                                     <span>RUC: ${ruc}</span>
