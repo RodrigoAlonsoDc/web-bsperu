@@ -1480,11 +1480,17 @@ if (file_exists($fileCotizPath)) {
                 padding: 0 !important;
                 box-shadow: none !important;
                 background: #FFF !important;
+                min-height: 0 !important;
+                height: auto !important;
             }
             body.imprimiendo-oficial {
                 background: #FFF !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                height: auto !important;
+            }
+            html {
+                height: auto !important;
             }
             .no-print {
                 display: none !important;
