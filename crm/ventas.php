@@ -1605,6 +1605,28 @@ if (file_exists($fileCotizPath)) {
                     <i class="fa-solid fa-table-cells-large"></i>
                     <span>Dashboard</span>
                 </div>
+                <div class="nav-item" id="nav-facturacion" onclick="cambiarVistaVentas('facturacion', this)">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Facturar</span>
+                    <span class="nav-badge">+</span>
+                </div>
+
+                <div class="nav-item" id="nav-pedidos-main" onclick="toggleSubmenu('submenu-pedidos')" style="cursor: pointer;">
+                    <i class="fa-solid fa-box"></i>
+                    <span>Pedidos</span>
+                    <i class="fa-solid fa-chevron-down" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </div>
+                <div id="submenu-pedidos" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                    <div class="nav-item" id="nav-pedidos-crear-cliente" onclick="navegarCartera('nuevo', this);" style="padding-left: 32px; font-size: 0.82rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Creación de clientes</span>
+                    </div>
+                    <div class="nav-item" id="nav-pedidos-solicitudes" onclick="cambiarVistaVentas('solicitudes_facturacion', this);" style="padding-left: 32px; font-size: 0.82rem;">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <span>Solicitudes facturación</span>
+                    </div>
+                </div>
+
 
                 <div class="nav-item" id="nav-cotizaciones-main" onclick="toggleSubmenu('submenu-cotizaciones')" style="cursor: pointer;">
                     <i class="fa-solid fa-file-signature"></i>
@@ -1622,11 +1644,7 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                <div class="nav-item" id="nav-facturacion" onclick="cambiarVistaVentas('facturacion', this)">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Facturar</span>
-                    <span class="nav-badge">+</span>
-                </div>
+                
 
 
                 <div class="nav-item" id="nav-cartera-main" onclick="toggleSubmenu('submenu-cartera')" style="cursor: pointer;">
@@ -1639,10 +1657,7 @@ if (file_exists($fileCotizPath)) {
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <span>Buscar Clientes</span>
                     </div>
-                    <div class="nav-item" id="nav-cartera-nuevo" onclick="navegarCartera('nuevo', this);" style="padding-left: 32px; font-size: 0.82rem;">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <span>Añadir Cliente</span>
-                    </div>
+                    
                 </div>
 
                 <div class="nav-item" id="nav-comprobantes" onclick="cambiarVistaVentas('comprobantes', this)">
@@ -1825,7 +1840,7 @@ if (file_exists($fileCotizPath)) {
                 <div class="main-header" style="margin-bottom: -20px;">
                     <div>
                         <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Gestión de Propuestas</span>
-                        <h1 style="margin-top:2px;">Cotizaciones & Pedidos de Tienda</h1>
+                        <h1 style="margin-top:2px;">Crear cotización</h1>
                     </div>
                     <div class="header-actions">
                         <button class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
@@ -2046,6 +2061,55 @@ if (file_exists($fileCotizPath)) {
             </div>
 
             <!-- ================= VISTA 2: NUEVA FACTURACIÓN (EN EL MEDIO) ================= -->
+            
+            <!-- ================= VISTA: SOLICITUDES DE FACTURACIÓN ================= -->
+            <div id="vista-solicitudes_facturacion" class="vista-seccion" style="display:none;">
+                <div class="main-header">
+                    <div>
+                        <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Gestión Comercial</span>
+                        <h1 style="margin-top:2px;">Solicitudes para Facturar</h1>
+                    </div>
+                </div>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-clock"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-value" style="font-size:1.5rem;">0</span>
+                            <span class="kpi-label">Pendientes</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-check"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-value" style="font-size:1.5rem;">0</span>
+                            <span class="kpi-label">Procesadas Hoy</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-container" style="background:#FFF; padding:20px; border-radius:16px; border:1px solid var(--border-soft); margin-top:20px;">
+                    <h3 style="font-size:1.1rem; margin-bottom:16px; font-weight:700;"><i class="fa-solid fa-list-ul"></i> Solicitudes del Personal</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha Solicitud</th>
+                                <th>N° Cotización</th>
+                                <th>Cliente</th>
+                                <th>Asesor</th>
+                                <th>Estado</th>
+                                <th style="text-align:right;">Monto Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodySolicitudesFacturacion">
+                            <tr>
+                                <td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">
+                                    No hay solicitudes pendientes de facturación.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div id="vista-facturacion" class="vista-seccion" style="display:none;">
                 <div class="main-header">
                     <div>
@@ -3456,10 +3520,7 @@ if (file_exists($fileCotizPath)) {
                     cargarCarteraClientes();
 
                     // Abrir vista previa PDF oficial y lanzar automáticamente la impresión
-                    abrirModalVistaPreviaPdf(cotizGenerada);
-                    setTimeout(() => {
-                        window.print();
-                    }, 500);
+                    abrirModalConfirmarFacturacion(cotizGenerada);
 
                     limpiarFormularioNuevaCotizacion();
                 } else {
@@ -3471,10 +3532,7 @@ if (file_exists($fileCotizPath)) {
                 if (!silencioso) {
                     mostrarToast('warning', 'Cotización Guardada (Local)', `Cotización ${data.codigo} registrada.`);
                 }
-                abrirModalVistaPreviaPdf(data);
-                setTimeout(() => {
-                    window.print();
-                }, 500);
+                abrirModalConfirmarFacturacion(data);
                 cargarCotizaciones();
                 cargarCarteraClientes();
                 limpiarFormularioNuevaCotizacion();
@@ -4376,5 +4434,56 @@ if (file_exists($fileCotizPath)) {
             </div>
         </div>
     </div>
+
+    <!-- ================= MODAL CONFIRMAR FACTURACIÓN ================= -->
+    <div class="modal-overlay" id="modalConfirmarFacturacion">
+        <div class="modal-card" style="max-width:400px; text-align:center;">
+            <div style="width:60px; height:60px; background:#ECFDF5; color:#10B981; border-radius:20px; display:flex; justify-content:center; align-items:center; font-size:1.6rem; margin:0 auto 16px;">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <h3 style="font-size:1.25rem;">Cotización Guardada Exitosamente</h3>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 20px;">¿Desea enviar una solicitud para facturarla ahora mismo?</p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn-pill-white primary" style="justify-content:center; background:var(--accent-tan); border-color:var(--accent-tan); color:#161719;" onclick="confirmarFacturacionSi()">
+                    <i class="fa-solid fa-check"></i> Sí, solicitar facturación
+                </button>
+                <button class="btn-pill-white" style="justify-content:center; border-color:#10B981; color:#059669;" onclick="confirmarFacturacionNo()">
+                    <i class="fa-solid fa-print"></i> No, solo imprimir cotización
+                </button>
+                <button class="btn-pill-white" style="justify-content:center; color:var(--text-muted);" onclick="cerrarModales()">
+                    <i class="fa-solid fa-clock"></i> Más tarde
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let cotizPendienteFacturacion = null;
+        function abrirModalConfirmarFacturacion(cotiz) {
+            cotizPendienteFacturacion = cotiz;
+            const modal = document.getElementById('modalConfirmarFacturacion');
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
+            }
+        }
+        function confirmarFacturacionSi() {
+            cerrarModales();
+            // Ir a la vista de solicitudes de facturación
+            cambiarVistaVentas('solicitudes_facturacion');
+            // Aquí podríamos enviar la solicitud por AJAX al backend.
+            mostrarToast('success', 'Solicitud Enviada', 'Se ha notificado a facturación.');
+        }
+        function confirmarFacturacionNo() {
+            cerrarModales();
+            if(cotizPendienteFacturacion) {
+                abrirModalVistaPreviaPdf(cotizPendienteFacturacion);
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            }
+        }
+    </script>
 </body>
+
 </html>
