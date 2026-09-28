@@ -1696,33 +1696,6 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                <!-- WELCOME / HERO CARD (CARAMELO) -->
-                <div class="welcome-card">
-                    <div class="welcome-content">
-                        <h2>Welcome back, Endrina!</h2>
-                        <p>Tu meta comercial del mes está al 85% completada. Emite cotizaciones oficiales para tus obras, adjunta los comprobantes de pago y solicita confirmación inmediata a Reportería.</p>
-                        <div class="welcome-actions">
-                            <button class="btn-pill-white primary" onclick="abrirGeneradorCotizacion()">
-                                <i class="fa-solid fa-file-signature"></i> Nueva Cotización
-                            </button>
-                            <button class="btn-pill-white" onclick="abrirBuscarCotizacionFacturar()" style="background:#FFF; color:#161719; font-weight:700;">
-                                <i class="fa-solid fa-magnifying-glass-dollar"></i> Buscar Cotiz. para Facturar
-                            </button>
-                            <button class="btn-pill-white" onclick="cambiarVistaVentas('facturacion')">
-                                <i class="fa-solid fa-file-invoice-dollar"></i> Facturar Venta
-                            </button>
-                            <button class="btn-pill-white" onclick="cambiarVistaVentas('ventas-dia')">
-                                <i class="fa-solid fa-paper-plane"></i> Enviar Venta del Día
-                            </button>
-                        </div>
-                    </div>
-                    <div class="welcome-avatar-wrapper">
-                        <div class="welcome-avatar-frame">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80" alt="Endrina">
-                        </div>
-                    </div>
-                </div>
-
                 <!-- 4 MINI STAT CARDS -->
                 <div class="stats-grid">
                     <div class="stat-card-mini" onclick="cambiarVistaVentas('facturacion')">
