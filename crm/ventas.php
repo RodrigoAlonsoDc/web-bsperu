@@ -2224,14 +2224,7 @@ if (file_exists($fileCotizPath)) {
                 
                 <?php if ($isEndrina || $isAdmin): ?>
                 <div class="form-new-cliente-box" style="display:block;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-                        <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-dark); margin:0; display:flex; align-items:center; gap:8px;">
-                            <i class="fa-solid fa-building-circle-check" style="color:var(--accent-tan);"></i> Registrar Nuevo Cliente a mi Cartera
-                        </h4>
-                        <span style="font-size:0.75rem; color:var(--accent-tan); font-weight:600;">
-                            ⚡ Ingresa DNI o RUC y haz clic en la lupa para jalar Razón Social y Dirección desde SUNAT / RENIEC
-                        </span>
-                    </div>
+                    
                     <form onsubmit="guardarNuevoCliente(event)">
                         <div class="form-grid">
                             <div class="form-row">
