@@ -1469,11 +1469,27 @@ if (file_exists($fileCotizPath)) {
 
         /* CSS DE IMPRESIÓN (MEDIA PRINT) */
         @media print {
+            html, body {
+                height: auto !important;
+                overflow: visible !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #FFF !important;
+            }
             body * {
                 visibility: hidden !important;
             }
             #printDocumentoOficial, #printDocumentoOficial * {
                 visibility: visible !important;
+            }
+            #modalVistaPreviaPdf, .modal-pdf-a4 {
+                position: static !important;
+                overflow: visible !important;
+                height: auto !important;
+                width: auto !important;
+                transform: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             #printDocumentoOficial {
                 position: absolute !important;
