@@ -1822,7 +1822,7 @@ if (file_exists($fileCotizPath)) {
 
             <!-- ================= VISTA: COTIZACIONES (EN EL MEDIO) ================= -->
             <div id="vista-cotizaciones" class="vista-seccion" style="display:none;">
-                <div class="main-header">
+                <div class="main-header" style="margin-bottom: -20px;">
                     <div>
                         <span style="font-size:0.75rem; font-weight:600; color:var(--accent-tan); text-transform:uppercase; letter-spacing:0.5px;">Gestión de Propuestas</span>
                         <h1 style="margin-top:2px;">Cotizaciones & Pedidos de Tienda</h1>
