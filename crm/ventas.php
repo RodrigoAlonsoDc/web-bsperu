@@ -1469,38 +1469,22 @@ if (file_exists($fileCotizPath)) {
 
         /* CSS DE IMPRESIÓN (MEDIA PRINT) */
         @media print {
-            html, body {
-                height: auto !important;
-                overflow: visible !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #FFF !important;
+            body.imprimiendo-oficial > * {
+                display: none !important;
             }
-            body * {
-                visibility: hidden !important;
-            }
-            #printDocumentoOficial, #printDocumentoOficial * {
-                visibility: visible !important;
-            }
-            #modalVistaPreviaPdf, .modal-pdf-a4 {
+            body.imprimiendo-oficial > #printDocumentoOficial {
+                display: block !important;
                 position: static !important;
-                overflow: visible !important;
-                height: auto !important;
-                width: auto !important;
-                transform: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            #printDocumentoOficial {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
                 width: 100% !important;
                 margin: 0 !important;
-                padding: 8mm 12mm !important;
+                padding: 0 !important;
                 box-shadow: none !important;
                 background: #FFF !important;
-                color: #000 !important;
+            }
+            body.imprimiendo-oficial {
+                background: #FFF !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             .no-print {
                 display: none !important;
@@ -3713,7 +3697,18 @@ if (file_exists($fileCotizPath)) {
         }
 
         function imprimirCotizacionOficialDirecto() {
+            const printContent = document.getElementById('printDocumentoOficial');
+            const originalParent = printContent.parentNode;
+            
+            // Mover al body
+            document.body.appendChild(printContent);
+            document.body.classList.add('imprimiendo-oficial');
+            
             window.print();
+            
+            // Restaurar
+            document.body.classList.remove('imprimiendo-oficial');
+            originalParent.appendChild(printContent);
         }
 
         function enviarCotizacionActualWhatsApp() {
