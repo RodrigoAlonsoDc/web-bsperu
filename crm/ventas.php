@@ -1844,80 +1844,31 @@ if (file_exists($fileCotizPath)) {
                         <input type="hidden" id="cotizCodigo" value="<?php echo htmlspecialchars($siguienteCodigoCotiz); ?>">
                         <input type="hidden" id="cotizFecha" value="<?php echo date('Y-m-d'); ?>">
 
-                        <!-- BUSCADOR EXCLUSIVO EN CARTERA POR DNI O RUC -->
-                        <div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <label style="font-size:0.84rem; font-weight:700; color:var(--text-dark);">
-                                    <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-tan);"></i> Buscar Cliente en Cartera por DNI / RUC
-                                </label>
-                                <span style="font-size:0.74rem; color:var(--accent-tan); font-weight:600;">
-                                    🔒 Clientes registrados en Mi Cartera
-                                </span>
-                            </div>
-                            <div style="display:flex; gap:8px; position:relative;">
-                                <div style="position:relative; flex:1;">
-                                    <input type="text" id="inputBuscarClienteCotiz" 
-                                           placeholder="Ingresa DNI (8 dígitos) o RUC del cliente registrado en cartera..." 
-                                           class="cotiz-input-cell" style="padding:12px 16px; font-size:0.9rem; border-color:var(--accent-tan); width:100%;" 
-                                           oninput="filtrarSugerenciasClientesCotiz(this.value)" 
-                                           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarClienteCarteraPorDni(); }"
-                                           autocomplete="off">
-                                    <div id="sugerenciasClientesBox" style="display:none; position:absolute; top:100%; left:0; right:0; background:#FFF; border:1px solid var(--border-soft); border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.15); z-index:1000; max-height:220px; overflow-y:auto; margin-top:4px;">
-                                        <!-- Lista de sugerencias inyectada por JS -->
-                                    </div>
-                                </div>
-                                <button type="button" id="btnLupaBuscarDoc" class="btn-pill-white primary" 
-                                        onclick="buscarClienteCarteraPorDni()" 
-                                        style="background:var(--accent-tan); border-color:var(--accent-tan); color:#161719; font-weight:700; padding:0 20px; display:flex; align-items:center; gap:8px; white-space:nowrap; cursor:pointer;"
-                                        title="Buscar cliente registrado en cartera">
-                                    <i class="fa-solid fa-magnifying-glass" id="iconLupaBuscar"></i>
-                                    <span>Buscar en Cartera</span>
-                                </button>
-                            </div>
-
-                            <!-- ALERTA SI EL CLIENTE NO SE ENCUENTRA REGISTRADO -->
-                            <div id="msgAlertaClienteNoRegistrado" style="display:none; margin-top:8px; padding:10px 14px; background:#FEF2F2; border:1px solid #FCA5A5; border-radius:10px; color:#DC2626; font-size:0.84rem; font-weight:700; display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-circle-xmark" style="font-size:1.1rem;"></i>
-                                <span>
-                                    <?php if ($isEndrina || $isAdmin): ?>
-                                        No se registra en la cartera. Puede añadirlo primero en <strong>Mi Cartera de Clientes</strong> con el botón "+ Nuevo Cliente".
-                                    <?php else: ?>
-                                        El cliente no figura en su cartera asignada (Vendedor <?php echo htmlspecialchars($currentVendedorCod); ?>). Solicite su asignación o creación a <strong>Endrina Izea</strong>.
-                                    <?php endif; ?>
-                                </span>
-                            </div>
-                            <!-- CONFIRMACIÓN CUANDO EL CLIENTE ES DE CARTERA -->
-                            <div id="msgClienteVerificado" style="display:none; margin-top:8px; padding:8px 14px; background:#ECFDF5; border:1px solid #A7F3D0; border-radius:10px; color:#065F46; font-size:0.82rem; font-weight:700; display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-circle-check" style="color:#10B981;"></i>
-                                <span>Cliente de Cartera Verificado</span>
-                            </div>
-                        </div>
-
-                        <!-- DATOS DEL CLIENTE (JALADOS DE LA CARTERA, SOLO LECTURA) -->
+                        <!-- DATOS DEL CLIENTE -->
                         <div class="cotiz-client-grid">
                             <div class="form-group" style="grid-column: 1 / -1;">
                                 <label>Razón Social / Nombre del Cliente *</label>
-                                <input type="text" id="cotizRazonSocial" required readonly placeholder="Razón Social (se jala de la cartera)" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
+                                <input type="text" id="cotizRazonSocial" required placeholder="Razón Social / Empresa" class="cotiz-input-cell">
                             </div>
                             <div class="form-group">
                                 <label>RUC / DNI *</label>
-                                <input type="text" id="cotizRucDni" required readonly placeholder="RUC o DNI" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
+                                <input type="text" id="cotizRucDni" required placeholder="RUC o DNI" class="cotiz-input-cell">
                             </div>
                             <div class="form-group">
                                 <label>Contacto / Residente</label>
-                                <input type="text" id="cotizContacto" readonly placeholder="Contacto asignado" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
+                                <input type="text" id="cotizContacto" placeholder="Contacto / Residente" class="cotiz-input-cell">
                             </div>
                             <div class="form-group">
                                 <label>Teléfono / WhatsApp *</label>
-                                <input type="tel" id="cotizTelefono" required readonly placeholder="Teléfono" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
+                                <input type="tel" id="cotizTelefono" required placeholder="Teléfono / WhatsApp" class="cotiz-input-cell">
                             </div>
                             <div class="form-group">
                                 <label>Correo Electrónico</label>
-                                <input type="email" id="cotizEmail" readonly placeholder="Correo electrónico" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
+                                <input type="email" id="cotizEmail" placeholder="Correo electrónico" class="cotiz-input-cell">
                             </div>
                             <div class="form-group" style="grid-column: 1 / -1;">
                                 <label>Dirección Fiscal / Obra</label>
-                                <input type="text" id="cotizDireccion" readonly placeholder="Dirección fiscal u obra" class="cotiz-input-cell" style="background:#F9FAFB; cursor:not-allowed;">
+                                <input type="text" id="cotizDireccion" placeholder="Dirección Fiscal / Obra" class="cotiz-input-cell">
                             </div>
                         </div>
 
