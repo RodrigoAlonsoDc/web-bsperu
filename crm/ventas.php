@@ -1660,25 +1660,11 @@ if (file_exists($fileCotizPath)) {
                 </div>
             </div>
 
-            <!-- USER CARD BOTTOM -->
-            <div class="user-pill" onclick="abrirLogoutModal()" title="Clic para cerrar sesión de Ventas" style="cursor:pointer;">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" alt="Endrina" class="user-pill-avatar">
-                <div class="user-pill-info">
-                    <div class="user-pill-name"><?php echo htmlspecialchars($currentNombre); ?></div>
-                    <div class="user-pill-status">
-                        <div class="status-dot"></div> <?php echo $isEndrina ? '👑 Asesora Principal (Clientes)' : ('💼 Asesor (Cod: ' . htmlspecialchars($currentVendedorCod) . ')'); ?>
-                    </div>
-                </div>
-                <i class="fa-solid fa-arrow-right-from-bracket user-pill-chevron" style="color:#EF4444; font-size:0.9rem;" title="Cerrar sesión"></i>
-            </div>
-
-            <!-- THEME TOGGLE -->
-            <div class="theme-toggle">
-                <button class="theme-btn active" id="btnThemeLight" onclick="setAppTheme('light')">
-                    <i class="fa-solid fa-sun"></i> Light
-                </button>
-                <button class="theme-btn" id="btnThemeDark" onclick="setAppTheme('dark')">
-                    <i class="fa-solid fa-moon"></i> Dark
+            <!-- BOTON CERRAR SESION BOTTOM -->
+            <div style="padding: 16px 20px; margin-top: auto;">
+                <button onclick="abrirLogoutModal()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar sesión</span>
                 </button>
             </div>
         </div>
