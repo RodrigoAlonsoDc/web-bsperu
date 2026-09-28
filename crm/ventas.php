@@ -3563,7 +3563,7 @@ if (file_exists($fileCotizPath)) {
                     badgeDescto = `<span style="background:#FEE2E2; color:#DC2626; padding:2px 6px; border-radius:8px; font-size:0.72rem; font-weight:800;" title="Descuento superior al 6%">${desctoMax}% ⚠️</span>`;
                 }
 
-                let badgeEstado = '<span class="badge-tag-vip">⏳ Pendiente</span>';
+                let badgeEstado = '<span style="color:#D97706; font-weight:800;">Pendiente</span>';
                 if (c.estado === 'Aceptada') badgeEstado = '<span class="badge-tag-activo">✅ Aceptada</span>';
                 else if (c.estado === 'Facturada') badgeEstado = '<span style="background:#E0E7FF; color:#4338CA; padding:3px 8px; border-radius:10px; font-size:0.72rem; font-weight:700;">💳 Facturada</span>';
 
@@ -3581,7 +3581,7 @@ if (file_exists($fileCotizPath)) {
                         <td>${badgeEstado}</td>
                         <td style="text-align:center;">
                             <div style="display:flex; justify-content:center; align-items:center; gap:6px; flex-wrap:wrap;">
-                                <button type="button" class="btn-pill-white primary" style="background:var(--accent-tan); border-color:var(--accent-tan); color:#161719; font-weight:800; padding:6px 12px; font-size:0.75rem; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Convertir esta cotización en factura y adjuntar voucher" onclick="convertirCotizAFacturaPorCodigo('${c.codigo}')">
+                                <button type="button" style="background:transparent; border:none; color:#1E3A8A; font-weight:800; padding:6px 12px; font-size:0.8rem; display:inline-flex; align-items:center; gap:5px; cursor:pointer; outline:none;" title="Convertir esta cotización en factura y adjuntar voucher" onclick="convertirCotizAFacturaPorCodigo('${c.codigo}')">
                                     <i class="fa-solid fa-file-invoice-dollar"></i> Facturar
                                 </button>
                                 <button type="button" class="btn-facturar-mini" title="Ver e imprimir PDF oficial" onclick="abrirModalVistaPreviaPdfPorCodigo('${c.codigo}')">
