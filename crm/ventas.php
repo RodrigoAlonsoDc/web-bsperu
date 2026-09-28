@@ -1605,28 +1605,22 @@ if (file_exists($fileCotizPath)) {
                     <i class="fa-solid fa-table-cells-large"></i>
                     <span>Dashboard</span>
                 </div>
-                <div class="nav-item" id="nav-facturacion" onclick="cambiarVistaVentas('facturacion', this)">
+
+                <div class="nav-item" id="nav-facturacion-main" onclick="toggleSubmenu('submenu-facturacion')" style="cursor: pointer;">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                     <span>Facturar</span>
-                    <span class="nav-badge">+</span>
-                </div>
-
-                <div class="nav-item" id="nav-pedidos-main" onclick="toggleSubmenu('submenu-pedidos')" style="cursor: pointer;">
-                    <i class="fa-solid fa-box"></i>
-                    <span>Pedidos</span>
                     <i class="fa-solid fa-chevron-down" style="margin-left: auto; font-size: 0.75rem;"></i>
                 </div>
-                <div id="submenu-pedidos" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 8px;">
-                    <div class="nav-item" id="nav-pedidos-crear-cliente" onclick="navegarCartera('nuevo', this);" style="padding-left: 32px; font-size: 0.82rem;">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <span>Creación de clientes</span>
-                    </div>
-                    <div class="nav-item" id="nav-pedidos-solicitudes" onclick="cambiarVistaVentas('solicitudes_facturacion', this);" style="padding-left: 32px; font-size: 0.82rem;">
+                <div id="submenu-facturacion" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 8px;">
+                    <div class="nav-item" id="nav-facturacion-solicitudes" onclick="cambiarVistaVentas('solicitudes_facturacion', this);" style="padding-left: 32px; font-size: 0.82rem;">
                         <i class="fa-solid fa-clipboard-list"></i>
                         <span>Solicitudes facturación</span>
                     </div>
+                    <div class="nav-item" id="nav-facturacion-nueva" onclick="cambiarVistaVentas('facturacion', this);" style="padding-left: 32px; font-size: 0.82rem;">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Facturar cotización</span>
+                    </div>
                 </div>
-
 
                 <div class="nav-item" id="nav-cotizaciones-main" onclick="toggleSubmenu('submenu-cotizaciones')" style="cursor: pointer;">
                     <i class="fa-solid fa-file-signature"></i>
@@ -1644,9 +1638,6 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                
-
-
                 <div class="nav-item" id="nav-cartera-main" onclick="toggleSubmenu('submenu-cartera')" style="cursor: pointer;">
                     <i class="fa-solid fa-address-book"></i>
                     <span>Cartera de Clientes</span>
@@ -1657,7 +1648,10 @@ if (file_exists($fileCotizPath)) {
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <span>Buscar Clientes</span>
                     </div>
-                    
+                    <div class="nav-item" id="nav-cartera-nuevo" onclick="navegarCartera('nuevo', this);" style="padding-left: 32px; font-size: 0.82rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Creación de clientes</span>
+                    </div>
                 </div>
 
                 <div class="nav-item" id="nav-comprobantes" onclick="cambiarVistaVentas('comprobantes', this)">
