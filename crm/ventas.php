@@ -3531,7 +3531,7 @@ if (file_exists($fileCotizPath)) {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        listaCotizacionesData = data.cotizaciones || [];
+                        listaCotizacionesData = (data.cotizaciones || []).reverse();
                         renderTablaHistorialCotizaciones(listaCotizacionesData);
 
                         const totalBadge = document.getElementById('badgeCotizacionesTotal');
