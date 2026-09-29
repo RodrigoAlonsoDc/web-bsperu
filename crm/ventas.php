@@ -3856,7 +3856,7 @@ if (file_exists($fileCotizPath)) {
             const cat = document.getElementById('newCliCategoria').value;
             const dir = document.getElementById('newCliDireccion').value.trim();
             const email = document.getElementById('newCliEmail').value.trim();
-            const vendedorSel = document.getElementById('newCliVendedor') ? document.getElementById('newCliVendedor').value : '01';
+            const vendedorSel = document.getElementById('newCliVendedor') ? document.getElementById('newCliVendedor').value : '99';
 
             const formDataCli = new FormData();
             formDataCli.append('action', 'guardar_cliente');
