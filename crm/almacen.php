@@ -357,127 +357,128 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
 
     <!-- EL PDF OCULTO QUE SE MOSTRARÁ AL IMPRIMIR -->
     <div id="pdfTemplate">
-        <div class="pdf-header">
+        <div class="pdf-header-top">
             <div class="pdf-logo">
-                <h1 style="color:#0b3c7c; font-family:'Outfit'; font-size:28px; margin-top:20px;">BSP | BS PERÚ</h1>
+                <img src="img/logo_bs.png" alt="Logo">
             </div>
             <div class="pdf-company-info">
-                <h2>BUILDING SYSTEMS PERU S.A.C.</h2>
-                <p>Domicilio Fiscal: Av. Los Faisanes N° 675<br>Urb. La Campiña, Chorrillos - Lima - Lima</p>
-                <p style="margin-top:8px;">Sucursal: <span id="pdf_suc_dir">Av. Los Faisanes N° 675 Urb. La Campiña, Chorrillos - Lima</span></p>
-                <p>E-mail: ventas.04@bsperu.pe</p>
-                <p>Telf.: (01) 329 9307 Cel. 923 062 809</p>
+                <strong>BUILDING SYSTEMS PERU S.A.C.</strong><br><br>
+                Domicilio Fiscal: Av. Los Faisanes N° 675<br>Urb. La Campiña, Chorrillos - Lima - Lima<br><br>
+                Sucursal: <span id="pdf_suc_dir">Av. Los Faisanes N° 675<br>Urb. La Campiña, Chorrillos - Lima - Lima</span><br>
+                E-mail : ventas.04@bsperu.pe<br>
+                Telf.: (01) 329 9307 Cel. 923 062 809
             </div>
             <div class="pdf-ruc-box">
-                <div class="ruc-top">RUC N° 20609793806</div>
-                <div class="ruc-mid">GUÍA DE REMISIÓN REMITENTE<br>ELECTRÓNICA</div>
-                <div class="ruc-bot">N° <?php echo $siguienteGS; ?></div>
+                <div class="pdf-ruc-top">RUC N° 20609793806</div>
+                <div class="pdf-ruc-mid">GUÍA DE REMISIÓN REMITENTE<br>ELECTRÓNICA</div>
+                <div class="pdf-ruc-bot">N° <?php echo $siguienteGS; ?></div>
             </div>
         </div>
 
-        <div class="pdf-box">
-            <div class="pdf-flex-row">
-                <div style="width:120px;"><strong>Fecha Emisión:</strong></div>
-                <div style="flex:1"><?php echo date('d/m/Y'); ?></div>
+        <div class="pdf-info-box">
+            <div class="pdf-info-row">
+                <div class="pdf-info-col1">Fecha Emisión:</div>
+                <div class="pdf-info-col2" id="pdf_fecha">29/09/2026</div>
             </div>
-            <div class="pdf-flex-row">
-                <div style="width:120px;"><strong>Nombre:</strong></div>
-                <div style="flex:1" id="pdf_nombre">BUILDING SYSTEMS PERU S.A.C.</div>
+            <div class="pdf-info-row">
+                <div class="pdf-info-col1">Nombre:</div>
+                <div class="pdf-info-col2" id="pdf_nombre">BUILDING SYSTEMS PERU S.A.C.</div>
             </div>
-            <div class="pdf-flex-row">
-                <div style="width:120px;"><strong>R.U.C.:</strong></div>
-                <div style="flex:1" id="pdf_ruc">20609793806</div>
+            <div class="pdf-info-row">
+                <div class="pdf-info-col1">R.U.C.:</div>
+                <div class="pdf-info-col2" id="pdf_ruc">20609793806</div>
             </div>
-            <div class="pdf-flex-row">
-                <div style="width:120px;"><strong>Dirección:</strong></div>
-                <div style="flex:1" id="pdf_dir">AV. LOS FAISANES...</div>
-                <div style="width:100px;"><strong>N° Pedido:</strong></div>
-                <div style="width:150px;"></div>
+            <div class="pdf-info-row">
+                <div class="pdf-info-col1">Dirección:</div>
+                <div class="pdf-info-col2" id="pdf_dir">AV. LOS FAISANES N° 675 URB. LA CAMPIÑA CHORRILLOS - LIMA - LIMA</div>
+                <div class="pdf-info-col3">N° Pedido:</div>
+                <div class="pdf-info-col4"></div>
             </div>
-            <div class="pdf-flex-row">
-                <div style="width:120px;"><strong>Cod. Vendedor:</strong></div>
-                <div style="flex:1">99 VENTAS OFICINA</div>
-                <div style="width:100px;"><strong>Doc. Referencia:</strong></div>
-                <div style="width:150px;">NI 0000 - 0000231</div>
+            <div class="pdf-info-row">
+                <div class="pdf-info-col1">Cod. Vendedor:</div>
+                <div class="pdf-info-col2">99 VENTAS OFICINA</div>
+                <div class="pdf-info-col3">N° Ord. Compra:</div>
+                <div class="pdf-info-col4"></div>
             </div>
-            <div class="pdf-flex-row">
-                <div style="width:120px;"><strong>Glosa:</strong></div>
-                <div style="flex:1" id="pdf_glosa">VENTA PUNTUAL SUC PIURA...</div>
+            <div class="pdf-info-row">
+                <div class="pdf-info-col1">Glosa:</div>
+                <div class="pdf-info-col2" id="pdf_glosa">VENTA PUNTUAL SUC PIURA...</div>
+                <div class="pdf-info-col3">Doc. Referencia:</div>
+                <div class="pdf-info-col4">NI 0000 - 0000231</div>
             </div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <div class="pdf-box" style="flex:1; margin-bottom:0;">
+        <div class="pdf-locations">
+            <div class="pdf-loc-box">
                 <strong>Punto de Partida:</strong><br>
-                <span id="pdf_partida">AV. LOS FAISANES 675</span>
+                <span id="pdf_partida">AV. LOS FAISANES 675 URB. LA CAMPIÑA</span>
             </div>
-            <div class="pdf-box" style="flex:1; margin-bottom:0;">
+            <div class="pdf-loc-box">
                 <strong>Punto de Llegada:</strong><br>
-                <span id="pdf_llegada">AAHH. MANUEL SEOANE...</span>
+                <span id="pdf_llegada">AAHH. MANUEL SEOANE CORRALES MZ. H LOTE 01</span>
             </div>
         </div>
 
-        <strong>MOTIVO DE TRASLADO</strong>
-        <div class="pdf-box pdf-motivo">
-            <div><span class="pdf-checkbox" id="chk_venta"></span> Venta</div>
-            <div><span class="pdf-checkbox" id="chk_consignacion"></span> Consignación</div>
-            <div><span class="pdf-checkbox" id="chk_devolucion"></span> Devolución</div>
-            <div><span class="pdf-checkbox" id="chk_traslado">X</span> Traslado entre establecimientos de la misma empresa</div>
-            <div><span class="pdf-checkbox" id="chk_exportacion"></span> Exportación</div>
-            <div><span class="pdf-checkbox" id="chk_otros"></span> Otros</div>
+        <div class="pdf-motivo-title">MOTIVO DE TRASLADO</div>
+        <div class="pdf-motivo-box">
+            <div class="pdf-motivo-col">
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_venta"></span> Venta</div>
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_traslado"></span> Traslado entre establecimientos de la misma empresa</div>
+            </div>
+            <div class="pdf-motivo-col">
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_consignacion"></span> Consignación</div>
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_exportacion"></span> Exportación</div>
+            </div>
+            <div class="pdf-motivo-col">
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_devolucion"></span> Devolución</div>
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_otros"></span> Otros</div>
+            </div>
         </div>
 
         <table class="pdf-table">
             <thead>
                 <tr>
-                    <th style="width:40px;">ITEM</th>
-                    <th>CODIGO</th>
-                    <th style="text-align:left;">DESCRIPCION</th>
-                    <th>LOTE</th>
-                    <th>CANTIDAD</th>
-                    <th>U.M.</th>
-                    <th>PESO</th>
+                    <th style="width:5%;">ITEM</th>
+                    <th style="width:15%;">CODIGO</th>
+                    <th style="width:40%; text-align:left;">DESCRIPCION</th>
+                    <th style="width:15%;">LOTE</th>
+                    <th style="width:10%;">CANTIDAD</th>
+                    <th style="width:5%;">U.M.</th>
+                    <th style="width:10%;">PESO</th>
                 </tr>
             </thead>
             <tbody id="pdf_items_render">
+                <!-- Se llenan con JS -->
             </tbody>
         </table>
-
+        
+        <div class="pdf-footer-titles">
+            <div style="width:49%;">Datos del Conductor:</div>
+            <div style="width:49%;">Datos de la Unidad de Transporte:</div>
+        </div>
         <div class="pdf-footer-boxes">
             <div class="pdf-footer-box">
-                <div style="margin-bottom:5px;"><strong>Datos del Conductor:</strong></div>
-                <div class="pdf-flex-row">
-                    <div style="width:60px;">Nombre:</div><div style="flex:1" id="pdf_cond_n">MIGUEL HUMBERTO</div>
-                </div>
-                <div class="pdf-flex-row">
-                    <div style="width:60px;">D.N.I.:</div><div style="flex:1" id="pdf_cond_d">46830741</div>
-                </div>
-                <div class="pdf-flex-row">
-                    <div style="width:60px;">Licencia:</div><div style="flex:1" id="pdf_cond_l">Q46830741</div>
-                </div>
+                <div style="display:flex;"><div style="width:60px;">Nombre:</div><div style="flex:1;" id="pdf_cond_n">MIGUEL HUMBERTO CONDEÑA AVALOS</div></div>
+                <div style="display:flex;"><div style="width:60px;">D.N.I.:</div><div style="flex:1;" id="pdf_cond_d">46830741</div></div>
+                <div style="display:flex;"><div style="width:60px;">Licencia:</div><div style="flex:1;" id="pdf_cond_l">Q46830741</div></div>
             </div>
             <div class="pdf-footer-box">
-                <div style="margin-bottom:5px;"><strong>Datos de la Unidad de Transporte:</strong></div>
-                <div class="pdf-flex-row">
-                    <div style="width:60px;">Marca:</div><div style="flex:1" id="pdf_veh_m">CANTER</div>
-                </div>
-                <div class="pdf-flex-row">
-                    <div style="width:60px;">Placa:</div><div style="flex:1" id="pdf_veh_p">BYF906</div>
-                </div>
+                <div style="display:flex;"><div style="width:60px;">Marca:</div><div style="flex:1;" id="pdf_veh_m">CANTER</div></div>
+                <div style="display:flex;"><div style="width:60px;">Placa:</div><div style="flex:1;" id="pdf_veh_p">BYF906</div></div>
             </div>
         </div>
         
-        <div style="text-align:right; font-size:10px; font-weight:bold; margin-top:5px;">
+        <div class="pdf-peso-row">
             Peso Bruto Total: <span id="pdf_peso_total">60.30</span> KGM
         </div>
 
-        <div class="pdf-signatures">
+        <div class="pdf-qr-row">
             <div class="pdf-qr">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=<?php echo urlencode($siguienteGS); ?>" style="width:100%; height:100%;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=<?php echo urlencode($siguienteGS); ?>" alt="QR">
             </div>
-            <div class="pdf-hash">
-                <p>ERnrvHe8zr7oF3C5BSm9KPv1Zws=</p>
-                <p>Representación impresa de la GUÍA DE REMISIÓN<br>REMITENTE ELECTRÓNICA.<br>Consulte el documento en<br>starsoftweb.com/FactronWeb/Factron<br>Autorizado mediante resolución 2023 / SUNAT</p>
+            <div class="pdf-hash-text">
+                <p style="margin:0; margin-bottom:5px;">ERnrvHe8zr7oF3C5BSm9KPv1Zws=</p>
+                <p style="margin:0;">Representación impresa de la GUÍA DE REMISIÓN<br>REMITENTE ELECTRÓNICA.<br>Consulte el documento en<br>starsoftweb.com/FactronWeb/Factron<br>Autorizado mediante resolución 2023 / SUNAT</p>
             </div>
         </div>
     </div>
