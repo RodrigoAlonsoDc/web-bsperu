@@ -88,7 +88,8 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         .items-table input { width: 100%; border: 1px solid var(--border-soft); padding: 8px; border-radius: 6px; outline: none; }
         
         @media print {
-            .sidebar, .main-content, .margin-settings-panel, .live-preview-toolbar { display: none !important; }
+            /* Ocultar UI de la plataforma */
+            .sidebar, .main-content { display: none !important; }
             body { 
                 background: white !important; 
                 margin: 0 !important; 
@@ -100,9 +101,9 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
                 display: block !important; 
                 position: relative !important; 
                 width: 100% !important; 
-                max-width: var(--pdf-width, 195mm) !important;
+                max-width: 195mm !important;
                 margin: 0 auto !important; 
-                padding: var(--pdf-margin-top, 4mm) var(--pdf-margin-lr, 5mm) !important; 
+                padding: 4mm 5mm !important; 
                 font-family: Arial, Helvetica, sans-serif !important;
                 font-size: 8.5pt !important;
                 color: #000 !important;
@@ -116,20 +117,20 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
 
             @page { 
                 size: A4 portrait; 
-                margin: var(--pdf-page-margin, 0mm); 
+                margin: 0mm; 
             }
         }
 
-        /* Estilos base del PDF */
+        /* Estilos base del PDF (oculto en pantalla) */
         #pdfTemplate {
             display: none;
             box-sizing: border-box;
             font-family: Arial, Helvetica, sans-serif;
             color: #000;
             background: #fff;
-            max-width: var(--pdf-width, 195mm);
+            max-width: 195mm;
             margin: 0 auto;
-            padding: var(--pdf-margin-top, 4mm) var(--pdf-margin-lr, 5mm);
+            padding: 4mm 5mm;
         }
 
         #pdfTemplate * {
@@ -403,23 +404,6 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             flex: 1;
             line-height: 1.25;
         }
-
-        /* Contenedor de Vista Previa en Pantalla */
-        #livePreviewWrapper {
-            display: none;
-            background: #cbd5e1;
-            padding: 25px;
-            border-radius: 16px;
-            margin-top: 25px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .live-preview-paper {
-            background: #ffffff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            margin: 0 auto;
-            border-radius: 2px;
-            transition: all 0.2s ease;
-        }
     </style>
 </head>
 <body>
@@ -588,76 +572,7 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
                 </div>
 
                 
-                <!-- PANEL DE CONTROL DE MÁRGENES DE IMPRESIÓN -->
-                <div class="margin-settings-panel" style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 18px 20px; margin-top: 25px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-                        <span style="font-weight: 700; color: #1e293b; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-sliders" style="color: var(--accent-tan);"></i> Ajustes de Margen y Diseño de la Guía
-                        </span>
-                        <div style="display: flex; gap: 8px;">
-                            <button type="button" onclick="resetMargenes()" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600;">
-                                <i class="fa-solid fa-rotate-left"></i> Restablecer
-                            </button>
-                            <button type="button" onclick="toggleLivePreview()" style="background: #1B4079; color: white; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                                <i class="fa-solid fa-eye"></i> <span id="btnPreviewText">Vista Previa en Pantalla</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
-                        <div class="form-group" style="margin: 0; background: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
-                                <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Margen Superior</label>
-                                <span id="val_m_top" style="font-size: 0.85rem; font-weight: 700; color: #1B4079;">4mm</span>
-                            </div>
-                            <input type="range" id="cfg_m_top" min="0" max="30" value="4" oninput="aplicarMargenes()" style="width: 100%; accent-color: var(--accent-tan); cursor: pointer;">
-                        </div>
-                        
-                        <div class="form-group" style="margin: 0; background: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
-                                <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Margen Lateral (Izq/Der)</label>
-                                <span id="val_m_lr" style="font-size: 0.85rem; font-weight: 700; color: #1B4079;">5mm</span>
-                            </div>
-                            <input type="range" id="cfg_m_lr" min="0" max="30" value="5" oninput="aplicarMargenes()" style="width: 100%; accent-color: var(--accent-tan); cursor: pointer;">
-                        </div>
-
-                        <div class="form-group" style="margin: 0; background: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 6px; display: block;">Ancho de Hoja</label>
-                            <select id="cfg_width" onchange="aplicarMargenes()" style="width: 100%; padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; background: #fff; outline: none;">
-                                <option value="195mm" selected>195 mm (Recomendado A4)</option>
-                                <option value="190mm">190 mm (Estrecho)</option>
-                                <option value="185mm">185 mm</option>
-                                <option value="100%">100% (Ancho Total)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" style="margin: 0; background: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 6px; display: block;">Margen Navegador (@page)</label>
-                            <select id="cfg_page_m" onchange="aplicarMargenes()" style="width: 100%; padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; background: #fff; outline: none;">
-                                <option value="0mm" selected>0 mm (Sin marcos blancos extra)</option>
-                                <option value="3mm">3 mm</option>
-                                <option value="5mm">5 mm</option>
-                                <option value="8mm">8 mm</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 12px; font-size: 0.8rem; color: #0369a1; background: #e0f2fe; border-left: 4px solid #0284c7; padding: 8px 12px; border-radius: 6px; line-height: 1.4;">
-                        <strong><i class="fa-solid fa-lightbulb"></i> ¿Cómo ajustar el margen en la ventana de impresión (Ctrl + P)?</strong><br>
-                        En la ventana que se abre al presionar <em>"Generar Guía"</em>: desglosa <strong>"Más opciones"</strong> &rarr; en <strong>"Márgenes"</strong> elige <strong>"Ninguno"</strong> (para que use estos milímetros exactos) o <strong>"Personalizado"</strong> (para arrastrar las líneas manualmente). Marca también <strong>"Gráficos de fondo"</strong>.
-                    </div>
-                </div>
-
-                <!-- CONTENEDOR DE VISTA PREVIA EN PANTALLA -->
-                <div id="livePreviewWrapper">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; color: #334155; font-size: 0.9rem; font-weight: 600;">
-                        <span><i class="fa-solid fa-file-invoice"></i> Vista Previa en Pantalla (Hoja A4 Simulada)</span>
-                        <span style="font-size: 0.8rem; color: #64748b;">Los cambios de márgenes de arriba se reflejan en tiempo real aquí</span>
-                    </div>
-                    <div id="livePreviewContainer" class="live-preview-paper">
-                        <!-- El template clonado se renderiza aquí -->
-                    </div>
-                </div>
+                
 
                 <div style="margin-top: 30px; display:flex; justify-content:flex-end; gap:10px;">
                     <button class="btn-primary" onclick="generarPDF()">
@@ -908,71 +823,6 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         }
 
         
-        function aplicarMargenes() {
-            const topVal = document.getElementById('cfg_m_top').value;
-            const lrVal = document.getElementById('cfg_m_lr').value;
-            const top = topVal + 'mm';
-            const lr = lrVal + 'mm';
-            const w = document.getElementById('cfg_width').value;
-            const pageM = document.getElementById('cfg_page_m').value;
-
-            document.getElementById('val_m_top').innerText = top;
-            document.getElementById('val_m_lr').innerText = lr;
-
-            document.documentElement.style.setProperty('--pdf-margin-top', top);
-            document.documentElement.style.setProperty('--pdf-margin-lr', lr);
-            document.documentElement.style.setProperty('--pdf-width', w);
-            document.documentElement.style.setProperty('--pdf-page-margin', pageM);
-
-            const tmpl = document.getElementById('pdfTemplate');
-            if (tmpl) {
-                tmpl.style.padding = `${top} ${lr}`;
-                tmpl.style.maxWidth = w;
-            }
-
-            // Si la vista previa en pantalla está abierta, actualizarla
-            const previewTarget = document.querySelector('#livePreviewContainer #pdfTemplate_clone');
-            if (previewTarget) {
-                previewTarget.style.padding = `${top} ${lr}`;
-                previewTarget.style.maxWidth = w;
-            }
-        }
-
-        function resetMargenes() {
-            document.getElementById('cfg_m_top').value = 4;
-            document.getElementById('cfg_m_lr').value = 5;
-            document.getElementById('cfg_width').value = '195mm';
-            document.getElementById('cfg_page_m').value = '0mm';
-            aplicarMargenes();
-        }
-
-        function toggleLivePreview() {
-            const wrapper = document.getElementById('livePreviewWrapper');
-            const btn = document.getElementById('btnPreviewText');
-            if (wrapper.style.display === 'none' || !wrapper.style.display) {
-                syncDataToTemplate();
-                const container = document.getElementById('livePreviewContainer');
-                const orig = document.getElementById('pdfTemplate');
-                container.innerHTML = orig.outerHTML;
-                const clone = container.querySelector('#pdfTemplate');
-                if (clone) {
-                    clone.id = 'pdfTemplate_clone';
-                    clone.style.display = 'block';
-                    clone.style.margin = '0 auto';
-                    clone.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
-                    clone.style.borderRadius = '4px';
-                    clone.style.background = '#fff';
-                }
-                aplicarMargenes();
-                wrapper.style.display = 'block';
-                btn.innerText = 'Ocultar Vista Previa';
-                wrapper.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                wrapper.style.display = 'none';
-                btn.innerText = 'Vista Previa en Pantalla';
-            }
-        }
-
         function syncDataToTemplate() {
             const d = new Date();
             const fechaStr = d.toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric'});
@@ -1017,48 +867,7 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
 
         function generarPDF() {
             try {
-                aplicarMargenes();
                 syncDataToTemplate();
-                const d = new Date();
-                const fechaStr = d.toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric'});
-                document.getElementById('pdf_fecha').innerText = fechaStr;
-
-                document.getElementById('pdf_nombre').innerText = document.getElementById('g_cliente').value;
-                document.getElementById('pdf_ruc').innerText = document.getElementById('g_ruc').value;
-                document.getElementById('pdf_partida').innerText = document.getElementById('g_partida').value;
-                document.getElementById('pdf_llegada').innerText = document.getElementById('g_llegada').value;
-                document.getElementById('pdf_glosa').innerText = document.getElementById('g_glosa').value;
-
-                const m = document.getElementById('g_motivo').value;
-                document.querySelectorAll('.pdf-chk').forEach(c => c.innerText = '');
-                if(m==='venta') document.getElementById('chk_venta').innerText = 'X';
-                if(m==='traslado') document.getElementById('chk_traslado').innerText = 'X';
-                if(m==='devolucion') document.getElementById('chk_devolucion').innerText = 'X';
-                if(m==='consignacion') document.getElementById('chk_consignacion').innerText = 'X';
-
-                document.getElementById('pdf_cond_n').innerText = document.getElementById('g_cond_nombre').value;
-                document.getElementById('pdf_cond_d').innerText = document.getElementById('g_cond_dni').value;
-                document.getElementById('pdf_cond_l').innerText = 'Q' + document.getElementById('g_cond_dni').value; 
-                document.getElementById('pdf_veh_m').innerText = document.getElementById('g_veh_marca').value;
-                document.getElementById('pdf_veh_p').innerText = document.getElementById('g_veh_placa').value;
-
-                const renderBody = document.getElementById('pdf_items_render');
-                renderBody.innerHTML = '';
-                let it = 1;
-                document.querySelectorAll('#g_items_body tr').forEach(tr => {
-                    let html = `<tr>
-                        <td>${it++}</td>
-                        <td>${tr.querySelector('.i_cod').value}</td>
-                        <td style="text-align:left; padding-left: 6px;">${tr.querySelector('.i_desc').value}</td>
-                        <td>${tr.querySelector('.i_lote').value}</td>
-                        <td>${parseFloat(tr.querySelector('.i_cant').value).toFixed(2)}</td>
-                        <td>${tr.querySelector('.i_um').value}</td>
-                        <td>${parseFloat(tr.querySelector('.i_peso').value).toFixed(2)}</td>
-                    </tr>`;
-                    renderBody.innerHTML += html;
-                });
-                calcPeso();
-
                 window.print();
             } catch(e) {
                 alert("Error en generarPDF: " + e.message);
