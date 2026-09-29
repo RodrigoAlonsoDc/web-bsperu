@@ -1,0 +1,134 @@
+[
+  {
+    "numero": "T001-0018824",
+    "tipo": "GS",
+    "fecha": "29/09/2026",
+    "hora": "10:30",
+    "origen": "PRINCIPAL",
+    "origen_nombre": "Sede Principal (Chorrillos)",
+    "destino": "PIURA",
+    "destino_nombre": "Sucursal Piura",
+    "motivo": "Traslado entre establecimientos de la misma empresa",
+    "cliente": "BUILDING SYSTEMS PERU S.A.C.",
+    "ruc": "20609793806",
+    "vendedor": "99 VENTAS OFICINA",
+    "glosa": "VENTA PUNTUAL SUC PIURA/CINTHYA CESPEDES CASTRO//SERVICIOS TERAN",
+    "conductor": "MIGUEL HUMBERTO CONDEÑA AVALOS",
+    "conductor_dni": "46830741",
+    "conductor_lic": "Q46830741",
+    "vehiculo": "CANTER",
+    "placa": "BYF906",
+    "items": [
+      {
+        "sku": "110014513",
+        "nombre": "MICROSILICA Z X 20 KG",
+        "lote": "200426",
+        "cant": 3,
+        "um": "B20",
+        "peso": 20.1
+      }
+    ],
+    "peso_total": 60.3,
+    "responsable": "Giovana",
+    "estado": "EMITIDO"
+  },
+  {
+    "numero": "T001-0018823",
+    "tipo": "GS",
+    "fecha": "22/09/2026",
+    "hora": "15:45",
+    "origen": "PRINCIPAL",
+    "origen_nombre": "Sede Principal (Chorrillos)",
+    "destino": "PIURA",
+    "destino_nombre": "Sucursal Piura",
+    "motivo": "Traslado entre establecimientos de la misma empresa",
+    "cliente": "BUILDING SYSTEMS PERU S.A.C.",
+    "ruc": "20609793806",
+    "vendedor": "99 VENTAS OFICINA",
+    "glosa": "VENTA PUNTUAL SUC PIURA/CINTHYA CESPEDES CASTRO//SERVICIOS TERAN",
+    "conductor": "MIGUEL HUMBERTO CONDEÑA AVALOS",
+    "conductor_dni": "46830741",
+    "conductor_lic": "Q46830741",
+    "vehiculo": "CANTER",
+    "placa": "BYF906",
+    "items": [
+      {
+        "sku": "110014513",
+        "nombre": "MICROSILICA Z X 20 KG",
+        "lote": "200426",
+        "cant": 3,
+        "um": "B20",
+        "peso": 20.1
+      }
+    ],
+    "peso_total": 60.3,
+    "responsable": "Giovana",
+    "estado": "EMITIDO"
+  },
+  {
+    "numero": "B001-0004521",
+    "tipo": "BV",
+    "fecha": "21/09/2026",
+    "hora": "11:15",
+    "origen": "PRINCIPAL",
+    "origen_nombre": "Sede Principal (Chorrillos)",
+    "destino": "CLIENTE",
+    "destino_nombre": "Cliente Final - Mostrador",
+    "motivo": "Venta",
+    "cliente": "CONSTRUCTORA SAN MARTIN S.A.C.",
+    "ruc": "20554189201",
+    "vendedor": "99 VENTAS OFICINA",
+    "glosa": "VENTA DIRECTA MOSTRADOR LIMA",
+    "conductor": "-",
+    "conductor_dni": "-",
+    "conductor_lic": "-",
+    "vehiculo": "-",
+    "placa": "-",
+    "items": [
+      {
+        "sku": "110014697",
+        "nombre": "PEGAMENTO Z ADITIVOS GRIS INT X 25 KG",
+        "lote": "200501",
+        "cant": 10,
+        "um": "BOL",
+        "peso": 25.0
+      }
+    ],
+    "peso_total": 250.0,
+    "responsable": "Giovana",
+    "estado": "EMITIDO"
+  },
+  {
+    "numero": "F002-0009812",
+    "tipo": "FT",
+    "fecha": "20/09/2026",
+    "hora": "16:20",
+    "origen": "PIURA",
+    "origen_nombre": "Sucursal Piura",
+    "destino": "CLIENTE",
+    "destino_nombre": "CONSORCIO VIAL NORTE",
+    "motivo": "Venta",
+    "cliente": "CONSORCIO VIAL NORTE",
+    "ruc": "20601234567",
+    "vendedor": "Endrina",
+    "glosa": "SUMINISTRO DE ADITIVOS OBRA CARRETERA",
+    "conductor": "-",
+    "conductor_dni": "-",
+    "conductor_lic": "-",
+    "vehiculo": "-",
+    "placa": "-",
+    "items": [
+      {
+        "sku": "110014292",
+        "nombre": "AIRCON Z X 5 GAL",
+        "lote": "200318",
+        "cant": 5,
+        "um": "GAL",
+        "peso": 20.0
+      }
+    ],
+    "peso_total": 100.0,
+    "responsable": "Giovana",
+    "estado": "EMITIDO"
+  }
+]

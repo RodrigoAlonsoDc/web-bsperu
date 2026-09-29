@@ -1,31 +1,280 @@
-﻿<?php
+<?php
+// crm/almacen.php - Sistema de Almacén y Control de Stock (Giovana)
 session_start();
-$vendedorCod = $_SESSION['crm_vendedor_cod'] ?? '99';
 
-$fileAlmacenPath = __DIR__ . '/crm_data/almacen_movimientos.json';
-if (!file_exists(__DIR__ . '/crm_data')) {
-    mkdir(__DIR__ . '/crm_data', 0777, true);
-}
-if (!file_exists($fileAlmacenPath)) {
-    file_put_contents($fileAlmacenPath, json_encode([]));
+$fileStockPath = __DIR__ . '/crm_data/almacen_stock.json';
+$fileMovPath   = __DIR__ . '/crm_data/almacen_movimientos.json';
+
+// Cargar o inicializar Stock
+function getStockData() {
+    global $fileStockPath;
+    if (file_exists($fileStockPath)) {
+        return json_decode(file_get_contents($fileStockPath), true) ?: [];
+    }
+    return [];
 }
 
-$rawMov = json_decode(file_get_contents($fileAlmacenPath), true) ?: [];
-$gs_counter = 18824; 
-foreach ($rawMov as $m) {
-    if ($m['tipo'] === 'GS') {
-        $num = intval(explode('-', $m['numero'])[1]);
-        if ($num >= $gs_counter) $gs_counter = $num + 1;
+function saveStockData($data) {
+    global $fileStockPath;
+    file_put_contents($fileStockPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+// Cargar o inicializar Movimientos
+function getMovimientosData() {
+    global $fileMovPath;
+    if (file_exists($fileMovPath)) {
+        return json_decode(file_get_contents($fileMovPath), true) ?: [];
+    }
+    return [];
+}
+
+function saveMovimientosData($data) {
+    global $fileMovPath;
+    file_put_contents($fileMovPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+function getSiguienteGS() {
+    $movs = getMovimientosData();
+    $maxNum = 18824;
+    foreach ($movs as $m) {
+        if (($m['tipo'] ?? '') === 'GS' && !empty($m['numero'])) {
+            $parts = explode('-', $m['numero']);
+            if (isset($parts[1])) {
+                $n = intval(trim($parts[1]));
+                if ($n >= $maxNum) $maxNum = $n + 1;
+            }
+        }
+    }
+    return 'T001 - ' . str_pad($maxNum, 7, '0', STR_PAD_LEFT);
+}
+
+// Nombres y direcciones oficiales de las sedes
+$sucursalesInfo = [
+    'PRINCIPAL' => [
+        'nombre' => 'Sede Principal (Chorrillos - Lima)',
+        'dir' => 'AV. LOS FAISANES 675 URB. LA CAMPIÑA',
+        'dir_completa' => 'Av. Los Faisanes Nº 675 Urb. La Campiña, Chorrillos - Lima - Lima'
+    ],
+    'PIURA' => [
+        'nombre' => 'Sucursal Piura',
+        'dir' => 'MZ. D LOTE 17 ZONA INDUSTRIAL',
+        'dir_completa' => 'Mz. D Lote 17 Zona Industrial - Piura'
+    ],
+    'AREQUIPA' => [
+        'nombre' => 'Sucursal Arequipa',
+        'dir' => 'PARQUE INDUSTRIAL RIO SECO',
+        'dir_completa' => 'Parque Industrial Rio Seco - Arequipa'
+    ],
+    'SURQUILLO' => [
+        'nombre' => 'Sucursal Surquillo',
+        'dir' => 'AV. TOMAS MARSANO 1234',
+        'dir_completa' => 'Av. Tomás Marsano 1234 - Surquillo - Lima'
+    ],
+    'SAN_BORJA' => [
+        'nombre' => 'Sucursal San Borja',
+        'dir' => 'AV. JAVIER PRADO ESTE 2450',
+        'dir_completa' => 'Av. Javier Prado Este 2450 - San Borja - Lima'
+    ]
+];
+
+// === API BACKEND HANDLER (AJAX) ===
+if (isset($_REQUEST['action'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    $action = $_REQUEST['action'];
+    $stockAll = getStockData();
+    $movsAll  = getMovimientosData();
+
+    // 1. Obtener Stock por Sucursal
+    if ($action === 'get_stock') {
+        $suc = $_GET['sucursal'] ?? 'PRINCIPAL';
+        $stockSuc = $stockAll[$suc] ?? [];
+        echo json_encode([
+            'success' => true,
+            'sucursal' => $suc,
+            'items' => array_values($stockSuc),
+            'total_items' => count($stockSuc),
+            'sucursal_info' => $sucursalesInfo[$suc] ?? []
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 2. Transferir Stock entre Sucursales
+    if ($action === 'transferir_stock') {
+        $origen = trim($_POST['origen'] ?? '');
+        $destino = trim($_POST['destino'] ?? '');
+        $sku = trim($_POST['sku'] ?? '');
+        $cantidad = floatval($_POST['cantidad'] ?? 0);
+        $generarGuia = !empty($_POST['generar_guia']);
+        $responsable = $_SESSION['crm_user'] ?? 'Giovana';
+
+        if (empty($origen) || empty($destino) || $origen === $destino) {
+            echo json_encode(['success' => false, 'error' => 'Debes seleccionar una sucursal de origen y una de destino distintas.']);
+            exit;
+        }
+
+        if (empty($sku) || $cantidad <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Producto no válido o cantidad menor o igual a cero.']);
+            exit;
+        }
+
+        if (!isset($stockAll[$origen][$sku])) {
+            echo json_encode(['success' => false, 'error' => 'El producto no existe en el catálogo de la sucursal de origen.']);
+            exit;
+        }
+
+        $itemOrig = &$stockAll[$origen][$sku];
+        if ($itemOrig['stock'] < $cantidad) {
+            echo json_encode(['success' => false, 'error' => "Stock insuficiente en origen. Stock disponible: {$itemOrig['stock']}."]);
+            exit;
+        }
+
+        // Descontar en origen
+        $itemOrig['stock'] -= $cantidad;
+
+        // Sumar en destino (si no existe, copiar estructura de origen)
+        if (!isset($stockAll[$destino][$sku])) {
+            $stockAll[$destino][$sku] = $itemOrig;
+            $stockAll[$destino][$sku]['stock'] = 0;
+        }
+        $stockAll[$destino][$sku]['stock'] += $cantidad;
+
+        // Guardar stock
+        saveStockData($stockAll);
+
+        // Generar correlativo de Guía GS
+        $nroGuia = getSiguienteGS();
+        $guiaLimpia = str_replace(' ', '', $nroGuia);
+
+        $nomOrig = $sucursalesInfo[$origen]['nombre'] ?? $origen;
+        $nomDest = $sucursalesInfo[$destino]['nombre'] ?? $destino;
+        $dirDest = $sucursalesInfo[$destino]['dir'] ?? 'DIRECCION DE SUCURSAL';
+
+        // Registrar movimiento
+        $nuevoMov = [
+            'numero' => $guiaLimpia,
+            'tipo' => 'GS',
+            'fecha' => date('d/m/Y'),
+            'hora' => date('H:i'),
+            'origen' => $origen,
+            'origen_nombre' => $nomOrig,
+            'destino' => $destino,
+            'destino_nombre' => $nomDest,
+            'motivo' => 'Traslado entre establecimientos de la misma empresa',
+            'cliente' => 'BUILDING SYSTEMS PERU S.A.C.',
+            'ruc' => '20609793806',
+            'vendedor' => '99 VENTAS OFICINA',
+            'glosa' => "TRASLADO DE STOCK $nomOrig A $nomDest // GIOVANA",
+            'conductor' => trim($_POST['conductor'] ?? 'MIGUEL HUMBERTO CONDEÑA AVALOS'),
+            'conductor_dni' => trim($_POST['conductor_dni'] ?? '46830741'),
+            'conductor_lic' => trim($_POST['conductor_lic'] ?? 'Q46830741'),
+            'vehiculo' => trim($_POST['vehiculo'] ?? 'CANTER'),
+            'placa' => trim($_POST['placa'] ?? 'BYF906'),
+            'items' => [
+                [
+                    'sku' => $sku,
+                    'nombre' => $itemOrig['nombre'],
+                    'lote' => $itemOrig['lote'] ?? '200426',
+                    'cant' => $cantidad,
+                    'um' => $itemOrig['um'] ?? 'UND',
+                    'peso' => $itemOrig['peso'] ?? 20.0
+                ]
+            ],
+            'peso_total' => round($cantidad * floatval($itemOrig['peso'] ?? 20.0), 2),
+            'responsable' => $responsable,
+            'estado' => 'EMITIDO'
+        ];
+
+        array_unshift($movsAll, $nuevoMov);
+        saveMovimientosData($movsAll);
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => "Transferencia exitosa de {$cantidad} {$itemOrig['um']} de {$nomOrig} hacia {$nomDest}.",
+            'guia_numero' => $nroGuia,
+            'movimiento' => $nuevoMov,
+            'generar_guia' => $generarGuia
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 3. Ajustar / Estabilizar Stock
+    if ($action === 'ajustar_stock') {
+        $suc = trim($_POST['sucursal'] ?? 'PRINCIPAL');
+        $sku = trim($_POST['sku'] ?? '');
+        $nuevoStock = floatval($_POST['nuevo_stock'] ?? 0);
+        $motivo = trim($_POST['motivo'] ?? 'Conteo físico de inventario');
+        $responsable = $_SESSION['crm_user'] ?? 'Giovana';
+
+        if (empty($sku) || !isset($stockAll[$suc][$sku])) {
+            echo json_encode(['success' => false, 'error' => 'Producto no encontrado en la sucursal seleccionada.']);
+            exit;
+        }
+
+        $stockAnterior = $stockAll[$suc][$sku]['stock'];
+        $diff = $nuevoStock - $stockAnterior;
+        $stockAll[$suc][$sku]['stock'] = $nuevoStock;
+        saveStockData($stockAll);
+
+        // Registrar en auditoría
+        $nomSuc = $sucursalesInfo[$suc]['nombre'] ?? $suc;
+        $signo = $diff >= 0 ? "+$diff" : "$diff";
+        $nuevoMov = [
+            'numero' => 'AJUSTE-' . date('YmdHis'),
+            'tipo' => 'AJUSTE',
+            'fecha' => date('d/m/Y'),
+            'hora' => date('H:i'),
+            'origen' => $suc,
+            'origen_nombre' => $nomSuc,
+            'destino' => $suc,
+            'destino_nombre' => $nomSuc,
+            'motivo' => "Ajuste de Stock: $motivo ($signo uds)",
+            'cliente' => 'INVENTARIO INTERNO BS PERU',
+            'ruc' => '20609793806',
+            'vendedor' => 'GIOVANA ALMACEN',
+            'glosa' => "ESTABILIZACIÓN DE STOCK: {$stockAll[$suc][$sku]['nombre']}. Anterior: $stockAnterior, Nuevo: $nuevoStock.",
+            'items' => [
+                [
+                    'sku' => $sku,
+                    'nombre' => $stockAll[$suc][$sku]['nombre'],
+                    'lote' => $stockAll[$suc][$sku]['lote'] ?? '200426',
+                    'cant' => abs($diff),
+                    'um' => $stockAll[$suc][$sku]['um'] ?? 'UND',
+                    'peso' => $stockAll[$suc][$sku]['peso'] ?? 20.0
+                ]
+            ],
+            'peso_total' => 0,
+            'responsable' => $responsable,
+            'estado' => 'CONCILIADO'
+        ];
+        array_unshift($movsAll, $nuevoMov);
+        saveMovimientosData($movsAll);
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => "Stock estabilizado correctamente. Stock anterior: {$stockAnterior}, Nuevo stock: {$nuevoStock}.",
+            'nuevo_stock' => $nuevoStock
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 4. Obtener Movimientos
+    if ($action === 'get_movimientos') {
+        echo json_encode([
+            'success' => true,
+            'movimientos' => $movsAll
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
 }
-$siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
+
+$siguienteGS = getSiguienteGS();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BS Perú - Panel de Almacén</title>
+    <title>BS Perú - Almacén y Control de Stock</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -33,63 +282,109 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         :root {
             --outer-bg: #1B4079;
             --app-frame: #161719;
-            --sidebar-bg: #161719;
-            --main-bg: #FFFFFF;
+            --main-bg: #F8FAFC;
+            --sidebar-bg: #0F172A;
             --accent-tan: #1B4079;
-            --text-dark: #1E2024;
-            --text-muted: #8E9299;
-            --border-soft: #ECE7DE;
-            --card-radius: 28px;
-            --pill-radius: 40px;
+            --accent-blue: #0284C7;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --border-soft: #E2E8F0;
+            --card-radius: 20px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--sidebar-bg); height: 100vh; width: 100vw; display: flex; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--outer-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; color: var(--text-dark); }
+        .app-window { width: 100%; max-width: 1440px; height: 94vh; background: var(--app-frame); border-radius: 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); display: flex; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid rgba(255, 255, 255, 0.05); }
+        .brand-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; text-decoration: none; }
+        .brand-logo-icon { width: 42px; height: 42px; background: var(--accent-tan); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FFF; font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; }
+        .brand-logo-text { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; color: #FFF; letter-spacing: -0.5px; }
+        .nav-menu { display: flex; flex-direction: column; gap: 6px; }
+        .nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px; color: #94A3B8; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .nav-item:hover { color: #FFF; background: rgba(255,255,255,0.06); }
+        .nav-item.active { background: var(--accent-tan); color: #FFF; font-weight: 600; box-shadow: 0 4px 12px rgba(27,64,121,0.3); }
+        
+        /* Contenedor Principal */
+        .main-content { flex: 1; background: var(--main-bg); border-radius: var(--card-radius) 0 0 var(--card-radius); padding: 25px 35px; overflow-y: auto; display: flex; flex-direction: column; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .header-title h1 { font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text-dark); }
+        .header-title p { font-size: 0.85rem; color: var(--text-muted); }
+        
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .user-badge { display: flex; align-items: center; gap: 8px; background: #FFF; padding: 8px 14px; border-radius: 12px; border: 1px solid var(--border-soft); font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+        
+        .sucursal-selector { display: flex; align-items: center; gap: 10px; background: #FFF; padding: 8px 16px; border-radius: 12px; border: 1.5px solid var(--accent-tan); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .sucursal-selector select { border: none; background: transparent; font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--accent-tan); outline: none; cursor: pointer; }
 
-        .sidebar { width: 280px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 26px 18px; gap: 16px; flex-shrink: 0; }
-        .brand-logo { display: flex; align-items: center; gap: 12px; padding: 6px 12px 18px 12px; color: #FFF; text-decoration: none; }
-        .brand-logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #1B4079 0%, #4D7C8A 100%); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1.25rem; color: #FFF; }
-        .brand-logo-text { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800; color: #FFF; }
-        
-        .nav-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: var(--pill-radius); color: var(--text-muted); font-size: 0.88rem; font-weight: 500; text-decoration: none; cursor: pointer; transition: 0.2s; }
-        .nav-item:hover { color: #FFF; background: rgba(255,255,255,0.05); }
-        .nav-item.active { background: var(--accent-tan); color: #FFF; font-weight: 600; }
-        
-        .main-content { flex: 1; background: var(--main-bg); border-radius: var(--card-radius) 0 0 var(--card-radius); padding: 30px 40px; overflow-y: auto; display: flex; flex-direction: column; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .header-title h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 700; color: var(--text-dark); }
-        
-        .sucursal-selector { display: flex; align-items: center; gap: 10px; background: rgba(27,64,121,0.05); padding: 10px 20px; border-radius: 15px; border: 1px solid rgba(27,64,121,0.1); }
-        .sucursal-selector select { border: none; background: transparent; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 600; color: var(--accent-tan); outline: none; cursor: pointer; }
+        /* KPI Cards */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 25px; }
+        .kpi-card { background: #FFF; border-radius: 16px; padding: 18px 22px; border: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .kpi-info h4 { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .kpi-info .val { font-family: 'Outfit', sans-serif; font-size: 1.7rem; font-weight: 700; color: var(--text-dark); }
+        .kpi-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+        .kpi-blue { background: rgba(27,64,121,0.1); color: var(--accent-tan); }
+        .kpi-green { background: rgba(56,161,105,0.1); color: #38A169; }
+        .kpi-amber { background: rgba(236,201,75,0.2); color: #B7791F; }
+        .kpi-purple { background: rgba(128,90,213,0.1); color: #805AD5; }
 
-        .btn-primary { background: var(--accent-tan); color: #FFF; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        /* Botones y Tablas */
+        .btn-primary { background: var(--accent-tan); color: #FFF; border: none; padding: 10px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; text-decoration: none; }
+        .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+        .btn-success { background: #16A34A; color: #FFF; border: none; padding: 10px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .btn-success:hover { opacity: 0.92; transform: translateY(-1px); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.15s; }
+        .btn-transfer { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }
+        .btn-transfer:hover { background: #4338CA; color: #FFF; }
+        .btn-adjust { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+        .btn-adjust:hover { background: #B45309; color: #FFF; }
 
         .view-section { display: none; }
         .view-section.active { display: block; }
         
-        .table-container { background: #FFF; border-radius: 20px; border: 1px solid var(--border-soft); overflow: hidden; margin-top: 20px; }
+        .table-container { background: #FFF; border-radius: 16px; border: 1px solid var(--border-soft); overflow: hidden; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #F8F9FA; padding: 16px 20px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        td { padding: 16px 20px; font-size: 0.95rem; color: var(--text-dark); border-bottom: 1px solid var(--border-soft); font-weight: 500; }
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
-        .badge.gs { background: rgba(27,64,121,0.1); color: var(--accent-tan); }
-        .badge.ft { background: rgba(56,161,105,0.1); color: #38A169; }
-        .badge.bv { background: rgba(236,201,75,0.2); color: #B7791F; }
+        th { background: #F8FAFC; padding: 14px 18px; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--border-soft); }
+        td { padding: 14px 18px; font-size: 0.88rem; color: var(--text-dark); border-bottom: 1px solid var(--border-soft); font-weight: 500; vertical-align: middle; }
+        tr:hover { background: #F8FAFC; }
+        
+        .badge { padding: 4px 9px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .badge.gs { background: rgba(27,64,121,0.12); color: var(--accent-tan); }
+        .badge.ft { background: rgba(22,163,74,0.12); color: #16A34A; }
+        .badge.bv { background: rgba(202,138,4,0.15); color: #A16207; }
+        .badge.stock-ok { background: #DCFCE7; color: #15803D; font-weight: 700; }
+        .badge.stock-low { background: #FEF9C3; color: #A16207; font-weight: 700; }
+        .badge.stock-out { background: #FEE2E2; color: #B91C1C; font-weight: 700; }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        /* Barra de herramientas */
+        .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .search-box { display: flex; align-items: center; gap: 10px; background: #FFF; border: 1px solid var(--border-soft); border-radius: 10px; padding: 8px 14px; width: 340px; }
+        .search-box input { border: none; outline: none; font-size: 0.88rem; width: 100%; }
+        .filter-group { display: flex; gap: 6px; }
+        .filter-btn { background: #FFF; border: 1px solid var(--border-soft); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+        .filter-btn.active { background: var(--accent-tan); color: #FFF; border-color: var(--accent-tan); }
+
+        /* Formularios */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-        .form-group input, .form-group select { padding: 12px 16px; border: 1px solid var(--border-soft); border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 0.95rem; outline: none; }
-        .form-group input:focus { border-color: var(--accent-tan); }
-        
-        .items-table input { width: 100%; border: 1px solid var(--border-soft); padding: 8px; border-radius: 6px; outline: none; }
-        
+        .form-group label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1px solid var(--border-soft); border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 0.9rem; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-tan); }
+
+        /* Modales */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal-card { background: #FFF; border-radius: 20px; width: 100%; max-width: 520px; padding: 25px 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); position: relative; animation: modalIn 0.2s ease-out; }
+        @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-family: 'Outfit', sans-serif; font-size: 1.3rem; color: var(--text-dark); }
+        .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
+
+        /* ============================================================ */
+        /* === ESTILOS OFICIALES DE IMPRESIÓN (PDF EXACTO STARSOFT) === */
+        /* ============================================================ */
         @media print {
-            /* Ocultar UI de la plataforma */
-            .sidebar, .main-content { display: none !important; }
+            .app-window, .sidebar, .main-content, .modal-overlay { display: none !important; }
             body { 
                 background: white !important; 
                 margin: 0 !important; 
@@ -121,7 +416,6 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             }
         }
 
-        /* Estilos base del PDF (oculto en pantalla) */
         #pdfTemplate {
             display: none;
             box-sizing: border-box;
@@ -133,457 +427,453 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             padding: 4mm 5mm;
         }
 
-        #pdfTemplate * {
-            box-sizing: border-box;
-        }
+        #pdfTemplate * { box-sizing: border-box; }
 
-        /* 1. Encabezado */
-        .pdf-header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            width: 100%;
-        }
-        .pdf-logo {
-            width: 23%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        .pdf-logo img {
-            width: 140px;
-            max-width: 100%;
-            height: auto;
-        }
-        .pdf-company-info {
-            width: 44%;
-            text-align: center;
-            white-space: nowrap;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        .pdf-comp-title {
-            font-size: 11pt;
-            font-weight: bold;
-            color: #000;
-            margin-bottom: 5px;
-            letter-spacing: 0.2px;
-        }
-        .pdf-comp-fiscal {
-            font-size: 8pt;
-            font-weight: bold;
-            line-height: 1.25;
-            margin-bottom: 5px;
-            color: #000;
-        }
-        .pdf-comp-branch {
-            font-size: 8.5pt;
-            font-weight: bold;
-            line-height: 1.25;
-            color: #000;
-        }
-        .pdf-ruc-box {
-            width: 32%;
-            border: 1.5px solid #000;
-            border-radius: 6px;
-            text-align: center;
-            overflow: hidden;
-            background: #fff;
-        }
-        .pdf-ruc-top {
-            font-size: 11.5pt;
-            font-weight: bold;
-            padding: 5px 0;
-            letter-spacing: 0.5px;
-        }
-        .pdf-ruc-mid {
-            background-color: #004080 !important;
-            color: #ffffff !important;
-            padding: 5px 2px;
-            line-height: 1.2;
-        }
-        .pdf-ruc-mid div:first-child {
-            font-size: 10pt;
-            font-weight: bold;
-            white-space: nowrap;
-            letter-spacing: 0px;
-        }
-        .pdf-ruc-mid div:last-child {
-            font-size: 10.5pt;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            margin-top: 1px;
-        }
-        .pdf-ruc-bot {
-            font-size: 11.5pt;
-            font-weight: bold;
-            padding: 5px 0;
-            letter-spacing: 0.5px;
-        }
+        .pdf-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; width: 100%; }
+        .pdf-logo { width: 23%; display: flex; align-items: center; justify-content: flex-start; }
+        .pdf-logo img { width: 140px; max-width: 100%; height: auto; }
+        .pdf-company-info { width: 44%; text-align: center; white-space: nowrap; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial, Helvetica, sans-serif; }
+        .pdf-comp-title { font-size: 11pt; font-weight: bold; color: #000; margin-bottom: 5px; letter-spacing: 0.2px; }
+        .pdf-comp-fiscal { font-size: 8pt; font-weight: bold; line-height: 1.25; margin-bottom: 5px; color: #000; }
+        .pdf-comp-branch { font-size: 8.5pt; font-weight: bold; line-height: 1.25; color: #000; }
+        .pdf-ruc-box { width: 32%; border: 1.5px solid #000; border-radius: 6px; text-align: center; overflow: hidden; background: #fff; }
+        .pdf-ruc-top { font-size: 11.5pt; font-weight: bold; padding: 5px 0; letter-spacing: 0.5px; }
+        .pdf-ruc-mid { background-color: #004080 !important; color: #ffffff !important; padding: 5px 2px; line-height: 1.2; }
+        .pdf-ruc-mid div:first-child { font-size: 10pt; font-weight: bold; white-space: nowrap; letter-spacing: 0px; }
+        .pdf-ruc-mid div:last-child { font-size: 10.5pt; font-weight: bold; letter-spacing: 0.5px; margin-top: 1px; }
+        .pdf-ruc-bot { font-size: 11.5pt; font-weight: bold; padding: 5px 0; letter-spacing: 0.5px; }
 
-        /* 2. Caja de Info General */
-        .pdf-info-box {
-            border: 1px solid #000;
-            border-radius: 4px;
-            padding: 6px 10px;
-            margin-bottom: 8px;
-            font-size: 8.5pt;
-            line-height: 1.35;
-        }
-        .pdf-info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 1px;
-        }
-        .pdf-info-left {
-            display: flex;
-            align-items: baseline;
-            flex: 1;
-        }
-        .pdf-info-right {
-            display: flex;
-            align-items: baseline;
-            width: 220px;
-            white-space: nowrap;
-            justify-content: flex-start;
-        }
-        .pdf-lbl {
-            font-weight: bold;
-            display: inline-block;
-            min-width: 90px;
-            white-space: nowrap;
-        }
-        .pdf-val {
-            font-weight: normal;
-        }
+        .pdf-info-box { border: 1px solid #000; border-radius: 4px; padding: 6px 10px; margin-bottom: 8px; font-size: 8.5pt; line-height: 1.35; }
+        .pdf-info-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1px; }
+        .pdf-info-left { display: flex; align-items: baseline; flex: 1; }
+        .pdf-info-right { display: flex; align-items: baseline; width: 220px; white-space: nowrap; justify-content: flex-start; }
+        .pdf-lbl { font-weight: bold; display: inline-block; min-width: 90px; white-space: nowrap; }
+        .pdf-val { font-weight: normal; }
 
-        /* 3. Puntos de partida y llegada */
-        .pdf-locations-box {
-            border: 1px solid #000;
-            border-radius: 4px;
-            display: flex;
-            margin-bottom: 8px;
-            font-size: 8pt;
-            line-height: 1.3;
-        }
-        .pdf-loc-half {
-            flex: 1;
-            padding: 5px 8px;
-        }
-        .pdf-loc-divider {
-            width: 1px;
-            background-color: #000;
-        }
-        .pdf-loc-title {
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
+        .pdf-locations-box { border: 1px solid #000; border-radius: 4px; display: flex; margin-bottom: 8px; font-size: 8pt; line-height: 1.3; }
+        .pdf-loc-half { flex: 1; padding: 5px 8px; }
+        .pdf-loc-divider { width: 1px; background-color: #000; }
+        .pdf-loc-title { font-weight: bold; margin-bottom: 2px; }
 
-        /* 4. Motivo de traslado */
-        .pdf-motivo-title {
-            font-weight: bold;
-            font-size: 8pt;
-            margin-bottom: 2px;
-        }
-        .pdf-motivo-box {
-            border: 1px solid #000;
-            border-radius: 4px;
-            padding: 5px 8px;
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 8pt;
-        }
+        .pdf-motivo-title { font-weight: bold; font-size: 8pt; margin-bottom: 2px; }
+        .pdf-motivo-box { border: 1px solid #000; border-radius: 4px; padding: 5px 8px; display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 8pt; }
         .pdf-motivo-col1 { width: 44%; display: flex; flex-direction: column; gap: 4px; }
         .pdf-motivo-col2 { width: 28%; display: flex; flex-direction: column; gap: 4px; }
         .pdf-motivo-col3 { width: 26%; display: flex; flex-direction: column; gap: 4px; }
         .pdf-chk-item { display: flex; align-items: center; gap: 6px; }
-        .pdf-chk {
-            width: 12px;
-            height: 12px;
-            min-width: 12px;
-            border: 1px solid #000;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            font-weight: bold;
-            line-height: 1;
-        }
+        .pdf-chk { width: 12px; height: 12px; min-width: 12px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; line-height: 1; }
 
-        /* 5. Tabla de Items */
-        .pdf-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 6px;
-            font-size: 8pt;
-        }
-        .pdf-table th {
-            background-color: #004080 !important;
-            color: #ffffff !important;
-            border: 1px solid #000;
-            padding: 4px 2px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 8pt;
-        }
-        .pdf-table td {
-            border: 1px solid #000;
-            padding: 4px 3px;
-            text-align: center;
-            font-size: 8pt;
-        }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 8pt; }
+        .pdf-table th { background-color: #004080 !important; color: #ffffff !important; border: 1px solid #000; padding: 4px 2px; font-weight: bold; text-align: center; font-size: 8pt; }
+        .pdf-table td { border: 1px solid #000; padding: 4px 3px; text-align: center; font-size: 8pt; }
 
-        /* 6. Conductor y Transporte */
-        .pdf-footer-titles {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 8pt;
-            margin-bottom: 2px;
-        }
-        .pdf-footer-boxes {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-            font-size: 8pt;
-        }
-        .pdf-footer-box {
-            width: 49.5%;
-            border: 1px solid #000;
-            border-radius: 4px;
-            overflow: hidden;
-            line-height: 1.3;
-        }
-        .pdf-box-row {
-            display: flex;
-        }
-        .pdf-box-lbl {
-            width: 55px;
-            padding: 3px 6px;
-            border-right: 1px solid #000;
-            font-weight: normal;
-        }
-        .pdf-box-val {
-            flex: 1;
-            padding: 3px 6px;
-        }
+        .pdf-footer-titles { display: flex; justify-content: space-between; font-weight: bold; font-size: 8pt; margin-bottom: 2px; }
+        .pdf-footer-boxes { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 8pt; }
+        .pdf-footer-box { width: 49.5%; border: 1px solid #000; border-radius: 4px; overflow: hidden; line-height: 1.3; }
+        .pdf-box-row { display: flex; }
+        .pdf-box-lbl { width: 55px; padding: 3px 6px; border-right: 1px solid #000; font-weight: normal; }
+        .pdf-box-val { flex: 1; padding: 3px 6px; }
 
-        /* 7. Peso Bruto */
-        .pdf-peso-row {
-            text-align: right;
-            font-size: 7.5pt;
-            font-weight: bold;
-            margin-bottom: 6px;
-            padding-right: 2px;
-        }
+        .pdf-peso-row { text-align: right; font-size: 7.5pt; font-weight: bold; margin-bottom: 6px; padding-right: 2px; }
 
-        /* 8. QR y SUNAT */
-        .pdf-qr-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            font-size: 8pt;
-        }
-        .pdf-qr {
-            width: 75px;
-            height: 75px;
-            min-width: 75px;
-        }
-        .pdf-qr img {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        .pdf-hash-text {
-            flex: 1;
-            line-height: 1.25;
-        }
+        .pdf-qr-row { display: flex; align-items: flex-start; gap: 12px; font-size: 8pt; }
+        .pdf-qr { width: 75px; height: 75px; min-width: 75px; }
+        .pdf-qr img { width: 100%; height: 100%; display: block; }
+        .pdf-hash-text { flex: 1; line-height: 1.25; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <a href="#" class="brand-logo">
-            <div class="brand-logo-icon">BS</div>
-            <span class="brand-logo-text">Almacén</span>
-        </a>
-        <nav class="nav-menu">
-            <a class="nav-item active" onclick="switchView('historial', this)">
-                <i class="fa-solid fa-clock-rotate-left"></i> Historial
+    <div class="app-window">
+        <!-- BARRA LATERAL -->
+        <div class="sidebar">
+            <a href="#" class="brand-logo">
+                <div class="brand-logo-icon">BS</div>
+                <span class="brand-logo-text">Almacén</span>
             </a>
-            <a class="nav-item" onclick="switchView('nueva_guia', this)">
-                <i class="fa-solid fa-truck-fast"></i> Nueva Guía (GS)
-            </a>
-        </nav>
-        <div style="margin-top:auto">
-            <a href="ventas.php" class="nav-item" style="color:var(--text-muted); font-size:0.8rem;">
-                <i class="fa-solid fa-arrow-left"></i> Volver a Ventas
-            </a>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div class="header">
-            <div class="header-title">
-                <h1 id="pageTitle">Historial de Movimientos</h1>
-            </div>
-            <div class="sucursal-selector">
-                <i class="fa-solid fa-building" style="color:var(--accent-tan)"></i>
-                <select id="sucursalActiva" onchange="actualizarSucursal()">
-                    <option value="PRINCIPAL">Sede Principal (Lima)</option>
-                    <option value="PIURA">Sucursal Piura</option>
-                    <option value="AREQUIPA">Sucursal Arequipa</option>
-                </select>
+            <nav class="nav-menu">
+                <a class="nav-item active" onclick="switchView('stock', this)">
+                    <i class="fa-solid fa-boxes-stacked"></i> Stock por Sucursal
+                </a>
+                <a class="nav-item" onclick="switchView('transferir', this)">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Transferir / Mover
+                </a>
+                <a class="nav-item" onclick="switchView('nueva_guia', this)">
+                    <i class="fa-solid fa-truck-fast"></i> Guía Remisión (GS)
+                </a>
+                <a class="nav-item" onclick="switchView('historial', this)">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Historial (BV/FT/GS)
+                </a>
+            </nav>
+            <div style="margin-top:auto">
+                <a href="ventas.php" class="nav-item" style="color:var(--text-muted); font-size:0.85rem;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a Ventas
+                </a>
             </div>
         </div>
 
-        <div id="view_historial" class="view-section active">
-            <button class="btn-primary" onclick="document.querySelectorAll('.nav-item')[1].click()">
-                <i class="fa-solid fa-plus"></i> Generar Guía Remisión
-            </button>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Documento</th>
-                            <th>Tipo</th>
-                            <th>Fecha</th>
-                            <th>Origen/Destino</th>
-                            <th>Motivo</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historialBody">
-                        <tr>
-                            <td><strong>T001-0018823</strong></td>
-                            <td><span class="badge gs">GS</span></td>
-                            <td>22/09/2026</td>
-                            <td>Lima &rarr; Piura</td>
-                            <td>Traslado mismo establecimiento</td>
-                            <td style="color:#38A169;font-weight:600;"><i class="fa-solid fa-check-circle"></i> Emitido</td>
-                        </tr>
-                        <tr>
-                            <td><strong>B001-004521</strong></td>
-                            <td><span class="badge bv">BV</span></td>
-                            <td>21/09/2026</td>
-                            <td>Almacén Lima &rarr; Cliente</td>
-                            <td>Venta</td>
-                            <td style="color:#38A169;font-weight:600;"><i class="fa-solid fa-check-circle"></i> Emitido</td>
-                        </tr>
-                        <tr>
-                            <td><strong>F002-009812</strong></td>
-                            <td><span class="badge ft">FT</span></td>
-                            <td>20/09/2026</td>
-                            <td>Almacén Piura &rarr; Consorcio X</td>
-                            <td>Venta</td>
-                            <td style="color:#38A169;font-weight:600;"><i class="fa-solid fa-check-circle"></i> Emitido</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="view_nueva_guia" class="view-section">
-            <div style="background:#fff; border-radius: 20px; border: 1px solid var(--border-soft); padding: 30px;">
-                <h3 style="margin-bottom:20px; font-family:'Outfit';">Generar Guía de Remisión Electrónica</h3>
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Destinatario (Razón Social)</label>
-                        <input type="text" id="g_cliente" value="BUILDING SYSTEMS PERU S.A.C.">
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-title">
+                    <h1 id="pageTitle">Control de Stock por Sucursal</h1>
+                    <p id="pageSubtitle">Inventario físico y estabilización de almacenes - Encargada: Giovana</p>
+                </div>
+                <div class="header-actions">
+                    <div class="user-badge">
+                        <i class="fa-solid fa-user-shield" style="color:var(--accent-tan);"></i>
+                        <span>Giovana</span>
                     </div>
-                    <div class="form-group">
-                        <label>R.U.C. Destinatario</label>
-                        <input type="text" id="g_ruc" value="20609793806">
-                    </div>
-                    <div class="form-group">
-                        <label>Punto de Partida</label>
-                        <input type="text" id="g_partida" value="AV. LOS FAISANES 675 URB. LA CAMPIÑA">
-                    </div>
-                    <div class="form-group">
-                        <label>Punto de Llegada</label>
-                        <input type="text" id="g_llegada" value="AAHH. MANUEL SEOANE CORRALES MZ. H LOTE 01">
-                    </div>
-                    <div class="form-group">
-                        <label>Motivo de Traslado</label>
-                        <select id="g_motivo">
-                            <option value="traslado">Traslado entre establecimientos de la misma empresa</option>
-                            <option value="venta">Venta</option>
-                            <option value="devolucion">Devolución</option>
-                            <option value="consignacion">Consignación</option>
+                    <div class="sucursal-selector">
+                        <i class="fa-solid fa-building" style="color:var(--accent-tan)"></i>
+                        <select id="sucursalActiva" onchange="cambiarSucursalActiva()">
+                            <option value="PRINCIPAL">Sede Principal (Lima / Chorrillos)</option>
+                            <option value="PIURA">Sucursal Piura</option>
+                            <option value="AREQUIPA">Sucursal Arequipa</option>
+                            <option value="SURQUILLO">Sucursal Surquillo</option>
+                            <option value="SAN_BORJA">Sucursal San Borja</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Glosa / Observación</label>
-                        <input type="text" id="g_glosa" value="VENTA PUNTUAL SUC PIURA/CINTHYA CESPEDES CASTRO//SERVICIOS TERAN">
+                </div>
+            </div>
+
+            <!-- VISTA 1: STOCK POR SUCURSAL -->
+            <div id="view_stock" class="view-section active">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-info">
+                            <h4>Total Items</h4>
+                            <div class="val" id="kpi_total_items">0</div>
+                        </div>
+                        <div class="kpi-icon kpi-blue"><i class="fa-solid fa-box"></i></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-info">
+                            <h4>Unidades en Stock</h4>
+                            <div class="val" id="kpi_total_unidades">0</div>
+                        </div>
+                        <div class="kpi-icon kpi-green"><i class="fa-solid fa-cubes-stacked"></i></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-info">
+                            <h4>Bajo Stock (&lt; 15)</h4>
+                            <div class="val" id="kpi_bajo_stock" style="color:#B45309;">0</div>
+                        </div>
+                        <div class="kpi-icon kpi-amber"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-info">
+                            <h4>Sede Activa</h4>
+                            <div class="val" id="kpi_sede_nombre" style="font-size:1.15rem; color:var(--accent-tan);">Principal</div>
+                        </div>
+                        <div class="kpi-icon kpi-purple"><i class="fa-solid fa-warehouse"></i></div>
                     </div>
                 </div>
 
-                <h4 style="margin:20px 0 10px;">Items a trasladar</h4>
-                <div class="table-container" style="margin-top:0; margin-bottom:20px; border-radius:10px;">
-                    <table class="items-table">
-                        <thead style="background:#1B4079; color:#fff;">
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted)"></i>
+                        <input type="text" id="filtroTexto" placeholder="Buscar por SKU o nombre de producto..." oninput="filtrarTablaStock()">
+                    </div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" onclick="setFiltroStock('todos', this)">Todos</button>
+                        <button class="filter-btn" onclick="setFiltroStock('normal', this)">En Stock</button>
+                        <button class="filter-btn" onclick="setFiltroStock('bajo', this)">Bajo Stock</button>
+                        <button class="filter-btn" onclick="setFiltroStock('agotado', this)">Agotados</button>
+                    </div>
+                    <button class="btn-primary" onclick="abrirModalTransferirVacio()">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i> Transferir a otra Sede
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
                             <tr>
-                                <th style="color:#fff">CÓDIGO</th>
-                                <th style="color:#fff">DESCRIPCIÓN</th>
-                                <th style="color:#fff">LOTE</th>
-                                <th style="color:#fff">CANT.</th>
-                                <th style="color:#fff">U.M.</th>
-                                <th style="color:#fff">PESO (KG)</th>
+                                <th style="width: 12%;">Código SKU</th>
+                                <th style="width: 38%;">Producto</th>
+                                <th style="width: 10%;">U.M.</th>
+                                <th style="width: 10%;">Peso (KG)</th>
+                                <th style="width: 12%;">Stock Actual</th>
+                                <th style="width: 18%; text-align: center;">Acciones (Giovana)</th>
                             </tr>
                         </thead>
-                        <tbody id="g_items_body">
-                            <tr>
-                                <td><input type="text" value="110014513" class="i_cod"></td>
-                                <td><input type="text" value="MICROSILICA Z X 20 KG" class="i_desc"></td>
-                                <td><input type="text" value="200426" class="i_lote"></td>
-                                <td><input type="number" value="3" class="i_cant" onchange="calcPeso()"></td>
-                                <td><input type="text" value="B20" class="i_um"></td>
-                                <td><input type="number" value="20.10" class="i_peso" onchange="calcPeso()"></td>
-                            </tr>
+                        <tbody id="stockTableBody">
+                            <tr><td colspan="6" style="text-align:center; padding:30px; color:#64748B;">Cargando inventario...</td></tr>
                         </tbody>
                     </table>
-                    <button type="button" class="btn-primary" style="margin:10px; padding:6px 12px; font-size:0.8rem;" onclick="addFila()">+ Añadir Fila</button>
                 </div>
+            </div>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Conductor (Nombre)</label>
-                        <input type="text" id="g_cond_nombre" value="MIGUEL HUMBERTO CONDEÑA AVALOS">
+            <!-- VISTA 2: FORMULARIO DE TRANSFERENCIA ENTRE SUCURSALES -->
+            <div id="view_transferir" class="view-section">
+                <div style="background:#FFF; border-radius: 20px; border: 1px solid var(--border-soft); padding: 30px; max-width: 900px; margin: 0 auto;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <div>
+                            <h3 style="font-family:'Outfit'; font-size:1.4rem;">Transferencia de Stock entre Sedes</h3>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">Mueve productos para estabilizar stock y genera la Guía de Salida (GS) automáticamente.</p>
+                        </div>
+                        <span class="badge gs" style="font-size:0.9rem; padding:6px 12px;">GS: <?php echo $siguienteGS; ?></span>
                     </div>
-                    <div class="form-group">
-                        <label>Conductor (D.N.I / Licencia)</label>
-                        <input type="text" id="g_cond_dni" value="46830741">
+
+                    <form id="formTransferencia" onsubmit="ejecutarTransferencia(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-circle-dot" style="color:#0284C7"></i> Sucursal de Origen</label>
+                                <select id="t_origen" onchange="cargarProductosOrigenParaTransfer()">
+                                    <option value="PRINCIPAL">Sede Principal (Lima / Chorrillos)</option>
+                                    <option value="PIURA">Sucursal Piura</option>
+                                    <option value="AREQUIPA">Sucursal Arequipa</option>
+                                    <option value="SURQUILLO">Sucursal Surquillo</option>
+                                    <option value="SAN_BORJA">Sucursal San Borja</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-location-dot" style="color:#DC2626"></i> Sucursal de Destino</label>
+                                <select id="t_destino">
+                                    <option value="PIURA">Sucursal Piura</option>
+                                    <option value="AREQUIPA">Sucursal Arequipa</option>
+                                    <option value="PRINCIPAL">Sede Principal (Lima / Chorrillos)</option>
+                                    <option value="SURQUILLO">Sucursal Surquillo</option>
+                                    <option value="SAN_BORJA">Sucursal San Borja</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Producto a Transferir</label>
+                            <select id="t_producto" onchange="actualizarInfoProductoTransfer()" style="font-weight:600;">
+                                <option value="">-- Seleccionar Producto --</option>
+                            </select>
+                            <span id="t_stock_disponible_info" style="font-size:0.8rem; color:#0284C7; margin-top:3px; font-weight:600;"></span>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cantidad a Mover</label>
+                                <input type="number" id="t_cantidad" min="1" step="1" value="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Motivo Oficial de Traslado</label>
+                                <input type="text" id="t_motivo" value="Traslado entre establecimientos de la misma empresa" readonly style="background:#F8FAFC;">
+                            </div>
+                        </div>
+
+                        <h4 style="font-family:'Outfit'; font-size:1.05rem; margin: 20px 0 10px; color:#334155;">Datos del Transporte para la Guía Oficial</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Conductor (Nombre)</label>
+                                <input type="text" id="t_cond_nombre" value="MIGUEL HUMBERTO CONDEÑA AVALOS">
+                            </div>
+                            <div class="form-group">
+                                <label>Conductor (D.N.I. y Licencia)</label>
+                                <div style="display:flex; gap:10px;">
+                                    <input type="text" id="t_cond_dni" value="46830741" placeholder="DNI" style="flex:1;">
+                                    <input type="text" id="t_cond_lic" value="Q46830741" placeholder="Licencia" style="flex:1;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Vehículo (Marca)</label>
+                                <input type="text" id="t_veh_marca" value="CANTER">
+                            </div>
+                            <div class="form-group">
+                                <label>Vehículo (Placa)</label>
+                                <input type="text" id="t_veh_placa" value="BYF906">
+                            </div>
+                        </div>
+
+                        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px; padding:15px; margin: 20px 0; display:flex; align-items:center; gap:12px;">
+                            <input type="checkbox" id="t_generar_guia" checked style="width:20px; height:20px; accent-color:#16A34A; cursor:pointer;">
+                            <label for="t_generar_guia" style="cursor:pointer; font-size:0.9rem; font-weight:600; color:#166534;">
+                                Generar e Imprimir Guía de Remisión (GS) oficial en PDF automáticamente
+                            </label>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:25px;">
+                            <button type="button" class="filter-btn" onclick="switchView('stock', document.querySelectorAll('.nav-item')[0])">Cancelar</button>
+                            <button type="submit" class="btn-success">
+                                <i class="fa-solid fa-check"></i> Ejecutar Transferencia y Estabilizar Stock
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VISTA 3: GENERAR GUÍA DE REMISIÓN DIRECTA -->
+            <div id="view_nueva_guia" class="view-section">
+                <div style="background:#FFF; border-radius: 20px; border: 1px solid var(--border-soft); padding: 30px;">
+                    <h3 style="margin-bottom:20px; font-family:'Outfit';">Generar Guía de Remisión Electrónica Libre</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Destinatario (Razón Social)</label>
+                            <input type="text" id="g_cliente" value="BUILDING SYSTEMS PERU S.A.C.">
+                        </div>
+                        <div class="form-group">
+                            <label>R.U.C. Destinatario</label>
+                            <input type="text" id="g_ruc" value="20609793806">
+                        </div>
+                        <div class="form-group">
+                            <label>Punto de Partida</label>
+                            <input type="text" id="g_partida" value="AV. LOS FAISANES 675 URB. LA CAMPIÑA">
+                        </div>
+                        <div class="form-group">
+                            <label>Punto de Llegada</label>
+                            <input type="text" id="g_llegada" value="AAHH. MANUEL SEOANE CORRALES MZ. H LOTE 01">
+                        </div>
+                        <div class="form-group">
+                            <label>Motivo de Traslado</label>
+                            <select id="g_motivo">
+                                <option value="traslado">Traslado entre establecimientos de la misma empresa</option>
+                                <option value="venta">Venta</option>
+                                <option value="devolucion">Devolución</option>
+                                <option value="consignacion">Consignación</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Glosa</label>
+                            <input type="text" id="g_glosa" value="VENTA PUNTUAL SUC PIURA/CINTHYA CESPEDES CASTRO//SERVICIOS TERAN">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Vehículo (Marca)</label>
-                        <input type="text" id="g_veh_marca" value="CANTER">
+
+                    <h4 style="margin:20px 0 10px; font-family:'Outfit';">Items / Productos a Trasladar</h4>
+                    <div class="table-container items-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:15%;">Código SKU</th>
+                                    <th style="width:40%;">Descripción</th>
+                                    <th style="width:15%;">Lote</th>
+                                    <th style="width:10%;">Cant.</th>
+                                    <th style="width:8%;">U.M.</th>
+                                    <th style="width:12%;">Peso Unit (KG)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="g_items_body">
+                                <tr>
+                                    <td><input type="text" class="i_cod" value="110014513"></td>
+                                    <td><input type="text" class="i_desc" value="MICROSILICA Z X 20 KG"></td>
+                                    <td><input type="text" class="i_lote" value="200426"></td>
+                                    <td><input type="number" value="3" class="i_cant" onchange="calcPeso()"></td>
+                                    <td><input type="text" value="B20" class="i_um"></td>
+                                    <td><input type="number" value="20.10" class="i_peso" step="0.01" onchange="calcPeso()"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn-primary" style="margin:10px; padding:6px 12px; font-size:0.8rem;" onclick="addFila()">+ Añadir Fila</button>
                     </div>
-                    <div class="form-group">
-                        <label>Vehículo (Placa)</label>
-                        <input type="text" id="g_veh_placa" value="BYF906">
+
+                    <h4 style="margin:25px 0 10px; font-family:'Outfit';">Datos del Conductor y Transporte</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Conductor (Nombre)</label>
+                            <input type="text" id="g_cond_nombre" value="MIGUEL HUMBERTO CONDEÑA AVALOS">
+                        </div>
+                        <div class="form-group">
+                            <label>Conductor (D.N.I / Licencia)</label>
+                            <input type="text" id="g_cond_dni" value="46830741">
+                        </div>
+                        <div class="form-group">
+                            <label>Vehículo (Marca)</label>
+                            <input type="text" id="g_veh_marca" value="CANTER">
+                        </div>
+                        <div class="form-group">
+                            <label>Vehículo (Placa)</label>
+                            <input type="text" id="g_veh_placa" value="BYF906">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; display:flex; justify-content:flex-end; gap:10px;">
+                        <button class="btn-primary" onclick="generarPDF()">
+                            <i class="fa-solid fa-file-pdf"></i> Generar Guía y Ver PDF
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                
-                
-
-                <div style="margin-top: 30px; display:flex; justify-content:flex-end; gap:10px;">
-                    <button class="btn-primary" onclick="generarPDF()">
-                        <i class="fa-solid fa-file-pdf"></i> Generar Guía y Ver PDF
+            <!-- VISTA 4: HISTORIAL DE MOVIMIENTOS (BV / FT / GS) -->
+            <div id="view_historial" class="view-section">
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted)"></i>
+                        <input type="text" id="filtroHistorial" placeholder="Buscar por comprobante, cliente o destino..." oninput="filtrarHistorial()">
+                    </div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" onclick="setFiltroHistorial('TODOS', this)">Todos</button>
+                        <button class="filter-btn" onclick="setFiltroHistorial('GS', this)">Guías (GS)</button>
+                        <button class="filter-btn" onclick="setFiltroHistorial('FT', this)">Facturas (FT)</button>
+                        <button class="filter-btn" onclick="setFiltroHistorial('BV', this)">Boletas (BV)</button>
+                    </div>
+                    <button class="btn-primary" onclick="switchView('nueva_guia', document.querySelectorAll('.nav-menu .nav-item')[2])">
+                        <i class="fa-solid fa-plus"></i> Nueva Guía
                     </button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Documento</th>
+                                <th>Tipo</th>
+                                <th>Fecha</th>
+                                <th>Origen &rarr; Destino</th>
+                                <th>Motivo / Glosa</th>
+                                <th>Items</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialBody">
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- EL PDF OCULTO QUE SE MOSTRARÁ AL IMPRIMIR -->
+    <!-- MODAL: AJUSTAR STOCK FÍSICO (GIOVANA) -->
+    <div class="modal-overlay" id="modalAjustar">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders" style="color:var(--accent-tan)"></i> Estabilizar Stock Físico</h3>
+                <button class="modal-close" onclick="cerrarModalAjustar()">&times;</button>
+            </div>
+            <form onsubmit="guardarAjusteStock(event)">
+                <input type="hidden" id="aj_sku">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Producto</label>
+                    <div id="aj_nombre" style="font-weight:700; color:var(--text-dark); font-size:0.95rem;"></div>
+                </div>
+                <div class="form-grid" style="margin-bottom:12px;">
+                    <div class="form-group">
+                        <label>Stock en Sistema</label>
+                        <input type="text" id="aj_stock_actual" readonly style="background:#F1F5F9; font-weight:700;">
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Físico Real *</label>
+                        <input type="number" id="aj_stock_nuevo" min="0" step="1" required style="border-color:#0284C7; font-weight:700; font-size:1.1rem;">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label>Motivo del Ajuste / Conteo</label>
+                    <select id="aj_motivo">
+                        <option value="Conteo físico quincenal">Conteo físico quincenal</option>
+                        <option value="Regularización de mermas">Regularización de mermas</option>
+                        <option value="Devolución no registrada">Devolución no registrada</option>
+                        <option value="Corrección de ingreso manual">Corrección de ingreso manual</option>
+                    </select>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="filter-btn" onclick="cerrarModalAjustar()">Cancelar</button>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Guardar Ajuste</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- === TEMPLATE OCULTO PARA IMPRESIÓN OFICIAL STARSOFT (PDF) === -->
+    <!-- ============================================================ -->
     <div id="pdfTemplate">
         <!-- 1. ENCABEZADO -->
         <div class="pdf-header-top">
@@ -611,7 +901,7 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
                     <div>GUÍA DE REMISIÓN REMITENTE</div>
                     <div>ELECTRÓNICA</div>
                 </div>
-                <div class="pdf-ruc-bot">N° <?php echo $siguienteGS; ?></div>
+                <div class="pdf-ruc-bot">N° <span id="pdf_guia_num"><?php echo $siguienteGS; ?></span></div>
             </div>
         </div>
 
@@ -636,7 +926,7 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
                 </div>
             </div>
             <div class="pdf-info-row">
-                <div class="pdf-info-left">
+                <div class="pdf-info-left" style="flex: 1;">
                     <span class="pdf-lbl">Dirección:</span>
                     <span class="pdf-val" id="pdf_dir">AV. LOS FAISANES Nº 675 URB. LA CAMPIÑA CHORRILLOS -<br>LIMA - LIMA</span>
                 </div>
@@ -646,9 +936,9 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
                 </div>
             </div>
             <div class="pdf-info-row">
-                <div class="pdf-info-left">
+                <div class="pdf-info-left" style="flex: 1;">
                     <span class="pdf-lbl">Cod. Vendedor:</span>
-                    <span class="pdf-val">99 &nbsp;&nbsp; VENTAS OFICINA</span>
+                    <span class="pdf-val" id="pdf_vendedor">99 &nbsp;&nbsp; VENTAS OFICINA</span>
                 </div>
                 <div class="pdf-info-right">
                     <span class="pdf-lbl">N° Ord. Compra:</span>
@@ -656,7 +946,7 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
                 </div>
             </div>
             <div class="pdf-info-row">
-                <div class="pdf-info-left">
+                <div class="pdf-info-left" style="flex: 1;">
                     <span class="pdf-lbl">Glosa:</span>
                     <span class="pdf-val" id="pdf_glosa">VENTA PUNTUAL SUC PIURA/CINTHYA CESPEDES CASTRO//SERVICIOS TERAN</span>
                 </div>
@@ -770,17 +1060,434 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
+        let stockGlobal = [];
+        let movimientosGlobal = [];
+        let filtroStockActual = 'todos';
+        let filtroHistorialActual = 'TODOS';
+
+        // Inicialización al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarStockDeSucursal();
+            cargarMovimientos();
+        });
+
         function switchView(viewId, el) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('view_' + viewId).classList.add('active');
-            el.classList.add('active');
+            document.querySelectorAll('.nav-menu .nav-item').forEach(i => i.classList.remove('active'));
             
-            document.getElementById('pageTitle').innerText = viewId === 'historial' ? 'Historial de Movimientos' : 'Generar Nueva Guía';
+            const target = document.getElementById('view_' + viewId);
+            if (target) target.classList.add('active');
+            if (el) el.classList.add('active');
+            
+            const titles = {
+                'stock': 'Control de Stock por Sucursal',
+                'transferir': 'Transferencia de Stock entre Sedes',
+                'nueva_guia': 'Generar Guía de Remisión Libre',
+                'historial': 'Historial de Movimientos (BV / FT / GS)'
+            };
+            document.getElementById('pageTitle').innerText = titles[viewId] || 'Almacén';
+
+            if (viewId === 'stock') cargarStockDeSucursal();
+            if (viewId === 'transferir') cargarProductosOrigenParaTransfer();
+            if (viewId === 'historial') cargarMovimientos();
         }
 
-        function actualizarSucursal() {
+        function cambiarSucursalActiva() {
+            const suc = document.getElementById('sucursalActiva').value;
+            const sucNames = {
+                'PRINCIPAL': 'Sede Principal (Lima)',
+                'PIURA': 'Sucursal Piura',
+                'AREQUIPA': 'Sucursal Arequipa',
+                'SURQUILLO': 'Sucursal Surquillo',
+                'SAN_BORJA': 'Sucursal San Borja'
+            };
+            document.getElementById('kpi_sede_nombre').innerText = sucNames[suc] || suc;
+            cargarStockDeSucursal();
+            actualizarSucursalEnGuia();
+        }
+
+        // ============================================
+        // 1. CARGA Y FILTRADO DE STOCK
+        // ============================================
+        async function cargarStockDeSucursal() {
+            const suc = document.getElementById('sucursalActiva').value;
+            const tbody = document.getElementById('stockTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#64748B;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando stock de ' + suc + '...</td></tr>';
+            
+            try {
+                const res = await fetch(`almacen.php?action=get_stock&sucursal=${suc}`);
+                const data = await res.json();
+                if (data.success) {
+                    stockGlobal = data.items || [];
+                    renderStockTable(stockGlobal);
+                    actualizarKPIs(stockGlobal);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">${data.error || 'Error al cargar stock.'}</td></tr>`;
+                }
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error de conexión: ${e.message}</td></tr>`;
+            }
+        }
+
+        function renderStockTable(items) {
+            const tbody = document.getElementById('stockTableBody');
+            tbody.innerHTML = '';
+            
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94A3B8;">No hay productos registrados en esta sucursal.</td></tr>';
+                return;
+            }
+
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                let badgeClass = 'stock-ok';
+                let estadoTxt = `${item.stock} ${item.um}`;
+                if (item.stock === 0) {
+                    badgeClass = 'stock-out';
+                    estadoTxt = 'Agotado (0)';
+                } else if (item.stock < 15) {
+                    badgeClass = 'stock-low';
+                    estadoTxt = `Bajo: ${item.stock} ${item.um}`;
+                }
+
+                tr.innerHTML = `
+                    <td><strong>${item.sku}</strong></td>
+                    <td>
+                        <div style="font-weight:600; color:#0F172A;">${item.nombre}</div>
+                        <span style="font-size:0.75rem; color:#64748B;">Lote: ${item.lote || '200426'}</span>
+                    </td>
+                    <td>${item.um}</td>
+                    <td>${parseFloat(item.peso || 20).toFixed(2)}</td>
+                    <td><span class="badge ${badgeClass}">${estadoTxt}</span></td>
+                    <td style="text-align:center;">
+                        <button class="btn-sm btn-transfer" onclick="abrirModalTransferir('${item.sku}')" title="Transferir a otra sucursal">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i> Transferir
+                        </button>
+                        <button class="btn-sm btn-adjust" onclick="abrirModalAjustar('${item.sku}', '${encodeURIComponent(item.nombre)}', ${item.stock})" title="Estabilizar / Ajustar stock físico">
+                            <i class="fa-solid fa-sliders"></i> Ajustar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function actualizarKPIs(items) {
+            document.getElementById('kpi_total_items').innerText = items.length;
+            let unidades = 0;
+            let bajo = 0;
+            items.forEach(it => {
+                unidades += (parseFloat(it.stock) || 0);
+                if ((parseFloat(it.stock) || 0) < 15) bajo++;
+            });
+            document.getElementById('kpi_total_unidades').innerText = Math.round(unidades).toLocaleString();
+            document.getElementById('kpi_bajo_stock').innerText = bajo;
+        }
+
+        function filtrarTablaStock() {
+            const q = document.getElementById('filtroTexto').value.toLowerCase().trim();
+            const filtrados = stockGlobal.filter(it => {
+                const matchText = it.nombre.toLowerCase().includes(q) || it.sku.toLowerCase().includes(q);
+                let matchEstado = true;
+                if (filtroStockActual === 'normal') matchEstado = (it.stock >= 15);
+                if (filtroStockActual === 'bajo') matchEstado = (it.stock > 0 && it.stock < 15);
+                if (filtroStockActual === 'agotado') matchEstado = (it.stock === 0);
+                return matchText && matchEstado;
+            });
+            renderStockTable(filtrados);
+        }
+
+        function setFiltroStock(filtro, el) {
+            document.querySelectorAll('.toolbar .filter-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            filtroStockActual = filtro;
+            filtrarTablaStock();
+        }
+
+        // ============================================
+        // 2. MODAL DE AJUSTE / ESTABILIZACIÓN FÍSICA
+        // ============================================
+        function abrirModalAjustar(sku, nombreEnc, stock) {
+            document.getElementById('aj_sku').value = sku;
+            document.getElementById('aj_nombre').innerText = decodeURIComponent(nombreEnc);
+            document.getElementById('aj_stock_actual').value = stock;
+            document.getElementById('aj_stock_nuevo').value = stock;
+            document.getElementById('modalAjustar').style.display = 'flex';
+        }
+
+        function cerrarModalAjustar() {
+            document.getElementById('modalAjustar').style.display = 'none';
+        }
+
+        async function guardarAjusteStock(e) {
+            e.preventDefault();
+            const suc = document.getElementById('sucursalActiva').value;
+            const sku = document.getElementById('aj_sku').value;
+            const nuevoStock = document.getElementById('aj_stock_nuevo').value;
+            const motivo = document.getElementById('aj_motivo').value;
+
+            try {
+                const fd = new FormData();
+                fd.append('action', 'ajustar_stock');
+                fd.append('sucursal', suc);
+                fd.append('sku', sku);
+                fd.append('nuevo_stock', nuevoStock);
+                fd.append('motivo', motivo);
+
+                const res = await fetch('almacen.php', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.mensaje);
+                    cerrarModalAjustar();
+                    cargarStockDeSucursal();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error al guardar ajuste: ' + err.message);
+            }
+        }
+
+        // ============================================
+        // 3. TRANSFERENCIA ENTRE SUCURSALES
+        // ============================================
+        function abrirModalTransferir(sku) {
+            const sucActiva = document.getElementById('sucursalActiva').value;
+            document.getElementById('t_origen').value = sucActiva;
+            cargarProductosOrigenParaTransfer(sku);
+            switchView('transferir', document.querySelectorAll('.nav-menu .nav-item')[1]);
+        }
+
+        function abrirModalTransferirVacio() {
+            abrirModalTransferir('');
+        }
+
+        async function cargarProductosOrigenParaTransfer(preselectSku = '') {
+            const origen = document.getElementById('t_origen').value;
+            const selProd = document.getElementById('t_producto');
+            selProd.innerHTML = '<option value="">-- Cargando productos de ' + origen + '... --</option>';
+
+            try {
+                const res = await fetch(`almacen.php?action=get_stock&sucursal=${origen}`);
+                const data = await res.json();
+                if (data.success) {
+                    selProd.innerHTML = '<option value="">-- Seleccionar Producto --</option>';
+                    data.items.forEach(it => {
+                        const opt = document.createElement('option');
+                        opt.value = it.sku;
+                        opt.dataset.nombre = it.nombre;
+                        opt.dataset.stock = it.stock;
+                        opt.dataset.um = it.um;
+                        opt.dataset.peso = it.peso;
+                        opt.dataset.lote = it.lote;
+                        opt.innerText = `${it.sku} - ${it.nombre} (Stock: ${it.stock} ${it.um})`;
+                        selProd.appendChild(opt);
+                    });
+
+                    if (preselectSku) {
+                        selProd.value = preselectSku;
+                    }
+                    actualizarInfoProductoTransfer();
+                }
+            } catch (e) {
+                selProd.innerHTML = '<option value="">Error al cargar productos</option>';
+            }
+        }
+
+        function actualizarInfoProductoTransfer() {
+            const sel = document.getElementById('t_producto');
+            const opt = sel.selectedOptions[0];
+            const infoSpan = document.getElementById('t_stock_disponible_info');
+            if (opt && opt.value) {
+                const st = opt.dataset.stock;
+                const um = opt.dataset.um;
+                infoSpan.innerText = `Disponible en almacén de origen: ${st} ${um}`;
+                document.getElementById('t_cantidad').max = st;
+            } else {
+                infoSpan.innerText = '';
+            }
+        }
+
+        async function ejecutarTransferencia(e) {
+            e.preventDefault();
+            const origen = document.getElementById('t_origen').value;
+            const destino = document.getElementById('t_destino').value;
+            const sku = document.getElementById('t_producto').value;
+            const cantidad = parseFloat(document.getElementById('t_cantidad').value) || 0;
+            const genGuia = document.getElementById('t_generar_guia').checked;
+
+            if (origen === destino) {
+                alert('La sucursal de origen y destino no pueden ser iguales.');
+                return;
+            }
+            if (!sku) {
+                alert('Por favor selecciona un producto para transferir.');
+                return;
+            }
+            if (cantidad <= 0) {
+                alert('La cantidad a transferir debe ser mayor a 0.');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('action', 'transferir_stock');
+            fd.append('origen', origen);
+            fd.append('destino', destino);
+            fd.append('sku', sku);
+            fd.append('cantidad', cantidad);
+            fd.append('generar_guia', genGuia ? '1' : '');
+            fd.append('conductor', document.getElementById('t_cond_nombre').value);
+            fd.append('conductor_dni', document.getElementById('t_cond_dni').value);
+            fd.append('conductor_lic', document.getElementById('t_cond_lic').value);
+            fd.append('vehiculo', document.getElementById('t_veh_marca').value);
+            fd.append('placa', document.getElementById('t_veh_placa').value);
+
+            try {
+                const res = await fetch('almacen.php', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.mensaje);
+                    if (genGuia && data.movimiento) {
+                        prepararEImprimirGuia(data.movimiento);
+                    }
+                    switchView('stock', document.querySelectorAll('.nav-menu .nav-item')[0]);
+                } else {
+                    alert('Error en transferencia: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error en transferencia: ' + err.message);
+            }
+        }
+
+        // ============================================
+        // 4. HISTORIAL DE MOVIMIENTOS
+        // ============================================
+        async function cargarMovimientos() {
+            const tbody = document.getElementById('historialBody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#64748B;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando historial...</td></tr>';
+            try {
+                const res = await fetch('almacen.php?action=get_movimientos');
+                const data = await res.json();
+                if (data.success) {
+                    movimientosGlobal = data.movimientos || [];
+                    renderHistorialTable(movimientosGlobal);
+                }
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">Error al cargar historial: ${e.message}</td></tr>`;
+            }
+        }
+
+        function renderHistorialTable(movs) {
+            const tbody = document.getElementById('historialBody');
+            tbody.innerHTML = '';
+            if (movs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#94A3B8;">No hay movimientos registrados.</td></tr>';
+                return;
+            }
+
+            movs.forEach(m => {
+                const tr = document.createElement('tr');
+                let tipoBadge = 'gs';
+                if (m.tipo === 'FT') tipoBadge = 'ft';
+                if (m.tipo === 'BV') tipoBadge = 'bv';
+
+                const primerItem = (m.items && m.items[0]) ? `${m.items[0].cant}x ${m.items[0].nombre}` : '-';
+                const itemsCount = (m.items && m.items.length > 1) ? ` (+${m.items.length - 1} más)` : '';
+
+                tr.innerHTML = `
+                    <td><strong>${m.numero}</strong></td>
+                    <td><span class="badge ${tipoBadge}">${m.tipo}</span></td>
+                    <td>${m.fecha} <span style="font-size:0.75rem; color:#64748B;">${m.hora || ''}</span></td>
+                    <td>${m.origen_nombre || m.origen} &rarr; ${m.destino_nombre || m.destino}</td>
+                    <td><div style="max-width:260px; font-size:0.8rem; line-height:1.2;">${m.motivo || m.glosa}</div></td>
+                    <td><span style="font-size:0.8rem; font-weight:600;">${primerItem}${itemsCount}</span></td>
+                    <td>
+                        ${m.tipo === 'GS' ? `
+                            <button class="btn-sm btn-primary" onclick='reimprimirGuiaMov(${JSON.stringify(m)})' style="padding:4px 8px; font-size:0.75rem;">
+                                <i class="fa-solid fa-print"></i> Guía
+                            </button>
+                        ` : '<span style="color:#64748B; font-size:0.75rem;">Electrónico</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filtrarHistorial() {
+            const q = document.getElementById('filtroHistorial').value.toLowerCase().trim();
+            const filtrados = movimientosGlobal.filter(m => {
+                const matchText = (m.numero || '').toLowerCase().includes(q) ||
+                                  (m.destino_nombre || '').toLowerCase().includes(q) ||
+                                  (m.glosa || '').toLowerCase().includes(q) ||
+                                  (m.cliente || '').toLowerCase().includes(q);
+                let matchTipo = true;
+                if (filtroHistorialActual !== 'TODOS') matchTipo = (m.tipo === filtroHistorialActual);
+                return matchText && matchTipo;
+            });
+            renderHistorialTable(filtrados);
+        }
+
+        function setFiltroHistorial(tipo, el) {
+            document.querySelectorAll('#view_historial .filter-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            filtroHistorialActual = tipo;
+            filtrarHistorial();
+        }
+
+        // ============================================
+        // 5. INTEGRACIÓN Y GENERACIÓN DEL PDF STARSOFT
+        // ============================================
+        function reimprimirGuiaMov(mov) {
+            prepararEImprimirGuia(mov);
+        }
+
+        function prepararEImprimirGuia(mov) {
+            document.getElementById('pdf_guia_num').innerText = mov.numero;
+            document.getElementById('pdf_fecha').innerText = mov.fecha || '29/09/2026';
+            document.getElementById('pdf_nombre').innerText = mov.cliente || 'BUILDING SYSTEMS PERU S.A.C.';
+            document.getElementById('pdf_ruc').innerText = mov.ruc || '20609793806';
+            document.getElementById('pdf_glosa').innerText = mov.glosa || '';
+            document.getElementById('pdf_partida').innerText = 'AV. LOS FAISANES 675 URB. LA CAMPIÑA';
+            document.getElementById('pdf_llegada').innerText = mov.destino_nombre || 'SUCURSAL DE DESTINO';
+
+            document.getElementById('pdf_cond_n').innerText = mov.conductor || 'MIGUEL HUMBERTO CONDEÑA AVALOS';
+            document.getElementById('pdf_cond_d').innerText = mov.conductor_dni || '46830741';
+            document.getElementById('pdf_cond_l').innerText = mov.conductor_lic || 'Q46830741';
+            document.getElementById('pdf_veh_m').innerText = mov.vehiculo || 'CANTER';
+            document.getElementById('pdf_veh_p').innerText = mov.placa || 'BYF906';
+
+            // Items en la tabla oficial
+            const renderBody = document.getElementById('pdf_items_render');
+            renderBody.innerHTML = '';
+            let itNum = 1;
+            let pesoTotal = 0;
+            if (mov.items && mov.items.length) {
+                mov.items.forEach(it => {
+                    const cant = parseFloat(it.cant) || 1;
+                    const pUnit = parseFloat(it.peso) || 20.0;
+                    pesoTotal += (cant * pUnit);
+                    renderBody.innerHTML += `<tr>
+                        <td>${itNum++}</td>
+                        <td>${it.sku}</td>
+                        <td style="text-align:left; padding-left: 6px;">${it.nombre}</td>
+                        <td>${it.lote || '200426'}</td>
+                        <td>${cant.toFixed(2)}</td>
+                        <td>${it.um || 'UND'}</td>
+                        <td>${pUnit.toFixed(2)}</td>
+                    </tr>`;
+                });
+            }
+            document.getElementById('pdf_peso_total').innerText = pesoTotal.toFixed(2);
+
+            // Código de vendedor fijo 99 VENTAS OFICINA
+            document.getElementById('pdf_vendedor').innerHTML = '99 &nbsp;&nbsp; VENTAS OFICINA';
+
+            window.print();
+        }
+
+        function actualizarSucursalEnGuia() {
             const suc = document.getElementById('sucursalActiva').value;
             let l1 = "Av. Los Faisanes Nº 675";
             let l2 = "Urb. La Campiña, Chorrillos - Lima - Lima";
@@ -791,6 +1498,14 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             if (suc === 'AREQUIPA') {
                 l1 = "Parque Industrial Rio Seco";
                 l2 = "Arequipa - Arequipa";
+            }
+            if (suc === 'SURQUILLO') {
+                l1 = "Av. Tomás Marsano 1234";
+                l2 = "Surquillo - Lima";
+            }
+            if (suc === 'SAN_BORJA') {
+                l1 = "Av. Javier Prado Este 2450";
+                l2 = "San Borja - Lima";
             }
             const el = document.getElementById('pdf_suc_dir');
             if (el) {
@@ -822,7 +1537,6 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             document.getElementById('pdf_peso_total').innerText = total.toFixed(2);
         }
 
-        
         function syncDataToTemplate() {
             const d = new Date();
             const fechaStr = d.toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric'});
@@ -846,6 +1560,9 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             document.getElementById('pdf_cond_l').innerText = 'Q' + document.getElementById('g_cond_dni').value; 
             document.getElementById('pdf_veh_m').innerText = document.getElementById('g_veh_marca').value;
             document.getElementById('pdf_veh_p').innerText = document.getElementById('g_veh_placa').value;
+
+            // Codigo de vendedor oficial para StarSoft
+            document.getElementById('pdf_vendedor').innerHTML = '99 &nbsp;&nbsp; VENTAS OFICINA';
 
             const renderBody = document.getElementById('pdf_items_render');
             renderBody.innerHTML = '';

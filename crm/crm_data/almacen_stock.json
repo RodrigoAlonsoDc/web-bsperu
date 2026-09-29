@@ -1,0 +1,5277 @@
+{
+  "PRINCIPAL": {
+    "110014513": {
+      "sku": "110014513",
+      "nombre": "MICROSILICA Z X 20 KG",
+      "categoria": "ADITIVOS",
+      "um": "B20",
+      "peso": 20.1,
+      "stock": 68,
+      "lote": "200125"
+    },
+    "110014697": {
+      "sku": "110014697",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO FLEX X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 66,
+      "lote": "200792"
+    },
+    "110014699": {
+      "sku": "110014699",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO EXT X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 97,
+      "lote": "200242"
+    },
+    "110014292": {
+      "sku": "110014292",
+      "nombre": "AIRCON Z X 5 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 179,
+      "lote": "200189"
+    },
+    "110014371": {
+      "sku": "110014371",
+      "nombre": "AIRCON Z X 55 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 234.1,
+      "stock": 148,
+      "lote": "200132"
+    },
+    "110014294": {
+      "sku": "110014294",
+      "nombre": "AIRCON Z X GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 47,
+      "lote": "200195"
+    },
+    "110014480": {
+      "sku": "110014480",
+      "nombre": "ALQUITRAN Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 95,
+      "lote": "200338"
+    },
+    "110014355": {
+      "sku": "110014355",
+      "nombre": "ALQUITRAN Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 209.0,
+      "stock": 169,
+      "lote": "200716"
+    },
+    "110014469": {
+      "sku": "110014469",
+      "nombre": "ASFALTO LIQUIDO Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 46,
+      "lote": "200674"
+    },
+    "110014319": {
+      "sku": "110014319",
+      "nombre": "ASFALTO LIQUIDO Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 90,
+      "lote": "200833"
+    },
+    "110014261": {
+      "sku": "110014261",
+      "nombre": "ASFALTO LIQUIDO Z X GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 3.9,
+      "stock": 179,
+      "lote": "200529"
+    },
+    "110014501": {
+      "sku": "110014501",
+      "nombre": "CEMENTICIO Z BLANCO X 10 KG + Z RESINA X JGO.",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 10.5,
+      "stock": 96,
+      "lote": "200559"
+    },
+    "110014367": {
+      "sku": "110014367",
+      "nombre": "CEMENTICIO Z GRIS X 25 KG + Z RESINA (JUEGO)",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 25.1,
+      "stock": 111,
+      "lote": "200928"
+    },
+    "110014520": {
+      "sku": "110014520",
+      "nombre": "CRISTAL Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 41,
+      "lote": "200877"
+    },
+    "110015451": {
+      "sku": "110015451",
+      "nombre": "CRISTAL Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 80,
+      "lote": "200814"
+    },
+    "110014456": {
+      "sku": "110014456",
+      "nombre": "CRISTAL Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 148,
+      "lote": "200448"
+    },
+    "110014458": {
+      "sku": "110014458",
+      "nombre": "CURET Z BLANCO CON PIG. X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 111,
+      "lote": "200259"
+    },
+    "110014468": {
+      "sku": "110014468",
+      "nombre": "CURET Z BLANCO CON PIG. X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 238.0,
+      "stock": 95,
+      "lote": "200881"
+    },
+    "110014376": {
+      "sku": "110014376",
+      "nombre": "CURET Z BLANCO CON PIG. X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 126,
+      "lote": "200204"
+    },
+    "110014629": {
+      "sku": "110014629",
+      "nombre": "IMPRIMANTE Z X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 63,
+      "lote": "200489"
+    },
+    "110014611": {
+      "sku": "110014611",
+      "nombre": "IMPRIMANTE Z X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 64,
+      "lote": "200467"
+    },
+    "110014599": {
+      "sku": "110014599",
+      "nombre": "IMPRIMANTE Z X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.95,
+      "stock": 128,
+      "lote": "200718"
+    },
+    "110014342": {
+      "sku": "110014342",
+      "nombre": "IMPRIMANTE ZP X GAL A+B",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.21,
+      "stock": 107,
+      "lote": "200926"
+    },
+    "110014569": {
+      "sku": "110014569",
+      "nombre": "IMPRIMANTE ZPM X GAL",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 3.4,
+      "stock": 51,
+      "lote": "200847"
+    },
+    "110014453": {
+      "sku": "110014453",
+      "nombre": "MATE Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 19.8,
+      "stock": 157,
+      "lote": "200649"
+    },
+    "110015090": {
+      "sku": "110015090",
+      "nombre": "MATE Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 71,
+      "lote": "200487"
+    },
+    "110014323": {
+      "sku": "110014323",
+      "nombre": "MATE Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 3.99,
+      "stock": 60,
+      "lote": "200665"
+    },
+    "110014504": {
+      "sku": "110014504",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 1/4 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 1.15,
+      "stock": 115,
+      "lote": "200949"
+    },
+    "110014503": {
+      "sku": "110014503",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 5 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 132,
+      "lote": "200691"
+    },
+    "110014553": {
+      "sku": "110014553",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 55 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 229.0,
+      "stock": 89,
+      "lote": "200821"
+    },
+    "110014516": {
+      "sku": "110014516",
+      "nombre": "REMOVEDOR DE CONCRETO Z X GL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "UND",
+      "peso": 4.2,
+      "stock": 57,
+      "lote": "200146"
+    },
+    "110014455": {
+      "sku": "110014455",
+      "nombre": "REMOVEDOR DE OXIDO Z X 5 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 98,
+      "lote": "200891"
+    },
+    "110014511": {
+      "sku": "110014511",
+      "nombre": "REMOVEDOR DE OXIDO Z X 55 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 252.0,
+      "stock": 114,
+      "lote": "200181"
+    },
+    "110014470": {
+      "sku": "110014470",
+      "nombre": "REMOVEDOR DE OXIDO Z X GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 4.63,
+      "stock": 99,
+      "lote": "200987"
+    },
+    "110014475": {
+      "sku": "110014475",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.0 CM X 200 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 12.0,
+      "stock": 65,
+      "lote": "200489"
+    },
+    "110014460": {
+      "sku": "110014460",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 8.0,
+      "stock": 111,
+      "lote": "200564"
+    },
+    "110014449": {
+      "sku": "110014449",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 9.0,
+      "stock": 133,
+      "lote": "200266"
+    },
+    "110014467": {
+      "sku": "110014467",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 10.0,
+      "stock": 134,
+      "lote": "200463"
+    },
+    "110014484": {
+      "sku": "110014484",
+      "nombre": "SEP. CONCRETOP DE FIERRO 4 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 11.0,
+      "stock": 93,
+      "lote": "200786"
+    },
+    "110014506": {
+      "sku": "110014506",
+      "nombre": "SOLVENTE Z X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 108,
+      "lote": "200818"
+    },
+    "110014505": {
+      "sku": "110014505",
+      "nombre": "SOLVENTE Z X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 58,
+      "lote": "200723"
+    },
+    "110014507": {
+      "sku": "110014507",
+      "nombre": "SOLVENTE Z X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.93,
+      "stock": 83,
+      "lote": "200646"
+    },
+    "110014606": {
+      "sku": "110014606",
+      "nombre": "SOLVENTE ZP X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 102,
+      "lote": "200267"
+    },
+    "110014508": {
+      "sku": "110014508",
+      "nombre": "SOLVENTE ZP X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 158,
+      "lote": "200488"
+    },
+    "110014703": {
+      "sku": "110014703",
+      "nombre": "WATER STOP Z RX 101 + PEGAMENTO x 30 Ml",
+      "categoria": "WATER STOP",
+      "um": "UND",
+      "peso": 31.0,
+      "stock": 109,
+      "lote": "200755"
+    },
+    "110014559": {
+      "sku": "110014559",
+      "nombre": "Z BITUMEN X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 96,
+      "lote": "200801"
+    },
+    "110014536": {
+      "sku": "110014536",
+      "nombre": "Z BITUMEN X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 210.0,
+      "stock": 123,
+      "lote": "200963"
+    },
+    "110014537": {
+      "sku": "110014537",
+      "nombre": "Z BITUMEN X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.74,
+      "stock": 54,
+      "lote": "200334"
+    },
+    "110014446": {
+      "sku": "110014446",
+      "nombre": "Z CRON X 1000 L",
+      "categoria": "DESMOLDANTES",
+      "um": "UND",
+      "peso": 920.0,
+      "stock": 48,
+      "lote": "200924"
+    },
+    "110014489": {
+      "sku": "110014489",
+      "nombre": "Z CRON X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 120,
+      "lote": "200510"
+    },
+    "110014481": {
+      "sku": "110014481",
+      "nombre": "Z CRON X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 200.0,
+      "stock": 108,
+      "lote": "200167"
+    },
+    "110014437": {
+      "sku": "110014437",
+      "nombre": "Z CRON X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.71,
+      "stock": 94,
+      "lote": "200680"
+    },
+    "110014954": {
+      "sku": "110014954",
+      "nombre": "Z FIBRA PP X 4.8 KG - 12MM",
+      "categoria": "FIBRAS",
+      "um": "BOL",
+      "peso": 5.03,
+      "stock": 120,
+      "lote": "200317"
+    },
+    "610005544": {
+      "sku": "610005544",
+      "nombre": "Z FLEX POLIURETANO GRIS 30-40 (MANGA 600ML)",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "UND",
+      "peso": 0.71,
+      "stock": 167,
+      "lote": "200505"
+    },
+    "110014575": {
+      "sku": "110014575",
+      "nombre": "Z FLEX POLIURETANO GRIS X GAL A+B",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 157,
+      "lote": "200246"
+    },
+    "110014347": {
+      "sku": "110014347",
+      "nombre": "Z FLUIDIZANTE IR X 5 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 107,
+      "lote": "200242"
+    },
+    "110014254": {
+      "sku": "110014254",
+      "nombre": "Z FLUIDIZANTE IR X 55 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 259.0,
+      "stock": 103,
+      "lote": "200862"
+    },
+    "110014324": {
+      "sku": "110014324",
+      "nombre": "Z FLUIDIZANTE IR X GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 177,
+      "lote": "200369"
+    },
+    "110014325": {
+      "sku": "110014325",
+      "nombre": "Z FLUIDIZANTE RE. X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 249.82,
+      "stock": 149,
+      "lote": "200697"
+    },
+    "110014259": {
+      "sku": "110014259",
+      "nombre": "Z FLUIDIZANTE RE. X GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.32,
+      "stock": 142,
+      "lote": "200470"
+    },
+    "110014274": {
+      "sku": "110014274",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 96,
+      "lote": "200241"
+    },
+    "110014574": {
+      "sku": "110014574",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 245.0,
+      "stock": 170,
+      "lote": "200605"
+    },
+    "110014287": {
+      "sku": "110014287",
+      "nombre": "Z FLUIDIZANTE SR 1000 X GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.23,
+      "stock": 63,
+      "lote": "200873"
+    },
+    "110014393": {
+      "sku": "110014393",
+      "nombre": "Z FLUIDIZANTE SR. X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 23.14,
+      "stock": 52,
+      "lote": "200981"
+    },
+    "110014300": {
+      "sku": "110014300",
+      "nombre": "Z FLUIDIZANTE SR. X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 268.56,
+      "stock": 68,
+      "lote": "200256"
+    },
+    "110014627": {
+      "sku": "110014627",
+      "nombre": "Z FRAGUA #3 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 80,
+      "lote": "200911"
+    },
+    "110014582": {
+      "sku": "110014582",
+      "nombre": "Z FRAGUA #3 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 148,
+      "lote": "200710"
+    },
+    "110014583": {
+      "sku": "110014583",
+      "nombre": "Z FRAGUA #3 X GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 5.04,
+      "stock": 56,
+      "lote": "200494"
+    },
+    "110014621": {
+      "sku": "110014621",
+      "nombre": "Z FRAGUA #5 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 137,
+      "lote": "200710"
+    },
+    "110014639": {
+      "sku": "110014639",
+      "nombre": "Z FRAGUA #5 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 159,
+      "lote": "200641"
+    },
+    "110014622": {
+      "sku": "110014622",
+      "nombre": "Z GROUT X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 104,
+      "lote": "200666"
+    },
+    "110014462": {
+      "sku": "110014462",
+      "nombre": "Z I LIQUIDO X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 19.93,
+      "stock": 42,
+      "lote": "200796"
+    },
+    "110014278": {
+      "sku": "110014278",
+      "nombre": "Z I LIQUIDO X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 233.18,
+      "stock": 69,
+      "lote": "200798"
+    },
+    "110014279": {
+      "sku": "110014279",
+      "nombre": "Z I LIQUIDO X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 4.02,
+      "stock": 177,
+      "lote": "200868"
+    },
+    "110014473": {
+      "sku": "110014473",
+      "nombre": "Z I POLVO X KG",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "BOL",
+      "peso": 1.0,
+      "stock": 108,
+      "lote": "200887"
+    },
+    "110014545": {
+      "sku": "110014545",
+      "nombre": "Z IMPEROOF X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 24.5,
+      "stock": 127,
+      "lote": "200214"
+    },
+    "110014309": {
+      "sku": "110014309",
+      "nombre": "Z IMPEROOF X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 283.4,
+      "stock": 115,
+      "lote": "200545"
+    },
+    "110014566": {
+      "sku": "110014566",
+      "nombre": "Z IMPEROOF X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 4.9,
+      "stock": 80,
+      "lote": "200564"
+    },
+    "110014392": {
+      "sku": "110014392",
+      "nombre": "Z MEMBRANA A X 5 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 40,
+      "lote": "200839"
+    },
+    "110014388": {
+      "sku": "110014388",
+      "nombre": "Z MEMBRANA A X 55 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 267.0,
+      "stock": 107,
+      "lote": "200612"
+    },
+    "110014477": {
+      "sku": "110014477",
+      "nombre": "Z MEMBRANA BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 85,
+      "lote": "200619"
+    },
+    "110014487": {
+      "sku": "110014487",
+      "nombre": "Z MEMBRANA BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 254.0,
+      "stock": 67,
+      "lote": "200991"
+    },
+    "110014320": {
+      "sku": "110014320",
+      "nombre": "Z MEMBRANA BLANCO X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 116,
+      "lote": "200961"
+    },
+    "110014471": {
+      "sku": "110014471",
+      "nombre": "Z MORTERO T40 X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 169,
+      "lote": "200723"
+    },
+    "110014464": {
+      "sku": "110014464",
+      "nombre": "Z POX 31 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 90,
+      "lote": "200256"
+    },
+    "110014571": {
+      "sku": "110014571",
+      "nombre": "Z POX 31 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 135,
+      "lote": "200880"
+    },
+    "110014483": {
+      "sku": "110014483",
+      "nombre": "Z POX 32 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 81,
+      "lote": "200652"
+    },
+    "110014570": {
+      "sku": "110014570",
+      "nombre": "Z POX 32 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 175,
+      "lote": "200100"
+    },
+    "110014265": {
+      "sku": "110014265",
+      "nombre": "Z POX 35 BV KG (A+B)",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.13,
+      "stock": 122,
+      "lote": "200600"
+    },
+    "110014634": {
+      "sku": "110014634",
+      "nombre": "Z RESINA 100% X 1/4 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 1.14,
+      "stock": 44,
+      "lote": "200214"
+    },
+    "110014474": {
+      "sku": "110014474",
+      "nombre": "Z RESINA 100% X 5 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 132,
+      "lote": "200999"
+    },
+    "110014459": {
+      "sku": "110014459",
+      "nombre": "Z RESINA 100% X 55 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 246.0,
+      "stock": 118,
+      "lote": "200345"
+    },
+    "110014598": {
+      "sku": "110014598",
+      "nombre": "Z RR PLAST - 971 X 5 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 24.0,
+      "stock": 54,
+      "lote": "200346"
+    },
+    "110014587": {
+      "sku": "110014587",
+      "nombre": "Z RR PLAST - 971 X 55 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 60,
+      "lote": "200187"
+    },
+    "110014603": {
+      "sku": "110014603",
+      "nombre": "Z RR PLAST - 971 X GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 4.76,
+      "stock": 164,
+      "lote": "200935"
+    },
+    "110014595": {
+      "sku": "110014595",
+      "nombre": "Z RR PLAST X 5 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 57,
+      "lote": "200878"
+    },
+    "110014375": {
+      "sku": "110014375",
+      "nombre": "Z RR PLAST X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 251.0,
+      "stock": 176,
+      "lote": "200884"
+    },
+    "110014397": {
+      "sku": "110014397",
+      "nombre": "Z SOL BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 72,
+      "lote": "200231"
+    },
+    "110014510": {
+      "sku": "110014510",
+      "nombre": "Z SOL BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 161,
+      "lote": "200662"
+    },
+    "110014573": {
+      "sku": "110014573",
+      "nombre": "Z VISTA X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 82,
+      "lote": "200371"
+    },
+    "610005612": {
+      "sku": "610005612",
+      "nombre": "CAPUCHONES DE SEG. CHICO (3/8\", 1/2\", 5/8\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 1.6,
+      "stock": 175,
+      "lote": "200993"
+    },
+    "610005613": {
+      "sku": "610005613",
+      "nombre": "CAPUCHONES DE SEG. GRANDE (3/4\", 7/8\", 1\", 1 1/4\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 2.14,
+      "stock": 148,
+      "lote": "200316"
+    },
+    "610005585": {
+      "sku": "610005585",
+      "nombre": "BACKER ROD 1 1/2\" x 91 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.15,
+      "stock": 178,
+      "lote": "200873"
+    },
+    "610005584": {
+      "sku": "610005584",
+      "nombre": "BACKER ROD 1 1/4\" x 122 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.59,
+      "stock": 91,
+      "lote": "200830"
+    },
+    "610005583": {
+      "sku": "610005583",
+      "nombre": "BACKER ROD 1 1/8\" x 152 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.86,
+      "stock": 119,
+      "lote": "200508"
+    },
+    "610005582": {
+      "sku": "610005582",
+      "nombre": "BACKER ROD 1\" x 182 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.64,
+      "stock": 135,
+      "lote": "200548"
+    },
+    "610005580": {
+      "sku": "610005580",
+      "nombre": "BACKER ROD 1/2\" x 762 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.57,
+      "stock": 172,
+      "lote": "200562"
+    },
+    "610005578": {
+      "sku": "610005578",
+      "nombre": "BACKER ROD 1/4\" x 2438 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.63,
+      "stock": 70,
+      "lote": "200353"
+    },
+    "610005587": {
+      "sku": "610005587",
+      "nombre": "BACKER ROD 3/4\" x 335 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.52,
+      "stock": 97,
+      "lote": "200165"
+    },
+    "610005579": {
+      "sku": "610005579",
+      "nombre": "BACKER ROD 3/8\" x 1280 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.2,
+      "stock": 126,
+      "lote": "200121"
+    },
+    "610005586": {
+      "sku": "610005586",
+      "nombre": "BACKER ROD 5/8\" x 472 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.48,
+      "stock": 98,
+      "lote": "200702"
+    },
+    "610005581": {
+      "sku": "610005581",
+      "nombre": "BACKER ROD 7/8\" x 259 Ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.4,
+      "stock": 96,
+      "lote": "200107"
+    },
+    "620001061": {
+      "sku": "620001061",
+      "nombre": "WATER STOP DE JEBE 4\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 17.44,
+      "stock": 58,
+      "lote": "200824"
+    },
+    "610005592": {
+      "sku": "610005592",
+      "nombre": "WATER STOP DE JEBE 6\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 25.75,
+      "stock": 55,
+      "lote": "200334"
+    },
+    "610005593": {
+      "sku": "610005593",
+      "nombre": "WATER STOP DE JEBE 9\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 39.25,
+      "stock": 57,
+      "lote": "200132"
+    },
+    "110014580": {
+      "sku": "110014580",
+      "nombre": "Z 2000 X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 124,
+      "lote": "200172"
+    },
+    "110014677": {
+      "sku": "110014677",
+      "nombre": "Z DESMOLAC PU X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 171,
+      "lote": "200343"
+    }
+  },
+  "PIURA": {
+    "110014513": {
+      "sku": "110014513",
+      "nombre": "MICROSILICA Z X 20 KG",
+      "categoria": "ADITIVOS",
+      "um": "B20",
+      "peso": 20.1,
+      "stock": 32,
+      "lote": "200785"
+    },
+    "110014697": {
+      "sku": "110014697",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO FLEX X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 51,
+      "lote": "200690"
+    },
+    "110014699": {
+      "sku": "110014699",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO EXT X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 49,
+      "lote": "200235"
+    },
+    "110014292": {
+      "sku": "110014292",
+      "nombre": "AIRCON Z X 5 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 45,
+      "lote": "200348"
+    },
+    "110014371": {
+      "sku": "110014371",
+      "nombre": "AIRCON Z X 55 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 234.1,
+      "stock": 45,
+      "lote": "200926"
+    },
+    "110014294": {
+      "sku": "110014294",
+      "nombre": "AIRCON Z X GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 41,
+      "lote": "200294"
+    },
+    "110014480": {
+      "sku": "110014480",
+      "nombre": "ALQUITRAN Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 21,
+      "lote": "200199"
+    },
+    "110014355": {
+      "sku": "110014355",
+      "nombre": "ALQUITRAN Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 209.0,
+      "stock": 57,
+      "lote": "200541"
+    },
+    "110014469": {
+      "sku": "110014469",
+      "nombre": "ASFALTO LIQUIDO Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 37,
+      "lote": "200533"
+    },
+    "110014319": {
+      "sku": "110014319",
+      "nombre": "ASFALTO LIQUIDO Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 41,
+      "lote": "200578"
+    },
+    "110014261": {
+      "sku": "110014261",
+      "nombre": "ASFALTO LIQUIDO Z X GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 3.9,
+      "stock": 18,
+      "lote": "200789"
+    },
+    "110014501": {
+      "sku": "110014501",
+      "nombre": "CEMENTICIO Z BLANCO X 10 KG + Z RESINA X JGO.",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 10.5,
+      "stock": 56,
+      "lote": "200761"
+    },
+    "110014367": {
+      "sku": "110014367",
+      "nombre": "CEMENTICIO Z GRIS X 25 KG + Z RESINA (JUEGO)",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 25.1,
+      "stock": 21,
+      "lote": "200162"
+    },
+    "110014520": {
+      "sku": "110014520",
+      "nombre": "CRISTAL Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 40,
+      "lote": "200845"
+    },
+    "110015451": {
+      "sku": "110015451",
+      "nombre": "CRISTAL Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 36,
+      "lote": "200919"
+    },
+    "110014456": {
+      "sku": "110014456",
+      "nombre": "CRISTAL Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 21,
+      "lote": "200354"
+    },
+    "110014458": {
+      "sku": "110014458",
+      "nombre": "CURET Z BLANCO CON PIG. X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 27,
+      "lote": "200294"
+    },
+    "110014468": {
+      "sku": "110014468",
+      "nombre": "CURET Z BLANCO CON PIG. X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 238.0,
+      "stock": 49,
+      "lote": "200559"
+    },
+    "110014376": {
+      "sku": "110014376",
+      "nombre": "CURET Z BLANCO CON PIG. X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 23,
+      "lote": "200532"
+    },
+    "110014629": {
+      "sku": "110014629",
+      "nombre": "IMPRIMANTE Z X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 26,
+      "lote": "200385"
+    },
+    "110014611": {
+      "sku": "110014611",
+      "nombre": "IMPRIMANTE Z X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 44,
+      "lote": "200355"
+    },
+    "110014599": {
+      "sku": "110014599",
+      "nombre": "IMPRIMANTE Z X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.95,
+      "stock": 19,
+      "lote": "200553"
+    },
+    "110014342": {
+      "sku": "110014342",
+      "nombre": "IMPRIMANTE ZP X GAL A+B",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.21,
+      "stock": 50,
+      "lote": "200200"
+    },
+    "110014569": {
+      "sku": "110014569",
+      "nombre": "IMPRIMANTE ZPM X GAL",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 3.4,
+      "stock": 18,
+      "lote": "200767"
+    },
+    "110014453": {
+      "sku": "110014453",
+      "nombre": "MATE Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 19.8,
+      "stock": 49,
+      "lote": "200956"
+    },
+    "110015090": {
+      "sku": "110015090",
+      "nombre": "MATE Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 15,
+      "lote": "200195"
+    },
+    "110014323": {
+      "sku": "110014323",
+      "nombre": "MATE Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 3.99,
+      "stock": 30,
+      "lote": "200270"
+    },
+    "110014504": {
+      "sku": "110014504",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 1/4 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 1.15,
+      "stock": 41,
+      "lote": "200597"
+    },
+    "110014503": {
+      "sku": "110014503",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 5 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 45,
+      "lote": "200318"
+    },
+    "110014553": {
+      "sku": "110014553",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 55 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 229.0,
+      "stock": 40,
+      "lote": "200160"
+    },
+    "110014516": {
+      "sku": "110014516",
+      "nombre": "REMOVEDOR DE CONCRETO Z X GL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "UND",
+      "peso": 4.2,
+      "stock": 25,
+      "lote": "200488"
+    },
+    "110014455": {
+      "sku": "110014455",
+      "nombre": "REMOVEDOR DE OXIDO Z X 5 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 15,
+      "lote": "200499"
+    },
+    "110014511": {
+      "sku": "110014511",
+      "nombre": "REMOVEDOR DE OXIDO Z X 55 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 252.0,
+      "stock": 31,
+      "lote": "200902"
+    },
+    "110014470": {
+      "sku": "110014470",
+      "nombre": "REMOVEDOR DE OXIDO Z X GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 4.63,
+      "stock": 44,
+      "lote": "200392"
+    },
+    "110014475": {
+      "sku": "110014475",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.0 CM X 200 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 12.0,
+      "stock": 42,
+      "lote": "200813"
+    },
+    "110014460": {
+      "sku": "110014460",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 8.0,
+      "stock": 50,
+      "lote": "200777"
+    },
+    "110014449": {
+      "sku": "110014449",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 9.0,
+      "stock": 60,
+      "lote": "200598"
+    },
+    "110014467": {
+      "sku": "110014467",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 10.0,
+      "stock": 24,
+      "lote": "200294"
+    },
+    "110014484": {
+      "sku": "110014484",
+      "nombre": "SEP. CONCRETOP DE FIERRO 4 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 11.0,
+      "stock": 33,
+      "lote": "200322"
+    },
+    "110014506": {
+      "sku": "110014506",
+      "nombre": "SOLVENTE Z X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 18,
+      "lote": "200693"
+    },
+    "110014505": {
+      "sku": "110014505",
+      "nombre": "SOLVENTE Z X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 49,
+      "lote": "200162"
+    },
+    "110014507": {
+      "sku": "110014507",
+      "nombre": "SOLVENTE Z X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.93,
+      "stock": 35,
+      "lote": "200158"
+    },
+    "110014606": {
+      "sku": "110014606",
+      "nombre": "SOLVENTE ZP X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 18,
+      "lote": "200698"
+    },
+    "110014508": {
+      "sku": "110014508",
+      "nombre": "SOLVENTE ZP X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 45,
+      "lote": "200614"
+    },
+    "110014703": {
+      "sku": "110014703",
+      "nombre": "WATER STOP Z RX 101 + PEGAMENTO x 30 Ml",
+      "categoria": "WATER STOP",
+      "um": "UND",
+      "peso": 31.0,
+      "stock": 48,
+      "lote": "200261"
+    },
+    "110014559": {
+      "sku": "110014559",
+      "nombre": "Z BITUMEN X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 18,
+      "lote": "200620"
+    },
+    "110014536": {
+      "sku": "110014536",
+      "nombre": "Z BITUMEN X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 210.0,
+      "stock": 20,
+      "lote": "200971"
+    },
+    "110014537": {
+      "sku": "110014537",
+      "nombre": "Z BITUMEN X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.74,
+      "stock": 26,
+      "lote": "200170"
+    },
+    "110014446": {
+      "sku": "110014446",
+      "nombre": "Z CRON X 1000 L",
+      "categoria": "DESMOLDANTES",
+      "um": "UND",
+      "peso": 920.0,
+      "stock": 53,
+      "lote": "200169"
+    },
+    "110014489": {
+      "sku": "110014489",
+      "nombre": "Z CRON X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 58,
+      "lote": "200982"
+    },
+    "110014481": {
+      "sku": "110014481",
+      "nombre": "Z CRON X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 200.0,
+      "stock": 30,
+      "lote": "200513"
+    },
+    "110014437": {
+      "sku": "110014437",
+      "nombre": "Z CRON X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.71,
+      "stock": 22,
+      "lote": "200683"
+    },
+    "110014954": {
+      "sku": "110014954",
+      "nombre": "Z FIBRA PP X 4.8 KG - 12MM",
+      "categoria": "FIBRAS",
+      "um": "BOL",
+      "peso": 5.03,
+      "stock": 30,
+      "lote": "200692"
+    },
+    "610005544": {
+      "sku": "610005544",
+      "nombre": "Z FLEX POLIURETANO GRIS 30-40 (MANGA 600ML)",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "UND",
+      "peso": 0.71,
+      "stock": 53,
+      "lote": "200140"
+    },
+    "110014575": {
+      "sku": "110014575",
+      "nombre": "Z FLEX POLIURETANO GRIS X GAL A+B",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 54,
+      "lote": "200183"
+    },
+    "110014347": {
+      "sku": "110014347",
+      "nombre": "Z FLUIDIZANTE IR X 5 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 41,
+      "lote": "200773"
+    },
+    "110014254": {
+      "sku": "110014254",
+      "nombre": "Z FLUIDIZANTE IR X 55 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 259.0,
+      "stock": 52,
+      "lote": "200678"
+    },
+    "110014324": {
+      "sku": "110014324",
+      "nombre": "Z FLUIDIZANTE IR X GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 48,
+      "lote": "200423"
+    },
+    "110014325": {
+      "sku": "110014325",
+      "nombre": "Z FLUIDIZANTE RE. X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 249.82,
+      "stock": 31,
+      "lote": "200309"
+    },
+    "110014259": {
+      "sku": "110014259",
+      "nombre": "Z FLUIDIZANTE RE. X GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.32,
+      "stock": 57,
+      "lote": "200833"
+    },
+    "110014274": {
+      "sku": "110014274",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 35,
+      "lote": "200344"
+    },
+    "110014574": {
+      "sku": "110014574",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 245.0,
+      "stock": 31,
+      "lote": "200505"
+    },
+    "110014287": {
+      "sku": "110014287",
+      "nombre": "Z FLUIDIZANTE SR 1000 X GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.23,
+      "stock": 23,
+      "lote": "200787"
+    },
+    "110014393": {
+      "sku": "110014393",
+      "nombre": "Z FLUIDIZANTE SR. X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 23.14,
+      "stock": 56,
+      "lote": "200407"
+    },
+    "110014300": {
+      "sku": "110014300",
+      "nombre": "Z FLUIDIZANTE SR. X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 268.56,
+      "stock": 44,
+      "lote": "200423"
+    },
+    "110014627": {
+      "sku": "110014627",
+      "nombre": "Z FRAGUA #3 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 19,
+      "lote": "200109"
+    },
+    "110014582": {
+      "sku": "110014582",
+      "nombre": "Z FRAGUA #3 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 44,
+      "lote": "200736"
+    },
+    "110014583": {
+      "sku": "110014583",
+      "nombre": "Z FRAGUA #3 X GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 5.04,
+      "stock": 51,
+      "lote": "200202"
+    },
+    "110014621": {
+      "sku": "110014621",
+      "nombre": "Z FRAGUA #5 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 19,
+      "lote": "200650"
+    },
+    "110014639": {
+      "sku": "110014639",
+      "nombre": "Z FRAGUA #5 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 28,
+      "lote": "200618"
+    },
+    "110014622": {
+      "sku": "110014622",
+      "nombre": "Z GROUT X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 31,
+      "lote": "200235"
+    },
+    "110014462": {
+      "sku": "110014462",
+      "nombre": "Z I LIQUIDO X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 19.93,
+      "stock": 37,
+      "lote": "200170"
+    },
+    "110014278": {
+      "sku": "110014278",
+      "nombre": "Z I LIQUIDO X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 233.18,
+      "stock": 30,
+      "lote": "200478"
+    },
+    "110014279": {
+      "sku": "110014279",
+      "nombre": "Z I LIQUIDO X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 4.02,
+      "stock": 33,
+      "lote": "200261"
+    },
+    "110014473": {
+      "sku": "110014473",
+      "nombre": "Z I POLVO X KG",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "BOL",
+      "peso": 1.0,
+      "stock": 43,
+      "lote": "200953"
+    },
+    "110014545": {
+      "sku": "110014545",
+      "nombre": "Z IMPEROOF X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 24.5,
+      "stock": 49,
+      "lote": "200820"
+    },
+    "110014309": {
+      "sku": "110014309",
+      "nombre": "Z IMPEROOF X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 283.4,
+      "stock": 34,
+      "lote": "200726"
+    },
+    "110014566": {
+      "sku": "110014566",
+      "nombre": "Z IMPEROOF X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 4.9,
+      "stock": 56,
+      "lote": "200641"
+    },
+    "110014392": {
+      "sku": "110014392",
+      "nombre": "Z MEMBRANA A X 5 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 15,
+      "lote": "200783"
+    },
+    "110014388": {
+      "sku": "110014388",
+      "nombre": "Z MEMBRANA A X 55 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 267.0,
+      "stock": 50,
+      "lote": "200406"
+    },
+    "110014477": {
+      "sku": "110014477",
+      "nombre": "Z MEMBRANA BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 57,
+      "lote": "200206"
+    },
+    "110014487": {
+      "sku": "110014487",
+      "nombre": "Z MEMBRANA BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 254.0,
+      "stock": 23,
+      "lote": "200370"
+    },
+    "110014320": {
+      "sku": "110014320",
+      "nombre": "Z MEMBRANA BLANCO X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 22,
+      "lote": "200209"
+    },
+    "110014471": {
+      "sku": "110014471",
+      "nombre": "Z MORTERO T40 X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 50,
+      "lote": "200259"
+    },
+    "110014464": {
+      "sku": "110014464",
+      "nombre": "Z POX 31 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 32,
+      "lote": "200388"
+    },
+    "110014571": {
+      "sku": "110014571",
+      "nombre": "Z POX 31 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 53,
+      "lote": "200315"
+    },
+    "110014483": {
+      "sku": "110014483",
+      "nombre": "Z POX 32 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 60,
+      "lote": "200451"
+    },
+    "110014570": {
+      "sku": "110014570",
+      "nombre": "Z POX 32 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 28,
+      "lote": "200803"
+    },
+    "110014265": {
+      "sku": "110014265",
+      "nombre": "Z POX 35 BV KG (A+B)",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.13,
+      "stock": 55,
+      "lote": "200973"
+    },
+    "110014634": {
+      "sku": "110014634",
+      "nombre": "Z RESINA 100% X 1/4 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 1.14,
+      "stock": 31,
+      "lote": "200617"
+    },
+    "110014474": {
+      "sku": "110014474",
+      "nombre": "Z RESINA 100% X 5 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 46,
+      "lote": "200357"
+    },
+    "110014459": {
+      "sku": "110014459",
+      "nombre": "Z RESINA 100% X 55 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 246.0,
+      "stock": 18,
+      "lote": "200194"
+    },
+    "110014598": {
+      "sku": "110014598",
+      "nombre": "Z RR PLAST - 971 X 5 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 24.0,
+      "stock": 55,
+      "lote": "200533"
+    },
+    "110014587": {
+      "sku": "110014587",
+      "nombre": "Z RR PLAST - 971 X 55 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 32,
+      "lote": "200145"
+    },
+    "110014603": {
+      "sku": "110014603",
+      "nombre": "Z RR PLAST - 971 X GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 4.76,
+      "stock": 15,
+      "lote": "200441"
+    },
+    "110014595": {
+      "sku": "110014595",
+      "nombre": "Z RR PLAST X 5 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 23,
+      "lote": "200752"
+    },
+    "110014375": {
+      "sku": "110014375",
+      "nombre": "Z RR PLAST X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 251.0,
+      "stock": 31,
+      "lote": "200265"
+    },
+    "110014397": {
+      "sku": "110014397",
+      "nombre": "Z SOL BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 43,
+      "lote": "200664"
+    },
+    "110014510": {
+      "sku": "110014510",
+      "nombre": "Z SOL BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 60,
+      "lote": "200537"
+    },
+    "110014573": {
+      "sku": "110014573",
+      "nombre": "Z VISTA X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 50,
+      "lote": "200109"
+    },
+    "610005612": {
+      "sku": "610005612",
+      "nombre": "CAPUCHONES DE SEG. CHICO (3/8\", 1/2\", 5/8\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 1.6,
+      "stock": 22,
+      "lote": "200177"
+    },
+    "610005613": {
+      "sku": "610005613",
+      "nombre": "CAPUCHONES DE SEG. GRANDE (3/4\", 7/8\", 1\", 1 1/4\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 2.14,
+      "stock": 59,
+      "lote": "200252"
+    },
+    "610005585": {
+      "sku": "610005585",
+      "nombre": "BACKER ROD 1 1/2\" x 91 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.15,
+      "stock": 49,
+      "lote": "200136"
+    },
+    "610005584": {
+      "sku": "610005584",
+      "nombre": "BACKER ROD 1 1/4\" x 122 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.59,
+      "stock": 38,
+      "lote": "200696"
+    },
+    "610005583": {
+      "sku": "610005583",
+      "nombre": "BACKER ROD 1 1/8\" x 152 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.86,
+      "stock": 50,
+      "lote": "200251"
+    },
+    "610005582": {
+      "sku": "610005582",
+      "nombre": "BACKER ROD 1\" x 182 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.64,
+      "stock": 42,
+      "lote": "200230"
+    },
+    "610005580": {
+      "sku": "610005580",
+      "nombre": "BACKER ROD 1/2\" x 762 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.57,
+      "stock": 17,
+      "lote": "200415"
+    },
+    "610005578": {
+      "sku": "610005578",
+      "nombre": "BACKER ROD 1/4\" x 2438 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.63,
+      "stock": 38,
+      "lote": "200915"
+    },
+    "610005587": {
+      "sku": "610005587",
+      "nombre": "BACKER ROD 3/4\" x 335 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.52,
+      "stock": 17,
+      "lote": "200466"
+    },
+    "610005579": {
+      "sku": "610005579",
+      "nombre": "BACKER ROD 3/8\" x 1280 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.2,
+      "stock": 28,
+      "lote": "200798"
+    },
+    "610005586": {
+      "sku": "610005586",
+      "nombre": "BACKER ROD 5/8\" x 472 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.48,
+      "stock": 30,
+      "lote": "200782"
+    },
+    "610005581": {
+      "sku": "610005581",
+      "nombre": "BACKER ROD 7/8\" x 259 Ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.4,
+      "stock": 21,
+      "lote": "200462"
+    },
+    "620001061": {
+      "sku": "620001061",
+      "nombre": "WATER STOP DE JEBE 4\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 17.44,
+      "stock": 50,
+      "lote": "200995"
+    },
+    "610005592": {
+      "sku": "610005592",
+      "nombre": "WATER STOP DE JEBE 6\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 25.75,
+      "stock": 41,
+      "lote": "200735"
+    },
+    "610005593": {
+      "sku": "610005593",
+      "nombre": "WATER STOP DE JEBE 9\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 39.25,
+      "stock": 24,
+      "lote": "200342"
+    },
+    "110014580": {
+      "sku": "110014580",
+      "nombre": "Z 2000 X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 25,
+      "lote": "200919"
+    },
+    "110014677": {
+      "sku": "110014677",
+      "nombre": "Z DESMOLAC PU X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 26,
+      "lote": "200522"
+    }
+  },
+  "AREQUIPA": {
+    "110014513": {
+      "sku": "110014513",
+      "nombre": "MICROSILICA Z X 20 KG",
+      "categoria": "ADITIVOS",
+      "um": "B20",
+      "peso": 20.1,
+      "stock": 16,
+      "lote": "200283"
+    },
+    "110014697": {
+      "sku": "110014697",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO FLEX X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 57,
+      "lote": "200984"
+    },
+    "110014699": {
+      "sku": "110014699",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO EXT X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 41,
+      "lote": "200921"
+    },
+    "110014292": {
+      "sku": "110014292",
+      "nombre": "AIRCON Z X 5 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 30,
+      "lote": "200373"
+    },
+    "110014371": {
+      "sku": "110014371",
+      "nombre": "AIRCON Z X 55 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 234.1,
+      "stock": 25,
+      "lote": "200906"
+    },
+    "110014294": {
+      "sku": "110014294",
+      "nombre": "AIRCON Z X GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 59,
+      "lote": "200210"
+    },
+    "110014480": {
+      "sku": "110014480",
+      "nombre": "ALQUITRAN Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 39,
+      "lote": "200993"
+    },
+    "110014355": {
+      "sku": "110014355",
+      "nombre": "ALQUITRAN Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 209.0,
+      "stock": 17,
+      "lote": "200979"
+    },
+    "110014469": {
+      "sku": "110014469",
+      "nombre": "ASFALTO LIQUIDO Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 45,
+      "lote": "200327"
+    },
+    "110014319": {
+      "sku": "110014319",
+      "nombre": "ASFALTO LIQUIDO Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 27,
+      "lote": "200936"
+    },
+    "110014261": {
+      "sku": "110014261",
+      "nombre": "ASFALTO LIQUIDO Z X GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 3.9,
+      "stock": 44,
+      "lote": "200458"
+    },
+    "110014501": {
+      "sku": "110014501",
+      "nombre": "CEMENTICIO Z BLANCO X 10 KG + Z RESINA X JGO.",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 10.5,
+      "stock": 34,
+      "lote": "200940"
+    },
+    "110014367": {
+      "sku": "110014367",
+      "nombre": "CEMENTICIO Z GRIS X 25 KG + Z RESINA (JUEGO)",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 25.1,
+      "stock": 29,
+      "lote": "200328"
+    },
+    "110014520": {
+      "sku": "110014520",
+      "nombre": "CRISTAL Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 16,
+      "lote": "200775"
+    },
+    "110015451": {
+      "sku": "110015451",
+      "nombre": "CRISTAL Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 27,
+      "lote": "200508"
+    },
+    "110014456": {
+      "sku": "110014456",
+      "nombre": "CRISTAL Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 36,
+      "lote": "200385"
+    },
+    "110014458": {
+      "sku": "110014458",
+      "nombre": "CURET Z BLANCO CON PIG. X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 19,
+      "lote": "200891"
+    },
+    "110014468": {
+      "sku": "110014468",
+      "nombre": "CURET Z BLANCO CON PIG. X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 238.0,
+      "stock": 32,
+      "lote": "200459"
+    },
+    "110014376": {
+      "sku": "110014376",
+      "nombre": "CURET Z BLANCO CON PIG. X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 56,
+      "lote": "200621"
+    },
+    "110014629": {
+      "sku": "110014629",
+      "nombre": "IMPRIMANTE Z X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 40,
+      "lote": "200795"
+    },
+    "110014611": {
+      "sku": "110014611",
+      "nombre": "IMPRIMANTE Z X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 49,
+      "lote": "200439"
+    },
+    "110014599": {
+      "sku": "110014599",
+      "nombre": "IMPRIMANTE Z X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.95,
+      "stock": 16,
+      "lote": "200218"
+    },
+    "110014342": {
+      "sku": "110014342",
+      "nombre": "IMPRIMANTE ZP X GAL A+B",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.21,
+      "stock": 31,
+      "lote": "200282"
+    },
+    "110014569": {
+      "sku": "110014569",
+      "nombre": "IMPRIMANTE ZPM X GAL",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 3.4,
+      "stock": 52,
+      "lote": "200371"
+    },
+    "110014453": {
+      "sku": "110014453",
+      "nombre": "MATE Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 19.8,
+      "stock": 17,
+      "lote": "200211"
+    },
+    "110015090": {
+      "sku": "110015090",
+      "nombre": "MATE Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 53,
+      "lote": "200544"
+    },
+    "110014323": {
+      "sku": "110014323",
+      "nombre": "MATE Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 3.99,
+      "stock": 37,
+      "lote": "200846"
+    },
+    "110014504": {
+      "sku": "110014504",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 1/4 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 1.15,
+      "stock": 35,
+      "lote": "200546"
+    },
+    "110014503": {
+      "sku": "110014503",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 5 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 53,
+      "lote": "200623"
+    },
+    "110014553": {
+      "sku": "110014553",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 55 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 229.0,
+      "stock": 22,
+      "lote": "200494"
+    },
+    "110014516": {
+      "sku": "110014516",
+      "nombre": "REMOVEDOR DE CONCRETO Z X GL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "UND",
+      "peso": 4.2,
+      "stock": 51,
+      "lote": "200294"
+    },
+    "110014455": {
+      "sku": "110014455",
+      "nombre": "REMOVEDOR DE OXIDO Z X 5 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 31,
+      "lote": "200145"
+    },
+    "110014511": {
+      "sku": "110014511",
+      "nombre": "REMOVEDOR DE OXIDO Z X 55 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 252.0,
+      "stock": 60,
+      "lote": "200546"
+    },
+    "110014470": {
+      "sku": "110014470",
+      "nombre": "REMOVEDOR DE OXIDO Z X GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 4.63,
+      "stock": 15,
+      "lote": "200632"
+    },
+    "110014475": {
+      "sku": "110014475",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.0 CM X 200 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 12.0,
+      "stock": 49,
+      "lote": "200803"
+    },
+    "110014460": {
+      "sku": "110014460",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 8.0,
+      "stock": 57,
+      "lote": "200301"
+    },
+    "110014449": {
+      "sku": "110014449",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 9.0,
+      "stock": 38,
+      "lote": "200541"
+    },
+    "110014467": {
+      "sku": "110014467",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 10.0,
+      "stock": 19,
+      "lote": "200780"
+    },
+    "110014484": {
+      "sku": "110014484",
+      "nombre": "SEP. CONCRETOP DE FIERRO 4 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 11.0,
+      "stock": 36,
+      "lote": "200738"
+    },
+    "110014506": {
+      "sku": "110014506",
+      "nombre": "SOLVENTE Z X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 35,
+      "lote": "200779"
+    },
+    "110014505": {
+      "sku": "110014505",
+      "nombre": "SOLVENTE Z X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 22,
+      "lote": "200837"
+    },
+    "110014507": {
+      "sku": "110014507",
+      "nombre": "SOLVENTE Z X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.93,
+      "stock": 34,
+      "lote": "200619"
+    },
+    "110014606": {
+      "sku": "110014606",
+      "nombre": "SOLVENTE ZP X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 34,
+      "lote": "200782"
+    },
+    "110014508": {
+      "sku": "110014508",
+      "nombre": "SOLVENTE ZP X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 41,
+      "lote": "200434"
+    },
+    "110014703": {
+      "sku": "110014703",
+      "nombre": "WATER STOP Z RX 101 + PEGAMENTO x 30 Ml",
+      "categoria": "WATER STOP",
+      "um": "UND",
+      "peso": 31.0,
+      "stock": 40,
+      "lote": "200813"
+    },
+    "110014559": {
+      "sku": "110014559",
+      "nombre": "Z BITUMEN X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 33,
+      "lote": "200667"
+    },
+    "110014536": {
+      "sku": "110014536",
+      "nombre": "Z BITUMEN X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 210.0,
+      "stock": 23,
+      "lote": "200296"
+    },
+    "110014537": {
+      "sku": "110014537",
+      "nombre": "Z BITUMEN X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.74,
+      "stock": 41,
+      "lote": "200780"
+    },
+    "110014446": {
+      "sku": "110014446",
+      "nombre": "Z CRON X 1000 L",
+      "categoria": "DESMOLDANTES",
+      "um": "UND",
+      "peso": 920.0,
+      "stock": 39,
+      "lote": "200793"
+    },
+    "110014489": {
+      "sku": "110014489",
+      "nombre": "Z CRON X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 26,
+      "lote": "200730"
+    },
+    "110014481": {
+      "sku": "110014481",
+      "nombre": "Z CRON X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 200.0,
+      "stock": 51,
+      "lote": "200408"
+    },
+    "110014437": {
+      "sku": "110014437",
+      "nombre": "Z CRON X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.71,
+      "stock": 40,
+      "lote": "200661"
+    },
+    "110014954": {
+      "sku": "110014954",
+      "nombre": "Z FIBRA PP X 4.8 KG - 12MM",
+      "categoria": "FIBRAS",
+      "um": "BOL",
+      "peso": 5.03,
+      "stock": 15,
+      "lote": "200411"
+    },
+    "610005544": {
+      "sku": "610005544",
+      "nombre": "Z FLEX POLIURETANO GRIS 30-40 (MANGA 600ML)",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "UND",
+      "peso": 0.71,
+      "stock": 33,
+      "lote": "200315"
+    },
+    "110014575": {
+      "sku": "110014575",
+      "nombre": "Z FLEX POLIURETANO GRIS X GAL A+B",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 42,
+      "lote": "200904"
+    },
+    "110014347": {
+      "sku": "110014347",
+      "nombre": "Z FLUIDIZANTE IR X 5 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 52,
+      "lote": "200721"
+    },
+    "110014254": {
+      "sku": "110014254",
+      "nombre": "Z FLUIDIZANTE IR X 55 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 259.0,
+      "stock": 56,
+      "lote": "200429"
+    },
+    "110014324": {
+      "sku": "110014324",
+      "nombre": "Z FLUIDIZANTE IR X GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 44,
+      "lote": "200552"
+    },
+    "110014325": {
+      "sku": "110014325",
+      "nombre": "Z FLUIDIZANTE RE. X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 249.82,
+      "stock": 43,
+      "lote": "200791"
+    },
+    "110014259": {
+      "sku": "110014259",
+      "nombre": "Z FLUIDIZANTE RE. X GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.32,
+      "stock": 28,
+      "lote": "200623"
+    },
+    "110014274": {
+      "sku": "110014274",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 45,
+      "lote": "200912"
+    },
+    "110014574": {
+      "sku": "110014574",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 245.0,
+      "stock": 25,
+      "lote": "200774"
+    },
+    "110014287": {
+      "sku": "110014287",
+      "nombre": "Z FLUIDIZANTE SR 1000 X GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.23,
+      "stock": 20,
+      "lote": "200390"
+    },
+    "110014393": {
+      "sku": "110014393",
+      "nombre": "Z FLUIDIZANTE SR. X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 23.14,
+      "stock": 47,
+      "lote": "200779"
+    },
+    "110014300": {
+      "sku": "110014300",
+      "nombre": "Z FLUIDIZANTE SR. X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 268.56,
+      "stock": 55,
+      "lote": "200734"
+    },
+    "110014627": {
+      "sku": "110014627",
+      "nombre": "Z FRAGUA #3 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 36,
+      "lote": "200195"
+    },
+    "110014582": {
+      "sku": "110014582",
+      "nombre": "Z FRAGUA #3 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 30,
+      "lote": "200788"
+    },
+    "110014583": {
+      "sku": "110014583",
+      "nombre": "Z FRAGUA #3 X GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 5.04,
+      "stock": 34,
+      "lote": "200330"
+    },
+    "110014621": {
+      "sku": "110014621",
+      "nombre": "Z FRAGUA #5 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 27,
+      "lote": "200250"
+    },
+    "110014639": {
+      "sku": "110014639",
+      "nombre": "Z FRAGUA #5 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 16,
+      "lote": "200147"
+    },
+    "110014622": {
+      "sku": "110014622",
+      "nombre": "Z GROUT X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 30,
+      "lote": "200586"
+    },
+    "110014462": {
+      "sku": "110014462",
+      "nombre": "Z I LIQUIDO X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 19.93,
+      "stock": 54,
+      "lote": "200970"
+    },
+    "110014278": {
+      "sku": "110014278",
+      "nombre": "Z I LIQUIDO X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 233.18,
+      "stock": 19,
+      "lote": "200566"
+    },
+    "110014279": {
+      "sku": "110014279",
+      "nombre": "Z I LIQUIDO X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 4.02,
+      "stock": 41,
+      "lote": "200744"
+    },
+    "110014473": {
+      "sku": "110014473",
+      "nombre": "Z I POLVO X KG",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "BOL",
+      "peso": 1.0,
+      "stock": 51,
+      "lote": "200299"
+    },
+    "110014545": {
+      "sku": "110014545",
+      "nombre": "Z IMPEROOF X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 24.5,
+      "stock": 60,
+      "lote": "200813"
+    },
+    "110014309": {
+      "sku": "110014309",
+      "nombre": "Z IMPEROOF X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 283.4,
+      "stock": 39,
+      "lote": "200606"
+    },
+    "110014566": {
+      "sku": "110014566",
+      "nombre": "Z IMPEROOF X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 4.9,
+      "stock": 40,
+      "lote": "200349"
+    },
+    "110014392": {
+      "sku": "110014392",
+      "nombre": "Z MEMBRANA A X 5 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 24,
+      "lote": "200771"
+    },
+    "110014388": {
+      "sku": "110014388",
+      "nombre": "Z MEMBRANA A X 55 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 267.0,
+      "stock": 59,
+      "lote": "200105"
+    },
+    "110014477": {
+      "sku": "110014477",
+      "nombre": "Z MEMBRANA BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 21,
+      "lote": "200897"
+    },
+    "110014487": {
+      "sku": "110014487",
+      "nombre": "Z MEMBRANA BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 254.0,
+      "stock": 42,
+      "lote": "200324"
+    },
+    "110014320": {
+      "sku": "110014320",
+      "nombre": "Z MEMBRANA BLANCO X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 26,
+      "lote": "200923"
+    },
+    "110014471": {
+      "sku": "110014471",
+      "nombre": "Z MORTERO T40 X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 59,
+      "lote": "200630"
+    },
+    "110014464": {
+      "sku": "110014464",
+      "nombre": "Z POX 31 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 44,
+      "lote": "200151"
+    },
+    "110014571": {
+      "sku": "110014571",
+      "nombre": "Z POX 31 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 50,
+      "lote": "200355"
+    },
+    "110014483": {
+      "sku": "110014483",
+      "nombre": "Z POX 32 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 22,
+      "lote": "200567"
+    },
+    "110014570": {
+      "sku": "110014570",
+      "nombre": "Z POX 32 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 23,
+      "lote": "200920"
+    },
+    "110014265": {
+      "sku": "110014265",
+      "nombre": "Z POX 35 BV KG (A+B)",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.13,
+      "stock": 44,
+      "lote": "200783"
+    },
+    "110014634": {
+      "sku": "110014634",
+      "nombre": "Z RESINA 100% X 1/4 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 1.14,
+      "stock": 48,
+      "lote": "200672"
+    },
+    "110014474": {
+      "sku": "110014474",
+      "nombre": "Z RESINA 100% X 5 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 53,
+      "lote": "200424"
+    },
+    "110014459": {
+      "sku": "110014459",
+      "nombre": "Z RESINA 100% X 55 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 246.0,
+      "stock": 43,
+      "lote": "200727"
+    },
+    "110014598": {
+      "sku": "110014598",
+      "nombre": "Z RR PLAST - 971 X 5 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 24.0,
+      "stock": 47,
+      "lote": "200536"
+    },
+    "110014587": {
+      "sku": "110014587",
+      "nombre": "Z RR PLAST - 971 X 55 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 50,
+      "lote": "200556"
+    },
+    "110014603": {
+      "sku": "110014603",
+      "nombre": "Z RR PLAST - 971 X GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 4.76,
+      "stock": 25,
+      "lote": "200861"
+    },
+    "110014595": {
+      "sku": "110014595",
+      "nombre": "Z RR PLAST X 5 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 45,
+      "lote": "200560"
+    },
+    "110014375": {
+      "sku": "110014375",
+      "nombre": "Z RR PLAST X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 251.0,
+      "stock": 31,
+      "lote": "200869"
+    },
+    "110014397": {
+      "sku": "110014397",
+      "nombre": "Z SOL BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 30,
+      "lote": "200960"
+    },
+    "110014510": {
+      "sku": "110014510",
+      "nombre": "Z SOL BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 55,
+      "lote": "200383"
+    },
+    "110014573": {
+      "sku": "110014573",
+      "nombre": "Z VISTA X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 48,
+      "lote": "200596"
+    },
+    "610005612": {
+      "sku": "610005612",
+      "nombre": "CAPUCHONES DE SEG. CHICO (3/8\", 1/2\", 5/8\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 1.6,
+      "stock": 55,
+      "lote": "200344"
+    },
+    "610005613": {
+      "sku": "610005613",
+      "nombre": "CAPUCHONES DE SEG. GRANDE (3/4\", 7/8\", 1\", 1 1/4\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 2.14,
+      "stock": 32,
+      "lote": "200550"
+    },
+    "610005585": {
+      "sku": "610005585",
+      "nombre": "BACKER ROD 1 1/2\" x 91 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.15,
+      "stock": 19,
+      "lote": "200830"
+    },
+    "610005584": {
+      "sku": "610005584",
+      "nombre": "BACKER ROD 1 1/4\" x 122 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.59,
+      "stock": 33,
+      "lote": "200340"
+    },
+    "610005583": {
+      "sku": "610005583",
+      "nombre": "BACKER ROD 1 1/8\" x 152 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.86,
+      "stock": 32,
+      "lote": "200443"
+    },
+    "610005582": {
+      "sku": "610005582",
+      "nombre": "BACKER ROD 1\" x 182 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.64,
+      "stock": 35,
+      "lote": "200653"
+    },
+    "610005580": {
+      "sku": "610005580",
+      "nombre": "BACKER ROD 1/2\" x 762 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.57,
+      "stock": 20,
+      "lote": "200241"
+    },
+    "610005578": {
+      "sku": "610005578",
+      "nombre": "BACKER ROD 1/4\" x 2438 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.63,
+      "stock": 24,
+      "lote": "200336"
+    },
+    "610005587": {
+      "sku": "610005587",
+      "nombre": "BACKER ROD 3/4\" x 335 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.52,
+      "stock": 39,
+      "lote": "200810"
+    },
+    "610005579": {
+      "sku": "610005579",
+      "nombre": "BACKER ROD 3/8\" x 1280 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.2,
+      "stock": 24,
+      "lote": "200823"
+    },
+    "610005586": {
+      "sku": "610005586",
+      "nombre": "BACKER ROD 5/8\" x 472 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.48,
+      "stock": 28,
+      "lote": "200165"
+    },
+    "610005581": {
+      "sku": "610005581",
+      "nombre": "BACKER ROD 7/8\" x 259 Ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.4,
+      "stock": 41,
+      "lote": "200517"
+    },
+    "620001061": {
+      "sku": "620001061",
+      "nombre": "WATER STOP DE JEBE 4\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 17.44,
+      "stock": 36,
+      "lote": "200655"
+    },
+    "610005592": {
+      "sku": "610005592",
+      "nombre": "WATER STOP DE JEBE 6\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 25.75,
+      "stock": 44,
+      "lote": "200525"
+    },
+    "610005593": {
+      "sku": "610005593",
+      "nombre": "WATER STOP DE JEBE 9\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 39.25,
+      "stock": 18,
+      "lote": "200311"
+    },
+    "110014580": {
+      "sku": "110014580",
+      "nombre": "Z 2000 X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 41,
+      "lote": "200498"
+    },
+    "110014677": {
+      "sku": "110014677",
+      "nombre": "Z DESMOLAC PU X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 52,
+      "lote": "200812"
+    }
+  },
+  "SURQUILLO": {
+    "110014513": {
+      "sku": "110014513",
+      "nombre": "MICROSILICA Z X 20 KG",
+      "categoria": "ADITIVOS",
+      "um": "B20",
+      "peso": 20.1,
+      "stock": 5,
+      "lote": "200977"
+    },
+    "110014697": {
+      "sku": "110014697",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO FLEX X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 5,
+      "lote": "200460"
+    },
+    "110014699": {
+      "sku": "110014699",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO EXT X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 17,
+      "lote": "200588"
+    },
+    "110014292": {
+      "sku": "110014292",
+      "nombre": "AIRCON Z X 5 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 14,
+      "lote": "200871"
+    },
+    "110014371": {
+      "sku": "110014371",
+      "nombre": "AIRCON Z X 55 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 234.1,
+      "stock": 17,
+      "lote": "200973"
+    },
+    "110014294": {
+      "sku": "110014294",
+      "nombre": "AIRCON Z X GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 18,
+      "lote": "200651"
+    },
+    "110014480": {
+      "sku": "110014480",
+      "nombre": "ALQUITRAN Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 28,
+      "lote": "200852"
+    },
+    "110014355": {
+      "sku": "110014355",
+      "nombre": "ALQUITRAN Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 209.0,
+      "stock": 22,
+      "lote": "200919"
+    },
+    "110014469": {
+      "sku": "110014469",
+      "nombre": "ASFALTO LIQUIDO Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 24,
+      "lote": "200325"
+    },
+    "110014319": {
+      "sku": "110014319",
+      "nombre": "ASFALTO LIQUIDO Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 20,
+      "lote": "200324"
+    },
+    "110014261": {
+      "sku": "110014261",
+      "nombre": "ASFALTO LIQUIDO Z X GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 3.9,
+      "stock": 13,
+      "lote": "200546"
+    },
+    "110014501": {
+      "sku": "110014501",
+      "nombre": "CEMENTICIO Z BLANCO X 10 KG + Z RESINA X JGO.",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 10.5,
+      "stock": 20,
+      "lote": "200129"
+    },
+    "110014367": {
+      "sku": "110014367",
+      "nombre": "CEMENTICIO Z GRIS X 25 KG + Z RESINA (JUEGO)",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 25.1,
+      "stock": 17,
+      "lote": "200444"
+    },
+    "110014520": {
+      "sku": "110014520",
+      "nombre": "CRISTAL Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 26,
+      "lote": "200795"
+    },
+    "110015451": {
+      "sku": "110015451",
+      "nombre": "CRISTAL Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 30,
+      "lote": "200514"
+    },
+    "110014456": {
+      "sku": "110014456",
+      "nombre": "CRISTAL Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 28,
+      "lote": "200269"
+    },
+    "110014458": {
+      "sku": "110014458",
+      "nombre": "CURET Z BLANCO CON PIG. X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 19,
+      "lote": "200230"
+    },
+    "110014468": {
+      "sku": "110014468",
+      "nombre": "CURET Z BLANCO CON PIG. X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 238.0,
+      "stock": 24,
+      "lote": "200646"
+    },
+    "110014376": {
+      "sku": "110014376",
+      "nombre": "CURET Z BLANCO CON PIG. X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 5,
+      "lote": "200503"
+    },
+    "110014629": {
+      "sku": "110014629",
+      "nombre": "IMPRIMANTE Z X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 23,
+      "lote": "200677"
+    },
+    "110014611": {
+      "sku": "110014611",
+      "nombre": "IMPRIMANTE Z X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 26,
+      "lote": "200127"
+    },
+    "110014599": {
+      "sku": "110014599",
+      "nombre": "IMPRIMANTE Z X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.95,
+      "stock": 7,
+      "lote": "200758"
+    },
+    "110014342": {
+      "sku": "110014342",
+      "nombre": "IMPRIMANTE ZP X GAL A+B",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.21,
+      "stock": 18,
+      "lote": "200238"
+    },
+    "110014569": {
+      "sku": "110014569",
+      "nombre": "IMPRIMANTE ZPM X GAL",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 3.4,
+      "stock": 19,
+      "lote": "200286"
+    },
+    "110014453": {
+      "sku": "110014453",
+      "nombre": "MATE Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 19.8,
+      "stock": 6,
+      "lote": "200366"
+    },
+    "110015090": {
+      "sku": "110015090",
+      "nombre": "MATE Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 17,
+      "lote": "200435"
+    },
+    "110014323": {
+      "sku": "110014323",
+      "nombre": "MATE Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 3.99,
+      "stock": 11,
+      "lote": "200565"
+    },
+    "110014504": {
+      "sku": "110014504",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 1/4 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 1.15,
+      "stock": 15,
+      "lote": "200445"
+    },
+    "110014503": {
+      "sku": "110014503",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 5 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 29,
+      "lote": "200488"
+    },
+    "110014553": {
+      "sku": "110014553",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 55 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 229.0,
+      "stock": 13,
+      "lote": "200870"
+    },
+    "110014516": {
+      "sku": "110014516",
+      "nombre": "REMOVEDOR DE CONCRETO Z X GL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "UND",
+      "peso": 4.2,
+      "stock": 18,
+      "lote": "200358"
+    },
+    "110014455": {
+      "sku": "110014455",
+      "nombre": "REMOVEDOR DE OXIDO Z X 5 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 7,
+      "lote": "200581"
+    },
+    "110014511": {
+      "sku": "110014511",
+      "nombre": "REMOVEDOR DE OXIDO Z X 55 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 252.0,
+      "stock": 5,
+      "lote": "200867"
+    },
+    "110014470": {
+      "sku": "110014470",
+      "nombre": "REMOVEDOR DE OXIDO Z X GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 4.63,
+      "stock": 22,
+      "lote": "200153"
+    },
+    "110014475": {
+      "sku": "110014475",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.0 CM X 200 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 12.0,
+      "stock": 16,
+      "lote": "200329"
+    },
+    "110014460": {
+      "sku": "110014460",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 8.0,
+      "stock": 25,
+      "lote": "200170"
+    },
+    "110014449": {
+      "sku": "110014449",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 9.0,
+      "stock": 29,
+      "lote": "200767"
+    },
+    "110014467": {
+      "sku": "110014467",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 10.0,
+      "stock": 6,
+      "lote": "200872"
+    },
+    "110014484": {
+      "sku": "110014484",
+      "nombre": "SEP. CONCRETOP DE FIERRO 4 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 11.0,
+      "stock": 5,
+      "lote": "200353"
+    },
+    "110014506": {
+      "sku": "110014506",
+      "nombre": "SOLVENTE Z X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 11,
+      "lote": "200959"
+    },
+    "110014505": {
+      "sku": "110014505",
+      "nombre": "SOLVENTE Z X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 5,
+      "lote": "200736"
+    },
+    "110014507": {
+      "sku": "110014507",
+      "nombre": "SOLVENTE Z X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.93,
+      "stock": 9,
+      "lote": "200344"
+    },
+    "110014606": {
+      "sku": "110014606",
+      "nombre": "SOLVENTE ZP X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 9,
+      "lote": "200584"
+    },
+    "110014508": {
+      "sku": "110014508",
+      "nombre": "SOLVENTE ZP X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 26,
+      "lote": "200217"
+    },
+    "110014703": {
+      "sku": "110014703",
+      "nombre": "WATER STOP Z RX 101 + PEGAMENTO x 30 Ml",
+      "categoria": "WATER STOP",
+      "um": "UND",
+      "peso": 31.0,
+      "stock": 23,
+      "lote": "200323"
+    },
+    "110014559": {
+      "sku": "110014559",
+      "nombre": "Z BITUMEN X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 19,
+      "lote": "200816"
+    },
+    "110014536": {
+      "sku": "110014536",
+      "nombre": "Z BITUMEN X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 210.0,
+      "stock": 13,
+      "lote": "200885"
+    },
+    "110014537": {
+      "sku": "110014537",
+      "nombre": "Z BITUMEN X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.74,
+      "stock": 16,
+      "lote": "200271"
+    },
+    "110014446": {
+      "sku": "110014446",
+      "nombre": "Z CRON X 1000 L",
+      "categoria": "DESMOLDANTES",
+      "um": "UND",
+      "peso": 920.0,
+      "stock": 24,
+      "lote": "200721"
+    },
+    "110014489": {
+      "sku": "110014489",
+      "nombre": "Z CRON X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 28,
+      "lote": "200835"
+    },
+    "110014481": {
+      "sku": "110014481",
+      "nombre": "Z CRON X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 200.0,
+      "stock": 8,
+      "lote": "200896"
+    },
+    "110014437": {
+      "sku": "110014437",
+      "nombre": "Z CRON X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.71,
+      "stock": 10,
+      "lote": "200418"
+    },
+    "110014954": {
+      "sku": "110014954",
+      "nombre": "Z FIBRA PP X 4.8 KG - 12MM",
+      "categoria": "FIBRAS",
+      "um": "BOL",
+      "peso": 5.03,
+      "stock": 8,
+      "lote": "200692"
+    },
+    "610005544": {
+      "sku": "610005544",
+      "nombre": "Z FLEX POLIURETANO GRIS 30-40 (MANGA 600ML)",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "UND",
+      "peso": 0.71,
+      "stock": 5,
+      "lote": "200419"
+    },
+    "110014575": {
+      "sku": "110014575",
+      "nombre": "Z FLEX POLIURETANO GRIS X GAL A+B",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 23,
+      "lote": "200793"
+    },
+    "110014347": {
+      "sku": "110014347",
+      "nombre": "Z FLUIDIZANTE IR X 5 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 17,
+      "lote": "200506"
+    },
+    "110014254": {
+      "sku": "110014254",
+      "nombre": "Z FLUIDIZANTE IR X 55 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 259.0,
+      "stock": 27,
+      "lote": "200303"
+    },
+    "110014324": {
+      "sku": "110014324",
+      "nombre": "Z FLUIDIZANTE IR X GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 7,
+      "lote": "200706"
+    },
+    "110014325": {
+      "sku": "110014325",
+      "nombre": "Z FLUIDIZANTE RE. X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 249.82,
+      "stock": 27,
+      "lote": "200950"
+    },
+    "110014259": {
+      "sku": "110014259",
+      "nombre": "Z FLUIDIZANTE RE. X GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.32,
+      "stock": 25,
+      "lote": "200348"
+    },
+    "110014274": {
+      "sku": "110014274",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 8,
+      "lote": "200813"
+    },
+    "110014574": {
+      "sku": "110014574",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 245.0,
+      "stock": 29,
+      "lote": "200408"
+    },
+    "110014287": {
+      "sku": "110014287",
+      "nombre": "Z FLUIDIZANTE SR 1000 X GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.23,
+      "stock": 26,
+      "lote": "200714"
+    },
+    "110014393": {
+      "sku": "110014393",
+      "nombre": "Z FLUIDIZANTE SR. X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 23.14,
+      "stock": 30,
+      "lote": "200223"
+    },
+    "110014300": {
+      "sku": "110014300",
+      "nombre": "Z FLUIDIZANTE SR. X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 268.56,
+      "stock": 30,
+      "lote": "200679"
+    },
+    "110014627": {
+      "sku": "110014627",
+      "nombre": "Z FRAGUA #3 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 30,
+      "lote": "200142"
+    },
+    "110014582": {
+      "sku": "110014582",
+      "nombre": "Z FRAGUA #3 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 16,
+      "lote": "200645"
+    },
+    "110014583": {
+      "sku": "110014583",
+      "nombre": "Z FRAGUA #3 X GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 5.04,
+      "stock": 18,
+      "lote": "200777"
+    },
+    "110014621": {
+      "sku": "110014621",
+      "nombre": "Z FRAGUA #5 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 16,
+      "lote": "200170"
+    },
+    "110014639": {
+      "sku": "110014639",
+      "nombre": "Z FRAGUA #5 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 21,
+      "lote": "200763"
+    },
+    "110014622": {
+      "sku": "110014622",
+      "nombre": "Z GROUT X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 15,
+      "lote": "200112"
+    },
+    "110014462": {
+      "sku": "110014462",
+      "nombre": "Z I LIQUIDO X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 19.93,
+      "stock": 18,
+      "lote": "200942"
+    },
+    "110014278": {
+      "sku": "110014278",
+      "nombre": "Z I LIQUIDO X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 233.18,
+      "stock": 20,
+      "lote": "200208"
+    },
+    "110014279": {
+      "sku": "110014279",
+      "nombre": "Z I LIQUIDO X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 4.02,
+      "stock": 18,
+      "lote": "200470"
+    },
+    "110014473": {
+      "sku": "110014473",
+      "nombre": "Z I POLVO X KG",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "BOL",
+      "peso": 1.0,
+      "stock": 25,
+      "lote": "200948"
+    },
+    "110014545": {
+      "sku": "110014545",
+      "nombre": "Z IMPEROOF X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 24.5,
+      "stock": 19,
+      "lote": "200824"
+    },
+    "110014309": {
+      "sku": "110014309",
+      "nombre": "Z IMPEROOF X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 283.4,
+      "stock": 9,
+      "lote": "200545"
+    },
+    "110014566": {
+      "sku": "110014566",
+      "nombre": "Z IMPEROOF X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 4.9,
+      "stock": 10,
+      "lote": "200851"
+    },
+    "110014392": {
+      "sku": "110014392",
+      "nombre": "Z MEMBRANA A X 5 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 21,
+      "lote": "200766"
+    },
+    "110014388": {
+      "sku": "110014388",
+      "nombre": "Z MEMBRANA A X 55 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 267.0,
+      "stock": 13,
+      "lote": "200730"
+    },
+    "110014477": {
+      "sku": "110014477",
+      "nombre": "Z MEMBRANA BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 30,
+      "lote": "200651"
+    },
+    "110014487": {
+      "sku": "110014487",
+      "nombre": "Z MEMBRANA BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 254.0,
+      "stock": 29,
+      "lote": "200595"
+    },
+    "110014320": {
+      "sku": "110014320",
+      "nombre": "Z MEMBRANA BLANCO X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 19,
+      "lote": "200546"
+    },
+    "110014471": {
+      "sku": "110014471",
+      "nombre": "Z MORTERO T40 X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 28,
+      "lote": "200706"
+    },
+    "110014464": {
+      "sku": "110014464",
+      "nombre": "Z POX 31 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 13,
+      "lote": "200430"
+    },
+    "110014571": {
+      "sku": "110014571",
+      "nombre": "Z POX 31 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 12,
+      "lote": "200950"
+    },
+    "110014483": {
+      "sku": "110014483",
+      "nombre": "Z POX 32 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 7,
+      "lote": "200385"
+    },
+    "110014570": {
+      "sku": "110014570",
+      "nombre": "Z POX 32 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 19,
+      "lote": "200349"
+    },
+    "110014265": {
+      "sku": "110014265",
+      "nombre": "Z POX 35 BV KG (A+B)",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.13,
+      "stock": 29,
+      "lote": "200575"
+    },
+    "110014634": {
+      "sku": "110014634",
+      "nombre": "Z RESINA 100% X 1/4 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 1.14,
+      "stock": 23,
+      "lote": "200724"
+    },
+    "110014474": {
+      "sku": "110014474",
+      "nombre": "Z RESINA 100% X 5 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 26,
+      "lote": "200488"
+    },
+    "110014459": {
+      "sku": "110014459",
+      "nombre": "Z RESINA 100% X 55 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 246.0,
+      "stock": 15,
+      "lote": "200129"
+    },
+    "110014598": {
+      "sku": "110014598",
+      "nombre": "Z RR PLAST - 971 X 5 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 24.0,
+      "stock": 20,
+      "lote": "200971"
+    },
+    "110014587": {
+      "sku": "110014587",
+      "nombre": "Z RR PLAST - 971 X 55 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 15,
+      "lote": "200286"
+    },
+    "110014603": {
+      "sku": "110014603",
+      "nombre": "Z RR PLAST - 971 X GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 4.76,
+      "stock": 20,
+      "lote": "200317"
+    },
+    "110014595": {
+      "sku": "110014595",
+      "nombre": "Z RR PLAST X 5 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 16,
+      "lote": "200916"
+    },
+    "110014375": {
+      "sku": "110014375",
+      "nombre": "Z RR PLAST X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 251.0,
+      "stock": 13,
+      "lote": "200448"
+    },
+    "110014397": {
+      "sku": "110014397",
+      "nombre": "Z SOL BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 13,
+      "lote": "200710"
+    },
+    "110014510": {
+      "sku": "110014510",
+      "nombre": "Z SOL BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 27,
+      "lote": "200382"
+    },
+    "110014573": {
+      "sku": "110014573",
+      "nombre": "Z VISTA X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 22,
+      "lote": "200110"
+    },
+    "610005612": {
+      "sku": "610005612",
+      "nombre": "CAPUCHONES DE SEG. CHICO (3/8\", 1/2\", 5/8\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 1.6,
+      "stock": 21,
+      "lote": "200295"
+    },
+    "610005613": {
+      "sku": "610005613",
+      "nombre": "CAPUCHONES DE SEG. GRANDE (3/4\", 7/8\", 1\", 1 1/4\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 2.14,
+      "stock": 7,
+      "lote": "200347"
+    },
+    "610005585": {
+      "sku": "610005585",
+      "nombre": "BACKER ROD 1 1/2\" x 91 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.15,
+      "stock": 28,
+      "lote": "200516"
+    },
+    "610005584": {
+      "sku": "610005584",
+      "nombre": "BACKER ROD 1 1/4\" x 122 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.59,
+      "stock": 20,
+      "lote": "200668"
+    },
+    "610005583": {
+      "sku": "610005583",
+      "nombre": "BACKER ROD 1 1/8\" x 152 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.86,
+      "stock": 29,
+      "lote": "200346"
+    },
+    "610005582": {
+      "sku": "610005582",
+      "nombre": "BACKER ROD 1\" x 182 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.64,
+      "stock": 27,
+      "lote": "200587"
+    },
+    "610005580": {
+      "sku": "610005580",
+      "nombre": "BACKER ROD 1/2\" x 762 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.57,
+      "stock": 25,
+      "lote": "200828"
+    },
+    "610005578": {
+      "sku": "610005578",
+      "nombre": "BACKER ROD 1/4\" x 2438 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.63,
+      "stock": 20,
+      "lote": "200558"
+    },
+    "610005587": {
+      "sku": "610005587",
+      "nombre": "BACKER ROD 3/4\" x 335 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.52,
+      "stock": 30,
+      "lote": "200117"
+    },
+    "610005579": {
+      "sku": "610005579",
+      "nombre": "BACKER ROD 3/8\" x 1280 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.2,
+      "stock": 7,
+      "lote": "200401"
+    },
+    "610005586": {
+      "sku": "610005586",
+      "nombre": "BACKER ROD 5/8\" x 472 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.48,
+      "stock": 12,
+      "lote": "200514"
+    },
+    "610005581": {
+      "sku": "610005581",
+      "nombre": "BACKER ROD 7/8\" x 259 Ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.4,
+      "stock": 27,
+      "lote": "200349"
+    },
+    "620001061": {
+      "sku": "620001061",
+      "nombre": "WATER STOP DE JEBE 4\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 17.44,
+      "stock": 14,
+      "lote": "200779"
+    },
+    "610005592": {
+      "sku": "610005592",
+      "nombre": "WATER STOP DE JEBE 6\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 25.75,
+      "stock": 23,
+      "lote": "200477"
+    },
+    "610005593": {
+      "sku": "610005593",
+      "nombre": "WATER STOP DE JEBE 9\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 39.25,
+      "stock": 20,
+      "lote": "200666"
+    },
+    "110014580": {
+      "sku": "110014580",
+      "nombre": "Z 2000 X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 21,
+      "lote": "200452"
+    },
+    "110014677": {
+      "sku": "110014677",
+      "nombre": "Z DESMOLAC PU X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 18,
+      "lote": "200863"
+    }
+  },
+  "SAN_BORJA": {
+    "110014513": {
+      "sku": "110014513",
+      "nombre": "MICROSILICA Z X 20 KG",
+      "categoria": "ADITIVOS",
+      "um": "B20",
+      "peso": 20.1,
+      "stock": 22,
+      "lote": "200438"
+    },
+    "110014697": {
+      "sku": "110014697",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO FLEX X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 14,
+      "lote": "200357"
+    },
+    "110014699": {
+      "sku": "110014699",
+      "nombre": "PEGAMENTO Z ADITIVOS BCO EXT X 25 KG",
+      "categoria": "PEGAMENTO",
+      "um": "BOL",
+      "peso": 25.0,
+      "stock": 19,
+      "lote": "200377"
+    },
+    "110014292": {
+      "sku": "110014292",
+      "nombre": "AIRCON Z X 5 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 12,
+      "lote": "200223"
+    },
+    "110014371": {
+      "sku": "110014371",
+      "nombre": "AIRCON Z X 55 GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 234.1,
+      "stock": 28,
+      "lote": "200297"
+    },
+    "110014294": {
+      "sku": "110014294",
+      "nombre": "AIRCON Z X GAL",
+      "categoria": "INCORPORADOR DE AIRE",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 15,
+      "lote": "200222"
+    },
+    "110014480": {
+      "sku": "110014480",
+      "nombre": "ALQUITRAN Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 28,
+      "lote": "200648"
+    },
+    "110014355": {
+      "sku": "110014355",
+      "nombre": "ALQUITRAN Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 209.0,
+      "stock": 29,
+      "lote": "200806"
+    },
+    "110014469": {
+      "sku": "110014469",
+      "nombre": "ASFALTO LIQUIDO Z X 5 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 10,
+      "lote": "200296"
+    },
+    "110014319": {
+      "sku": "110014319",
+      "nombre": "ASFALTO LIQUIDO Z X 55 GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 11,
+      "lote": "200856"
+    },
+    "110014261": {
+      "sku": "110014261",
+      "nombre": "ASFALTO LIQUIDO Z X GAL",
+      "categoria": "PRODUCTOS PARA CARRETERAS",
+      "um": "GAL",
+      "peso": 3.9,
+      "stock": 20,
+      "lote": "200383"
+    },
+    "110014501": {
+      "sku": "110014501",
+      "nombre": "CEMENTICIO Z BLANCO X 10 KG + Z RESINA X JGO.",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 10.5,
+      "stock": 28,
+      "lote": "200703"
+    },
+    "110014367": {
+      "sku": "110014367",
+      "nombre": "CEMENTICIO Z GRIS X 25 KG + Z RESINA (JUEGO)",
+      "categoria": "IMPERMEABILIZANTES PARA CONCRETO Y REVESTIMIENTO",
+      "um": "BOL",
+      "peso": 25.1,
+      "stock": 29,
+      "lote": "200637"
+    },
+    "110014520": {
+      "sku": "110014520",
+      "nombre": "CRISTAL Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 24,
+      "lote": "200389"
+    },
+    "110015451": {
+      "sku": "110015451",
+      "nombre": "CRISTAL Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 8,
+      "lote": "200952"
+    },
+    "110014456": {
+      "sku": "110014456",
+      "nombre": "CRISTAL Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 4.0,
+      "stock": 11,
+      "lote": "200403"
+    },
+    "110014458": {
+      "sku": "110014458",
+      "nombre": "CURET Z BLANCO CON PIG. X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 12,
+      "lote": "200469"
+    },
+    "110014468": {
+      "sku": "110014468",
+      "nombre": "CURET Z BLANCO CON PIG. X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 238.0,
+      "stock": 10,
+      "lote": "200409"
+    },
+    "110014376": {
+      "sku": "110014376",
+      "nombre": "CURET Z BLANCO CON PIG. X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 5,
+      "lote": "200825"
+    },
+    "110014629": {
+      "sku": "110014629",
+      "nombre": "IMPRIMANTE Z X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 22,
+      "lote": "200229"
+    },
+    "110014611": {
+      "sku": "110014611",
+      "nombre": "IMPRIMANTE Z X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 13,
+      "lote": "200146"
+    },
+    "110014599": {
+      "sku": "110014599",
+      "nombre": "IMPRIMANTE Z X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.95,
+      "stock": 6,
+      "lote": "200666"
+    },
+    "110014342": {
+      "sku": "110014342",
+      "nombre": "IMPRIMANTE ZP X GAL A+B",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.21,
+      "stock": 14,
+      "lote": "200814"
+    },
+    "110014569": {
+      "sku": "110014569",
+      "nombre": "IMPRIMANTE ZPM X GAL",
+      "categoria": "PUENTE ADHERENTE DE SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 3.4,
+      "stock": 9,
+      "lote": "200753"
+    },
+    "110014453": {
+      "sku": "110014453",
+      "nombre": "MATE Z X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 19.8,
+      "stock": 29,
+      "lote": "200602"
+    },
+    "110015090": {
+      "sku": "110015090",
+      "nombre": "MATE Z X 55 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 232.0,
+      "stock": 8,
+      "lote": "200993"
+    },
+    "110014323": {
+      "sku": "110014323",
+      "nombre": "MATE Z X GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 3.99,
+      "stock": 5,
+      "lote": "200687"
+    },
+    "110014504": {
+      "sku": "110014504",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 1/4 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 1.15,
+      "stock": 14,
+      "lote": "200580"
+    },
+    "110014503": {
+      "sku": "110014503",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 5 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 20,
+      "lote": "200551"
+    },
+    "110014553": {
+      "sku": "110014553",
+      "nombre": "REMOVEDOR DE CONCRETO Z X 55 GAL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "GAL",
+      "peso": 229.0,
+      "stock": 15,
+      "lote": "200288"
+    },
+    "110014516": {
+      "sku": "110014516",
+      "nombre": "REMOVEDOR DE CONCRETO Z X GL",
+      "categoria": "REMOVEDOR DE CONCRETO",
+      "um": "UND",
+      "peso": 4.2,
+      "stock": 6,
+      "lote": "200358"
+    },
+    "110014455": {
+      "sku": "110014455",
+      "nombre": "REMOVEDOR DE OXIDO Z X 5 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 20,
+      "lote": "200216"
+    },
+    "110014511": {
+      "sku": "110014511",
+      "nombre": "REMOVEDOR DE OXIDO Z X 55 GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 252.0,
+      "stock": 7,
+      "lote": "200510"
+    },
+    "110014470": {
+      "sku": "110014470",
+      "nombre": "REMOVEDOR DE OXIDO Z X GAL",
+      "categoria": "INHIBIDORES DE CORROSION",
+      "um": "GAL",
+      "peso": 4.63,
+      "stock": 20,
+      "lote": "200175"
+    },
+    "110014475": {
+      "sku": "110014475",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.0 CM X 200 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 12.0,
+      "stock": 23,
+      "lote": "200744"
+    },
+    "110014460": {
+      "sku": "110014460",
+      "nombre": "SEP. CONCRETOP DE FIERRO 2.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 8.0,
+      "stock": 26,
+      "lote": "200154"
+    },
+    "110014449": {
+      "sku": "110014449",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 9.0,
+      "stock": 9,
+      "lote": "200252"
+    },
+    "110014467": {
+      "sku": "110014467",
+      "nombre": "SEP. CONCRETOP DE FIERRO 3.5 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 10.0,
+      "stock": 30,
+      "lote": "200676"
+    },
+    "110014484": {
+      "sku": "110014484",
+      "nombre": "SEP. CONCRETOP DE FIERRO 4 CM X 100 UNI",
+      "categoria": "SEPARADORES",
+      "um": "UND",
+      "peso": 11.0,
+      "stock": 14,
+      "lote": "200187"
+    },
+    "110014506": {
+      "sku": "110014506",
+      "nombre": "SOLVENTE Z X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 12,
+      "lote": "200221"
+    },
+    "110014505": {
+      "sku": "110014505",
+      "nombre": "SOLVENTE Z X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 22,
+      "lote": "200882"
+    },
+    "110014507": {
+      "sku": "110014507",
+      "nombre": "SOLVENTE Z X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.93,
+      "stock": 18,
+      "lote": "200720"
+    },
+    "110014606": {
+      "sku": "110014606",
+      "nombre": "SOLVENTE ZP X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 19.0,
+      "stock": 24,
+      "lote": "200909"
+    },
+    "110014508": {
+      "sku": "110014508",
+      "nombre": "SOLVENTE ZP X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 220.0,
+      "stock": 24,
+      "lote": "200331"
+    },
+    "110014703": {
+      "sku": "110014703",
+      "nombre": "WATER STOP Z RX 101 + PEGAMENTO x 30 Ml",
+      "categoria": "WATER STOP",
+      "um": "UND",
+      "peso": 31.0,
+      "stock": 29,
+      "lote": "200635"
+    },
+    "110014559": {
+      "sku": "110014559",
+      "nombre": "Z BITUMEN X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 17,
+      "lote": "200561"
+    },
+    "110014536": {
+      "sku": "110014536",
+      "nombre": "Z BITUMEN X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 210.0,
+      "stock": 19,
+      "lote": "200404"
+    },
+    "110014537": {
+      "sku": "110014537",
+      "nombre": "Z BITUMEN X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA CIMENTACIONES",
+      "um": "GAL",
+      "peso": 3.74,
+      "stock": 23,
+      "lote": "200539"
+    },
+    "110014446": {
+      "sku": "110014446",
+      "nombre": "Z CRON X 1000 L",
+      "categoria": "DESMOLDANTES",
+      "um": "UND",
+      "peso": 920.0,
+      "stock": 14,
+      "lote": "200682"
+    },
+    "110014489": {
+      "sku": "110014489",
+      "nombre": "Z CRON X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 18.0,
+      "stock": 24,
+      "lote": "200161"
+    },
+    "110014481": {
+      "sku": "110014481",
+      "nombre": "Z CRON X 55 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 200.0,
+      "stock": 24,
+      "lote": "200857"
+    },
+    "110014437": {
+      "sku": "110014437",
+      "nombre": "Z CRON X GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 3.71,
+      "stock": 8,
+      "lote": "200881"
+    },
+    "110014954": {
+      "sku": "110014954",
+      "nombre": "Z FIBRA PP X 4.8 KG - 12MM",
+      "categoria": "FIBRAS",
+      "um": "BOL",
+      "peso": 5.03,
+      "stock": 11,
+      "lote": "200740"
+    },
+    "610005544": {
+      "sku": "610005544",
+      "nombre": "Z FLEX POLIURETANO GRIS 30-40 (MANGA 600ML)",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "UND",
+      "peso": 0.71,
+      "stock": 11,
+      "lote": "200370"
+    },
+    "110014575": {
+      "sku": "110014575",
+      "nombre": "Z FLEX POLIURETANO GRIS X GAL A+B",
+      "categoria": "SELLADORES ELASTOMERICOS",
+      "um": "GAL",
+      "peso": 4.1,
+      "stock": 26,
+      "lote": "200183"
+    },
+    "110014347": {
+      "sku": "110014347",
+      "nombre": "Z FLUIDIZANTE IR X 5 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 10,
+      "lote": "200345"
+    },
+    "110014254": {
+      "sku": "110014254",
+      "nombre": "Z FLUIDIZANTE IR X 55 GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 259.0,
+      "stock": 10,
+      "lote": "200665"
+    },
+    "110014324": {
+      "sku": "110014324",
+      "nombre": "Z FLUIDIZANTE IR X GAL",
+      "categoria": "PLASTIFICANTES / IMPERMEABILIZANTE",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 7,
+      "lote": "200260"
+    },
+    "110014325": {
+      "sku": "110014325",
+      "nombre": "Z FLUIDIZANTE RE. X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 249.82,
+      "stock": 5,
+      "lote": "200518"
+    },
+    "110014259": {
+      "sku": "110014259",
+      "nombre": "Z FLUIDIZANTE RE. X GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.32,
+      "stock": 19,
+      "lote": "200805"
+    },
+    "110014274": {
+      "sku": "110014274",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 24,
+      "lote": "200581"
+    },
+    "110014574": {
+      "sku": "110014574",
+      "nombre": "Z FLUIDIZANTE SR 1000 X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 245.0,
+      "stock": 14,
+      "lote": "200133"
+    },
+    "110014287": {
+      "sku": "110014287",
+      "nombre": "Z FLUIDIZANTE SR 1000 X GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 4.23,
+      "stock": 12,
+      "lote": "200395"
+    },
+    "110014393": {
+      "sku": "110014393",
+      "nombre": "Z FLUIDIZANTE SR. X 5 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 23.14,
+      "stock": 27,
+      "lote": "200389"
+    },
+    "110014300": {
+      "sku": "110014300",
+      "nombre": "Z FLUIDIZANTE SR. X 55 GAL",
+      "categoria": "SUPERPLASTIFICANTES",
+      "um": "GAL",
+      "peso": 268.56,
+      "stock": 27,
+      "lote": "200980"
+    },
+    "110014627": {
+      "sku": "110014627",
+      "nombre": "Z FRAGUA #3 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 19,
+      "lote": "200172"
+    },
+    "110014582": {
+      "sku": "110014582",
+      "nombre": "Z FRAGUA #3 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 26,
+      "lote": "200339"
+    },
+    "110014583": {
+      "sku": "110014583",
+      "nombre": "Z FRAGUA #3 X GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 5.04,
+      "stock": 13,
+      "lote": "200906"
+    },
+    "110014621": {
+      "sku": "110014621",
+      "nombre": "Z FRAGUA #5 X 5 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 25.03,
+      "stock": 30,
+      "lote": "200740"
+    },
+    "110014639": {
+      "sku": "110014639",
+      "nombre": "Z FRAGUA #5 X 55 GAL",
+      "categoria": "ACELERANTES",
+      "um": "GAL",
+      "peso": 274.38,
+      "stock": 23,
+      "lote": "200777"
+    },
+    "110014622": {
+      "sku": "110014622",
+      "nombre": "Z GROUT X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 30,
+      "lote": "200302"
+    },
+    "110014462": {
+      "sku": "110014462",
+      "nombre": "Z I LIQUIDO X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 19.93,
+      "stock": 18,
+      "lote": "200217"
+    },
+    "110014278": {
+      "sku": "110014278",
+      "nombre": "Z I LIQUIDO X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 233.18,
+      "stock": 22,
+      "lote": "200330"
+    },
+    "110014279": {
+      "sku": "110014279",
+      "nombre": "Z I LIQUIDO X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "GAL",
+      "peso": 4.02,
+      "stock": 25,
+      "lote": "200252"
+    },
+    "110014473": {
+      "sku": "110014473",
+      "nombre": "Z I POLVO X KG",
+      "categoria": "IMPERMEABILIZANTES PARA TARRAJEO",
+      "um": "BOL",
+      "peso": 1.0,
+      "stock": 13,
+      "lote": "200946"
+    },
+    "110014545": {
+      "sku": "110014545",
+      "nombre": "Z IMPEROOF X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 24.5,
+      "stock": 9,
+      "lote": "200173"
+    },
+    "110014309": {
+      "sku": "110014309",
+      "nombre": "Z IMPEROOF X 55 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 283.4,
+      "stock": 6,
+      "lote": "200269"
+    },
+    "110014566": {
+      "sku": "110014566",
+      "nombre": "Z IMPEROOF X GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 4.9,
+      "stock": 30,
+      "lote": "200414"
+    },
+    "110014392": {
+      "sku": "110014392",
+      "nombre": "Z MEMBRANA A X 5 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 24,
+      "lote": "200866"
+    },
+    "110014388": {
+      "sku": "110014388",
+      "nombre": "Z MEMBRANA A X 55 GAL",
+      "categoria": "CURADORES",
+      "um": "GAL",
+      "peso": 267.0,
+      "stock": 23,
+      "lote": "200395"
+    },
+    "110014477": {
+      "sku": "110014477",
+      "nombre": "Z MEMBRANA BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 19,
+      "lote": "200227"
+    },
+    "110014487": {
+      "sku": "110014487",
+      "nombre": "Z MEMBRANA BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 254.0,
+      "stock": 19,
+      "lote": "200805"
+    },
+    "110014320": {
+      "sku": "110014320",
+      "nombre": "Z MEMBRANA BLANCO X GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 4.49,
+      "stock": 14,
+      "lote": "200816"
+    },
+    "110014471": {
+      "sku": "110014471",
+      "nombre": "Z MORTERO T40 X 30 KG",
+      "categoria": "MORTEROS DE REPARACION DE ALTA RESISTENCIA",
+      "um": "BOL",
+      "peso": 30.1,
+      "stock": 17,
+      "lote": "200378"
+    },
+    "110014464": {
+      "sku": "110014464",
+      "nombre": "Z POX 31 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 21,
+      "lote": "200652"
+    },
+    "110014571": {
+      "sku": "110014571",
+      "nombre": "Z POX 31 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 20,
+      "lote": "200548"
+    },
+    "110014483": {
+      "sku": "110014483",
+      "nombre": "Z POX 32 X 5KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 5.45,
+      "stock": 7,
+      "lote": "200712"
+    },
+    "110014570": {
+      "sku": "110014570",
+      "nombre": "Z POX 32 X KG A+B",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.23,
+      "stock": 6,
+      "lote": "200542"
+    },
+    "110014265": {
+      "sku": "110014265",
+      "nombre": "Z POX 35 BV KG (A+B)",
+      "categoria": "ADHESIVO EPOXICO",
+      "um": "BOL",
+      "peso": 1.13,
+      "stock": 28,
+      "lote": "200430"
+    },
+    "110014634": {
+      "sku": "110014634",
+      "nombre": "Z RESINA 100% X 1/4 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 1.14,
+      "stock": 24,
+      "lote": "200356"
+    },
+    "110014474": {
+      "sku": "110014474",
+      "nombre": "Z RESINA 100% X 5 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 21.0,
+      "stock": 5,
+      "lote": "200193"
+    },
+    "110014459": {
+      "sku": "110014459",
+      "nombre": "Z RESINA 100% X 55 GAL",
+      "categoria": "PUENTE ADHERENTE Y MEJORADOR DE PROPIEDADES",
+      "um": "GAL",
+      "peso": 246.0,
+      "stock": 12,
+      "lote": "200790"
+    },
+    "110014598": {
+      "sku": "110014598",
+      "nombre": "Z RR PLAST - 971 X 5 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 24.0,
+      "stock": 23,
+      "lote": "200701"
+    },
+    "110014587": {
+      "sku": "110014587",
+      "nombre": "Z RR PLAST - 971 X 55 GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 5,
+      "lote": "200883"
+    },
+    "110014603": {
+      "sku": "110014603",
+      "nombre": "Z RR PLAST - 971 X GAL",
+      "categoria": "PLASTIFICANTES / RETARDANTE",
+      "um": "GAL",
+      "peso": 4.76,
+      "stock": 26,
+      "lote": "200941"
+    },
+    "110014595": {
+      "sku": "110014595",
+      "nombre": "Z RR PLAST X 5 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 22.0,
+      "stock": 13,
+      "lote": "200690"
+    },
+    "110014375": {
+      "sku": "110014375",
+      "nombre": "Z RR PLAST X 55 GAL",
+      "categoria": "PLASTIFICANTES",
+      "um": "GAL",
+      "peso": 251.0,
+      "stock": 6,
+      "lote": "200881"
+    },
+    "110014397": {
+      "sku": "110014397",
+      "nombre": "Z SOL BLANCO X 5 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 23.0,
+      "stock": 29,
+      "lote": "200279"
+    },
+    "110014510": {
+      "sku": "110014510",
+      "nombre": "Z SOL BLANCO X 55 GAL",
+      "categoria": "CURADORES DE CONCRETO",
+      "um": "GAL",
+      "peso": 266.0,
+      "stock": 20,
+      "lote": "200631"
+    },
+    "110014573": {
+      "sku": "110014573",
+      "nombre": "Z VISTA X 5 GAL",
+      "categoria": "SELLADORES DE PARED Y PISO",
+      "um": "GAL",
+      "peso": 20.0,
+      "stock": 25,
+      "lote": "200552"
+    },
+    "610005612": {
+      "sku": "610005612",
+      "nombre": "CAPUCHONES DE SEG. CHICO (3/8\", 1/2\", 5/8\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 1.6,
+      "stock": 13,
+      "lote": "200285"
+    },
+    "610005613": {
+      "sku": "610005613",
+      "nombre": "CAPUCHONES DE SEG. GRANDE (3/4\", 7/8\", 1\", 1 1/4\") X 100 UNI",
+      "categoria": "CAPUCHONES",
+      "um": "UND",
+      "peso": 2.14,
+      "stock": 23,
+      "lote": "200546"
+    },
+    "610005585": {
+      "sku": "610005585",
+      "nombre": "BACKER ROD 1 1/2\" x 91 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.15,
+      "stock": 25,
+      "lote": "200933"
+    },
+    "610005584": {
+      "sku": "610005584",
+      "nombre": "BACKER ROD 1 1/4\" x 122 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.59,
+      "stock": 20,
+      "lote": "200193"
+    },
+    "610005583": {
+      "sku": "610005583",
+      "nombre": "BACKER ROD 1 1/8\" x 152 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.86,
+      "stock": 20,
+      "lote": "200456"
+    },
+    "610005582": {
+      "sku": "610005582",
+      "nombre": "BACKER ROD 1\" x 182 ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.64,
+      "stock": 18,
+      "lote": "200441"
+    },
+    "610005580": {
+      "sku": "610005580",
+      "nombre": "BACKER ROD 1/2\" x 762 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.57,
+      "stock": 15,
+      "lote": "200786"
+    },
+    "610005578": {
+      "sku": "610005578",
+      "nombre": "BACKER ROD 1/4\" x 2438 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.63,
+      "stock": 8,
+      "lote": "200978"
+    },
+    "610005587": {
+      "sku": "610005587",
+      "nombre": "BACKER ROD 3/4\" x 335 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.52,
+      "stock": 10,
+      "lote": "200437"
+    },
+    "610005579": {
+      "sku": "610005579",
+      "nombre": "BACKER ROD 3/8\" x 1280 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 3.2,
+      "stock": 18,
+      "lote": "200810"
+    },
+    "610005586": {
+      "sku": "610005586",
+      "nombre": "BACKER ROD 5/8\" x 472 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.48,
+      "stock": 20,
+      "lote": "200395"
+    },
+    "610005581": {
+      "sku": "610005581",
+      "nombre": "BACKER ROD 7/8\" x 259 Ml",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 4.4,
+      "stock": 26,
+      "lote": "200510"
+    },
+    "620001061": {
+      "sku": "620001061",
+      "nombre": "WATER STOP DE JEBE 4\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 17.44,
+      "stock": 29,
+      "lote": "200663"
+    },
+    "610005592": {
+      "sku": "610005592",
+      "nombre": "WATER STOP DE JEBE 6\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 25.75,
+      "stock": 6,
+      "lote": "200565"
+    },
+    "610005593": {
+      "sku": "610005593",
+      "nombre": "WATER STOP DE JEBE 9\" x 25 mL",
+      "categoria": "SELLADORES DE JUNTA",
+      "um": "UND",
+      "peso": 39.25,
+      "stock": 7,
+      "lote": "200422"
+    },
+    "110014580": {
+      "sku": "110014580",
+      "nombre": "Z 2000 X 5 GAL",
+      "categoria": "IMPERMEABILIZANTES PARA TECHO",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 13,
+      "lote": "200431"
+    },
+    "110014677": {
+      "sku": "110014677",
+      "nombre": "Z DESMOLAC PU X 5 GAL",
+      "categoria": "DESMOLDANTES",
+      "um": "GAL",
+      "peso": 39.25,
+      "stock": 8,
+      "lote": "200891"
+    }
+  }
+}
