@@ -524,49 +524,52 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         }
 
         function generarPDF() {
-            
-            const d = new Date();
-            const fechaStr = d.toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric'});
-            document.getElementById('pdf_fecha').innerText = fechaStr;
+            try {
+                const d = new Date();
+                const fechaStr = d.toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric'});
+                document.getElementById('pdf_fecha').innerText = fechaStr;
 
-            document.getElementById('pdf_nombre').innerText = document.getElementById('g_cliente').value;
-            document.getElementById('pdf_ruc').innerText = document.getElementById('g_ruc').value;
-            document.getElementById('pdf_dir').innerText = document.getElementById('g_partida').value;
-            document.getElementById('pdf_glosa').innerText = document.getElementById('g_glosa').value;
-            document.getElementById('pdf_partida').innerText = document.getElementById('g_partida').value;
-            document.getElementById('pdf_llegada').innerText = document.getElementById('g_llegada').value;
+                document.getElementById('pdf_nombre').innerText = document.getElementById('g_cliente').value;
+                document.getElementById('pdf_ruc').innerText = document.getElementById('g_ruc').value;
+                document.getElementById('pdf_dir').innerText = document.getElementById('g_partida').value;
+                document.getElementById('pdf_glosa').innerText = document.getElementById('g_glosa').value;
+                document.getElementById('pdf_partida').innerText = document.getElementById('g_partida').value;
+                document.getElementById('pdf_llegada').innerText = document.getElementById('g_llegada').value;
 
-            const m = document.getElementById('g_motivo').value;
-            document.querySelectorAll('.pdf-checkbox').forEach(c => c.innerText = '');
-            if(m==='venta') document.getElementById('chk_venta').innerText = 'X';
-            if(m==='traslado') document.getElementById('chk_traslado').innerText = 'X';
-            if(m==='devolucion') document.getElementById('chk_devolucion').innerText = 'X';
-            if(m==='consignacion') document.getElementById('chk_consignacion').innerText = 'X';
+                const m = document.getElementById('g_motivo').value;
+                document.querySelectorAll('.pdf-chk').forEach(c => c.innerText = '');
+                if(m==='venta') document.getElementById('chk_venta').innerText = 'X';
+                if(m==='traslado') document.getElementById('chk_traslado').innerText = 'X';
+                if(m==='devolucion') document.getElementById('chk_devolucion').innerText = 'X';
+                if(m==='consignacion') document.getElementById('chk_consignacion').innerText = 'X';
 
-            document.getElementById('pdf_cond_n').innerText = document.getElementById('g_cond_nombre').value;
-            document.getElementById('pdf_cond_d').innerText = document.getElementById('g_cond_dni').value;
-            document.getElementById('pdf_cond_l').innerText = document.getElementById('g_cond_dni').value; 
-            document.getElementById('pdf_veh_m').innerText = document.getElementById('g_veh_marca').value;
-            document.getElementById('pdf_veh_p').innerText = document.getElementById('g_veh_placa').value;
+                document.getElementById('pdf_cond_n').innerText = document.getElementById('g_cond_nombre').value;
+                document.getElementById('pdf_cond_d').innerText = document.getElementById('g_cond_dni').value;
+                document.getElementById('pdf_cond_l').innerText = document.getElementById('g_cond_dni').value; 
+                document.getElementById('pdf_veh_m').innerText = document.getElementById('g_veh_marca').value;
+                document.getElementById('pdf_veh_p').innerText = document.getElementById('g_veh_placa').value;
 
-            const renderBody = document.getElementById('pdf_items_render');
-            renderBody.innerHTML = '';
-            let it = 1;
-            document.querySelectorAll('#g_items_body tr').forEach(tr => {
-                let html = `<tr>
-                    <td>${it++}</td>
-                    <td>${tr.querySelector('.i_cod').value}</td>
-                    <td style="text-align:left;">${tr.querySelector('.i_desc').value}</td>
-                    <td>${tr.querySelector('.i_lote').value}</td>
-                    <td>${parseFloat(tr.querySelector('.i_cant').value).toFixed(2)}</td>
-                    <td>${tr.querySelector('.i_um').value}</td>
-                    <td>${parseFloat(tr.querySelector('.i_peso').value).toFixed(2)}</td>
-                </tr>`;
-                renderBody.innerHTML += html;
-            });
-            calcPeso();
+                const renderBody = document.getElementById('pdf_items_render');
+                renderBody.innerHTML = '';
+                let it = 1;
+                document.querySelectorAll('#g_items_body tr').forEach(tr => {
+                    let html = `<tr>
+                        <td>${it++}</td>
+                        <td>${tr.querySelector('.i_cod').value}</td>
+                        <td style="text-align:left;">${tr.querySelector('.i_desc').value}</td>
+                        <td>${tr.querySelector('.i_lote').value}</td>
+                        <td>${parseFloat(tr.querySelector('.i_cant').value).toFixed(2)}</td>
+                        <td>${tr.querySelector('.i_um').value}</td>
+                        <td>${parseFloat(tr.querySelector('.i_peso').value).toFixed(2)}</td>
+                    </tr>`;
+                    renderBody.innerHTML += html;
+                });
+                calcPeso();
 
-            window.print();
+                window.print();
+            } catch(e) {
+                alert("Error en generarPDF: " + e.message);
+            }
         }
     </script>
 </body>
