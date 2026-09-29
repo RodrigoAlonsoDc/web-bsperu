@@ -93,7 +93,7 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             body { background: white !important; margin: 0; padding: 0; display: block !important; }
             
             
-        /* Mostrar PDF */
+                /* Mostrar PDF */
         #pdfTemplate { 
             display: block !important; 
             position: relative; 
@@ -107,46 +107,55 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         #pdfTemplate * { box-sizing: border-box; }
         
         .pdf-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .pdf-logo { width: 25%; }
-        .pdf-logo img { max-width: 150px; }
-        .pdf-company-info { width: 45%; text-align: center; font-size: 10px; line-height: 1.2; }
-        .pdf-company-info strong { font-size: 13px; }
+        .pdf-logo { width: 22%; }
+        .pdf-logo img { width: 100%; max-width: 180px; }
+        .pdf-company-info { width: 48%; text-align: center; font-size: 9px; line-height: 1.3; }
+        .pdf-company-info strong { font-size: 12px; }
         
-        .pdf-ruc-box { width: 30%; border: 2px solid black; border-radius: 8px; text-align: center; overflow: hidden; }
-        .pdf-ruc-top { font-size: 14px; font-weight: bold; padding: 5px; }
-        .pdf-ruc-mid { background-color: #004b93; color: white; padding: 5px; font-weight: bold; font-size: 12px; }
-        .pdf-ruc-bot { font-size: 14px; font-weight: bold; padding: 5px; }
+        .pdf-ruc-box { width: 28%; border: 1px solid black; border-radius: 5px; text-align: center; overflow: hidden; }
+        .pdf-ruc-top { font-size: 12px; font-weight: bold; padding: 5px; }
+        .pdf-ruc-mid { background-color: #004b93 !important; color: white !important; padding: 5px; font-weight: bold; font-size: 11px; }
+        .pdf-ruc-bot { font-size: 12px; font-weight: bold; padding: 5px; }
         
-        .pdf-info-box { border: 1px solid black; border-radius: 4px; padding: 8px; margin-bottom: 10px; line-height: 1.4; }
-        .pdf-info-row { display: flex; }
-        .pdf-info-col1 { width: 110px; font-weight: bold; }
+        .pdf-info-box { border: 1px solid black; border-radius: 4px; padding: 6px; margin-bottom: 8px; line-height: 1.3; font-size: 9px; }
+        .pdf-info-row { display: flex; margin-bottom: 2px; }
+        .pdf-info-col1 { width: 90px; font-weight: bold; }
         .pdf-info-col2 { flex: 1; }
-        .pdf-info-col3 { width: 110px; font-weight: bold; }
-        .pdf-info-col4 { width: 150px; }
+        .pdf-info-col3 { width: 100px; font-weight: bold; }
+        .pdf-info-col4 { width: 130px; }
         
-        .pdf-locations { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .pdf-loc-box { width: 49%; border: 1px solid black; border-radius: 4px; padding: 8px; }
+        .pdf-locations { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 9px; }
+        .pdf-loc-box { width: 49%; border: 1px solid black; border-radius: 4px; padding: 6px; line-height: 1.3; }
         
-        .pdf-motivo-title { font-weight: bold; margin-bottom: 2px; font-size: 10px; text-transform: uppercase; }
-        .pdf-motivo-box { border: 1px solid black; border-radius: 4px; padding: 8px; display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .pdf-motivo-col { width: 32%; display: flex; flex-direction: column; gap: 4px; }
-        .pdf-chk-item { display: flex; align-items: center; gap: 5px; font-size: 10px; }
-        .pdf-chk { width: 12px; height: 12px; border: 1px solid black; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+        .pdf-motivo-title { font-weight: bold; margin-bottom: 2px; font-size: 9px; text-transform: uppercase; }
+        .pdf-motivo-box { border: 1px solid black; border-radius: 4px; padding: 6px; display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 9px;}
+        .pdf-motivo-col1 { width: 48%; display: flex; flex-direction: column; gap: 4px; }
+        .pdf-motivo-col2 { width: 25%; display: flex; flex-direction: column; gap: 4px; }
+        .pdf-motivo-col3 { width: 25%; display: flex; flex-direction: column; gap: 4px; }
+        .pdf-chk-item { display: flex; align-items: flex-start; gap: 5px; font-size: 9px; line-height: 1.1; }
+        .pdf-chk { width: 12px; height: 12px; min-width: 12px; border: 1px solid black; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
         
-        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 10px; }
-        .pdf-table th { background-color: #004b93; color: white; border: 1px solid black; padding: 5px; font-weight: bold; text-align: center; }
-        .pdf-table td { border: 1px solid black; padding: 5px; text-align: center; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 9px; }
+        .pdf-table th { background-color: #004b93 !important; color: white !important; border: 1px solid black; padding: 4px; font-weight: bold; text-align: center; }
+        .pdf-table td { border: 1px solid black; padding: 4px; text-align: center; }
         
-        .pdf-footer-titles { display: flex; justify-content: space-between; font-weight: bold; font-size: 10px; margin-bottom: 2px; }
-        .pdf-footer-boxes { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .pdf-footer-box { width: 49%; border: 1px solid black; border-radius: 4px; padding: 8px; line-height: 1.4; }
+        .pdf-footer-titles { display: flex; justify-content: space-between; font-weight: bold; font-size: 9px; margin-bottom: 2px; }
+        .pdf-footer-boxes { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 9px; }
+        .pdf-footer-box { width: 49%; border: 1px solid black; border-radius: 4px; padding: 6px; line-height: 1.3; }
         
-        .pdf-peso-row { text-align: right; font-size: 10px; font-weight: bold; margin-bottom: 10px; }
+        .pdf-peso-row { text-align: right; font-size: 9px; font-weight: bold; margin-bottom: 8px; }
         
-        .pdf-qr-row { display: flex; gap: 15px; font-size: 10px; }
-        .pdf-qr { width: 100px; height: 100px; }
+        .pdf-qr-row { display: flex; gap: 15px; font-size: 9px; }
+        .pdf-qr { width: 80px; height: 80px; }
         .pdf-qr img { width: 100%; height: 100%; }
         .pdf-hash-text { flex: 1; line-height: 1.2; }
+        
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
 
             /* Configuraciones de la pagina */
             @page { size: A4 portrait; margin: 0; }
@@ -421,17 +430,17 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
 
         <div class="pdf-motivo-title">MOTIVO DE TRASLADO</div>
         <div class="pdf-motivo-box">
-            <div class="pdf-motivo-col">
-                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_venta"></span> Venta</div>
-                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_traslado"></span> Traslado entre establecimientos de la misma empresa</div>
+            <div class="pdf-motivo-col1">
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_venta"></span> <div>Venta</div></div>
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_traslado"></span> <div>Traslado entre establecimientos de la misma empresa</div></div>
             </div>
-            <div class="pdf-motivo-col">
-                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_consignacion"></span> Consignación</div>
-                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_exportacion"></span> Exportación</div>
+            <div class="pdf-motivo-col2">
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_consignacion"></span> <div>Consignación</div></div>
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_exportacion"></span> <div>Exportación</div></div>
             </div>
-            <div class="pdf-motivo-col">
-                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_devolucion"></span> Devolución</div>
-                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_otros"></span> Otros</div>
+            <div class="pdf-motivo-col3">
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_devolucion"></span> <div>Devolución</div></div>
+                <div class="pdf-chk-item"><span class="pdf-chk" id="chk_otros"></span> <div>Otros</div></div>
             </div>
         </div>
 
