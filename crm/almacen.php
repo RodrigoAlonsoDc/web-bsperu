@@ -88,9 +88,21 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         .items-table input { width: 100%; border: 1px solid var(--border-soft); padding: 8px; border-radius: 6px; outline: none; }
         
         @media print {
-            body * { visibility: hidden; }
-            #pdfTemplate, #pdfTemplate * { visibility: visible; }
-            #pdfTemplate { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+            /* Ocultar UI normal */
+            .sidebar, .main-content { display: none !important; }
+            body { background: white !important; margin: 0; padding: 0; display: block !important; }
+            
+            /* Mostrar PDF */
+            #pdfTemplate { 
+                display: block !important; 
+                position: relative; 
+                width: 100%; 
+                margin: 0; 
+                padding: 10mm 20mm 20mm 20mm; 
+            }
+            
+            /* Configuraciones de la pagina */
+            @page { size: A4 portrait; margin: 0; }
         }
 
         #pdfTemplate { width: 210mm; margin: 0 auto; padding: 20mm; font-family: Arial, sans-serif; background: #fff; box-sizing: border-box; display: none; }
