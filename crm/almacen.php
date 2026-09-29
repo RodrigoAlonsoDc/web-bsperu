@@ -92,15 +92,62 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
             .sidebar, .main-content { display: none !important; }
             body { background: white !important; margin: 0; padding: 0; display: block !important; }
             
-            /* Mostrar PDF */
-            #pdfTemplate { 
-                display: block !important; 
-                position: relative; 
-                width: 100%; 
-                margin: 0; 
-                padding: 10mm 20mm 20mm 20mm; 
-            }
             
+        /* Mostrar PDF */
+        #pdfTemplate { 
+            display: block !important; 
+            position: relative; 
+            width: 100%; 
+            margin: 0; 
+            padding: 5mm; 
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+        
+        #pdfTemplate * { box-sizing: border-box; }
+        
+        .pdf-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .pdf-logo { width: 25%; }
+        .pdf-logo img { max-width: 150px; }
+        .pdf-company-info { width: 45%; text-align: center; font-size: 10px; line-height: 1.2; }
+        .pdf-company-info strong { font-size: 13px; }
+        
+        .pdf-ruc-box { width: 30%; border: 2px solid black; border-radius: 8px; text-align: center; overflow: hidden; }
+        .pdf-ruc-top { font-size: 14px; font-weight: bold; padding: 5px; }
+        .pdf-ruc-mid { background-color: #004b93; color: white; padding: 5px; font-weight: bold; font-size: 12px; }
+        .pdf-ruc-bot { font-size: 14px; font-weight: bold; padding: 5px; }
+        
+        .pdf-info-box { border: 1px solid black; border-radius: 4px; padding: 8px; margin-bottom: 10px; line-height: 1.4; }
+        .pdf-info-row { display: flex; }
+        .pdf-info-col1 { width: 110px; font-weight: bold; }
+        .pdf-info-col2 { flex: 1; }
+        .pdf-info-col3 { width: 110px; font-weight: bold; }
+        .pdf-info-col4 { width: 150px; }
+        
+        .pdf-locations { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .pdf-loc-box { width: 49%; border: 1px solid black; border-radius: 4px; padding: 8px; }
+        
+        .pdf-motivo-title { font-weight: bold; margin-bottom: 2px; font-size: 10px; text-transform: uppercase; }
+        .pdf-motivo-box { border: 1px solid black; border-radius: 4px; padding: 8px; display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .pdf-motivo-col { width: 32%; display: flex; flex-direction: column; gap: 4px; }
+        .pdf-chk-item { display: flex; align-items: center; gap: 5px; font-size: 10px; }
+        .pdf-chk { width: 12px; height: 12px; border: 1px solid black; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+        
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 10px; }
+        .pdf-table th { background-color: #004b93; color: white; border: 1px solid black; padding: 5px; font-weight: bold; text-align: center; }
+        .pdf-table td { border: 1px solid black; padding: 5px; text-align: center; }
+        
+        .pdf-footer-titles { display: flex; justify-content: space-between; font-weight: bold; font-size: 10px; margin-bottom: 2px; }
+        .pdf-footer-boxes { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .pdf-footer-box { width: 49%; border: 1px solid black; border-radius: 4px; padding: 8px; line-height: 1.4; }
+        
+        .pdf-peso-row { text-align: right; font-size: 10px; font-weight: bold; margin-bottom: 10px; }
+        
+        .pdf-qr-row { display: flex; gap: 15px; font-size: 10px; }
+        .pdf-qr { width: 100px; height: 100px; }
+        .pdf-qr img { width: 100%; height: 100%; }
+        .pdf-hash-text { flex: 1; line-height: 1.2; }
+
             /* Configuraciones de la pagina */
             @page { size: A4 portrait; margin: 0; }
         }
@@ -477,6 +524,11 @@ $siguienteGS = 'T001 - ' . str_pad($gs_counter, 7, '0', STR_PAD_LEFT);
         }
 
         function generarPDF() {
+            
+            const d = new Date();
+            const fechaStr = d.toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric'});
+            document.getElementById('pdf_fecha').innerText = fechaStr;
+
             document.getElementById('pdf_nombre').innerText = document.getElementById('g_cliente').value;
             document.getElementById('pdf_ruc').innerText = document.getElementById('g_ruc').value;
             document.getElementById('pdf_dir').innerText = document.getElementById('g_partida').value;
