@@ -561,7 +561,7 @@ function setupSearchInput(inputSelector, formSelector, suggestionsSelector) {
             );
 
         suggestions.innerHTML = matches.slice(0, 6).map(p => `
-            <a href="/views/producto.html?sku=${encodeURIComponent(p.sku)}"
+            <a href="/producto.html?sku=${encodeURIComponent(p.sku)}"
                class="list-group-item list-group-item-action d-flex align-items-center search-suggestion"
                data-sku="${p.sku}"
                style="padding: 10px 12px; border-bottom: 1px solid #eee;">
@@ -595,7 +595,7 @@ function setupSearchInput(inputSelector, formSelector, suggestionsSelector) {
                 );
 
             if (matches.length === 1) {
-                window.location.href = `/views/producto.html?sku=${encodeURIComponent(matches[0].sku)}`;
+                window.location.href = `/producto.html?sku=${encodeURIComponent(matches[0].sku)}`;
                 return;
             }
 
@@ -609,7 +609,7 @@ function setupSearchInput(inputSelector, formSelector, suggestionsSelector) {
         e.preventDefault();
         const sku = item.dataset.sku;
         if (!sku) return;
-        window.location.href = `/views/producto.html?sku=${encodeURIComponent(sku)}`;
+        window.location.href = `/producto.html?sku=${encodeURIComponent(sku)}`;
     });
 
     document.addEventListener("click", (e) => {
@@ -703,7 +703,7 @@ function actualizarSEOProducto(prod) {
     const codigo = (prod.sku || prod.codigo || "").trim();
     const categoria = (prod.categoria || "Qu\u00edmicos para la Construcci\u00f3n").trim();
     const marca = (prod.marca || "Z ADITIVOS").trim();
-    const url = "https://bsperu.pe/views/producto.html?sku=" + encodeURIComponent(codigo);
+    const url = "https://bsperu.pe/producto.html?sku=" + encodeURIComponent(codigo);
     
     // 1. T\u00edtulo de la pesta\u00f1a
     const pageTitle = `${nombre} | Z Aditivos Oficial - BS Per\u00fa`;
@@ -1026,7 +1026,7 @@ function renderSimilares() {
     $$(".btn-ver-similar", cont).forEach(btn => {
         btn.addEventListener("click", () => {
             const sku = btn.dataset.sku;
-            window.location.href = `/views/producto.html?sku=${encodeURIComponent(sku)}`;
+            window.location.href = `/producto.html?sku=${encodeURIComponent(sku)}`;
         });
     });
 

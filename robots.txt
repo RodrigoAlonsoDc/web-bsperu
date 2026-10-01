@@ -3,6 +3,7 @@ User-agent: *
 Allow: /
 Allow: /index.html
 Allow: /productos.html
+Allow: /producto.html
 Allow: /sucursales.html
 Allow: /views/
 Allow: /img/

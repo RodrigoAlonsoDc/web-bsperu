@@ -416,7 +416,7 @@ function mostrarSugerenciasDrawer(productos, query) {
   }
   
   suggestionsDiv.innerHTML = productos.map(producto => `
-    <a href="/views/producto.html?sku=${encodeURIComponent(producto.sku)}" 
+    <a href="/producto.html?sku=${encodeURIComponent(producto.sku)}" 
        class="navbar-bs__drawer-suggestion-item"
        style="display: flex; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: inherit; transition: background 0.2s; align-items: center;">
       <!-- Imagen del producto -->
@@ -536,7 +536,7 @@ function mostrarSugerenciasNavbar(productos, query) {
   }
   
   suggestionsDiv.innerHTML = productos.map(producto => `
-    <a href="/views/producto.html?sku=${encodeURIComponent(producto.sku)}" 
+    <a href="/producto.html?sku=${encodeURIComponent(producto.sku)}" 
        class="navbar-suggestion-item"
        style="display: flex; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: inherit; transition: background 0.2s; align-items: center;">
       <!-- Imagen del producto -->

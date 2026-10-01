@@ -5,9 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Removedor de Óxido Z | Building Systems Perú (Z Aditivos)</title>
     <meta name="description" id="metaDescription" content="Removedor de Óxido Z: Potente desengrasante, detergente y desoxidante elaborado a base de tensoactivos y ácidos orgánicos para superficies metálicas. Catálogo oficial BS Perú.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://bsperu.pe/producto.html">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" id="canonicalLink" href="https://bsperu.pe/producto.html">
     <link rel="icon" href="/favicon.ico">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="product">
+    <meta property="og:locale" content="es_PE">
+    <meta property="og:site_name" content="Building Systems Perú (BS Perú)">
+    <meta property="og:title" id="ogTitle" content="Removedor de Óxido Z | Z Aditivos Oficial - BS Perú">
+    <meta property="og:description" id="ogDesc" content="Potente desengrasante, detergente y desoxidante elaborado a base de tensoactivos y ácidos orgánicos para superficies metálicas. Catálogo oficial BS Perú.">
+    <meta property="og:url" id="ogUrl" content="https://bsperu.pe/producto.html">
+    <meta property="og:image" id="ogImage" content="https://bsperu.pe/img/impermeabilizantes.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="twTitle" content="Removedor de Óxido Z | Z Aditivos Oficial - BS Perú">
+    <meta name="twitter:description" id="twDesc" content="Potente desengrasante, detergente y desoxidante elaborado a base de tensoactivos y ácidos orgánicos para superficies metálicas.">
+    <meta name="twitter:image" id="twImage" content="https://bsperu.pe/img/impermeabilizantes.jpg">
+
+    <!-- Schema.org BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://bsperu.pe/" },
+        { "@type": "ListItem", "position": 2, "name": "Catálogo", "item": "https://bsperu.pe/productos.html" },
+        { "@type": "ListItem", "position": 3, "name": "Producto", "item": "https://bsperu.pe/producto.html" }
+      ]
+    }
+    </script>
+
+    <!-- Schema.org JSON-LD para Producto Dinámico -->
+    <script type="application/ld+json" id="productSchemaJson"></script>
+
+    <!-- Script temprano para sincronizar Canonical y OG en el primer render -->
+    <script>
+    (function(){
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var sku = params.get('sku');
+            if (sku) {
+                var cUrl = 'https://bsperu.pe/producto.html?sku=' + encodeURIComponent(sku.trim());
+                var can = document.getElementById('canonicalLink');
+                if (can) can.setAttribute('href', cUrl);
+                var ogUrl = document.getElementById('ogUrl');
+                if (ogUrl) ogUrl.setAttribute('content', cUrl);
+            }
+        } catch(e) {}
+    })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1423,6 +1471,70 @@
             var waMsg = 'Hola Building Systems Perú, deseo cotizar el producto: ' + p.nombre + (p.sku ? ' (SKU: ' + p.sku + ')' : '');
             var waUrl = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
             if (btnCotizarWa) btnCotizarWa.href = waUrl;
+
+            // Actualización completa de Metadatos SEO, Canonical, OpenGraph y Schema.org
+            var tituloCompleto = p.nombre + ' | Z Aditivos Oficial - Building Systems Perú';
+            document.title = tituloCompleto;
+            if (pageTitle) pageTitle.textContent = tituloCompleto;
+
+            var descLimpia = p.descripcion_larga || p.descripcion || 'Soluciones químicas especializadas para concreto y construcción en Perú.';
+            var metaDesc = 'Venta de ' + p.nombre + (p.sku ? ' (' + p.sku + ')' : '') + ' original de Z Aditivos en Perú. ' + descLimpia.replace(/\s+/g, ' ').substring(0, 140) + '... Cotiza con Building Systems Perú.';
+            var mDesc = document.getElementById('metaDescription') || document.querySelector('meta[name="description"]');
+            if (mDesc) mDesc.setAttribute('content', metaDesc);
+
+            var prodCanonicalUrl = 'https://bsperu.pe/producto.html?sku=' + encodeURIComponent(p.sku);
+            var canLink = document.getElementById('canonicalLink');
+            if (canLink && p.sku) canLink.setAttribute('href', prodCanonicalUrl);
+
+            var imgAbsoluta = 'https://bsperu.pe/img/impermeabilizantes.jpg';
+            if (p.imagen) {
+                imgAbsoluta = p.imagen.startsWith('http') ? p.imagen : 'https://bsperu.pe' + (p.imagen.startsWith('/') ? '' : '/') + p.imagen;
+            }
+
+            var setProp = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) el.setAttribute('content', val);
+            };
+            setProp('ogTitle', p.nombre + ' | Z Aditivos Oficial - BS Perú');
+            setProp('ogDesc', metaDesc);
+            setProp('ogUrl', prodCanonicalUrl);
+            setProp('ogImage', imgAbsoluta);
+            setProp('twTitle', p.nombre + ' | Z Aditivos Oficial - BS Perú');
+            setProp('twDesc', metaDesc);
+            setProp('twImage', imgAbsoluta);
+
+            var jsonLdEl = document.getElementById('productSchemaJson');
+            if (jsonLdEl) {
+                var schema = {
+                    '@context': 'https://schema.org/',
+                    '@type': 'Product',
+                    'name': p.nombre,
+                    'image': [imgAbsoluta],
+                    'description': p.descripcion_larga || p.descripcion || metaDesc,
+                    'sku': p.sku || '',
+                    'mpn': p.sku || '',
+                    'brand': {
+                        '@type': 'Brand',
+                        'name': p.marca || 'Z Aditivos'
+                    },
+                    'category': p.categoria || catTexto,
+                    'offers': {
+                        '@type': 'Offer',
+                        'url': prodCanonicalUrl,
+                        'priceCurrency': 'PEN',
+                        'price': p.precio ? String(p.precio) : '0.00',
+                        'priceValidUntil': '2027-12-31',
+                        'itemCondition': 'https://schema.org/NewCondition',
+                        'availability': (p.disponible !== false) ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
+                        'seller': {
+                            '@type': 'Organization',
+                            'name': 'Building Systems Perú',
+                            'url': 'https://bsperu.pe'
+                        }
+                    }
+                };
+                jsonLdEl.textContent = JSON.stringify(schema, null, 2);
+            }
         }
 
         // Año en footer
