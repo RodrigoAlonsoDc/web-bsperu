@@ -12,6 +12,9 @@
     RewriteRule ^views/catalogo\.html$ / [R=301,L,QSA]
     RewriteRule ^views/ubicacion\.html$ /sucursales.html [R=301,L,QSA]
     RewriteRule ^views/producto\.html$ /producto.html [R=301,L,QSA]
+
+    # --- Renderizar producto.html via PHP (SEO) ---
+    RewriteRule ^producto\.html$ producto.php [L,QSA]
 </IfModule>
 
 # --- Headers de Seguridad ---

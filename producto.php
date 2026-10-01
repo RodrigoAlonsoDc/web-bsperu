@@ -1,28 +1,112 @@
+<?php
+// Cargar JSON de productos
+$productosJson = @file_get_contents(__DIR__ . '/assets/Data/productos.json');
+$productos = $productosJson ? json_decode($productosJson, true) : [];
+
+// Obtener SKU de la URL
+$sku = isset($_GET['sku']) ? $_GET['sku'] : '';
+$productoActual = null;
+
+if ($productos) {
+    foreach ($productos as $p) {
+        if (isset($p['sku']) && $p['sku'] === $sku) {
+            $productoActual = $p;
+            break;
+        }
+    }
+}
+
+// Variables por defecto
+$title = "Catálogo de Productos | Building Systems Perú (BS Perú)";
+$description = "Encuentra los mejores aditivos, impermeabilizantes y productos químicos para la construcción en BS Perú. Catálogo oficial.";
+$image = "https://bsperu.pe/img/impermeabilizantes.jpg";
+$url = "https://bsperu.pe/producto.html";
+$jsonLd = "";
+
+if ($productoActual) {
+    $nombre = htmlspecialchars($productoActual['nombre'] ?? '');
+    $title = $nombre . " | Z Aditivos Oficial - BS Perú";
+    
+    // Descripción truncada a ~160 caracteres
+    $descRaw = $productoActual['descripcion_larga'] ?? ($productoActual['descripcion'] ?? $description);
+    $descRaw = strip_tags($descRaw);
+    $description = htmlspecialchars(mb_substr($descRaw, 0, 160) . (mb_strlen($descRaw) > 160 ? '...' : ''));
+
+    // Imagen
+    if (isset($productoActual['imagen'])) {
+        $img = $productoActual['imagen'];
+        if (strpos($img, 'http') !== 0) {
+            if (strpos($img, '/') !== 0) {
+                $img = '/' . $img;
+            }
+            $image = "https://bsperu.pe" . $img;
+        } else {
+            $image = $img;
+        }
+    }
+
+    $url = "https://bsperu.pe/producto.html?sku=" . urlencode($sku);
+    
+    // Generar JSON-LD estático
+    $jsonLdArr = [
+        "@context" => "https://schema.org/",
+        "@type" => "Product",
+        "name" => $nombre,
+        "image" => [$image],
+        "description" => $description,
+        "sku" => $sku,
+        "mpn" => $sku,
+        "brand" => [
+            "@type" => "Brand",
+            "name" => "Z Aditivos"
+        ]
+    ];
+    // Agregar el precio más bajo si hay presentaciones
+    if (isset($productoActual['presentaciones']) && is_array($productoActual['presentaciones'])) {
+        $lowestPrice = 999999;
+        foreach($productoActual['presentaciones'] as $pres) {
+            if (isset($pres['precio']) && is_numeric($pres['precio']) && $pres['precio'] > 0 && $pres['precio'] < $lowestPrice) {
+                $lowestPrice = $pres['precio'];
+            }
+        }
+        if ($lowestPrice < 999999) {
+            $jsonLdArr["offers"] = [
+                "@type" => "AggregateOffer",
+                "priceCurrency" => "PEN",
+                "lowPrice" => $lowestPrice,
+                "availability" => "https://schema.org/InStock",
+                "url" => $url
+            ];
+        }
+    }
+    $jsonLd = json_encode($jsonLdArr, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+}
+?>
 <!DOCTYPE html>
 <html lang="es" data-theme="corporate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Removedor de Óxido Z | Building Systems Perú (Z Aditivos)</title>
-    <meta name="description" id="metaDescription" content="Removedor de Óxido Z: Potente desengrasante, detergente y desoxidante elaborado a base de tensoactivos y ácidos orgánicos para superficies metálicas. Catálogo oficial BS Perú.">
+    <title id="pageTitle"><?php echo $title; ?></title>
+    <meta name="description" id="metaDescription" content="<?php echo $description; ?>">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" id="canonicalLink" href="https://bsperu.pe/producto.html">
+    <link rel="canonical" id="canonicalLink" href="<?php echo $url; ?>">
     <link rel="icon" href="/favicon.ico">
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="product">
     <meta property="og:locale" content="es_PE">
     <meta property="og:site_name" content="Building Systems Perú (BS Perú)">
-    <meta property="og:title" id="ogTitle" content="Removedor de Óxido Z | Z Aditivos Oficial - BS Perú">
-    <meta property="og:description" id="ogDesc" content="Potente desengrasante, detergente y desoxidante elaborado a base de tensoactivos y ácidos orgánicos para superficies metálicas. Catálogo oficial BS Perú.">
-    <meta property="og:url" id="ogUrl" content="https://bsperu.pe/producto.html">
-    <meta property="og:image" id="ogImage" content="https://bsperu.pe/img/impermeabilizantes.jpg">
+    <meta property="og:title" id="ogTitle" content="<?php echo $title; ?>">
+    <meta property="og:description" id="ogDesc" content="<?php echo $description; ?>">
+    <meta property="og:url" id="ogUrl" content="<?php echo $url; ?>">
+    <meta property="og:image" id="ogImage" content="<?php echo $image; ?>">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" id="twTitle" content="Removedor de Óxido Z | Z Aditivos Oficial - BS Perú">
-    <meta name="twitter:description" id="twDesc" content="Potente desengrasante, detergente y desoxidante elaborado a base de tensoactivos y ácidos orgánicos para superficies metálicas.">
-    <meta name="twitter:image" id="twImage" content="https://bsperu.pe/img/impermeabilizantes.jpg">
+    <meta name="twitter:title" id="twTitle" content="<?php echo $title; ?>">
+    <meta name="twitter:description" id="twDesc" content="<?php echo $description; ?>">
+    <meta name="twitter:image" id="twImage" content="<?php echo $image; ?>">
 
     <!-- Schema.org BreadcrumbList -->
     <script type="application/ld+json">
@@ -32,30 +116,20 @@
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://bsperu.pe/" },
         { "@type": "ListItem", "position": 2, "name": "Catálogo", "item": "https://bsperu.pe/productos.html" },
-        { "@type": "ListItem", "position": 3, "name": "Producto", "item": "https://bsperu.pe/producto.html" }
+        { "@type": "ListItem", "position": 3, "name": "Producto", "item": "<?php echo $url; ?>" }
       ]
     }
     </script>
 
-    <!-- Schema.org JSON-LD para Producto Dinámico -->
-    <script type="application/ld+json" id="productSchemaJson"></script>
-
-    <!-- Script temprano para sincronizar Canonical y OG en el primer render -->
-    <script>
-    (function(){
-        try {
-            var params = new URLSearchParams(window.location.search);
-            var sku = params.get('sku');
-            if (sku) {
-                var cUrl = 'https://bsperu.pe/producto.html?sku=' + encodeURIComponent(sku.trim());
-                var can = document.getElementById('canonicalLink');
-                if (can) can.setAttribute('href', cUrl);
-                var ogUrl = document.getElementById('ogUrl');
-                if (ogUrl) ogUrl.setAttribute('content', cUrl);
-            }
-        } catch(e) {}
-    })();
+    <!-- Schema.org JSON-LD para Producto Dinámico (SSR) -->
+    <?php if ($jsonLd): ?>
+    <script type="application/ld+json" id="productSchemaJson">
+    <?php echo $jsonLd; ?>
     </script>
+    <?php else: ?>
+    <script type="application/ld+json" id="productSchemaJson"></script>
+    <?php endif; ?>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
