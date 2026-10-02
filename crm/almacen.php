@@ -920,13 +920,13 @@ $siguienteGS = getSiguienteGS();
                     </div>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <select id="filtroPeriodo" onchange="filtrarHistorial()" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-soft); font-family:'Poppins',sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text-dark); background: #FFF; outline: none; cursor: pointer;">
-                            <option value="TODOS">📅 Histórico Completo 2026</option>
+                            <option value="TODOS">📅 Histórico Total (2024 - 2026)</option>
+                            <option value="A2026">Año 2026 (Actual)</option>
+                            <option value="A2025">Año 2025</option>
+                            <option value="A2024">Año 2024</option>
                             <option value="MES_ACTUAL">Este Mes (Octubre 2026)</option>
                             <option value="MES_ANTERIOR">Mes Anterior (Septiembre 2026)</option>
                             <option value="ULTIMOS_30">Últimos 30 días</option>
-                            <option value="T3">3er Trimestre (Jul - Sep)</option>
-                            <option value="T2">2do Trimestre (Abr - Jun)</option>
-                            <option value="T1">1er Trimestre (Ene - Mar)</option>
                         </select>
                         <button class="btn-sm btn-transfer" onclick="exportarHistorialCSV()" title="Descargar histórico en Excel / CSV">
                             <i class="fa-solid fa-file-excel"></i> Exportar
@@ -1581,18 +1581,18 @@ $siguienteGS = getSiguienteGS();
                         const mes = parts[1];
                         const anio = parts[2];
 
-                        if (periodo === 'MES_ACTUAL') {
+                        if (periodo === 'A2026') {
+                            matchPeriodo = (anio === '2026');
+                        } else if (periodo === 'A2025') {
+                            matchPeriodo = (anio === '2025');
+                        } else if (periodo === 'A2024') {
+                            matchPeriodo = (anio === '2024');
+                        } else if (periodo === 'MES_ACTUAL') {
                             matchPeriodo = (mes === '10' && anio === '2026');
                         } else if (periodo === 'MES_ANTERIOR') {
                             matchPeriodo = (mes === '09' && anio === '2026');
                         } else if (periodo === 'ULTIMOS_30') {
                             matchPeriodo = (mDate >= hace30Dias);
-                        } else if (periodo === 'T3') {
-                            matchPeriodo = (['07', '08', '09'].includes(mes) && anio === '2026');
-                        } else if (periodo === 'T2') {
-                            matchPeriodo = (['04', '05', '06'].includes(mes) && anio === '2026');
-                        } else if (periodo === 'T1') {
-                            matchPeriodo = (['01', '02', '03'].includes(mes) && anio === '2026');
                         }
                     }
                 }
