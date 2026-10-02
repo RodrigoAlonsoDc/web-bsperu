@@ -1009,8 +1009,7 @@ if ($productoActual) {
             .products-grid { grid-template-columns: 1fr; }
             .hero-btns .btn-hero-primary, .hero-btns .btn-hero-ghost { width: 100%; justify-content: center; }
         }
-    
-/* ============ BREADCRUMB ============ */
+    /* ============ BREADCRUMB ============ */
         .breadcrumb-wrap {
             padding-top: 100px;
             padding-bottom: 16px;
@@ -1031,7 +1030,7 @@ if ($productoActual) {
             padding: 10px 0 50px;
         }
 
-        /* T+ÏTULO PRINCIPAL (Como la imagen: GRANDE, NEGRO, BOLD ARRIBA) */
+        /* T√çTULO PRINCIPAL (Como la imagen: GRANDE, NEGRO, BOLD ARRIBA) */
         .product-main-title {
             font-size: clamp(26px, 3.8vw, 40px);
             font-weight: 900;
@@ -1080,7 +1079,7 @@ if ($productoActual) {
             transform: scale(1.04);
         }
 
-        /* Galer+°a de miniaturas */
+        /* Galer√≠a de miniaturas */
         .product-thumbnails {
             display: flex;
             gap: 10px;
@@ -1117,7 +1116,7 @@ if ($productoActual) {
             flex-direction: column;
         }
 
-        /* Subt+°tulo categor+°a (negrita como imagen) */
+        /* Subt√≠tulo categor√≠a (negrita como imagen) */
         .product-category-sub {
             font-size: 1.15rem;
             font-weight: 800;
@@ -1126,7 +1125,7 @@ if ($productoActual) {
             letter-spacing: -0.2px;
         }
 
-        /* P+Ìrrafo descripci+¶n */
+        /* P√°rrafo descripci√≥n */
         .product-desc-p {
             font-size: 1.02rem;
             line-height: 1.65;
@@ -1134,7 +1133,7 @@ if ($productoActual) {
             margin-bottom: 24px;
         }
 
-        /* Badges de caracter+°sticas destacadas */
+        /* Badges de caracter√≠sticas destacadas */
         .product-highlights {
             display: flex;
             flex-wrap: wrap;
@@ -1198,7 +1197,7 @@ if ($productoActual) {
         }
         .chip-envase.active .peso { color: var(--accent-light); }
 
-        /* Botones de acci+¶n */
+        /* Botones de acci√≥n */
         .product-actions-bar {
             display: flex;
             flex-wrap: wrap;
@@ -1245,7 +1244,7 @@ if ($productoActual) {
         }
         .btn-ficha-pdf i { font-size: 17px; }
 
-        /* ============ ACORDE+ÙN T+ÎCNICO (IGUAL A LA IMAGEN) ============ */
+        /* ============ ACORDE√ìN T√âCNICO (IGUAL A LA IMAGEN) ============ */
         .accordion-wrapper {
             border-top: 1px solid #e5e7eb;
             margin-top: 20px;
@@ -1292,7 +1291,7 @@ if ($productoActual) {
             color: var(--accent);
         }
 
-        /* Contenido del acorde+¶n */
+        /* Contenido del acorde√≥n */
         .accordion-body {
             max-height: 0;
             overflow: hidden;
@@ -1318,7 +1317,7 @@ if ($productoActual) {
             margin-bottom: 10px;
         }
         .accordion-inner li::before {
-            content: "‘«Û";
+            content: "‚Ä¢";
             position: absolute;
             left: 6px;
             color: var(--accent);
@@ -1327,7 +1326,7 @@ if ($productoActual) {
             line-height: 1;
         }
 
-        /* Tabla de especificaciones t+Æcnicas dentro del acorde+¶n */
+        /* Tabla de especificaciones t√©cnicas dentro del acorde√≥n */
         .specs-table {
             width: 100%;
             border-collapse: collapse;
@@ -1404,7 +1403,7 @@ if ($productoActual) {
             color: var(--text-muted);
         }
 
-        /* Banner de asesor+°a / llamada a la acci+¶n */
+        /* Banner de asesor√≠a / llamada a la acci√≥n */
         .product-cta-banner {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             border-radius: var(--radius-md);
@@ -1619,7 +1618,9 @@ if ($productoActual) {
             .nav-links, .nav-actions { display: none; }
             .nav-hamburger { display: flex; }
         }
-    </style>
+    
+</style>
+
 </head>
 <body>
 
@@ -2325,4 +2326,3 @@ if ($productoActual) {
     </script>
 </body>
 </html>
-
