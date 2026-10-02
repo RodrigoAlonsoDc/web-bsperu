@@ -1,0 +1,1621 @@
+﻿<?php
+// Cargar JSON de productos
+$productosJson = @file_get_contents(__DIR__ . '/assets/Data/productos.json');
+$productos = $productosJson ? json_decode($productosJson, true) : [];
+
+// Obtener SKU de la URL
+$sku = isset($_GET['sku']) ? $_GET['sku'] : '';
+$productoActual = null;
+
+if ($productos) {
+    foreach ($productos as $p) {
+        if (isset($p['sku']) && $p['sku'] === $sku) {
+            $productoActual = $p;
+            break;
+        }
+    }
+}
+
+// Variables por defecto
+$title = "Cat├ílogo de Productos | Building Systems Per├║ (BS Per├║)";
+$description = "Encuentra los mejores aditivos, impermeabilizantes y productos qu├¡micos para la construcci├│n en BS Per├║. Cat├ílogo oficial.";
+$image = "https://bsperu.pe/img/impermeabilizantes.jpg";
+$url = "https://bsperu.pe/producto.html";
+$jsonLd = "";
+
+if ($productoActual) {
+    $nombre = htmlspecialchars($productoActual['nombre'] ?? '');
+    $title = $nombre . " | Z Aditivos Oficial - BS Per├║";
+    
+    // Descripci├│n truncada a ~160 caracteres
+    $descRaw = $productoActual['descripcion_larga'] ?? ($productoActual['descripcion'] ?? $description);
+    $descRaw = strip_tags($descRaw);
+    $description = htmlspecialchars(mb_substr($descRaw, 0, 160) . (mb_strlen($descRaw) > 160 ? '...' : ''));
+
+    // Imagen
+    if (isset($productoActual['imagen'])) {
+        $img = $productoActual['imagen'];
+        if (strpos($img, 'http') !== 0) {
+            if (strpos($img, '/') !== 0) {
+                $img = '/' . $img;
+            }
+            $image = "https://bsperu.pe" . $img;
+        } else {
+            $image = $img;
+        }
+    }
+
+    $url = "https://bsperu.pe/producto.html?sku=" . urlencode($sku);
+    
+    // Generar JSON-LD est├ítico
+    $jsonLdArr = [
+        "@context" => "https://schema.org/",
+        "@type" => "Product",
+        "name" => $nombre,
+        "image" => [$image],
+        "description" => $description,
+        "sku" => $sku,
+        "mpn" => $sku,
+        "brand" => [
+            "@type" => "Brand",
+            "name" => "Z Aditivos"
+        ]
+    ];
+    // Agregar el precio m├ís bajo si hay presentaciones
+    if (isset($productoActual['presentaciones']) && is_array($productoActual['presentaciones'])) {
+        $lowestPrice = 999999;
+        foreach($productoActual['presentaciones'] as $pres) {
+            if (isset($pres['precio']) && is_numeric($pres['precio']) && $pres['precio'] > 0 && $pres['precio'] < $lowestPrice) {
+                $lowestPrice = $pres['precio'];
+            }
+        }
+        if ($lowestPrice < 999999) {
+            $jsonLdArr["offers"] = [
+                "@type" => "AggregateOffer",
+                "priceCurrency" => "PEN",
+                "lowPrice" => $lowestPrice,
+                "availability" => "https://schema.org/InStock",
+                "url" => $url
+            ];
+        }
+    }
+    $jsonLd = json_encode($jsonLdArr, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+}
+?>
+<!DOCTYPE html>
+<html lang="es" data-theme="corporate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle"><?php echo $title; ?></title>
+    <meta name="description" id="metaDescription" content="<?php echo $description; ?>">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" id="canonicalLink" href="<?php echo $url; ?>">
+    <link rel="icon" href="/favicon.ico">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="product">
+    <meta property="og:locale" content="es_PE">
+    <meta property="og:site_name" content="Building Systems Per├║ (BS Per├║)">
+    <meta property="og:title" id="ogTitle" content="<?php echo $title; ?>">
+    <meta property="og:description" id="ogDesc" content="<?php echo $description; ?>">
+    <meta property="og:url" id="ogUrl" content="<?php echo $url; ?>">
+    <meta property="og:image" id="ogImage" content="<?php echo $image; ?>">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="twTitle" content="<?php echo $title; ?>">
+    <meta name="twitter:description" id="twDesc" content="<?php echo $description; ?>">
+    <meta name="twitter:image" id="twImage" content="<?php echo $image; ?>">
+
+    <!-- Schema.org BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://bsperu.pe/" },
+        { "@type": "ListItem", "position": 2, "name": "Cat├ílogo", "item": "https://bsperu.pe/productos.html" },
+        { "@type": "ListItem", "position": 3, "name": "Producto", "item": "<?php echo $url; ?>" }
+      ]
+    }
+    </script>
+
+    <!-- Schema.org JSON-LD para Producto Din├ímico (SSR) -->
+    <?php if ($jsonLd): ?>
+    <script type="application/ld+json" id="productSchemaJson">
+    <?php echo $jsonLd; ?>
+    </script>
+    <?php else: ?>
+    <script type="application/ld+json" id="productSchemaJson"></script>
+    <?php endif; ?>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --maxw: 1100px;
+            --bg-dark: #f8fafc;
+            --bg-medium: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --accent: #2563eb;
+            --accent-light: #3b82f6;
+            --accent-glow: rgba(37, 99, 235, 0.15);
+            --title-color: #0f172a;
+            --text: #1e293b;
+            --text-muted: #52627a;
+            --nav-bg: rgba(248, 250, 252, 0.85);
+            --nav-bg-scroll: rgba(248, 250, 252, 0.98);
+            --border-color: #e2e8f0;
+            --border-subtle: #cbd5e1;
+            --logo-plate: #12233d;
+            --wa-color: #25d366;
+            --wa-hover: #20ba59;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
+        .shell { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+        /* ============ NAVBAR ============ */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; gap: 20px;
+            padding: 12px 28px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .navbar.scrolled {
+            background: var(--nav-bg-scroll);
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.06);
+        }
+
+        .nav-logo { display: flex; align-items: center; flex-shrink: 0; }
+        .brand-logo { background: var(--logo-plate); border-radius: 10px; padding: 4px 10px; }
+        .nav-logo img { height: 44px; width: auto; object-fit: contain; }
+
+        .nav-links { display: flex; gap: 24px; list-style: none; margin-left: auto; }
+        .nav-links a {
+            color: var(--text-muted); text-decoration: none; font-size: 13px;
+            font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+            transition: color 0.25s; white-space: nowrap;
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        .nav-actions { display: flex; align-items: center; gap: 12px; margin-left: 20px; }
+        .nav-cta {
+            background: var(--accent); color: #ffffff;
+            padding: 10px 20px; border-radius: var(--radius-sm);
+            font-weight: 700; font-size: 13px; text-decoration: none;
+            transition: all 0.25s; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 7px;
+            box-shadow: 0 2px 10px var(--accent-glow);
+        }
+        .nav-cta:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+        .nav-hamburger {
+            display: none; background: none; border: 1px solid var(--border-color);
+            color: var(--text); font-size: 24px; cursor: pointer;
+            width: 42px; height: 42px; border-radius: 10px;
+            align-items: center; justify-content: center; margin-left: auto;
+        }
+
+        /* Drawer m├│vil */
+        .drawer-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .drawer-overlay.open { opacity: 1; pointer-events: all; }
+        .drawer {
+            position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+            width: min(300px, 85vw); background: #ffffff;
+            border-left: 1px solid var(--border-color);
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            display: flex; flex-direction: column; padding: 20px;
+        }
+        .drawer.open { transform: translateX(0); }
+        .drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .drawer-head img { height: 38px; }
+        .drawer-close {
+            background: none; border: 1px solid var(--border-color); color: var(--text);
+            width: 36px; height: 36px; border-radius: 8px; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .drawer-nav { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+        .drawer-nav a {
+            color: var(--text); text-decoration: none; font-weight: 600; font-size: 15px;
+            display: flex; align-items: center; gap: 10px; padding: 8px 0;
+        }
+
+        /* ============ BREADCRUMB ============ */
+        .breadcrumb-wrap {
+            padding-top: 100px;
+            padding-bottom: 16px;
+        }
+        .breadcrumb {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            font-size: 13px; color: var(--text-muted); list-style: none;
+        }
+        .breadcrumb a {
+            color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+        }
+        .breadcrumb a:hover { color: var(--accent); }
+        .breadcrumb i { font-size: 11px; opacity: 0.6; }
+        .breadcrumb .current { color: var(--title-color); font-weight: 600; }
+
+        /* ============ PRODUCT LAYOUT (ESTILO Z ADITIVOS) ============ */
+        .product-section {
+            padding: 10px 0 50px;
+        }
+
+        /* T├ìTULO PRINCIPAL (Como la imagen: GRANDE, NEGRO, BOLD ARRIBA) */
+        .product-main-title {
+            font-size: clamp(26px, 3.8vw, 40px);
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            color: #000000;
+            line-height: 1.15;
+            margin-bottom: 28px;
+        }
+
+        /* Grid superior de 2 columnas */
+        .product-top-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 40px;
+            align-items: start;
+            margin-bottom: 40px;
+        }
+
+        /* Caja de imagen (Izquierda) */
+        .product-media-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: 0 4px 16px -2px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .product-img-stage {
+            width: 100%;
+            height: 330px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .product-img-stage img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .product-img-stage:hover img {
+            transform: scale(1.04);
+        }
+
+        /* Galer├¡a de miniaturas */
+        .product-thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+            width: 100%;
+            justify-content: center;
+        }
+        .thumb-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border-color);
+            background: #ffffff;
+            padding: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .thumb-btn img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .thumb-btn:hover, .thumb-btn.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        /* Info derecha */
+        .product-info-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Subt├¡tulo categor├¡a (negrita como imagen) */
+        .product-category-sub {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #000000;
+            margin-bottom: 14px;
+            letter-spacing: -0.2px;
+        }
+
+        /* P├írrafo descripci├│n */
+        .product-desc-p {
+            font-size: 1.02rem;
+            line-height: 1.65;
+            color: #334155;
+            margin-bottom: 24px;
+        }
+
+        /* Badges de caracter├¡sticas destacadas */
+        .product-highlights {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 26px;
+        }
+        .highlight-pill {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .highlight-pill i {
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        /* Presentaciones / Selector */
+        .envases-selector-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        .envases-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .chip-envase {
+            border: 1.5px solid var(--border-color);
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .chip-envase .peso {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .chip-envase:hover, .chip-envase.active {
+            border-color: var(--accent);
+            background: #eff6ff;
+            color: var(--accent);
+        }
+        .chip-envase.active .peso { color: var(--accent-light); }
+
+        /* Botones de acci├│n */
+        .product-actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+        }
+        .btn-wa-cotizar {
+            background: var(--wa-color);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 13px 26px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            transition: all 0.25s;
+            box-shadow: 0 4px 14px rgba(37, 211, 102, 0.28);
+        }
+        .btn-wa-cotizar:hover {
+            background: var(--wa-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
+        }
+        .btn-ficha-pdf {
+            background: #ffffff;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 13.5px;
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-ficha-pdf:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: #fff5f5;
+        }
+        .btn-ficha-pdf i { font-size: 17px; }
+
+        /* ============ ACORDE├ôN T├ëCNICO (IGUAL A LA IMAGEN) ============ */
+        .accordion-wrapper {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 20px;
+        }
+        .accordion-item {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .accordion-header {
+            width: 100%;
+            background: none;
+            border: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 0;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            color: #000000;
+            transition: color 0.2s;
+        }
+        .accordion-header:hover {
+            color: var(--accent);
+        }
+        .accordion-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+        }
+        .accordion-icon {
+            font-size: 22px;
+            font-weight: 400;
+            line-height: 1;
+            transition: transform 0.28s ease, color 0.2s;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+        }
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+            color: var(--accent);
+        }
+
+        /* Contenido del acorde├│n */
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+            padding: 0 4px;
+        }
+        .accordion-item.active .accordion-body {
+            max-height: 800px;
+            padding: 0 4px 26px 4px;
+        }
+        .accordion-inner {
+            font-size: 0.98rem;
+            color: #334155;
+            line-height: 1.7;
+        }
+        .accordion-inner ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .accordion-inner li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 10px;
+        }
+        .accordion-inner li::before {
+            content: "ÔÇó";
+            position: absolute;
+            left: 6px;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* Tabla de especificaciones t├®cnicas dentro del acorde├│n */
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .specs-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        .specs-table td {
+            padding: 12px 18px;
+            font-size: 13.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .specs-table td.spec-prop {
+            font-weight: 700;
+            color: #0f172a;
+            width: 40%;
+        }
+        .specs-table td.spec-val {
+            color: #475569;
+        }
+
+        /* Tarjeta de descarga de documentos */
+        .doc-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 10px;
+        }
+        .doc-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.25s;
+        }
+        .doc-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+        }
+        .doc-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: #eff6ff;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .doc-icon.pdf {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        .doc-meta h4 {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--title-color);
+            margin-bottom: 2px;
+        }
+        .doc-meta span {
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        /* Banner de asesor├¡a / llamada a la acci├│n */
+        .product-cta-banner {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: var(--radius-md);
+            padding: 36px 40px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            margin-top: 60px;
+            margin-bottom: 70px;
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.15);
+        }
+        .product-cta-banner h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .product-cta-banner p {
+            color: #94a3b8;
+            font-size: 14px;
+            max-width: 540px;
+            line-height: 1.5;
+        }
+        .btn-banner-wa {
+            background: #ffffff;
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 13.5px;
+            padding: 13px 24px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: all 0.25s;
+        }
+        .btn-banner-wa:hover {
+            background: var(--wa-color);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 60px 0 30px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-brand p {
+            color: #94a3b8;
+            font-size: 13.5px;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+        .footer-col h4 {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 10px; font-size: 13.5px; color: #94a3b8; }
+        .footer-col a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .footer-col a:hover { color: #ffffff; }
+        .footer-social { display: flex; gap: 14px; margin-top: 20px; }
+        .footer-social a {
+            width: 36px; height: 36px; border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            display: flex; align-items: center; justify-content: center;
+            color: #ffffff; font-size: 18px; text-decoration: none;
+            transition: background 0.2s;
+        }
+        .footer-social a:hover { background: var(--accent); }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 24px; text-align: center;
+            font-size: 12.5px; color: #64748b;
+        }
+
+        /* ============ STACK FLOTANTE: REDES SOCIALES + WHATSAPP ============ */
+        .floating-contact-stack {
+            position: fixed;
+            bottom: 26px;
+            right: 26px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .floating-social-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-float-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 20px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
+            position: relative;
+        }
+        .social-float-btn:hover {
+            transform: scale(1.15) translateX(-4px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Colores de marca */
+        .social-float-btn.fb { background: #1877f2; }
+        .social-float-btn.ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); }
+        .social-float-btn.tk { background: #000000; border: 1.5px solid rgba(255,255,255,0.25); }
+        .social-float-btn.yt { background: #ff0000; }
+        .social-float-btn.li { background: #0077b5; }
+
+        .social-float-btn .tooltip-label {
+            position: absolute;
+            right: 52px;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 9px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(6px);
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+        }
+        .social-float-btn:hover .tooltip-label {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .wa-float {
+            position: relative;
+            bottom: auto;
+            right: auto;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--wa-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+        }
+        .wa-float:hover {
+            transform: scale(1.12);
+            box-shadow: 0 8px 26px rgba(37, 211, 102, 0.55);
+        }
+        .wa-float::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid #25d366;
+            opacity: 0.8;
+            animation: waRadarPulse 2.4s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+            pointer-events: none;
+        }
+        @keyframes waRadarPulse {
+            0% { transform: scale(0.95); opacity: 0.85; }
+            70% { transform: scale(1.3); opacity: 0; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        /* ============ FILA DE REDES SOCIALES EN FICHA ============ */
+        .product-social-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .social-row-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .social-row-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .social-row-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 17px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .social-row-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+        }
+        .social-row-badge.fb { background: #1877f2; }
+        .social-row-badge.ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); }
+        .social-row-badge.tk { background: #000000; }
+        .social-row-badge.yt { background: #ff0000; }
+        .social-row-badge.li { background: #0077b5; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .product-top-grid {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+            .product-media-card {
+                max-width: 440px;
+                margin: 0 auto;
+                width: 100%;
+            }
+            .product-cta-banner {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+            .btn-banner-wa { width: 100%; justify-content: center; }
+            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+            .nav-links, .nav-actions { display: none; }
+            .nav-hamburger { display: flex; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar" id="mainNav" aria-label="Navegaci├│n principal">
+        <a href="/productos.html" class="nav-logo" aria-label="BS Per├║ - Cat├ílogo">
+            <img class="brand-logo" src="img/logo_bs.png" alt="Building Systems Per├║" width="180" height="42">
+        </a>
+        <ul class="nav-links">
+            <li><a href="/productos.html#inicio">Inicio</a></li>
+            <li><a href="/productos.html#familias">Familias</a></li>
+            <li><a href="/productos.html#catalogo">Cat├ílogo</a></li>
+            <li><a href="/sucursales.html">Sucursales</a></li>
+            <li><a href="/productos.html#consulta">Asesor├¡a</a></li>
+            <li><a href="/productos.html#contacto">Contacto</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="https://wa.me/51914776669" target="_blank" rel="noopener" class="nav-cta" id="navCtaBtn">
+                <i class="ph ph-chat-circle-text" aria-hidden="true"></i> Cotizar Ahora
+            </a>
+        </div>
+        <button class="nav-hamburger" id="hamburgerBtn" aria-label="Abrir men├║" aria-expanded="false" aria-controls="mobileDrawer">
+            <i class="ph ph-list" aria-hidden="true"></i>
+        </button>
+    </nav>
+
+    <!-- Drawer m├│vil -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <aside class="drawer" id="mobileDrawer" aria-label="Men├║ m├│vil" aria-hidden="true">
+        <div class="drawer-head">
+            <img class="brand-logo" src="img/logo_bs.png" alt="BS Per├║">
+            <button class="drawer-close" id="drawerCloseBtn" aria-label="Cerrar men├║"><i class="ph ph-x" aria-hidden="true"></i></button>
+        </div>
+        <ul class="drawer-nav">
+            <li><a href="/productos.html#inicio"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a></li>
+            <li><a href="/productos.html#familias"><i class="ph ph-squares-four" aria-hidden="true"></i> Familias</a></li>
+            <li><a href="/productos.html#catalogo"><i class="ph ph-list-magnifying-glass" aria-hidden="true"></i> Cat├ílogo completo</a></li>
+            <li><a href="/sucursales.html"><i class="ph ph-storefront" aria-hidden="true"></i> Sucursales</a></li>
+            <li><a href="/productos.html#consulta"><i class="ph ph-chats-circle" aria-hidden="true"></i> Asesor├¡a t├®cnica</a></li>
+            <li><a href="/productos.html#contacto"><i class="ph ph-map-pin" aria-hidden="true"></i> Contacto</a></li>
+        </ul>
+        <div style="margin-top:auto;">
+            <a href="https://wa.me/51914776669" target="_blank" rel="noopener" class="nav-cta" style="width:100%; justify-content:center;">
+                <i class="ph ph-chat-circle-text" aria-hidden="true"></i> Cotizar por WhatsApp
+            </a>
+        </div>
+    </aside>
+
+    <!-- ============ BREADCRUMB ============ -->
+    <div class="shell breadcrumb-wrap">
+        <nav aria-label="Ruta de navegaci├│n">
+            <ul class="breadcrumb">
+                <li><a href="/productos.html">Inicio</a></li>
+                <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
+                <li><a href="/productos.html#catalogo">Cat├ílogo</a></li>
+                <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
+                <li><a href="/productos.html#familias" id="breadCategoria">Inhibidores de corrosi├│n y removedores</a></li>
+                <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
+                <li class="current" id="breadProducto">Removedor de ├ôxido Z</li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- ============ CONTENIDO PRINCIPAL DEL PRODUCTO ============ -->
+    <main class="shell product-section">
+        
+        <!-- T├ìTULO PRINCIPAL (Exacto al dise├▒o de la imagen) -->
+        <h1 class="product-main-title" id="prodTitle">REMOVEDOR DE ├ôXIDO Z</h1>
+
+        <!-- SECCI├ôN SUPERIOR: IMAGEN + DESCRIPCI├ôN CORTA -->
+        <div class="product-top-grid">
+            
+            <!-- Columna Izquierda: Imagen del producto y miniaturas -->
+            <div class="product-media-card">
+                <div class="product-img-stage" id="imgStage">
+                    <img id="mainImg" src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL1.jpg" alt="Removedor de ├ôxido Z - Balde 5 Galones">
+                </div>
+                <div class="product-thumbnails" id="thumbsContainer">
+                    <button class="thumb-btn active" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL1.jpg" aria-label="Vista frontal">
+                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL1.jpg" alt="">
+                    </button>
+                    <button class="thumb-btn" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL2.jpg" aria-label="Vista lateral 1">
+                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL2.jpg" alt="">
+                    </button>
+                    <button class="thumb-btn" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL3.jpg" aria-label="Vista posterior">
+                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL3.jpg" alt="">
+                    </button>
+                    <button class="thumb-btn" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL4.jpg" aria-label="Vista lateral 2">
+                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL4.jpg" alt="">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Categor├¡a, Descripci├│n y Acciones -->
+            <div class="product-info-col">
+                <!-- Subt├¡tulo en negrita (igual a la imagen) -->
+                <h2 class="product-category-sub" id="prodSubtitle">Inhibidores de corrosi├│n y removedores</h2>
+
+                <!-- P├írrafo descriptivo principal (igual a la imagen) -->
+                <p class="product-desc-p" id="prodShortDesc">
+                    Producto elaborado a base de tensoactivos y ├ícidos org├ínicos muy eficaces contra la grasa y el ├│xido de las superficies met├ílicas. Es un excelente desengrasante, detergente y desoxidante.
+                </p>
+
+                <!-- Caracter├¡sticas clave -->
+                <div class="product-highlights">
+                    <span class="highlight-pill"><i class="ph-fill ph-lightning" aria-hidden="true"></i> Acci├│n 3 en 1: Desengrasa, Limpia y Desoxida</span>
+                    <span class="highlight-pill"><i class="ph-fill ph-shield-check" aria-hidden="true"></i> Efecto Fosfatizante Protector</span>
+                    <span class="highlight-pill"><i class="ph-fill ph-timer" aria-hidden="true"></i> Act├║a entre 10 a 20 min</span>
+                    <span class="highlight-pill"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Garant├¡a Z Aditivos Oficial</span>
+                </div>
+
+                <!-- Selector de Presentaciones Disponibles -->
+                <div class="envases-selector-title">Presentaciones Disponibles:</div>
+                <div class="envases-chips" id="chipsEnvases">
+                    <button type="button" class="chip-envase" data-sku="110014470">
+                        <span>1 Gal├│n</span>
+                        <span class="peso">Aprox. 4.63 kg</span>
+                    </button>
+                    <button type="button" class="chip-envase active" data-sku="110014455">
+                        <span>5 Galones (Balde)</span>
+                        <span class="peso">Aprox. 23.0 kg</span>
+                    </button>
+                    <button type="button" class="chip-envase" data-sku="110014511">
+                        <span>55 Galones (Cilindro)</span>
+                        <span class="peso">Aprox. 252 kg</span>
+                    </button>
+                </div>
+
+                <!-- Redes Sociales / S├¡guenos (Encima del bot├│n WhatsApp) -->
+                <div class="product-social-row">
+                    <span class="social-row-label"><i class="ph ph-share-network" aria-hidden="true"></i> S├¡guenos:</span>
+                    <div class="social-row-badges">
+                        <a href="https://www.facebook.com/people/Bsperu/100090456091171/" target="_blank" rel="noopener noreferrer" class="social-row-badge fb" aria-label="Facebook BS Per├║" title="Facebook">
+                            <i class="ph-fill ph-facebook-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.instagram.com/bsp.peru/" target="_blank" rel="noopener noreferrer" class="social-row-badge ig" aria-label="Instagram BS Per├║" title="Instagram">
+                            <i class="ph-fill ph-instagram-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@bs_peru?_t=ZS-90uDwonltem&_r=1" target="_blank" rel="noopener noreferrer" class="social-row-badge tk" aria-label="TikTok BS Per├║" title="TikTok">
+                            <i class="ph-fill ph-tiktok-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@bsperu-BSP" target="_blank" rel="noopener noreferrer" class="social-row-badge yt" aria-label="YouTube BS Per├║" title="YouTube">
+                            <i class="ph-fill ph-youtube-logo" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/bs-per%C3%BA/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-row-badge li" aria-label="LinkedIn BS Per├║" title="LinkedIn">
+                            <i class="ph-fill ph-linkedin-logo" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Botones de Acci├│n -->
+                <div class="product-actions-bar">
+                    <a href="https://wa.me/51914776669?text=Hola%20Building%20Systems%20Per%C3%BA,%20deseo%20cotizar%20el%20producto:%20REMOVEDOR%20DE%20%C3%93XIDO%20Z" target="_blank" rel="noopener" class="btn-wa-cotizar" id="btnCotizarWa">
+                        <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i> Cotizar por WhatsApp
+                    </a>
+                    <a href="https://drive.google.com/file/d/1_phLUi7wuY8ht2VyYpxBjjWL7E2grOfl/view?usp=drive_link" target="_blank" rel="noopener" class="btn-ficha-pdf" id="btnFichaPdf">
+                        <i class="ph-fill ph-file-pdf" aria-hidden="true"></i> Descargar Ficha T├®cnica
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============ ACORDE├ôN DE DETALLES Y CARACTER├ìSTICAS (IGUAL A LA IMAGEN) ============ -->
+        <section class="accordion-wrapper" aria-label="Detalles t├®cnicos del producto">
+            
+            <!-- 1. USOS -->
+            <article class="accordion-item" id="itemUsos">
+                <button type="button" class="accordion-header" aria-expanded="false" aria-controls="contentUsos">
+                    <span class="accordion-title">Usos</span>
+                    <span class="accordion-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="accordion-body" id="contentUsos" role="region">
+                    <div class="accordion-inner" id="textUsos">
+                        <ul>
+                            <li>Limpieza y desoxidaci├│n de fierros de construcci├│n y varillas corrugadas de acero estructural expuestas a la intemperie antes del vaciado de concreto.</li>
+                            <li>Tratamiento de perfiles, vigas, columnas, planchas y carpinter├¡a met├ílica antes de la aplicaci├│n de pinturas, primers o recubrimientos anticorrosivos.</li>
+                            <li>Limpieza profunda de encofrados met├ílicos, andamios, puntales y maquinaria de construcci├│n afectada por ├│xido y grasa.</li>
+                            <li>Remoci├│n de herrumbre y suciedad en tanques de almacenamiento, tuber├¡as industriales y piezas mec├ínicas automotrices.</li>
+                            <li>Restauraci├│n y mantenimiento de elementos met├ílicos ornamentales, rejas, barandas y portones.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. APLICACI├ôN -->
+            <article class="accordion-item" id="itemAplicacion">
+                <button type="button" class="accordion-header" aria-expanded="false" aria-controls="contentAplicacion">
+                    <span class="accordion-title">Aplicaci├│n</span>
+                    <span class="accordion-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="accordion-body" id="contentAplicacion" role="region">
+                    <div class="accordion-inner" id="textAplicacion">
+                        <ul>
+                            <li><strong>1. Preparaci├│n de superficie:</strong> Retire las escamas sueltas de ├│xido, tierra o polvo empleando una escobilla de alambre, lija o esp├ítula met├ílica.</li>
+                            <li><strong>2. Modo de empleo:</strong> Aplique el producto puro (sin diluir) con brocha de cerdas de nylon, trapo industrial, aspersor resistente a qu├¡micos o por inmersi├│n directa de las piezas.</li>
+                            <li><strong>3. Tiempo de acci├│n:</strong> Deje actuar el producto entre 10 a 20 minutos seg├║n el grado de oxidaci├│n. Notar├í que la superficie toma una coloraci├│n gris├ícea oscura (fosfatado).</li>
+                            <li><strong>4. Limpieza / Neutralizado:</strong> Retire los residuos con agua limpia a presi├│n o con un trapo h├║medo hasta eliminar los restos del reactivo.</li>
+                            <li><strong>5. Secado y protecci├│n:</strong> Seque r├ípidamente con aire o pa├▒o limpio. Se recomienda aplicar la pintura protectora o imprimante ep├│xico dentro de las primeras 24 a 48 horas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 3. CUIDADOS -->
+            <article class="accordion-item" id="itemCuidados">
+                <button type="button" class="accordion-header" aria-expanded="false" aria-controls="contentCuidados">
+                    <span class="accordion-title">Cuidados</span>
+                    <span class="accordion-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="accordion-body" id="contentCuidados" role="region">
+                    <div class="accordion-inner" id="textCuidados">
+                        <ul>
+                            <li><strong>Protecci├│n Personal (EPP):</strong> Utilice obligatoriamente guantes de jebe o nitrilo, lentes protectores panor├ímicos y mascarilla para vapores ├ícidos en ├íreas poco ventiladas.</li>
+                            <li><strong>Primeros auxilios:</strong> Producto de pH ├ícido. En caso de salpicadura en ojos o piel, enjuague inmediatamente con abundante agua limpia durante 15 minutos continuos y consulte al m├®dico.</li>
+                            <li><strong>Compatibilidad:</strong> No mezcle con productos alcalinos (soda c├íustica), hipoclorito de sodio (lej├¡a) ni solventes inflamables.</li>
+                            <li><strong>Almacenamiento:</strong> Cons├®rvese en su envase pl├ístico original bien tapado, en lugar fresco, bajo sombra y bien ventilado. Mant├®ngase fuera del alcance de los ni├▒os.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 4. ESPECIFICACIONES T├ëCNICAS -->
+            <article class="accordion-item" id="itemSpecs">
+                <button type="button" class="accordion-header" aria-expanded="false" aria-controls="contentSpecs">
+                    <span class="accordion-title">Especificaciones t├®cnicas</span>
+                    <span class="accordion-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="accordion-body" id="contentSpecs" role="region">
+                    <div class="accordion-inner" id="textSpecs">
+                        <table class="specs-table">
+                            <tbody>
+                                <tr>
+                                    <td class="spec-prop">Aspecto / Color</td>
+                                    <td class="spec-val">L├¡quido transl├║cido ligeramente ├ímbar</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-prop">Base qu├¡mica</td>
+                                    <td class="spec-val">Tensoactivos, ├ícidos org├ínicos e inhibidores de corrosi├│n</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-prop">Densidad (20 ┬░C)</td>
+                                    <td class="spec-val">1.05 ┬▒ 0.03 g/cm┬│</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-prop">pH</td>
+                                    <td class="spec-val">1.0 ÔÇô 2.0 (├ücido activo)</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-prop">Solubilidad</td>
+                                    <td class="spec-val">100% miscible en agua</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-prop">Rendimiento aprox.</td>
+                                    <td class="spec-val">20 a 30 m┬▓ por gal├│n (seg├║n rugosidad y grado de corrosi├│n)</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-prop">Tiempo de secado</td>
+                                    <td class="spec-val">15 a 30 minutos al ambiente</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-prop">Inflamabilidad</td>
+                                    <td class="spec-val">No inflamable (Base acuosa)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5. ENVASES -->
+            <article class="accordion-item" id="itemEnvases">
+                <button type="button" class="accordion-header" aria-expanded="false" aria-controls="contentEnvases">
+                    <span class="accordion-title">Envases</span>
+                    <span class="accordion-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="accordion-body" id="contentEnvases" role="region">
+                    <div class="accordion-inner" id="textEnvases">
+                        <ul>
+                            <li><strong>Frasco / Galonera x 1 Gal├│n:</strong> Peso neto aprox. 4.63 kg. Ideal para mantenimiento menor, piezas de taller y acabados puntuales.</li>
+                            <li><strong>Balde Pl├ístico Industrial x 5 Galones:</strong> Peso neto aprox. 23.0 kg. Presentaci├│n est├índar recomendada para frentes de obra y contratistas.</li>
+                            <li><strong>Cilindro Met├ílico / Pl├ístico x 55 Galones:</strong> Peso neto aprox. 252 kg. Presentaci├│n a granel para plantas de prefabricados, maestranzas y grandes proyectos de infraestructura.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 6. DOCUMENTACIONES -->
+            <article class="accordion-item" id="itemDocs">
+                <button type="button" class="accordion-header" aria-expanded="false" aria-controls="contentDocs">
+                    <span class="accordion-title">Documentaciones</span>
+                    <span class="accordion-icon" aria-hidden="true">+</span>
+                </button>
+                <div class="accordion-body" id="contentDocs" role="region">
+                    <div class="accordion-inner" id="textDocs">
+                        <div class="doc-cards-grid">
+                            <a href="https://drive.google.com/file/d/1_phLUi7wuY8ht2VyYpxBjjWL7E2grOfl/view?usp=drive_link" target="_blank" rel="noopener" class="doc-card" id="docLinkFicha">
+                                <div class="doc-icon pdf"><i class="ph-fill ph-file-pdf" aria-hidden="true"></i></div>
+                                <div class="doc-meta">
+                                    <h4>Ficha T├®cnica Oficial (HT)</h4>
+                                    <span>Descarga directa en PDF ┬À Certificada</span>
+                                </div>
+                            </a>
+                            <a href="https://wa.me/51914776669?text=Hola,%20solicito%20la%20Hoja%20de%20Seguridad%20(MSDS)%20de:%20REMOVEDOR%20DE%20├ôXIDO%20Z" target="_blank" rel="noopener" class="doc-card">
+                                <div class="doc-icon"><i class="ph-fill ph-shield-warning" aria-hidden="true"></i></div>
+                                <div class="doc-meta">
+                                    <h4>Hoja de Seguridad (HDS / MSDS)</h4>
+                                    <span>Solicitar copia oficial de seguridad</span>
+                                </div>
+                            </a>
+                            <a href="https://wa.me/51914776669?text=Hola,%20solicito%20el%20Certificado%20de%20Calidad%20de%20lote%20de:%20REMOVEDOR%20DE%20├ôXIDO%20Z" target="_blank" rel="noopener" class="doc-card">
+                                <div class="doc-icon"><i class="ph-fill ph-certificate" aria-hidden="true"></i></div>
+                                <div class="doc-meta">
+                                    <h4>Certificado de Calidad de Lote</h4>
+                                    <span>Emisi├│n por laboratorio de control</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- BANNER DE ASESOR├ìA T├ëCNICA -->
+        <div class="product-cta-banner">
+            <div>
+                <h3>┬┐Necesitas asesor├¡a t├®cnica para tu obra?</h3>
+                <p>Nuestros ingenieros especialistas te asesoran en la dosificaci├│n, rendimiento y aplicaci├│n directa de este y todos los productos de la l├¡nea Z Aditivos.</p>
+            </div>
+            <a href="https://wa.me/51914776669?text=Hola%20BS%20Per%C3%BA,%20necesito%20asesor%C3%ADa%20t%C3%A9cnica%20sobre:%20REMOVEDOR%20DE%20%C3%93XIDO%20Z" target="_blank" rel="noopener" class="btn-banner-wa">
+                <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i> Consultar a un Especialista
+            </a>
+        </div>
+
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer" id="contacto">
+        <div class="shell">
+            <div class="footer-grid">
+                <div class="footer-col footer-brand">
+                    <img class="brand-logo" src="img/logo_bs.png" alt="BS Per├║" width="180">
+                    <p>
+                        <strong>BUILDING SYSTEMS PER├Ü S.A.C.</strong><br>
+                        RUC: 20609793806<br>
+                        Av. Los Faisanes N┬░ 675, Urb. La Campi├▒a<br>
+                        Chorrillos, Lima ÔÇö Per├║
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com/bsp.peru/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="ph ph-instagram-logo" aria-hidden="true"></i></a>
+                        <a href="https://www.facebook.com/people/Bsperu/100090456091171/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="ph ph-facebook-logo" aria-hidden="true"></i></a>
+                        <a href="https://www.linkedin.com/company/bs-per%C3%BA/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="ph ph-linkedin-logo" aria-hidden="true"></i></a>
+                        <a href="https://www.tiktok.com/@bs_peru" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="ph ph-tiktok-logo" aria-hidden="true"></i></a>
+                        <a href="https://www.youtube.com/@bsperu-BSP" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="ph ph-youtube-logo" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Cont├íctanos</h4>
+                    <ul>
+                        <li><a href="https://wa.me/51914776669" target="_blank" rel="noopener">+51 914 776 669</a></li>
+                        <li><a href="mailto:bs.peru.marketing@bsperu.pe">bs.peru.marketing@bsperu.pe</a></li>
+                        <li>Lun a Vie ┬À 8:00 ÔÇô 17:30</li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Servicio al cliente</h4>
+                    <ul>
+                        <li><a href="/views/terminos-condiciones.html#aviso-legal">Aviso legal</a></li>
+                        <li><a href="/views/terminos-condiciones.html#politica-privacidad">Pol├¡tica de privacidad</a></li>
+                        <li><a href="/views/terminos-condiciones.html#terminos-condiciones-uso">T├®rminos y condiciones</a></li>
+                        <li><a href="https://respondo.pe/libro/building-systems-peru-s-a-c" target="_blank" rel="noopener">Libro de reclamaciones</a></li>
+                        <li><a href="/views/ubicacion.html">Sucursales</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; <span id="year">2026</span> Building Systems Per├║ S.A.C. ÔÇö Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Contacto Flotante: Redes Sociales encima del bot├│n de WhatsApp -->
+    <aside class="floating-contact-stack" aria-label="Canales de contacto y redes sociales">
+        <div class="floating-social-group">
+            <a href="https://www.facebook.com/people/Bsperu/100090456091171/" target="_blank" rel="noopener noreferrer" class="social-float-btn fb" aria-label="Facebook BS Per├║" title="Facebook">
+                <i class="ph-fill ph-facebook-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">Facebook</span>
+            </a>
+            <a href="https://www.instagram.com/bsp.peru/" target="_blank" rel="noopener noreferrer" class="social-float-btn ig" aria-label="Instagram BS Per├║" title="Instagram">
+                <i class="ph-fill ph-instagram-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">Instagram</span>
+            </a>
+            <a href="https://www.tiktok.com/@bs_peru?_t=ZS-90uDwonltem&_r=1" target="_blank" rel="noopener noreferrer" class="social-float-btn tk" aria-label="TikTok BS Per├║" title="TikTok">
+                <i class="ph-fill ph-tiktok-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">TikTok</span>
+            </a>
+            <a href="https://www.youtube.com/@bsperu-BSP" target="_blank" rel="noopener noreferrer" class="social-float-btn yt" aria-label="YouTube BS Per├║" title="YouTube">
+                <i class="ph-fill ph-youtube-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">YouTube</span>
+            </a>
+            <a href="https://www.linkedin.com/company/bs-per%C3%BA/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-float-btn li" aria-label="LinkedIn BS Per├║" title="LinkedIn">
+                <i class="ph-fill ph-linkedin-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">LinkedIn</span>
+            </a>
+        </div>
+        <a class="wa-float" id="waFloat" href="https://wa.me/51914776669" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Per├║" title="WhatsApp Oficial">
+            <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
+        </a>
+    </aside>
+
+    <!-- ============ L├ôGICA JAVASCRIPT ============ -->
+    <script>
+    (function () {
+        'use strict';
+
+        var WA_NUMBER = '51914776669';
+
+        /* 1. L├│gica del Acorde├│n interactivo */
+        var accHeaders = document.querySelectorAll('.accordion-header');
+        accHeaders.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var item = this.closest('.accordion-item');
+                var isExpanded = item.classList.contains('active');
+
+                // Si se desea cerrar otros al abrir uno (estilo acorde├│n ├║nico):
+                // accHeaders.forEach(function(b) { b.closest('.accordion-item').classList.remove('active'); b.setAttribute('aria-expanded', 'false'); });
+
+                if (isExpanded) {
+                    item.classList.remove('active');
+                    this.setAttribute('aria-expanded', 'false');
+                } else {
+                    item.classList.add('active');
+                    this.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        // Abrir el primer acorde├│n por defecto (Usos)
+        var firstItem = document.getElementById('itemUsos');
+        if (firstItem) {
+            firstItem.classList.add('active');
+            var firstBtn = firstItem.querySelector('.accordion-header');
+            if (firstBtn) firstBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        /* 2. Miniaturas de Galer├¡a */
+        var mainImg = document.getElementById('mainImg');
+        var thumbBtns = document.querySelectorAll('.thumb-btn');
+        thumbBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                thumbBtns.forEach(function (b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                var src = this.getAttribute('data-src');
+                if (src && mainImg) {
+                    mainImg.style.opacity = '0.3';
+                    setTimeout(function () {
+                        mainImg.src = src;
+                        mainImg.style.opacity = '1';
+                    }, 120);
+                }
+            });
+        });
+
+        /* 3. Men├║ m├│vil / Drawer */
+        var hamburgerBtn = document.getElementById('hamburgerBtn');
+        var drawerCloseBtn = document.getElementById('drawerCloseBtn');
+        var mobileDrawer = document.getElementById('mobileDrawer');
+        var drawerOverlay = document.getElementById('drawerOverlay');
+
+        function openDrawer() {
+            if (mobileDrawer) mobileDrawer.classList.add('open');
+            if (drawerOverlay) drawerOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer() {
+            if (mobileDrawer) mobileDrawer.classList.remove('open');
+            if (drawerOverlay) drawerOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        if (hamburgerBtn) hamburgerBtn.addEventListener('click', openDrawer);
+        if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+        if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+        /* 4. Navbar scroll shadow */
+        var navbar = document.getElementById('mainNav');
+        window.addEventListener('scroll', function () {
+            if (navbar) {
+                if (window.scrollY > 30) navbar.classList.add('scrolled');
+                else navbar.classList.remove('scrolled');
+            }
+        });
+
+        /* 5. Carga din├ímica si viene un par├ímetro ?sku= o ?p= en la URL */
+        var urlParams = new URLSearchParams(window.location.search);
+        var skuParam = urlParams.get('sku');
+        var nameParam = urlParams.get('p') || urlParams.get('nombre');
+
+        if (skuParam || nameParam) {
+            cargarDatosProducto(skuParam, nameParam);
+        }
+
+        function cargarDatosProducto(sku, nameQuery) {
+            var urls = ['/assets/Data/productos.json', 'assets/Data/productos.json'];
+            
+            function intentarFetch(index) {
+                if (index >= urls.length) return;
+                fetch(urls[index])
+                    .then(function (res) { return res.json(); })
+                    .then(function (catalog) {
+                        if (!Array.isArray(catalog)) return;
+                        var prod = null;
+                        if (sku) {
+                            prod = catalog.find(function (p) { return String(p.sku).trim() === String(sku).trim(); });
+                        }
+                        if (!prod && nameQuery) {
+                            var nq = nameQuery.toLowerCase().trim();
+                            prod = catalog.find(function (p) {
+                                return (p.nombre && p.nombre.toLowerCase().indexOf(nq) !== -1);
+                            });
+                        }
+                        if (prod) {
+                            aplicarProductoDinamico(prod);
+                        }
+                    })
+                    .catch(function () {
+                        intentarFetch(index + 1);
+                    });
+            }
+            intentarFetch(0);
+        }
+
+        function aplicarProductoDinamico(p) {
+            var prodTitle = document.getElementById('prodTitle');
+            var prodSubtitle = document.getElementById('prodSubtitle');
+            var prodShortDesc = document.getElementById('prodShortDesc');
+            var mainImg = document.getElementById('mainImg');
+            var breadProducto = document.getElementById('breadProducto');
+            var breadCategoria = document.getElementById('breadCategoria');
+            var btnCotizarWa = document.getElementById('btnCotizarWa');
+            var btnFichaPdf = document.getElementById('btnFichaPdf');
+            var pageTitle = document.getElementById('pageTitle');
+            var thumbsContainer = document.getElementById('thumbsContainer');
+
+            if (prodTitle) prodTitle.textContent = p.nombre;
+            if (breadProducto) breadProducto.textContent = p.nombre;
+            if (pageTitle) pageTitle.textContent = p.nombre + ' | Building Systems Per├║';
+
+            var catTexto = p.descripcion || p.categoria || 'Soluciones Qu├¡micas para la Construcci├│n';
+            if (prodSubtitle) prodSubtitle.textContent = catTexto;
+            if (breadCategoria) breadCategoria.textContent = catTexto;
+
+            if (p.descripcion_larga && prodShortDesc) {
+                prodShortDesc.textContent = p.descripcion_larga;
+            } else if (p.descripcion && prodShortDesc) {
+                prodShortDesc.textContent = p.descripcion;
+            }
+
+            if (p.imagen && mainImg) {
+                mainImg.src = p.imagen;
+                mainImg.alt = p.nombre;
+            }
+
+            // Galer├¡a de miniaturas din├ímicas
+            if (thumbsContainer && p.sku !== '110014455') {
+                var imgs = [];
+                if (p.imagen) imgs.push(p.imagen);
+                if (p.miniaturas) {
+                    ['miniatura1', 'miniatura2', 'miniatura3', 'miniatura4'].forEach(function(k) {
+                        if (p.miniaturas[k] && imgs.indexOf(p.miniaturas[k]) === -1) {
+                            imgs.push(p.miniaturas[k]);
+                        }
+                    });
+                }
+                if (imgs.length > 1) {
+                    thumbsContainer.innerHTML = '';
+                    thumbsContainer.style.display = 'flex';
+                    imgs.forEach(function(src, idx) {
+                        var btn = document.createElement('button');
+                        btn.className = 'thumb-btn' + (idx === 0 ? ' active' : '');
+                        btn.setAttribute('data-src', src);
+                        btn.setAttribute('aria-label', 'Vista ' + (idx + 1));
+                        btn.innerHTML = '<img src="' + src + '" alt="">';
+                        btn.addEventListener('click', function() {
+                            thumbsContainer.querySelectorAll('.thumb-btn').forEach(function(b) { b.classList.remove('active'); });
+                            this.classList.add('active');
+                            if (mainImg) {
+                                mainImg.style.opacity = '0.3';
+                                setTimeout(function() {
+                                    mainImg.src = src;
+                                    mainImg.style.opacity = '1';
+                                }, 120);
+                            }
+                        });
+                        thumbsContainer.appendChild(btn);
+                    });
+                } else {
+                    thumbsContainer.style.display = 'none';
+                }
+            }
+
+            // Ficha t├®cnica PDF
+            if (p.ficha_pdf && btnFichaPdf) {
+                btnFichaPdf.href = p.ficha_pdf;
+                btnFichaPdf.style.display = 'inline-flex';
+                var docFicha = document.getElementById('docLinkFicha');
+                if (docFicha) docFicha.href = p.ficha_pdf;
+            } else if (btnFichaPdf && !p.ficha_pdf) {
+                btnFichaPdf.style.display = 'none';
+            }
+
+            // Presentaci├│n din├ímica en envases
+            if (p.peso2 && p.sku !== '110014455') {
+                var chipsWrap = document.getElementById('chipsEnvases');
+                if (chipsWrap) {
+                    chipsWrap.innerHTML = '<button type="button" class="chip-envase active"><span>' + 
+                        (p.nombre.indexOf(' X ') !== -1 ? p.nombre.split(' X ')[1] : 'Presentaci├│n est├índar') + 
+                        '</span><span class="peso">Aprox. ' + p.peso2 + ' kg</span></button>';
+                }
+            }
+
+            // Acorde├│n Usos / Aplicaci├│n din├ímico si el producto no es removedor
+            if (p.sku !== '110014455') {
+                var textUsos = document.getElementById('textUsos');
+                if (textUsos && p.descripcion_larga) {
+                    textUsos.innerHTML = '<ul><li>' + p.descripcion_larga + '</li><li>Apto para obras de construcci├│n civil, acabados e infraestructura seg├║n especificaci├│n de cat├ílogo.</li><li>Consulte a nuestro departamento t├®cnico para requerimientos espec├¡ficos de dosificaci├│n en obra.</li></ul>';
+                }
+            }
+
+            // WhatsApp link personalizado
+            var waMsg = 'Hola Building Systems Per├║, deseo cotizar el producto: ' + p.nombre + (p.sku ? ' (SKU: ' + p.sku + ')' : '');
+            var waUrl = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
+            if (btnCotizarWa) btnCotizarWa.href = waUrl;
+
+            // Actualizaci├│n completa de Metadatos SEO, Canonical, OpenGraph y Schema.org
+            var tituloCompleto = p.nombre + ' | Z Aditivos Oficial - Building Systems Per├║';
+            document.title = tituloCompleto;
+            if (pageTitle) pageTitle.textContent = tituloCompleto;
+
+            var descLimpia = p.descripcion_larga || p.descripcion || 'Soluciones qu├¡micas especializadas para concreto y construcci├│n en Per├║.';
+            var metaDesc = 'Venta de ' + p.nombre + (p.sku ? ' (' + p.sku + ')' : '') + ' original de Z Aditivos en Per├║. ' + descLimpia.replace(/\s+/g, ' ').substring(0, 140) + '... Cotiza con Building Systems Per├║.';
+            var mDesc = document.getElementById('metaDescription') || document.querySelector('meta[name="description"]');
+            if (mDesc) mDesc.setAttribute('content', metaDesc);
+
+            var prodCanonicalUrl = 'https://bsperu.pe/producto.html?sku=' + encodeURIComponent(p.sku);
+            var canLink = document.getElementById('canonicalLink');
+            if (canLink && p.sku) canLink.setAttribute('href', prodCanonicalUrl);
+
+            var imgAbsoluta = 'https://bsperu.pe/img/impermeabilizantes.jpg';
+            if (p.imagen) {
+                imgAbsoluta = p.imagen.startsWith('http') ? p.imagen : 'https://bsperu.pe' + (p.imagen.startsWith('/') ? '' : '/') + p.imagen;
+            }
+
+            var setProp = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) el.setAttribute('content', val);
+            };
+            setProp('ogTitle', p.nombre + ' | Z Aditivos Oficial - BS Per├║');
+            setProp('ogDesc', metaDesc);
+            setProp('ogUrl', prodCanonicalUrl);
+            setProp('ogImage', imgAbsoluta);
+            setProp('twTitle', p.nombre + ' | Z Aditivos Oficial - BS Per├║');
+            setProp('twDesc', metaDesc);
+            setProp('twImage', imgAbsoluta);
+
+            var jsonLdEl = document.getElementById('productSchemaJson');
+            if (jsonLdEl) {
+                var schema = {
+                    '@context': 'https://schema.org/',
+                    '@type': 'Product',
+                    'name': p.nombre,
+                    'image': [imgAbsoluta],
+                    'description': p.descripcion_larga || p.descripcion || metaDesc,
+                    'sku': p.sku || '',
+                    'mpn': p.sku || '',
+                    'brand': {
+                        '@type': 'Brand',
+                        'name': p.marca || 'Z Aditivos'
+                    },
+                    'category': p.categoria || catTexto,
+                    'offers': {
+                        '@type': 'Offer',
+                        'url': prodCanonicalUrl,
+                        'priceCurrency': 'PEN',
+                        'price': p.precio ? String(p.precio) : '0.00',
+                        'priceValidUntil': '2027-12-31',
+                        'itemCondition': 'https://schema.org/NewCondition',
+                        'availability': (p.disponible !== false) ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
+                        'seller': {
+                            '@type': 'Organization',
+                            'name': 'Building Systems Per├║',
+                            'url': 'https://bsperu.pe'
+                        }
+                    }
+                };
+                jsonLdEl.textContent = JSON.stringify(schema, null, 2);
+            }
+        }
+
+        // A├▒o en footer
+        var yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    })();
+    </script>
+</body>
+</html>
