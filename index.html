@@ -1100,10 +1100,7 @@
                     </button>
                 </div>
                 <div class="filter-extras">
-                    <label class="switch">
-                        <input type="checkbox" id="fDisponible">
-                        Mostrar solo productos disponibles
-                    </label>
+                    
                     <p class="result-count" id="resultCount" aria-live="polite" role="status">Cargando catálogo…</p>
                 </div>
             </div>
@@ -1495,9 +1492,7 @@
             var img = p.imagen
                 ? '<img src="' + esc(p.imagen) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" onerror="this.closest(\'.p-img\').classList.add(\'no-image\')">'
                 : '';
-            var badge = p.disponible
-                ? '<span class="p-badge ok">Disponible</span>'
-                : '<span class="p-badge off">Bajo pedido</span>';
+            
             var desc = p.descripcion || 'Consulte la ficha técnica o escríbanos para conocer el detalle de este producto.';
 
             var acciones = '<button type="button" class="p-btn primary" data-detalle="' + p.idx + '">' +
@@ -1514,7 +1509,7 @@
             var idxDelay = (typeof i === 'number') ? (i % 24) : 0;
 
             return '<article class="product-card card-entrance' + (p.disponible ? '' : ' unavailable') + '" style="--i:' + idxDelay + ';">' +
-                '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + badge + img +
+                '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
                     '<span class="fallback"><i class="ph ph-image-square" aria-hidden="true"></i><span>Sin imagen</span></span>' +
                 '</div>' +
                 '<div class="p-body">' +
@@ -1610,8 +1605,7 @@
             var specs = [
                 { k: 'SKU', v: p.sku },
                 { k: 'Presentación', v: p.presentacion },
-                { k: 'Familia', v: p.familiaNombre },
-                { k: 'Disponibilidad', v: p.disponible ? 'Disponible' : 'Bajo pedido' }
+                { k: 'Familia', v: p.familiaNombre }
             ];
             if (p.peso) specs.push({ k: 'Peso neto', v: p.peso + ' kg' });
             $('#modalSpecs').innerHTML = specs.map(function (s) {
@@ -1664,7 +1658,6 @@
             estado.presentacion = ''; estado.soloDisp = false; estado.orden = 'az';
             $('#fSearch').value = ''; $('#fFamilia').value = '';
             $('#fPresentacion').value = ''; $('#fOrden').value = 'az';
-            $('#fDisponible').checked = false;
             aplicar();
         }
 
@@ -1866,7 +1859,6 @@
             });
             $('#fPresentacion').addEventListener('change', function (e) { estado.presentacion = e.target.value; aplicar(); });
             $('#fOrden').addEventListener('change', function (e) { estado.orden = e.target.value; aplicar(); });
-            $('#fDisponible').addEventListener('change', function (e) { estado.soloDisp = e.target.checked; aplicar(); });
             $('#btnClear').addEventListener('click', limpiar);
             $('#btnLoadMore').addEventListener('click', function () {
                 estado.visibles += PAGE_SIZE;
@@ -1958,3 +1950,8 @@
     </script>
 </body>
 </html>
+
+
+
+
+
