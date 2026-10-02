@@ -1016,35 +1016,7 @@ if ($productoActual) {
             text-align: center; font-size: 12px; color: var(--text-muted);
         }
 
-        /* ============ WHATSAPP FLOTANTE ============ */
-        .wa-float {
-            position: fixed; bottom: 30px; left: 30px; z-index: 900;
-            width: 56px; height: 56px; border-radius: 50%;
-            background: #25d366; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 30px; text-decoration: none;
-            box-shadow: 0 10px 26px rgba(0,0,0,0.35);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
-        }
-        .wa-float:hover {
-            transform: scale(1.12);
-            box-shadow: 0 14px 34px rgba(37, 211, 102, 0.45);
-        }
-        .wa-float::before {
-            content: '';
-            position: absolute;
-            inset: -5px;
-            border-radius: 50%;
-            border: 2px solid #25d366;
-            opacity: 0.85;
-            animation: waRadar 2.5s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
-            pointer-events: none;
-        }
-        @keyframes waRadar {
-            0% { transform: scale(0.95); opacity: 0.85; }
-            70% { transform: scale(1.35); opacity: 0; }
-            100% { transform: scale(1.35); opacity: 0; }
-        }
+        /* (Legacy wa-float styles unified in floating-contact-stack) */
 
         /* ============ ANIMACIONES ============ */
         .fade-up { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -1101,7 +1073,6 @@ if ($productoActual) {
             .modal-specs { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; text-align: center; }
             .footer-social { justify-content: center; }
-            .wa-float { bottom: 22px; left: 22px; width: 50px; height: 50px; font-size: 26px; }
         }
         @media (max-width: 470px) {
             .familias-grid { grid-template-columns: 1fr; }
@@ -1618,22 +1589,33 @@ if ($productoActual) {
             position: relative;
             bottom: auto;
             right: auto;
+            left: auto;
             width: 58px;
             height: 58px;
             border-radius: 50%;
-            background: var(--wa-color);
-            color: #ffffff;
+            background: #25d366 !important;
+            background-color: #25d366 !important;
+            color: #ffffff !important;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 32px;
             text-decoration: none;
             box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, background-color 0.3s;
+        }
+        .wa-float i {
+            color: #ffffff !important;
+            font-size: 32px !important;
+            line-height: 1;
+            display: inline-block;
         }
         .wa-float:hover {
+            background: #1ebe5d !important;
+            background-color: #1ebe5d !important;
             transform: scale(1.12);
-            box-shadow: 0 8px 26px rgba(37, 211, 102, 0.55);
+            box-shadow: 0 8px 26px rgba(37, 211, 102, 0.65);
+            color: #ffffff !important;
         }
         .wa-float::before {
             content: '';
@@ -2127,6 +2109,7 @@ if ($productoActual) {
         </div>
         <a class="wa-float" id="waFloat" href="https://wa.me/51914776669" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú" title="WhatsApp Oficial">
             <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
+            <span class="tooltip-label" style="right: calc(100% + 16px);">WhatsApp</span>
         </a>
     </aside>
 

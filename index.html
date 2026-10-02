@@ -945,19 +945,29 @@
             width: 58px;
             height: 58px;
             border-radius: 50%;
-            background: var(--wa-color);
-            color: #ffffff;
+            background: #25d366 !important;
+            background-color: #25d366 !important;
+            color: #ffffff !important;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 32px;
             text-decoration: none;
             box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, background-color 0.3s;
+        }
+        .wa-float i {
+            color: #ffffff !important;
+            font-size: 32px !important;
+            line-height: 1;
+            display: inline-block;
         }
         .wa-float:hover {
+            background: #1ebe5d !important;
+            background-color: #1ebe5d !important;
             transform: scale(1.12);
-            box-shadow: 0 8px 26px rgba(37, 211, 102, 0.55);
+            box-shadow: 0 8px 26px rgba(37, 211, 102, 0.65);
+            color: #ffffff !important;
         }
         .wa-float::before {
             content: '';
