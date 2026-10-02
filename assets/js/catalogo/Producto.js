@@ -624,7 +624,13 @@ function setupSearchInput(inputSelector, formSelector, suggestionsSelector) {
 // =============================
 function getSkuFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    return params.get("sku");
+    const sku = params.get("sku");
+    if (sku) return sku;
+    const slug = params.get("slug");
+    if (slug) return slug;
+    const pathMatch = window.location.pathname.match(/\/producto\/([a-zA-Z0-9_-]+)/i);
+    if (pathMatch && pathMatch[1]) return pathMatch[1];
+    return null;
 }
 
 // =============================
@@ -684,9 +690,13 @@ function cargarProductos() {
 }
 
 
-function encontrarProducto(sku) {
-  const cleanSku = String(sku).trim();
-  return window.productos.find(p => String(p.sku).trim() === cleanSku);
+function encontrarProducto(identifier) {
+  if (!identifier) return null;
+  const clean = String(identifier).trim().toLowerCase();
+  return window.productos.find(p => 
+    (p.slug && p.slug.toLowerCase() === clean) ||
+    (p.sku && String(p.sku).trim().toLowerCase() === clean)
+  );
 }
 
 
@@ -1026,7 +1036,9 @@ function renderSimilares() {
     $$(".btn-ver-similar", cont).forEach(btn => {
         btn.addEventListener("click", () => {
             const sku = btn.dataset.sku;
-            window.location.href = `/producto.html?sku=${encodeURIComponent(sku)}`;
+            const prod = (window.productos || []).find(p => String(p.sku) === String(sku));
+            const targetUrl = (prod && prod.slug) ? `/producto/${encodeURIComponent(prod.slug)}` : `/producto.html?sku=${encodeURIComponent(sku)}`;
+            window.location.href = targetUrl;
         });
     });
 

@@ -1127,7 +1127,9 @@ function renderCatalogoProductos(selector = '.catalogoProductos', pagina = 1, ca
   $$('.btn-ver', cont).forEach(btn => {
     btn.addEventListener('click', () => {
       const sku = btn.dataset.sku;
-      window.location.href = `/producto.html?sku=${sku}`;
+      const prod = (window.productos || []).find(p => String(p.sku) === String(sku));
+      const targetUrl = (prod && prod.slug) ? `/producto/${encodeURIComponent(prod.slug)}` : `/producto.html?sku=${sku}`;
+      window.location.href = targetUrl;
     });
   });
 
@@ -1138,7 +1140,9 @@ function renderCatalogoProductos(selector = '.catalogoProductos', pagina = 1, ca
       const card = img.closest('.producto-card');
       const sku = card ? card.querySelector('.btn-ver')?.dataset.sku : null;
       if (sku) {
-        window.location.href = `/producto.html?sku=${sku}`;
+        const prod = (window.productos || []).find(p => String(p.sku) === String(sku));
+        const targetUrl = (prod && prod.slug) ? `/producto/${encodeURIComponent(prod.slug)}` : `/producto.html?sku=${sku}`;
+        window.location.href = targetUrl;
       }
     });
   });
@@ -1522,9 +1526,10 @@ function setupCatalogSearch(inputSelector, formSelector, suggestionsSelector) {
       );
 
     suggestions.innerHTML = matches.slice(0, 6).map(p => `
-      <a href="/producto.html?sku=${p.sku}"
+      <a href="${p.slug ? `/producto/${encodeURIComponent(p.slug)}` : `/producto.html?sku=${p.sku}`}"
          class="list-group-item list-group-item-action d-flex align-items-center search-suggestion"
          data-sku="${p.sku}"
+         data-slug="${p.slug || ''}"
          style="padding: 10px 12px; border-bottom: 1px solid #eee;">
          
         <img src="${p.imagenes?.[0] || ''}"
@@ -1557,7 +1562,8 @@ function setupCatalogSearch(inputSelector, formSelector, suggestionsSelector) {
         );
       if (matches.length === 1) {
         // Ir directo al producto si hay una sola coincidencia
-        window.location.href = `/producto.html?sku=${matches[0].sku}`;
+        const pMatch = matches[0];
+        window.location.href = pMatch.slug ? `/producto/${encodeURIComponent(pMatch.slug)}` : `/producto.html?sku=${pMatch.sku}`;
       } else {
         // Ir al catálogo con query para mostrar resultados
         window.location.href = `/views/catalogo.html?q=${encodeURIComponent(q)}`;
@@ -1571,8 +1577,9 @@ function setupCatalogSearch(inputSelector, formSelector, suggestionsSelector) {
 
     e.preventDefault();
     const sku = a.dataset.sku;
+    const slug = a.dataset.slug;
 
-    window.location.href = `/producto.html?sku=${sku}`;
+    window.location.href = slug ? `/producto/${encodeURIComponent(slug)}` : `/producto.html?sku=${sku}`;
   });
 
   document.addEventListener('click', (e) => {
@@ -1610,6 +1617,7 @@ function cargarProductosDesdeJSON() {
 
       return {
         sku: String(p.sku),
+        slug: p.slug || "",
         marca: p.marca || "",
         nombre: p.nombre,
         categoria: p.categoria,

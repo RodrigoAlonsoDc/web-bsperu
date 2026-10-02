@@ -17,7 +17,8 @@
     "ficha_pdf": "/assets/img%20catalogo/PEGAMENTO%20Z%20ADITIVOS%20GRIS%20INT%20X%2025%20KG/PEGAMENTO%20Z%20ADITIVOS%20GRIS%20INT%20X%2025%20KG.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "pegamento-z-aditivos-gris-int-x-25-kg"
   },
   {
     "sku": "110014699",
@@ -37,7 +38,8 @@
     "ficha_pdf": "/assets/img%20catalogo/PEGAMENTO%20Z%20ADITIVOS%20BCO%20EXT%20X25%20KG/PEGAMENTO%20Z%20ADITIVOS%20BCO%20EXT%20X25%20KG.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "pegamento-z-aditivos-bco-ext-x-25-kg"
   },
   {
     "sku": "110014697",
@@ -57,7 +59,8 @@
     "ficha_pdf": "/assets/img%20catalogo/PEGAMENTO%20Z%20ADITIVOS%20BCO%20FLEX%20X25%20KG/PEGAMENTO%20Z%20ADITIVOS%20BCO%20FLEX%20X25%20KG.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "pegamento-z-aditivos-bco-flex-x-25-kg"
   },
   {
     "sku": "110014292",
@@ -77,7 +80,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "aircon-z-x-5-gal"
   },
   {
     "sku": "110014371",
@@ -97,7 +101,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "aircon-z-x-55-gal"
   },
   {
     "sku": "110014294",
@@ -117,7 +122,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "aircon-z-x-gal"
   },
   {
     "sku": "110014480",
@@ -137,7 +143,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "alquitran-z-x-5-gal"
   },
   {
     "sku": "110014355",
@@ -157,7 +164,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "alquitran-z-x-55-gal"
   },
   {
     "sku": "110014469",
@@ -177,7 +185,8 @@
     "ficha_pdf": "/assets/img%20catalogo/ASFALTO%20LIQUIDO%20X%205%20GAL/ASFALTO%20LIQUIDO%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "asfalto-liquido-z-x-5-gal"
   },
   {
     "sku": "110014319",
@@ -197,7 +206,8 @@
     "ficha_pdf": "/assets/img%20catalogo/ASFALTO%20LIQUIDO%20X%205%20GAL/ASFALTO%20LIQUIDO%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "asfalto-liquido-z-x-55-gal"
   },
   {
     "sku": "110014261",
@@ -217,7 +227,8 @@
     "ficha_pdf": "/assets/img%20catalogo/ASFALTO%20LIQUIDO%20X%205%20GAL/ASFALTO%20LIQUIDO%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "asfalto-liquido-z-x-gal"
   },
   {
     "sku": "110014501",
@@ -237,7 +248,8 @@
     "ficha_pdf": "/assets/img%20catalogo/CEMENTICIO%20Z%20GRIS%20X%2025%20KG%20%2B%20Z%20RESINA/CEMENTICIO%20Z%20GRIS%20X%2025%20KG%20%2B%20Z%20RESINA.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "cementicio-z-blanco-x-10-kg-z-resina-x-jgo"
   },
   {
     "sku": "110014367",
@@ -257,7 +269,8 @@
     "ficha_pdf": "/assets/img%20catalogo/CEMENTICIO%20Z%20GRIS%20X%2025%20KG%20%2B%20Z%20RESINA/CEMENTICIO%20Z%20GRIS%20X%2025%20KG%20%2B%20Z%20RESINA.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "cementicio-z-gris-x-25-kg-z-resina-juego"
   },
   {
     "sku": "110014520",
@@ -277,7 +290,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HT%20-%20CRISTAL%20Z_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "cristal-z-x-5-gal"
   },
   {
     "sku": "110015451",
@@ -297,7 +311,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "cristal-z-x-55-gal"
   },
   {
     "sku": "110014456",
@@ -317,7 +332,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "cristal-z-x-gal"
   },
   {
     "sku": "110014458",
@@ -337,7 +353,8 @@
     "ficha_pdf": "/assets/img%20catalogo/CURET%20Z%20BLANCO%20CON%20PIG.%20X%205%20GAL/CURET%20Z%20BLANCO%20CON%20PIG.%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "curet-z-blanco-con-pig-x-5-gal"
   },
   {
     "sku": "110014468",
@@ -357,7 +374,8 @@
     "ficha_pdf": "/assets/img%20catalogo/CURET%20Z%20BLANCO%20CON%20PIG.%20X%205%20GAL/CURET%20Z%20BLANCO%20CON%20PIG.%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "curet-z-blanco-con-pig-x-55-gal"
   },
   {
     "sku": "110014376",
@@ -377,7 +395,8 @@
     "ficha_pdf": "/assets/img%20catalogo/CURET%20Z%20BLANCO%20CON%20PIG.%20X%205%20GAL/CURET%20Z%20BLANCO%20CON%20PIG.%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "curet-z-blanco-con-pig-x-gal"
   },
   {
     "sku": "110014629",
@@ -397,7 +416,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "imprimante-z-x-5-gal"
   },
   {
     "sku": "110014611",
@@ -417,7 +437,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "imprimante-z-x-55-gal"
   },
   {
     "sku": "110014599",
@@ -437,7 +458,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "imprimante-z-x-gal"
   },
   {
     "sku": "110014342",
@@ -457,7 +479,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "imprimante-zp-x-gal-ab"
   },
   {
     "sku": "110014569",
@@ -477,7 +500,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "imprimante-zpm-x-gal"
   },
   {
     "sku": "110014453",
@@ -497,7 +521,8 @@
     "ficha_pdf": "/assets/img%20catalogo/MATE%20Z%20X%205%20GAL/MATE%20Z%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "mate-z-x-5-gal"
   },
   {
     "sku": "110015090",
@@ -517,7 +542,8 @@
     "ficha_pdf": "/assets/img%20catalogo/MATE%20Z%20X%205%20GAL/MATE%20Z%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "mate-z-x-55-gal"
   },
   {
     "sku": "110014323",
@@ -537,7 +563,8 @@
     "ficha_pdf": "https://drive.google.com/file/d/1BG4OJNGvRhNJ6T44UbTTIZ57xQrGHJXr/view?usp=drive_link",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "mate-z-x-gal"
   },
   {
     "sku": "110014504",
@@ -557,7 +584,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HT%20-%20REMOVEDOR%20DE%20CONCRETO%20Z_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "removedor-de-concreto-z-x-14-gal"
   },
   {
     "sku": "110014503",
@@ -577,7 +605,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HT%20-%20REMOVEDOR%20DE%20CONCRETO%20Z_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "removedor-de-concreto-z-x-5-gal"
   },
   {
     "sku": "110014553",
@@ -597,7 +626,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HT%20-%20REMOVEDOR%20DE%20CONCRETO%20Z_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "removedor-de-concreto-z-x-55-gal"
   },
   {
     "sku": "110014516",
@@ -617,7 +647,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HT%20-%20REMOVEDOR%20DE%20CONCRETO%20Z_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "removedor-de-concreto-z-x-gl"
   },
   {
     "sku": "110014455",
@@ -637,7 +668,8 @@
     "ficha_pdf": "https://drive.google.com/file/d/1_phLUi7wuY8ht2VyYpxBjjWL7E2grOfl/view?usp=drive_link",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "removedor-de-oxido-z-x-5-gal"
   },
   {
     "sku": "110014511",
@@ -657,7 +689,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-03/HT%20-%20REMOVEDOR%20DE%20OXIDO.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "removedor-de-oxido-z-x-55-gal"
   },
   {
     "sku": "110014470",
@@ -677,7 +710,8 @@
     "ficha_pdf": "https://drive.google.com/file/d/1nkH02lKjdQ2UVt7sfnoaDI1C_-QUKxzZ/view?usp=drive_link",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "removedor-de-oxido-z-x-gal"
   },
   {
     "sku": "110014475",
@@ -697,7 +731,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-09/HT%20-%20SEPARADORES%20DE%20CONCRETO_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "sep-concretop-de-fierro-20-cm-x-200-uni"
   },
   {
     "sku": "110014460",
@@ -717,7 +752,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-09/HT%20-%20SEPARADORES%20DE%20CONCRETO_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "sep-concretop-de-fierro-25-cm-x-100-uni"
   },
   {
     "sku": "110014449",
@@ -737,7 +773,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-09/HT%20-%20SEPARADORES%20DE%20CONCRETO_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "sep-concretop-de-fierro-3-cm-x-100-uni"
   },
   {
     "sku": "110014467",
@@ -757,7 +794,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-09/HT%20-%20SEPARADORES%20DE%20CONCRETO_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "sep-concretop-de-fierro-35-cm-x-100-uni"
   },
   {
     "sku": "110014484",
@@ -777,7 +815,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-09/HT%20-%20SEPARADORES%20DE%20CONCRETO_V03.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "sep-concretop-de-fierro-4-cm-x-100-uni"
   },
   {
     "sku": "110014506",
@@ -797,7 +836,8 @@
     "ficha_pdf": "/assets/img%20catalogo/SOLVENTE%20ZP%20X%205%20GAL/SOLVENTE%20ZP%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "solvente-z-x-5-gal"
   },
   {
     "sku": "110014505",
@@ -817,7 +857,8 @@
     "ficha_pdf": "/assets/img%20catalogo/SOLVENTE%20ZP%20X%205%20GAL/SOLVENTE%20ZP%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "solvente-z-x-55-gal"
   },
   {
     "sku": "110014507",
@@ -837,7 +878,8 @@
     "ficha_pdf": "/assets/img%20catalogo/SOLVENTE%20ZP%20X%205%20GAL/SOLVENTE%20ZP%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "solvente-z-x-gal"
   },
   {
     "sku": "110014606",
@@ -857,7 +899,8 @@
     "ficha_pdf": "/assets/img%20catalogo/SOLVENTE%20ZP%20X%205%20GAL/SOLVENTE%20ZP%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "solvente-zp-x-5-gal"
   },
   {
     "sku": "110014508",
@@ -877,7 +920,8 @@
     "ficha_pdf": "/assets/img%20catalogo/SOLVENTE%20ZP%20X%205%20GAL/SOLVENTE%20ZP%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "solvente-zp-x-55-gal"
   },
   {
     "sku": "110014703",
@@ -897,7 +941,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HT%20-%20WATERSTOP%20RX%20101_V02.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "water-stop-z-rx-101-pegamento-x-30-ml"
   },
   {
     "sku": "110014559",
@@ -917,7 +962,8 @@
     "ficha_pdf": "https://drive.google.com/file/d/1BG4OJNGvRhNJ6T44UbTTIZ57xQrGHJXr/view?usp=drive_link",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-bitumen-x-5-gal"
   },
   {
     "sku": "110014536",
@@ -937,7 +983,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-bitumen-x-55-gal"
   },
   {
     "sku": "110014537",
@@ -957,7 +1004,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-bitumen-x-gal"
   },
   {
     "sku": "110014446",
@@ -977,7 +1025,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-cron-x-1000-l"
   },
   {
     "sku": "110014489",
@@ -997,7 +1046,8 @@
     "ficha_pdf": "https://drive.google.com/file/d/1qp0V-DKTuwH5ovtuobgZm9_sJPC18kiJ/view?usp=drive_link",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-cron-x-5-gal"
   },
   {
     "sku": "110014481",
@@ -1017,7 +1067,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-cron-x-55-gal"
   },
   {
     "sku": "110014437",
@@ -1037,7 +1088,8 @@
     "ficha_pdf": "https://drive.google.com/file/d/15B-nljnLHTkP8ETDsPaRISLy75aRv_Vt/view?usp=drive_link",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-cron-x-gal"
   },
   {
     "sku": "110014954",
@@ -1057,7 +1109,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FIBRA%20PP%20X%204.8%20KG%20-12MM/Z%20FIBRA%20PP%20X%204.8%20KG%20-12MM.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fibra-pp-x-48-kg-12mm"
   },
   {
     "sku": "610005544",
@@ -1077,7 +1130,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLEX%20POLIURETANO%20GRIS%2030-40%20(MANGA%20600ML)/Z%20FIBRA%20PP%20X%204.8%20KG%20-12MM.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20FLEX%2030-40.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-flex-poliuretano-gris-30-40-manga-600ml"
   },
   {
     "sku": "110014575",
@@ -1097,7 +1151,8 @@
     "ficha_pdf": "https://drive.google.com/file/d/1MRb4XHDNLk8A6asWJmdRouq_ORL1K_ai/view?usp=drive_link",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20FLEX%20POLIURETANO%20A%2BB%20V03.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-flex-poliuretano-gris-x-gal-ab"
   },
   {
     "sku": "110014347",
@@ -1117,7 +1172,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20IR%20X%205%20GAL/Z%20FLUIDIZANTE%20IR%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-fluidizante-ir-x-5-gal"
   },
   {
     "sku": "110014254",
@@ -1137,7 +1193,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20IR%20X%205%20GAL/Z%20FLUIDIZANTE%20IR%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fluidizante-ir-x-55-gal"
   },
   {
     "sku": "110014324",
@@ -1157,7 +1214,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20IR%20X%205%20GAL/Z%20FLUIDIZANTE%20IR%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fluidizante-ir-x-gal"
   },
   {
     "sku": "110014325",
@@ -1177,7 +1235,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20IR%20X%205%20GAL/Z%20FLUIDIZANTE%20IR%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fluidizante-re-x-55-gal"
   },
   {
     "sku": "110014259",
@@ -1197,7 +1256,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20IR%20X%205%20GAL/Z%20FLUIDIZANTE%20IR%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fluidizante-re-x-gal"
   },
   {
     "sku": "110014274",
@@ -1217,7 +1277,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20SR%201000%20X%205%20GAL/Z%20FLUIDIZANTE%20SR%201000%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-fluidizante-sr-1000-x-5-gal"
   },
   {
     "sku": "110014574",
@@ -1237,7 +1298,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20SR%201000%20X%205%20GAL/Z%20FLUIDIZANTE%20SR%201000%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fluidizante-sr-1000-x-55-gal"
   },
   {
     "sku": "110014287",
@@ -1257,7 +1319,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FLUIDIZANTE%20SR%201000%20X%205%20GAL/Z%20FLUIDIZANTE%20SR%201000%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-fluidizante-sr-1000-x-gal"
   },
   {
     "sku": "110014393",
@@ -1277,7 +1340,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-fluidizante-sr-x-5-gal"
   },
   {
     "sku": "110014300",
@@ -1297,7 +1361,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fluidizante-sr-x-55-gal"
   },
   {
     "sku": "110014627",
@@ -1317,7 +1382,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FRAGUA%20%233%20X%205%20GAL/Z%20FRAGUA%20%233%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-fragua-3-x-5-gal"
   },
   {
     "sku": "110014582",
@@ -1337,7 +1403,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FRAGUA%20%233%20X%205%20GAL/Z%20FRAGUA%20%233%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fragua-3-x-55-gal"
   },
   {
     "sku": "110014583",
@@ -1357,7 +1424,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FRAGUA%20%233%20X%205%20GAL/Z%20FRAGUA%20%233%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fragua-3-x-gal"
   },
   {
     "sku": "110014621",
@@ -1377,7 +1445,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FRAGUA%20%235%20X%205%20GAL/Z%20FRAGUA%20%235%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-fragua-5-x-5-gal"
   },
   {
     "sku": "110014639",
@@ -1397,7 +1466,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20FRAGUA%20%235%20X%205%20GAL/Z%20FRAGUA%20%235%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-fragua-5-x-55-gal"
   },
   {
     "sku": "110014622",
@@ -1417,7 +1487,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20GROUT%20X%2030%20KG/Z%20GROUT%20X%2030%20KG.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20GROUT.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-grout-x-30-kg"
   },
   {
     "sku": "110014462",
@@ -1437,7 +1508,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20I%20LIQUIDO%20X%20GAL/Z%20I%20LIQUIDO%20X%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-i-liquido-x-5-gal"
   },
   {
     "sku": "110014278",
@@ -1457,7 +1529,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20I%20LIQUIDO%20X%20GAL/Z%20I%20LIQUIDO%20X%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-i-liquido-x-55-gal"
   },
   {
     "sku": "110014279",
@@ -1477,7 +1550,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20I%20LIQUIDO%20X%20GAL/Z%20I%20LIQUIDO%20X%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-i-liquido-x-gal"
   },
   {
     "sku": "110014473",
@@ -1497,7 +1571,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20I%20POLVO%20X%20KG/Z%20I%20POLVO%20X%20KG.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z1%20POLVO.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-i-polvo-x-kg"
   },
   {
     "sku": "110014545",
@@ -1517,7 +1592,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20IMPEROOF%20X%205%20GAL/Z%20IMPEROOF%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-imperoof-x-5-gal"
   },
   {
     "sku": "110014309",
@@ -1537,7 +1613,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20IMPEROOF%20X%205%20GAL/Z%20IMPEROOF%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-imperoof-x-55-gal"
   },
   {
     "sku": "110014566",
@@ -1557,7 +1634,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20IMPEROOF%20X%205%20GAL/Z%20IMPEROOF%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-imperoof-x-gal"
   },
   {
     "sku": "110014392",
@@ -1577,7 +1655,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20MEMBRANA%20A%20X%205%20GAL/Z%20MEMBRANA%20A%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-membrana-a-x-5-gal"
   },
   {
     "sku": "110014388",
@@ -1597,7 +1676,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20MEMBRANA%20A%20X%205%20GAL/Z%20MEMBRANA%20A%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-membrana-a-x-55-gal"
   },
   {
     "sku": "110014477",
@@ -1617,7 +1697,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20MEMBRANA%20BLANCO%20X%205%20GAL/Z%20MEMBRANA%20BLANCO%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20MEMBRANA%20BLANCO%20V03.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-membrana-blanco-x-5-gal"
   },
   {
     "sku": "110014487",
@@ -1637,7 +1718,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20MEMBRANA%20BLANCO%20X%205%20GAL/Z%20MEMBRANA%20BLANCO%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20MEMBRANA%20BLANCO%20V03.pdf",
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-membrana-blanco-x-55-gal"
   },
   {
     "sku": "110014320",
@@ -1657,7 +1739,8 @@
     "ficha_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HT%20-%20Z%20MEMBRANA%20BLANCO_V01.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20MEMBRANA%20BLANCO%20V03.pdf",
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-membrana-blanco-x-gal"
   },
   {
     "sku": "110014471",
@@ -1677,7 +1760,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20MORTERO%20T40%20X%2030%20KG/Z%20MORTERO%20T40%20X%2030%20KG.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20MORTERO%20T40.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-mortero-t40-x-30-kg"
   },
   {
     "sku": "110014464",
@@ -1697,7 +1781,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20POX%2031%20X%205%20KG%20A%2BB/Z%20POX%2031%20X%205%20KG%20A%2BB.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20POX%2031.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-pox-31-x-5kg-ab"
   },
   {
     "sku": "110014571",
@@ -1717,7 +1802,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20POX%2031%20X%205%20KG%20A%2BB/Z%20POX%2031%20X%205%20KG%20A%2BB.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20POX%2031.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-pox-31-x-kg-ab"
   },
   {
     "sku": "110014483",
@@ -1737,7 +1823,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20POX%2032%20X%205%20KG%20A%2BB/Z%20POX%2032%20X%205%20KG%20A%2BB.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20POX%2032.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-pox-32-x-5kg-ab"
   },
   {
     "sku": "110014570",
@@ -1757,7 +1844,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20POX%2032%20X%205%20KG%20A%2BB/Z%20POX%2032%20X%205%20KG%20A%2BB.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20POX%2032.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-pox-32-x-kg-ab"
   },
   {
     "sku": "110014265",
@@ -1777,7 +1865,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20POX%2031%20X%205%20KG%20A%2BB/Z%20POX%2031%20X%205%20KG%20A%2BB.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-pox-35-bv-kg-ab"
   },
   {
     "sku": "110014634",
@@ -1797,7 +1886,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RESINA%20100_%20X%205%20GAL/Z%20RESINA%20100_%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20RESINA%20100%25.pdf",
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-resina-100-x-14-gal"
   },
   {
     "sku": "110014474",
@@ -1817,7 +1907,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RESINA%20100_%20X%205%20GAL/Z%20RESINA%20100_%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20RESINA%20100%25.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-resina-100-x-5-gal"
   },
   {
     "sku": "110014459",
@@ -1837,7 +1928,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RESINA%20100_%20X%205%20GAL/Z%20RESINA%20100_%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20RESINA%20100%25.pdf",
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-resina-100-x-55-gal"
   },
   {
     "sku": "110014598",
@@ -1857,7 +1949,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RR%20PLAST%20X%205%20GAL/Z%20RR%20PLAST%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": "https://www.zaditivos.com.pe/files/zaditivos/2025-07/HS%20Z%20RR%20PLAST%20971.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-rr-plast-971-x-5-gal"
   },
   {
     "sku": "110014587",
@@ -1877,7 +1970,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RR%20PLAST%20X%205%20GAL/Z%20RR%20PLAST%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-rr-plast-971-x-55-gal"
   },
   {
     "sku": "110014603",
@@ -1897,7 +1991,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RR%20PLAST%20-%20545%20X%20GAL/Z%20RR%20PLAST%20-%20545%20X%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-rr-plast-971-x-gal"
   },
   {
     "sku": "110014595",
@@ -1917,7 +2012,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RR%20PLAST%20X%205%20GAL/Z%20RR%20PLAST%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-rr-plast-x-5-gal"
   },
   {
     "sku": "110014375",
@@ -1937,7 +2033,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20RR%20PLAST%20X%205%20GAL/Z%20RR%20PLAST%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-rr-plast-x-55-gal"
   },
   {
     "sku": "110014397",
@@ -1957,7 +2054,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20SOL%20BLANCO%20X%205%20GAL/Z%20SOL%20BLANCO%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-sol-blanco-x-5-gal"
   },
   {
     "sku": "110014510",
@@ -1977,7 +2075,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%20SOL%20BLANCO%20X%205%20GAL/Z%20SOL%20BLANCO%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-sol-blanco-x-55-gal"
   },
   {
     "sku": "110014573",
@@ -1997,7 +2096,8 @@
     "ficha_pdf": null,
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-vista-x-5-gal"
   },
   {
     "sku": "610005612",
@@ -2017,7 +2117,8 @@
     "ficha_pdf": "/assets/img%20catalogo/CAPUCHONES%20DE%20SEG.%20CHICO%20(3-8_%2C%201-2_%2C%205-8_)%20X%20100%20UNI/CAPUCHONES%20DE%20SEG.%20CHICO%20(3-8_%2C%201-2_%2C%205-8_)%20X%20100%20UNI.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "capuchones-de-seg-chico-38-12-58-x-100-uni"
   },
   {
     "sku": "610005613",
@@ -2037,7 +2138,8 @@
     "ficha_pdf": "/assets/img%20catalogo/CAPUCHONES%20DE%20SEG.%20GRANDE%20(3-4_%2C%207-8_%2C%201_%2C%201%201-4_)%20X%20100%20UNI/CAPUCHONES%20DE%20SEG.%20GRANDE%20(3-4_%2C%207-8_%2C%201_%2C%201%201-4_)%20X%20100%20UNI.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "capuchones-de-seg-grande-34-78-1-1-14-x-100-uni"
   },
   {
     "sku": "610005585",
@@ -2057,7 +2159,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-1-12-x-91-ml"
   },
   {
     "sku": "610005584",
@@ -2077,7 +2180,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-1-14-x-122-ml"
   },
   {
     "sku": "610005583",
@@ -2097,7 +2201,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-1-18-x-152-ml"
   },
   {
     "sku": "610005582",
@@ -2117,7 +2222,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-1-x-182-ml"
   },
   {
     "sku": "610005580",
@@ -2137,7 +2243,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-12-x-762-ml"
   },
   {
     "sku": "610005578",
@@ -2157,7 +2264,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-14-x-2438-ml"
   },
   {
     "sku": "610005587",
@@ -2177,7 +2285,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-34-x-335-ml"
   },
   {
     "sku": "610005579",
@@ -2197,7 +2306,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-38-x-1280-ml"
   },
   {
     "sku": "610005586",
@@ -2217,7 +2327,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-58-x-472-ml"
   },
   {
     "sku": "610005581",
@@ -2237,7 +2348,8 @@
     "ficha_pdf": "/assets/img%20catalogo/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL/BACKER%20ROD%20PONER%20MEDIDAS%20DEL%20EXCEL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "backer-rod-78-x-259-ml"
   },
   {
     "sku": "620001061",
@@ -2257,7 +2369,8 @@
     "ficha_pdf": "/assets/img%20catalogo/WATER%20STOP%20DE%20JEBE%206_%20X%2025%20ML/WATER%20STOP%20DE%20JEBE%206_%20X%2025%20ML.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "water-stop-de-jebe-4-x-25-ml"
   },
   {
     "sku": "610005592",
@@ -2277,7 +2390,8 @@
     "ficha_pdf": "/assets/img%20catalogo/WATER%20STOP%20DE%20JEBE%206_%20X%2025%20ML/WATER%20STOP%20DE%20JEBE%206_%20X%2025%20ML.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "water-stop-de-jebe-6-x-25-ml"
   },
   {
     "sku": "610005593",
@@ -2297,7 +2411,8 @@
     "ficha_pdf": "/assets/img%20catalogo/WATER%20STOP%20DE%20JEBE%206_%20X%2025%20ML/WATER%20STOP%20DE%20JEBE%206_%20X%2025%20ML.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "water-stop-de-jebe-9-x-25-ml"
   },
   {
     "sku": "110014580",
@@ -2317,7 +2432,8 @@
     "ficha_pdf": "/assets/img%20catalogo/Z%202000%20X%205%20GAL/Z%202000%20X%205%20GAL.pdf",
     "hoja_seguridad_pdf": null,
     "oferta_disponible": false,
-    "producto_disponible": false
+    "producto_disponible": false,
+    "slug": "z-2000-x-5-gal"
   },
   {
     "sku": "110014677",
@@ -2336,6 +2452,7 @@
     },
     "ficha_pdf": "/assets/img%20catalogo/Z%20DESMOLAC%20PU%20X%205%20GAL/Z%20DESMOLAC%20PU%20X%205%20GAL.pdf",
     "oferta_disponible": false,
-    "producto_disponible": true
+    "producto_disponible": true,
+    "slug": "z-desmolac-pu-x-5-gal"
   }
 ]

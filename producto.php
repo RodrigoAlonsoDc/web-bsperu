@@ -3,15 +3,60 @@
 $productosJson = @file_get_contents(__DIR__ . '/assets/Data/productos.json');
 $productos = $productosJson ? json_decode($productosJson, true) : [];
 
-// Obtener SKU de la URL
-$sku = isset($_GET['sku']) ? $_GET['sku'] : '';
+// Helper para generar slugs limpios
+function slugify_val($text) {
+    if (!$text) return '';
+    $text = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $text);
+    if (!$text) {
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+    }
+    $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+    $text = trim($text, '-');
+    $text = strtolower($text);
+    return preg_replace('~-+~', '-', $text);
+}
+
+// Obtener SLUG o SKU de la URL
+$slug = isset($_GET['slug']) ? trim($_GET['slug']) : '';
+$sku = isset($_GET['sku']) ? trim($_GET['sku']) : '';
 $productoActual = null;
 
 if ($productos) {
-    foreach ($productos as $p) {
-        if (isset($p['sku']) && $p['sku'] === $sku) {
-            $productoActual = $p;
-            break;
+    // 1. Buscar por slug exacto
+    if (!empty($slug)) {
+        foreach ($productos as $p) {
+            if (isset($p['slug']) && strtolower($p['slug']) === strtolower($slug)) {
+                $productoActual = $p;
+                break;
+            }
+        }
+        // Fallback: buscar si el slug coincide con slugify(nombre)
+        if (!$productoActual) {
+            foreach ($productos as $p) {
+                if (isset($p['nombre']) && slugify_val($p['nombre']) === strtolower($slug)) {
+                    $productoActual = $p;
+                    break;
+                }
+            }
+        }
+        // O si pasaron SKU en el parámetro slug (ej. /producto/110014319)
+        if (!$productoActual) {
+            foreach ($productos as $p) {
+                if (isset($p['sku']) && (string)$p['sku'] === $slug) {
+                    $productoActual = $p;
+                    break;
+                }
+            }
+        }
+    }
+
+    // 2. Buscar por SKU si no se encontró por slug
+    if (!$productoActual && !empty($sku)) {
+        foreach ($productos as $p) {
+            if (isset($p['sku']) && (string)$p['sku'] === $sku) {
+                $productoActual = $p;
+                break;
+            }
         }
     }
 }
@@ -45,7 +90,8 @@ if ($productoActual) {
         }
     }
 
-    $url = "https://bsperu.pe/producto.html?sku=" . urlencode($sku);
+    $canonicalSlug = !empty($productoActual['slug']) ? $productoActual['slug'] : slugify_val($productoActual['nombre'] ?? ($sku ?: 'catalogo'));
+    $url = "https://bsperu.pe/producto/" . urlencode($canonicalSlug);
     
     // Generar JSON-LD estático
     $jsonLdArr = [
@@ -87,6 +133,7 @@ if ($productoActual) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
     <title id="pageTitle"><?php echo $title; ?></title>
     <meta name="description" id="metaDescription" content="<?php echo $description; ?>">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -2115,13 +2162,20 @@ if ($productoActual) {
         /* 5. Carga dinámica si viene un parámetro ?sku= o ?p= en la URL */
         var urlParams = new URLSearchParams(window.location.search);
         var skuParam = urlParams.get('sku');
+        var slugParam = urlParams.get('slug');
         var nameParam = urlParams.get('p') || urlParams.get('nombre');
 
-        if (skuParam || nameParam) {
-            cargarDatosProducto(skuParam, nameParam);
+        // Extraer slug de la ruta /producto/este-es-el-slug
+        var pathMatch = window.location.pathname.match(/\/producto\/([a-zA-Z0-9_-]+)/i);
+        if (pathMatch && pathMatch[1]) {
+            slugParam = pathMatch[1];
         }
 
-        function cargarDatosProducto(sku, nameQuery) {
+        if (skuParam || slugParam || nameParam) {
+            cargarDatosProducto(skuParam, slugParam, nameParam);
+        }
+
+        function cargarDatosProducto(sku, slug, nameQuery) {
             var urls = ['/assets/Data/productos.json', 'assets/Data/productos.json'];
             
             function intentarFetch(index) {
@@ -2131,7 +2185,14 @@ if ($productoActual) {
                     .then(function (catalog) {
                         if (!Array.isArray(catalog)) return;
                         var prod = null;
-                        if (sku) {
+                        if (slug) {
+                            var cleanSlug = String(slug).toLowerCase().trim();
+                            prod = catalog.find(function (p) {
+                                return (p.slug && p.slug.toLowerCase() === cleanSlug) ||
+                                       (p.sku && String(p.sku).trim() === cleanSlug);
+                            });
+                        }
+                        if (!prod && sku) {
                             prod = catalog.find(function (p) { return String(p.sku).trim() === String(sku).trim(); });
                         }
                         if (!prod && nameQuery) {
@@ -2263,7 +2324,16 @@ if ($productoActual) {
             var mDesc = document.getElementById('metaDescription') || document.querySelector('meta[name="description"]');
             if (mDesc) mDesc.setAttribute('content', metaDesc);
 
-            var prodCanonicalUrl = 'https://bsperu.pe/producto.html?sku=' + encodeURIComponent(p.sku);
+            var cleanSlug = p.slug || p.sku;
+            var prodCanonicalUrl = 'https://bsperu.pe/producto/' + encodeURIComponent(cleanSlug);
+
+            // Actualizar URL en el navegador a URL amigable limpia (sin recargar la pagina)
+            if (p.slug && window.history && window.history.replaceState) {
+                var cleanPath = '/producto/' + encodeURIComponent(p.slug);
+                if (window.location.pathname !== cleanPath) {
+                    window.history.replaceState(null, '', cleanPath);
+                }
+            }
             var canLink = document.getElementById('canonicalLink');
             if (canLink && p.sku) canLink.setAttribute('href', prodCanonicalUrl);
 

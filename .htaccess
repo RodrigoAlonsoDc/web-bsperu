@@ -13,7 +13,11 @@
     RewriteRule ^views/ubicacion\.html$ /sucursales.html [R=301,L,QSA]
     RewriteRule ^views/producto\.html$ /producto.html [R=301,L,QSA]
 
-    # --- Renderizar producto.html via PHP (SEO) ---
+    # --- URLs amigables de productos (SEO / Slugs) ---
+    RewriteRule ^producto/([a-zA-Z0-9_-]+)/?$ producto.php?slug=$1 [L,QSA]
+    RewriteRule ^producto/([a-zA-Z0-9_-]+)\.html$ producto.php?slug=$1 [L,QSA]
+
+    # --- Renderizar producto.html via PHP (SEO y compatibilidad) ---
     RewriteRule ^producto\.html$ producto.php [L,QSA]
 </IfModule>
 

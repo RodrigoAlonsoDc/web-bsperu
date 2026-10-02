@@ -4,6 +4,7 @@ Allow: /
 Allow: /index.html
 Allow: /productos.html
 Allow: /producto.html
+Allow: /producto/
 Allow: /sucursales.html
 Allow: /views/
 Allow: /img/
