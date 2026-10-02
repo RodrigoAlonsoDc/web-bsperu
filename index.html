@@ -1509,12 +1509,13 @@
             var idxDelay = (typeof i === 'number') ? (i % 24) : 0;
 
             return '<article class="product-card card-entrance' + (p.disponible ? '' : ' unavailable') + '" style="--i:' + idxDelay + ';">' +
+                '<a href="producto.html?sku=' + encodeURIComponent(p.sku) + '" style="display:block; text-decoration:none;">' +
                 '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
                     '<span class="fallback"><i class="ph ph-image-square" aria-hidden="true"></i><span>Sin imagen</span></span>' +
-                '</div>' +
+                '</div></a>' +
                 '<div class="p-body">' +
                     '<p class="p-cat">' + esc(p.categoriaLabel) + '</p>' +
-                    '<h3>' + esc(p.nombre) + '</h3>' +
+                    '<h3><a href="producto.html?sku=' + encodeURIComponent(p.sku) + '" style="color:inherit;text-decoration:none;" title="Ver ficha completa de ' + esc(p.nombre) + '">' + esc(p.nombre) + '</a></h3>' +
                     '<p class="p-desc">' + esc(desc) + '</p>' +
                     '<p class="p-meta">' +
                         '<span><i class="ph ph-barcode" aria-hidden="true"></i> ' + esc(p.sku) + '</span>' +
