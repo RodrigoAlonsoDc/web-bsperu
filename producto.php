@@ -125,6 +125,7 @@ if ($productoActual) {
             "url" => $url,
             "priceCurrency" => "PEN",
             "price" => $prodPrice,
+            "validFrom" => "2026-01-01",
             "priceValidUntil" => "2027-12-31",
             "itemCondition" => "https://schema.org/NewCondition",
             "availability" => "https://schema.org/InStock",
@@ -132,6 +133,41 @@ if ($productoActual) {
                 "@type" => "Organization",
                 "name" => "Building Systems Perú",
                 "url" => "https://bsperu.pe"
+            ],
+            "hasMerchantReturnPolicy" => [
+                "@type" => "MerchantReturnPolicy",
+                "applicableCountry" => "PE",
+                "returnPolicyCategory" => "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays" => 7,
+                "returnMethod" => "https://schema.org/ReturnInStore",
+                "returnFees" => "https://schema.org/FreeReturn"
+            ],
+            "shippingDetails" => [
+                "@type" => "OfferShippingDetails",
+                "shippingRate" => [
+                    "@type" => "MonetaryAmount",
+                    "value" => "0.00",
+                    "currency" => "PEN"
+                ],
+                "shippingDestination" => [
+                    "@type" => "DefinedRegion",
+                    "addressCountry" => "PE"
+                ],
+                "deliveryTime" => [
+                    "@type" => "ShippingDeliveryTime",
+                    "handlingTime" => [
+                        "@type" => "QuantitativeValue",
+                        "minValue" => 0,
+                        "maxValue" => 1,
+                        "unitCode" => "DAY"
+                    ],
+                    "transitTime" => [
+                        "@type" => "QuantitativeValue",
+                        "minValue" => 1,
+                        "maxValue" => 3,
+                        "unitCode" => "DAY"
+                    ]
+                ]
             ]
         ],
         "aggregateRating" => [
@@ -2391,6 +2427,7 @@ if ($productoActual) {
                         'url': prodCanonicalUrl,
                         'priceCurrency': 'PEN',
                         'price': p.precio ? String(p.precio) : '0.00',
+                        'validFrom': '2026-01-01',
                         'priceValidUntil': '2027-12-31',
                         'itemCondition': 'https://schema.org/NewCondition',
                         'availability': (p.disponible !== false) ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
@@ -2398,6 +2435,41 @@ if ($productoActual) {
                             '@type': 'Organization',
                             'name': 'Building Systems Perú',
                             'url': 'https://bsperu.pe'
+                        },
+                        'hasMerchantReturnPolicy': {
+                            '@type': 'MerchantReturnPolicy',
+                            'applicableCountry': 'PE',
+                            'returnPolicyCategory': 'https://schema.org/MerchantReturnFiniteReturnWindow',
+                            'merchantReturnDays': 7,
+                            'returnMethod': 'https://schema.org/ReturnInStore',
+                            'returnFees': 'https://schema.org/FreeReturn'
+                        },
+                        'shippingDetails': {
+                            '@type': 'OfferShippingDetails',
+                            'shippingRate': {
+                                '@type': 'MonetaryAmount',
+                                'value': '0.00',
+                                'currency': 'PEN'
+                            },
+                            'shippingDestination': {
+                                '@type': 'DefinedRegion',
+                                'addressCountry': 'PE'
+                            },
+                            'deliveryTime': {
+                                '@type': 'ShippingDeliveryTime',
+                                'handlingTime': {
+                                    '@type': 'QuantitativeValue',
+                                    'minValue': 0,
+                                    'maxValue': 1,
+                                    'unitCode': 'DAY'
+                                },
+                                'transitTime': {
+                                    '@type': 'QuantitativeValue',
+                                    'minValue': 1,
+                                    'maxValue': 3,
+                                    'unitCode': 'DAY'
+                                }
+                            }
                         }
                     },
                     'aggregateRating': {
