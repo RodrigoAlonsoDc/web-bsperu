@@ -293,11 +293,44 @@ $siguienteGS = getSiguienteGS();
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--outer-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; color: var(--text-dark); }
-        .app-window { width: 100%; max-width: 1440px; height: 94vh; background: var(--app-frame); border-radius: 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); display: flex; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            color: var(--text-dark);
+        }
+        .app-window {
+            width: 100vw;
+            max-width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            border-radius: 0;
+            box-shadow: none;
+            display: flex;
+            overflow: hidden;
+            border: none;
+            position: relative;
+            padding: 0;
+        }
         
         /* Sidebar */
-        .sidebar { width: 260px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 26px 18px;
+            height: 100vh;
+            flex-shrink: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
         .brand-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; text-decoration: none; }
         .brand-logo-icon { width: 42px; height: 42px; background: var(--accent-tan); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FFF; font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; }
         .brand-logo-text { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; color: #FFF; letter-spacing: -0.5px; }
@@ -307,7 +340,17 @@ $siguienteGS = getSiguienteGS();
         .nav-item.active { background: var(--accent-tan); color: #FFF; font-weight: 600; box-shadow: 0 4px 12px rgba(27,64,121,0.3); }
         
         /* Contenedor Principal */
-        .main-content { flex: 1; background: var(--main-bg); border-radius: var(--card-radius) 0 0 var(--card-radius); padding: 25px 35px; overflow-y: auto; display: flex; flex-direction: column; }
+        .main-content {
+            flex: 1;
+            background: var(--main-bg);
+            border-radius: 36px 0 0 36px;
+            padding: 34px 44px;
+            overflow-y: auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
         .header-title h1 { font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text-dark); }
         .header-title p { font-size: 0.85rem; color: var(--text-muted); }
