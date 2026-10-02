@@ -1262,7 +1262,7 @@
                     <p class="m-short" id="modalShort"></p>
                     <p class="m-long" id="modalLong"></p>
                     <div class="modal-specs" id="modalSpecs"></div>
-                    <div class="modal-actions" id="modalActions"></div>
+                    <div class="modal-actions" id="modalActions" data-nosnippet></div>
                 </div>
             </div>
         </div>
@@ -1640,7 +1640,7 @@
             return '<article class="product-card card-entrance' + (p.disponible ? '' : ' unavailable') + '" style="--i:' + idxDelay + ';">' +
                 '<a href="' + prodHref + '" style="display:block; text-decoration:none;">' +
                 '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
-                    '<span class="fallback"><i class="ph ph-image-square" aria-hidden="true"></i><span>Sin imagen</span></span>' +
+                    '<span class="fallback" data-nosnippet aria-hidden="true"><i class="ph ph-image-square"></i></span>' +
                 '</div></a>' +
                 '<div class="p-body">' +
                     '<p class="p-cat">' + esc(p.categoriaLabel) + '</p>' +
@@ -1651,7 +1651,7 @@
                         '<span><i class="ph ph-package" aria-hidden="true"></i> ' + esc(p.presentacion) + '</span>' +
                     '</p>' +
                 '</div>' +
-                '<div class="p-actions">' + acciones + '</div>' +
+                '<div class="p-actions" data-nosnippet>' + acciones + '</div>' +
             '</article>';
         }
 
@@ -1695,11 +1695,11 @@
         function pintarImagenModal(src, nombre) {
             var cont = $('#modalMainImg');
             if (!src) {
-                cont.innerHTML = '<span class="fallback"><i class="ph ph-image-square" aria-hidden="true"></i><span>Sin imagen</span></span>';
+                cont.innerHTML = '<span class="fallback" data-nosnippet aria-hidden="true"><i class="ph ph-image-square"></i></span>';
                 return;
             }
             cont.innerHTML = '<img src="' + esc(src) + '" alt="' + esc(nombre) + '" ' +
-                'onerror="this.parentNode.innerHTML=\'<span class=&quot;fallback&quot;><i class=&quot;ph ph-image-square&quot;></i><span>Sin imagen</span></span>\'">';
+                'onerror="this.parentNode.innerHTML=\'<span class=&quot;fallback&quot; data-nosnippet aria-hidden=&quot;true&quot;><i class=&quot;ph ph-image-square&quot;></i></span>\'">';
         }
 
         function abrirModal(p) {
