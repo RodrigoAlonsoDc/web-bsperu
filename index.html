@@ -866,34 +866,113 @@
             text-align: center; font-size: 12px; color: var(--text-muted);
         }
 
+        /* ============ STACK FLOTANTE: REDES SOCIALES + WHATSAPP ============ */
+        .floating-contact-stack {
+            position: fixed;
+            bottom: 26px;
+            right: 26px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .floating-social-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-float-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+        }
+        .social-float-btn:hover {
+            transform: scale(1.15) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            z-index: 2;
+        }
+
+        .social-float-btn.fb { background: #1877F2; }
+        .social-float-btn.ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+        .social-float-btn.tk { background: #000000; }
+        .social-float-btn.yt { background: #FF0000; }
+        .social-float-btn.li { background: #0A66C2; }
+
+        .tooltip-label {
+            position: absolute;
+            right: calc(100% + 12px);
+            background: var(--bg-card);
+            color: var(--title-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            border: 1px solid var(--border-color);
+        }
+        .social-float-btn:hover .tooltip-label,
+        .wa-float:hover .tooltip-label {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
         /* ============ WHATSAPP FLOTANTE ============ */
         .wa-float {
-            position: fixed; bottom: 30px; left: 30px; z-index: 900;
-            width: 56px; height: 56px; border-radius: 50%;
-            background: #25d366; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 30px; text-decoration: none;
-            box-shadow: 0 10px 26px rgba(0,0,0,0.35);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+            position: relative;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--wa-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
         }
         .wa-float:hover {
             transform: scale(1.12);
-            box-shadow: 0 14px 34px rgba(37, 211, 102, 0.45);
+            box-shadow: 0 8px 26px rgba(37, 211, 102, 0.55);
         }
         .wa-float::before {
             content: '';
             position: absolute;
-            inset: -5px;
+            inset: -4px;
             border-radius: 50%;
             border: 2px solid #25d366;
-            opacity: 0.85;
-            animation: waRadar 2.5s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+            opacity: 0.8;
+            animation: waRadarPulse 2.4s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
             pointer-events: none;
         }
-        @keyframes waRadar {
+        @keyframes waRadarPulse {
             0% { transform: scale(0.95); opacity: 0.85; }
-            70% { transform: scale(1.35); opacity: 0; }
-            100% { transform: scale(1.35); opacity: 0; }
+            70% { transform: scale(1.3); opacity: 0; }
+            100% { transform: scale(1.3); opacity: 0; }
         }
 
         /* ============ ANIMACIONES ============ */
@@ -951,7 +1030,6 @@
             .modal-specs { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; text-align: center; }
             .footer-social { justify-content: center; }
-            .wa-float { bottom: 22px; left: 22px; width: 50px; height: 50px; font-size: 26px; }
         }
         @media (max-width: 470px) {
             .familias-grid { grid-template-columns: 1fr; }
@@ -966,10 +1044,37 @@
     <a href="#catalogo" class="skip-link">Saltar al catálogo</a>
 
 
-    <!-- ============ WHATSAPP FLOTANTE ============ -->
-    <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú">
-        <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
-    </a>
+    
+    <!-- ============ STACK FLOTANTE ============ -->
+    <aside class="floating-contact-stack" aria-label="Canales de contacto y redes sociales">
+        <div class="floating-social-group">
+            <a href="https://www.facebook.com/people/Bsperu/100090456091171/" target="_blank" rel="noopener noreferrer" class="social-float-btn fb" aria-label="Facebook BS Perú" title="Facebook">
+                <i class="ph-fill ph-facebook-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">Facebook</span>
+            </a>
+            <a href="https://www.instagram.com/bsp.peru/" target="_blank" rel="noopener noreferrer" class="social-float-btn ig" aria-label="Instagram BS Perú" title="Instagram">
+                <i class="ph-fill ph-instagram-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">Instagram</span>
+            </a>
+            <a href="https://www.tiktok.com/@bs_peru?_t=ZS-90uDwonltem&_r=1" target="_blank" rel="noopener noreferrer" class="social-float-btn tk" aria-label="TikTok BS Perú" title="TikTok">
+                <i class="ph-fill ph-tiktok-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">TikTok</span>
+            </a>
+            <a href="https://www.youtube.com/@bsperu-BSP" target="_blank" rel="noopener noreferrer" class="social-float-btn yt" aria-label="YouTube BS Perú" title="YouTube">
+                <i class="ph-fill ph-youtube-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">YouTube</span>
+            </a>
+            <a href="https://www.linkedin.com/company/bs-per%C3%BA/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-float-btn li" aria-label="LinkedIn BS Perú" title="LinkedIn">
+                <i class="ph-fill ph-linkedin-logo" aria-hidden="true"></i>
+                <span class="tooltip-label">LinkedIn</span>
+            </a>
+        </div>
+        <a class="wa-float" id="waFloat" href="https://wa.me/51914776669" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú" title="WhatsApp Oficial">
+            <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
+            <span class="tooltip-label" style="right: calc(100% + 16px);">WhatsApp</span>
+        </a>
+    </aside>
+
 
     <!-- ============ NAVBAR ============ -->
     <nav class="navbar" id="mainNav" aria-label="Navegación principal">
