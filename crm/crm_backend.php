@@ -202,12 +202,162 @@ if (!file_exists($pedidosFile)) {
     @file_put_contents($pedidosFile, json_encode($initialPedidos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
-function obtenerPedidos() {
-    global $pedidosFile;
-    if (file_exists($pedidosFile)) {
-        return json_decode(file_get_contents($pedidosFile), true) ?: [];
+function obtenerPedidos($filtroCotizacion = null) {
+    global $pedidosFile, $db;
+    $pedidosBD = [];
+
+    // 1. Consultar en vivo la base de datos SQL Server StarSoft (PEDCAB)
+    if ($db) {
+        try {
+            $limit = !empty($filtroCotizacion) ? "TOP 100" : "TOP 250";
+            $whereClause = "";
+            $params = [];
+
+            if (!empty($filtroCotizacion)) {
+                $cotizLimpia = trim(str_ireplace(['COT-', 'COT', 'PD-', 'PD'], '', (string)$filtroCotizacion));
+                $cotizPad = str_pad($cotizLimpia, 7, '0', STR_PAD_LEFT);
+                $cotizPad6 = str_pad($cotizLimpia, 6, '0', STR_PAD_LEFT);
+                $whereClause = "WHERE (
+                    LTRIM(RTRIM(p.CFRFNUMDOC)) = :c1 
+                    OR LTRIM(RTRIM(p.CFRFNUMDOC)) = :c2 
+                    OR LTRIM(RTRIM(p.CFRFNUMDOC)) = :c3
+                    OR LTRIM(RTRIM(p.CFNUMPED)) = :c1 
+                    OR LTRIM(RTRIM(p.CFNUMPED)) = :c2 
+                    OR LTRIM(RTRIM(p.CFNUMPED)) = :c3
+                    OR p.CFRFNUMDOC LIKE :cLike 
+                    OR p.CFNUMPED LIKE :cLike
+                )";
+                $params[':c1'] = $cotizLimpia;
+                $params[':c2'] = $cotizPad;
+                $params[':c3'] = $cotizPad6;
+                $params[':cLike'] = '%' . $cotizLimpia . '%';
+            }
+
+            $sql = "SELECT $limit
+                LTRIM(RTRIM(p.CFNUMPED)) as nro_pedido_raw,
+                LTRIM(RTRIM(COALESCE(p.CFRFNUMDOC, ''))) as nro_cotizacion,
+                LTRIM(RTRIM(COALESCE(p.CFRFTD, ''))) as tipo_ref,
+                CONVERT(varchar, p.CFFECDOC, 23) as fecha,
+                CONVERT(varchar, COALESCE(p.CFFECHAENT, p.CFFECDOC), 23) as fecha_entrega,
+                LTRIM(RTRIM(COALESCE(p.CFNOMBRE, ''))) as cliente,
+                LTRIM(RTRIM(COALESCE(p.CFRUC, ''))) as documento,
+                LTRIM(RTRIM(COALESCE(p.CFDIRECC, ''))) as direccion,
+                LTRIM(RTRIM(COALESCE(p.CFLUGENT, p.CFDIRECC, ''))) as lugar_entrega,
+                LTRIM(RTRIM(COALESCE(p.CFUSER, ''))) as vendedor,
+                LTRIM(RTRIM(COALESCE(p.CFGLOSA, ''))) as glosa,
+                LTRIM(RTRIM(COALESCE(p.CFFORVEN, p.CFFPAGO, 'CONTADO'))) as forma_pago,
+                LTRIM(RTRIM(COALESCE(p.CFBANCO, 'BCP'))) as banco,
+                LTRIM(RTRIM(COALESCE(p.CFOPERP, ''))) as nro_operacion,
+                CAST(COALESCE(p.CFIMPORTE, 0) as float) as total_venta,
+                CAST(COALESCE(p.CFIGV, 0) as float) as igv,
+                CAST(COALESCE(p.CFDESVAL, 0) as float) as total_v_venta,
+                CAST(COALESCE(p.CFDESCTO, 0) as float) as descuentos,
+                CASE 
+                    WHEN p.CFESTADO = '3' THEN 'Facturado'
+                    WHEN p.CFESTADO = '2' THEN 'Autorizado'
+                    WHEN p.CFESTADO = '1' THEN 'Registrado'
+                    WHEN p.CFESTADO = 'A' THEN 'Anulado'
+                    ELSE 'Autorizado'
+                END as estado,
+                LTRIM(RTRIM(COALESCE(p.CFNUMFAC, ''))) as factura_vinculada,
+                LTRIM(RTRIM(COALESCE(p.CFNUMGUIA, ''))) as guia_vinculada
+            FROM PEDCAB p
+            $whereClause
+            ORDER BY p.CFFECDOC DESC, p.CFNUMPED DESC";
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
+            if ($stmt) {
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                if (!empty($rows)) {
+                    foreach ($rows as $idx => $r) {
+                        $nroPed = $r['nro_pedido_raw'];
+                        if (strpos(strtoupper($nroPed), 'PD-') !== 0 && strpos(strtoupper($nroPed), 'PD') !== 0) {
+                            $nroPed = 'PD-' . str_pad($nroPed, 6, '0', STR_PAD_LEFT);
+                        }
+                        $pedidosBD[] = [
+                            'id' => $idx + 1,
+                            'nro_pedido' => $nroPed,
+                            'nro_cotizacion' => $r['nro_cotizacion'] ?: '',
+                            'fecha' => $r['fecha'] ?: date('Y-m-d'),
+                            'fecha_entrega' => $r['fecha_entrega'] ?: $r['fecha'],
+                            'punto_venta' => 'SUCURSAL CHORRILLOS',
+                            'forma_pago' => $r['forma_pago'] ?: 'CONTADO',
+                            'vendedor' => $r['vendedor'] ?: 'ENDRINA IZEA',
+                            'cliente' => $r['cliente'] ?: 'CLIENTE VARIOS',
+                            'documento' => $r['documento'] ?: '',
+                            'direccion' => $r['direccion'] ?: '',
+                            'lugar_entrega' => $r['lugar_entrega'] ?: $r['direccion'],
+                            'glosa' => $r['glosa'] ?: '',
+                            'validez_oferta' => '15 DIAS',
+                            'datos_pago' => 'BANCO ' . ($r['banco'] ?: 'BCP'),
+                            'descuento_global' => 0,
+                            'banco' => $r['banco'] ?: 'BCP',
+                            'fecha_pago' => $r['fecha'],
+                            'monto_pago' => floatval($r['total_venta']),
+                            'nro_operacion' => $r['nro_operacion'] ?: '',
+                            'total_bruto' => floatval($r['total_v_venta']) + floatval($r['descuentos']),
+                            'descuentos' => floatval($r['descuentos']),
+                            'total_v_venta' => floatval($r['total_v_venta']),
+                            'igv' => floatval($r['igv']),
+                            'total_venta' => floatval($r['total_venta']),
+                            'estado' => $r['estado'],
+                            'factura_vinculada' => $r['factura_vinculada'] ?: null,
+                            'guia_vinculada' => $r['guia_vinculada'] ?: null,
+                            'items' => []
+                        ];
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // Silencioso: fallback a archivo JSON
+        }
     }
-    return [];
+
+    // 2. Cargar pedidos locales desde JSON para complementar o servir de respaldo
+    $pedidosLocales = [];
+    if (file_exists($pedidosFile)) {
+        $pedidosLocales = json_decode(file_get_contents($pedidosFile), true) ?: [];
+    }
+
+    // 3. Si hay datos de la base de datos, incorporar pedidos locales no sincronizados
+    if (!empty($pedidosBD)) {
+        $mapExistentes = [];
+        foreach ($pedidosBD as $p) {
+            $numKey = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)($p['nro_pedido'] ?? ''))));
+            $mapExistentes[$numKey] = true;
+        }
+        foreach ($pedidosLocales as $pl) {
+            $numKey = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)($pl['nro_pedido'] ?? ''))));
+            if (!isset($mapExistentes[$numKey])) {
+                if (!empty($filtroCotizacion)) {
+                    $cotLimpia = trim(str_ireplace(['COT-', 'COT'], '', (string)$filtroCotizacion));
+                    $pCot = trim(str_ireplace(['COT-', 'COT'], '', (string)($pl['nro_cotizacion'] ?? '')));
+                    if ($pCot !== $cotLimpia && stripos($pCot, $cotLimpia) === false) {
+                        continue;
+                    }
+                }
+                array_unshift($pedidosBD, $pl);
+            }
+        }
+        return $pedidosBD;
+    }
+
+    // 4. Si la base de datos no está disponible, filtrar sobre los pedidos locales
+    if (!empty($filtroCotizacion)) {
+        $cotLimpia = trim(str_ireplace(['COT-', 'COT'], '', (string)$filtroCotizacion));
+        $filtrados = [];
+        foreach ($pedidosLocales as $pl) {
+            $pCot = trim(str_ireplace(['COT-', 'COT'], '', (string)($pl['nro_cotizacion'] ?? '')));
+            $pPed = trim(str_ireplace(['PD-', 'PD'], '', (string)($pl['nro_pedido'] ?? '')));
+            if ($pCot === $cotLimpia || stripos($pCot, $cotLimpia) !== false || $pPed === $cotLimpia || stripos($pPed, $cotLimpia) !== false) {
+                $filtrados[] = $pl;
+            }
+        }
+        return $filtrados;
+    }
+
+    return $pedidosLocales;
 }
 
 function guardarPedidos($pedidos) {
@@ -216,8 +366,147 @@ function guardarPedidos($pedidos) {
 }
 
 function obtenerPedidoPorCodigo($codigo) {
-    $pedidos = obtenerPedidos();
+    global $db, $pedidosFile;
     $codigoLimpio = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)$codigo)));
+    $codigoPad7 = str_pad($codigoLimpio, 7, '0', STR_PAD_LEFT);
+    $codigoPad6 = str_pad($codigoLimpio, 6, '0', STR_PAD_LEFT);
+
+    // 1. Intentar buscar en StarSoft ERP (PEDCAB y PEDDET)
+    if ($db) {
+        try {
+            $stmt = $db->prepare("SELECT TOP 1
+                LTRIM(RTRIM(p.CFNUMPED)) as nro_pedido_raw,
+                LTRIM(RTRIM(COALESCE(p.CFRFNUMDOC, ''))) as nro_cotizacion,
+                LTRIM(RTRIM(COALESCE(p.CFRFTD, ''))) as tipo_ref,
+                CONVERT(varchar, p.CFFECDOC, 23) as fecha,
+                CONVERT(varchar, COALESCE(p.CFFECHAENT, p.CFFECDOC), 23) as fecha_entrega,
+                LTRIM(RTRIM(COALESCE(p.CFNOMBRE, ''))) as cliente,
+                LTRIM(RTRIM(COALESCE(p.CFRUC, ''))) as documento,
+                LTRIM(RTRIM(COALESCE(p.CFDIRECC, ''))) as direccion,
+                LTRIM(RTRIM(COALESCE(p.CFLUGENT, p.CFDIRECC, ''))) as lugar_entrega,
+                LTRIM(RTRIM(COALESCE(p.CFUSER, ''))) as vendedor,
+                LTRIM(RTRIM(COALESCE(p.CFGLOSA, ''))) as glosa,
+                LTRIM(RTRIM(COALESCE(p.CFFORVEN, p.CFFPAGO, 'CONTADO CONTRAENTREGA'))) as forma_pago,
+                LTRIM(RTRIM(COALESCE(p.CFBANCO, 'BCP'))) as banco,
+                LTRIM(RTRIM(COALESCE(p.CFOPERP, ''))) as nro_operacion,
+                CAST(COALESCE(p.CFIMPORTE, 0) as float) as total_venta,
+                CAST(COALESCE(p.CFIGV, 0) as float) as igv,
+                CAST(COALESCE(p.CFDESVAL, 0) as float) as total_v_venta,
+                CAST(COALESCE(p.CFDESCTO, 0) as float) as descuentos,
+                CASE 
+                    WHEN p.CFESTADO = '3' THEN 'Facturado'
+                    WHEN p.CFESTADO = '2' THEN 'Autorizado'
+                    WHEN p.CFESTADO = '1' THEN 'Registrado'
+                    WHEN p.CFESTADO = 'A' THEN 'Anulado'
+                    ELSE 'Autorizado'
+                END as estado,
+                LTRIM(RTRIM(COALESCE(p.CFNUMFAC, ''))) as factura_vinculada,
+                LTRIM(RTRIM(COALESCE(p.CFNUMGUIA, ''))) as guia_vinculada
+            FROM PEDCAB p
+            WHERE LTRIM(RTRIM(p.CFNUMPED)) = :c1 
+               OR LTRIM(RTRIM(p.CFNUMPED)) = :c2 
+               OR LTRIM(RTRIM(p.CFNUMPED)) = :c3
+               OR LTRIM(RTRIM(p.CFNUMPED)) = :c4");
+
+            $stmt->execute([
+                ':c1' => $codigo,
+                ':c2' => $codigoLimpio,
+                ':c3' => $codigoPad7,
+                ':c4' => $codigoPad6
+            ]);
+            $r = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($r) {
+                $nroPed = $r['nro_pedido_raw'];
+                if (strpos(strtoupper($nroPed), 'PD-') !== 0 && strpos(strtoupper($nroPed), 'PD') !== 0) {
+                    $nroPed = 'PD-' . str_pad($nroPed, 6, '0', STR_PAD_LEFT);
+                }
+
+                // Cargar items del pedido desde PEDDET
+                $items = [];
+                try {
+                    $stmtDet = $db->prepare("SELECT 
+                        CAST(d.DFSECUEN as int) as item,
+                        LTRIM(RTRIM(d.DFCODIGO)) as codigo,
+                        LTRIM(RTRIM(d.DFDESCRI)) as descripcion,
+                        CAST(d.DFCANTID as float) as cantidad,
+                        LTRIM(RTRIM(COALESCE(d.DFUNIDAD, 'UND'))) as um,
+                        CAST(COALESCE(d.DFPREC_ORI, d.DFPREC_VEN, 0) as float) as p_original,
+                        CAST(COALESCE(d.DFPREC_VEN, 0) as float) as precio,
+                        CAST(COALESCE(d.DFPORDES, 0) as float) as porc_dsc,
+                        CAST(COALESCE(d.DFIMPMN, 0) as float) as v_venta,
+                        LTRIM(RTRIM(COALESCE(d.DFALMA, 'ALMACEN PRINCIPAL'))) as almacen
+                    FROM PEDDET d
+                    WHERE LTRIM(RTRIM(d.DFNUMPED)) = :p1 
+                       OR LTRIM(RTRIM(d.DFNUMPED)) = :p2 
+                       OR LTRIM(RTRIM(d.DFNUMPED)) = :p3
+                    ORDER BY CAST(d.DFSECUEN as int) ASC");
+                    $stmtDet->execute([
+                        ':p1' => $r['nro_pedido_raw'],
+                        ':p2' => $codigoLimpio,
+                        ':p3' => $codigoPad6
+                    ]);
+                    $rowsDet = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
+                    if (!empty($rowsDet)) {
+                        foreach ($rowsDet as $d) {
+                            $items[] = [
+                                'item' => intval($d['item']),
+                                'codigo' => $d['codigo'],
+                                'descripcion' => $d['descripcion'],
+                                'almacen' => $d['almacen'] ?: 'ALMACEN PRINCIPAL',
+                                'cantidad' => floatval($d['cantidad']),
+                                'precio' => floatval($d['precio']),
+                                'v_venta' => floatval($d['v_venta']),
+                                'p_original' => floatval($d['p_original']),
+                                'p_bruto' => floatval($d['p_original']),
+                                'porc_dsc' => floatval($d['porc_dsc']),
+                                'imp_dsc' => (floatval($d['p_original']) - floatval($d['precio'])) * floatval($d['cantidad']),
+                                'estado_item' => 'AUTORIZADO',
+                                'lote' => 'L-' . date('ymd'),
+                                'um' => $d['um'] ?: 'UND',
+                                'peso' => 20.0
+                            ];
+                        }
+                    }
+                } catch (Exception $eDet) {}
+
+                return [
+                    'id' => $codigoLimpio,
+                    'nro_pedido' => $nroPed,
+                    'nro_cotizacion' => $r['nro_cotizacion'] ?: '',
+                    'fecha' => $r['fecha'] ?: date('Y-m-d'),
+                    'fecha_entrega' => $r['fecha_entrega'] ?: $r['fecha'],
+                    'punto_venta' => 'SUCURSAL CHORRILLOS',
+                    'forma_pago' => $r['forma_pago'] ?: 'CONTADO CONTRAENTREGA',
+                    'vendedor' => $r['vendedor'] ?: 'ENDRINA IZEA',
+                    'cliente' => $r['cliente'],
+                    'documento' => $r['documento'],
+                    'direccion' => $r['direccion'],
+                    'lugar_entrega' => $r['lugar_entrega'] ?: $r['direccion'],
+                    'glosa' => $r['glosa'],
+                    'validez_oferta' => '15 DIAS',
+                    'datos_pago' => 'BANCO ' . ($r['banco'] ?: 'BCP'),
+                    'descuento_global' => 0,
+                    'banco' => $r['banco'] ?: 'BCP',
+                    'fecha_pago' => $r['fecha'],
+                    'monto_pago' => floatval($r['total_venta']),
+                    'nro_operacion' => $r['nro_operacion'] ?: '',
+                    'total_bruto' => floatval($r['total_v_venta']) + floatval($r['descuentos']),
+                    'descuentos' => floatval($r['descuentos']),
+                    'total_v_venta' => floatval($r['total_v_venta']),
+                    'igv' => floatval($r['igv']),
+                    'total_venta' => floatval($r['total_venta']),
+                    'estado' => $r['estado'],
+                    'factura_vinculada' => $r['factura_vinculada'] ?: null,
+                    'guia_vinculada' => $r['guia_vinculada'] ?: null,
+                    'items' => $items
+                ];
+            }
+        } catch (Exception $e) {}
+    }
+
+    // 2. Fallback a pedidos en JSON
+    $pedidos = obtenerPedidos();
     foreach ($pedidos as $p) {
         $pNum = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)($p['nro_pedido'] ?? ''))));
         if ($pNum === $codigoLimpio || (string)($p['id'] ?? '') === $codigoLimpio || (string)($p['nro_pedido'] ?? '') === trim($codigo)) {
@@ -2934,16 +3223,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
     // 15. LISTAR PEDIDOS REGISTRADOS
     if ($action === 'listar_pedidos') {
         header('Content-Type: application/json; charset=utf-8');
-        $pedidos = obtenerPedidos();
+        $filtroCotiz = trim($_GET['cotizacion'] ?? ($_POST['cotizacion'] ?? ''));
+        $pedidos = obtenerPedidos($filtroCotiz ?: null);
         echo json_encode([
             'success' => true,
+            'pedidos' => $pedidos,
+            'total' => count($pedidos),
+            'filtro_cotizacion' => $filtroCotiz
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 15.1 OBTENER HISTORIAL DE PEDIDOS ESPECÍFICOS DE UNA COTIZACIÓN
+    if ($action === 'obtener_pedidos_por_cotizacion') {
+        header('Content-Type: application/json; charset=utf-8');
+        $codigoCotiz = trim($_GET['codigo'] ?? ($_POST['codigo'] ?? ''));
+        $pedidos = obtenerPedidos($codigoCotiz);
+        echo json_encode([
+            'success' => true,
+            'cotizacion' => $codigoCotiz,
             'pedidos' => $pedidos,
             'total' => count($pedidos)
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
-    // 16. OBTENER DETALLE DE PEDIDO POR CÓDIGO
     if ($action === 'obtener_detalle_pedido') {
         header('Content-Type: application/json; charset=utf-8');
         $codigo = trim($_GET['codigo'] ?? ($_POST['codigo'] ?? ''));
@@ -3067,7 +3371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         if (!$pedido) {
             echo json_encode([
                 'success' => false,
-                'error' => "El Pedido "$codigo" no existe en el sistema. En StarSoft no se puede facturar sin un Pedido (PD) registrado previamente a través de la Cotización."
+                'error' => "El Pedido \"$codigo\" no existe en el sistema. En StarSoft no se puede facturar sin un Pedido (PD) registrado previamente a través de la Cotización."
             ], JSON_UNESCAPED_UNICODE);
             exit;
         }
@@ -3075,7 +3379,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         if ($pedido['estado'] === 'Facturado') {
             echo json_encode([
                 'success' => false,
-                'error' => "El Pedido "{$pedido['nro_pedido']}" ya fue facturado previamente con comprobante N° {$pedido['factura_vinculada']} y Guía {$pedido['guia_vinculada']}."
+                'error' => "El Pedido \"{$pedido['nro_pedido']}\" ya fue facturado previamente con comprobante N° {$pedido['factura_vinculada']} y Guía {$pedido['guia_vinculada']}."
             ], JSON_UNESCAPED_UNICODE);
             exit;
         }

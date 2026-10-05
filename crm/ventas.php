@@ -2414,9 +2414,29 @@ if (file_exists($fileCotizPath)) {
                 <!-- SUB-TAB 2: HISTORIAL DE PEDIDOS REGISTRADOS -->
                 <div id="tab-ped-historial" style="display:none; flex-direction:column; gap:16px;">
                     <div class="card-seccion-centro" style="background:#FFF; padding:20px; border-radius:12px; border:1px solid #E5E7EB;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                            <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-list-check"></i> Registro Histórico de Pedidos (StarSoft PD)</h3>
-                            <button type="button" class="btn-pill-white" onclick="cargarPedidosHistorial()"><i class="fa-solid fa-rotate"></i> Actualizar</button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                            <div>
+                                <h3 style="font-size:1.1rem; font-weight:700; margin:0;"><i class="fa-solid fa-list-check"></i> Registro Histórico de Pedidos (StarSoft PD)</h3>
+                                <span style="font-size:12px; color:#6B7280;">Sincronizado en vivo con StarSoft ERP y consultable por cotización</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <div style="position:relative;">
+                                    <input type="text" id="filtroPedidoCotizInput" placeholder="🔍 Filtrar por Cotización (ej: 0052456) o Pedido..." style="font-size:12px; padding:6px 12px; border-radius:6px; border:1px solid #D1D5DB; min-width:270px;" onkeyup="if(event.key==='Enter') filtrarPedidosHistorial()">
+                                </div>
+                                <button type="button" class="btn" style="background:#6D28D9; color:#FFF; font-size:12px; font-weight:700; padding:6px 14px; border-radius:6px; border:none; cursor:pointer;" onclick="filtrarPedidosHistorial()">
+                                    <i class="fa-solid fa-filter"></i> Filtrar
+                                </button>
+                                <button type="button" class="btn-pill-white" style="font-size:12px;" onclick="limpiarFiltroPedidosHistorial()">
+                                    <i class="fa-solid fa-broom"></i> Ver Todos
+                                </button>
+                                <button type="button" class="btn-pill-white" style="font-size:12px;" onclick="cargarPedidosHistorial(currentFiltroCotizPedidos)">
+                                    <i class="fa-solid fa-rotate"></i> Actualizar
+                                </button>
+                            </div>
+                        </div>
+                        <div id="badgeFiltroCotizActivo" style="display:none; align-items:center; justify-content:space-between; background:#EDE9FE; border:1px solid #DDD6FE; color:#5B21B6; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:600; margin-bottom:14px;">
+                            <span><i class="fa-solid fa-filter"></i> Mostrando pedidos vinculados a la Cotización: <strong id="lblCotizFiltrada"></strong></span>
+                            <button type="button" style="background:none; border:none; color:#5B21B6; cursor:pointer; font-weight:700; text-decoration:underline;" onclick="limpiarFiltroPedidosHistorial()"><i class="fa-solid fa-xmark"></i> Quitar filtro</button>
                         </div>
                         <div style="overflow-x:auto;">
                             <table class="data-table" style="width:100%; font-size:13px;">
@@ -4000,8 +4020,11 @@ if (file_exists($fileCotizPath)) {
                         <td>${badgeEstado}</td>
                         <td style="text-align:center;">
                             <div style="display:flex; justify-content:center; align-items:center; gap:6px; flex-wrap:wrap;">
-                                <button type="button" style="background:transparent; border:none; color:#6D28D9; font-weight:800; padding:6px 12px; font-size:0.8rem; display:inline-flex; align-items:center; gap:5px; cursor:pointer; outline:none;" title="Generar Pedido (PD) importando esta cotización en StarSoft ERP" onclick="convertirCotizAFacturaPorCodigo('${c.codigo}')">
+                                <button type="button" style="background:transparent; border:none; color:#6D28D9; font-weight:800; padding:6px 10px; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px; cursor:pointer; outline:none;" title="Generar Pedido (PD) importando esta cotización en StarSoft ERP" onclick="convertirCotizAFacturaPorCodigo('${c.codigo}')">
                                     <i class="fa-solid fa-cart-flatbed"></i> Pedido (PD)
+                                </button>
+                                <button type="button" style="background:#EDE9FE; border:1px solid #DDD6FE; color:#5B21B6; font-weight:700; border-radius:6px; padding:4px 8px; font-size:0.75rem; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="Consultar pedidos generados de esta cotización" onclick="verPedidosDeCotizacion('${c.codigo}')">
+                                    <i class="fa-solid fa-list-check"></i> Historial PD
                                 </button>
                                 <button type="button" class="btn-facturar-mini" title="Ver e imprimir PDF oficial" onclick="abrirModalVistaPreviaPdfPorCodigo('${c.codigo}')">
                                     <i class="fa-solid fa-print"></i>
@@ -5136,52 +5159,218 @@ if (file_exists($fileCotizPath)) {
             });
     }
 
-    // 4. HISTORIAL DE PEDIDOS
-    function cargarPedidosHistorial() {
-        const tbody = document.getElementById('tbodyHistorialPedidos');
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:18px;">Cargando pedidos registrados...</td></tr>';
+    // 4. HISTORIAL DE PEDIDOS CON CONSULTA A BASE DE DATOS Y FILTRO POR COTIZACIÓN
+    let currentFiltroCotizPedidos = '';
 
-        fetch('crm_backend.php?action=listar_pedidos')
-            .then(res => res.json())
+    function filtrarPedidosHistorial() {
+        const input = document.getElementById('filtroPedidoCotizInput');
+        const valor = input ? input.value.trim() : '';
+        cargarPedidosHistorial(valor);
+    }
+
+    function limpiarFiltroPedidosHistorial() {
+        const input = document.getElementById('filtroPedidoCotizInput');
+        if (input) input.value = '';
+        const badge = document.getElementById('badgeFiltroCotizActivo');
+        if (badge) badge.style.display = 'none';
+        cargarPedidosHistorial('');
+    }
+
+    function verPedidosDeCotizacion(codigo) {
+        cambiarVistaVentas('pedidos');
+        activarTabPedido('historial');
+        const input = document.getElementById('filtroPedidoCotizInput');
+        if (input) input.value = codigo;
+        cargarPedidosHistorial(codigo);
+    }
+
+    function cargarPedidosHistorial(filtroCotiz = '') {
+        currentFiltroCotizPedidos = (filtroCotiz || '').trim();
+        const tbody = document.getElementById('tbodyHistorialPedidos');
+        if (!tbody) return;
+
+        // Actualizar visualmente el badge de filtro activo
+        const badge = document.getElementById('badgeFiltroCotizActivo');
+        const lbl = document.getElementById('lblCotizFiltrada');
+        if (badge && lbl) {
+            if (currentFiltroCotizPedidos) {
+                lbl.innerText = currentFiltroCotizPedidos.toUpperCase();
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:#6B7280;"><i class="fa-solid fa-spinner fa-spin" style="font-size:18px; color:#6D28D9; margin-bottom:8px;"></i><br>Consultando pedidos registrados en StarSoft ERP...</td></tr>';
+
+        const url = 'crm_backend.php?action=listar_pedidos' + (currentFiltroCotizPedidos ? '&cotizacion=' + encodeURIComponent(currentFiltroCotizPedidos) : '');
+
+        fetch(url)
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Error HTTP ' + res.status + ' al contactar con el servidor');
+                }
+                return res.json();
+            })
             .then(data => {
-                if (!data.success || !data.pedidos || data.pedidos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:18px; color:#6B7280;">No hay pedidos registrados en el sistema.</td></tr>';
+                if (!data.success) {
+                    throw new Error(data.error || 'Respuesta no exitosa del servidor');
+                }
+
+                const pedidos = data.pedidos || [];
+                if (pedidos.length === 0) {
+                    if (currentFiltroCotizPedidos) {
+                        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:26px; color:#6B7280;">
+                            <i class="fa-solid fa-clipboard-question" style="font-size:28px; color:#9CA3AF; margin-bottom:8px;"></i><br>
+                            No se encontraron pedidos vinculados a la cotización <strong>${currentFiltroCotizPedidos}</strong>.<br>
+                            <button type="button" class="btn-pill-white" style="margin-top:10px; font-size:12px;" onclick="limpiarFiltroPedidosHistorial()">
+                                <i class="fa-solid fa-broom"></i> Ver todos los pedidos
+                            </button>
+                        </td></tr>`;
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:#6B7280;">No hay pedidos registrados en el sistema.</td></tr>';
+                    }
                     return;
                 }
 
                 tbody.innerHTML = '';
-                data.pedidos.forEach(p => {
+                pedidos.forEach(p => {
                     const isFacturado = p.estado === 'Facturado';
+                    const totalNum = parseFloat(p.total_venta != null ? p.total_venta : (p.monto != null ? p.monto : 0));
+                    const totalFmt = isNaN(totalNum) ? '0.00' : totalNum.toFixed(2);
+                    const nroCotiz = (p.nro_cotizacion || '').trim();
+
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid #E5E7EB';
                     tr.innerHTML = `
                         <td style="padding:10px; font-weight:700; color:#5B21B6;">${p.nro_pedido}</td>
-                        <td style="padding:10px;">${p.nro_cotizacion ? 'COT-' + p.nro_cotizacion : '-'}</td>
-                        <td style="padding:10px;">${p.fecha || '-'}</td>
-                        <td style="padding:10px; font-weight:600;">${p.cliente}</td>
-                        <td style="padding:10px;">${p.vendedor || 'Endrina'}</td>
-                        <td style="padding:10px; text-align:right; font-weight:700; color:#10B981;">S/ ${parseFloat(p.total_venta).toFixed(2)}</td>
+                        <td style="padding:10px;">
+                            ${nroCotiz ? `
+                                <a href="javascript:void(0)" onclick="cargarPedidosHistorial('${nroCotiz}')" style="font-weight:700; color:#4F46E5; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="Filtrar por esta cotización">
+                                    <i class="fa-solid fa-hashtag" style="font-size:10px;"></i>${nroCotiz.startsWith('COT-') ? nroCotiz : 'COT-' + nroCotiz}
+                                </a>
+                            ` : '<span style="color:#9CA3AF;">-</span>'}
+                        </td>
+                        <td style="padding:10px; font-size:12px; color:#4B5563;">${p.fecha || '-'}</td>
+                        <td style="padding:10px; font-weight:600; color:#1F2937;">
+                            ${p.cliente || 'CLIENTE VARIOS'}<br>
+                            <span style="font-size:11px; font-weight:normal; color:#6B7280;">RUC: ${p.documento || 'No registrado'}</span>
+                        </td>
+                        <td style="padding:10px; font-size:12px;">${p.vendedor || 'Endrina'}</td>
+                        <td style="padding:10px; text-align:right; font-weight:700; color:#10B981; font-size:13px;">S/ ${totalFmt}</td>
                         <td style="padding:10px; text-align:center;">
-                            <span style="padding:3px 8px; border-radius:4px; font-size:11px; font-weight:700; background:${isFacturado ? '#D1FAE5' : '#FEF3C7'}; color:${isFacturado ? '#065F46' : '#92400E'};">
+                            <span style="padding:3px 9px; border-radius:6px; font-size:11px; font-weight:700; background:${isFacturado ? '#D1FAE5' : (p.estado === 'Autorizado' ? '#EDE9FE' : '#FEF3C7')}; color:${isFacturado ? '#065F46' : (p.estado === 'Autorizado' ? '#5B21B6' : '#92400E')};">
                                 ${p.estado || 'Autorizado'}
                             </span>
                         </td>
                         <td style="padding:10px; text-align:center;">
-                            ${isFacturado ? `
-                                <span style="font-size:11px; color:#6B7280;">Facturado (${p.factura_vinculada || ''})</span>
-                            ` : `
-                                <button type="button" class="btn" style="background:#10B981; color:#FFF; font-size:11px; font-weight:700; padding:5px 12px; border-radius:4px; border:none; cursor:pointer;" onclick="irAFacturarConPedido('${p.nro_pedido}')">
-                                    <i class="fa-solid fa-file-invoice"></i> Facturar
+                            <div style="display:flex; justify-content:center; align-items:center; gap:6px; flex-wrap:wrap;">
+                                ${isFacturado ? `
+                                    <span style="font-size:11px; color:#6B7280; font-weight:600;">Facturado (${p.factura_vinculada || ''})</span>
+                                ` : `
+                                    <button type="button" class="btn" style="background:#10B981; color:#FFF; font-size:11px; font-weight:700; padding:5px 12px; border-radius:4px; border:none; cursor:pointer;" onclick="irAFacturarConPedido('${p.nro_pedido}')">
+                                        <i class="fa-solid fa-file-invoice"></i> Facturar
+                                    </button>
+                                `}
+                                <button type="button" class="btn-pill-white" style="font-size:11px; padding:5px 8px;" onclick="verDetallePedidoModal('${p.nro_pedido}')" title="Ver detalle de items del pedido">
+                                    <i class="fa-solid fa-eye"></i>
                                 </button>
-                            `}
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
             })
             .catch(err => {
-                console.error(err);
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:18px; color:#EF4444;">Error al cargar pedidos.</td></tr>';
+                console.error('Error al cargar historial de pedidos:', err);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:22px; color:#EF4444;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size:22px; margin-bottom:6px;"></i><br>
+                    <strong>Error al cargar pedidos del sistema:</strong> ${err.message || 'Error de conexión'}<br>
+                    <button type="button" class="btn-pill-white" style="margin-top:10px; font-size:12px;" onclick="cargarPedidosHistorial(currentFiltroCotizPedidos)">
+                        <i class="fa-solid fa-rotate"></i> Reintentar
+                    </button>
+                </td></tr>`;
+            });
+    }
+
+    // Modal para consultar items de un pedido en específico
+    function verDetallePedidoModal(nroPedido) {
+        fetch('crm_backend.php?action=obtener_detalle_pedido&codigo=' + encodeURIComponent(nroPedido))
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.pedido) {
+                    mostrarToast('error', 'Error', data.error || 'No se pudo cargar el detalle del pedido.');
+                    return;
+                }
+                const p = data.pedido;
+                const items = p.items || [];
+                let itemsHtml = items.map((it, idx) => `
+                    <tr style="border-bottom:1px solid #E5E7EB;">
+                        <td style="padding:8px; text-align:center;">${it.item || (idx + 1)}</td>
+                        <td style="padding:8px; font-weight:600;">${it.codigo || '-'}</td>
+                        <td style="padding:8px;">${it.descripcion || '-'}</td>
+                        <td style="padding:8px; text-align:center;">${it.um || 'UND'}</td>
+                        <td style="padding:8px; text-align:right; font-weight:700;">${parseFloat(it.cantidad || 0).toFixed(2)}</td>
+                        <td style="padding:8px; text-align:right;">S/ ${parseFloat(it.precio || 0).toFixed(2)}</td>
+                        <td style="padding:8px; text-align:right; font-weight:700; color:#10B981;">S/ ${parseFloat(it.v_venta || ((it.cantidad || 1) * (it.precio || 0))).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+
+                if (items.length === 0) {
+                    itemsHtml = '<tr><td colspan="7" style="text-align:center; padding:16px; color:#6B7280;">No se registraron items detallados en este pedido.</td></tr>';
+                }
+
+                const modalHtml = `
+                    <div id="modalDetallePedidoBox" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px;">
+                        <div style="background:#FFF; width:100%; max-width:760px; border-radius:12px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2); overflow:hidden; display:flex; flex-direction:column; max-height:90vh;">
+                            <div style="background:#5B21B6; color:#FFF; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+                                <h3 style="margin:0; font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-cart-flatbed"></i> Detalle de Pedido: ${p.nro_pedido}</h3>
+                                <button type="button" onclick="document.getElementById('modalDetallePedidoBox').remove()" style="background:none; border:none; color:#FFF; font-size:18px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div style="padding:20px; overflow-y:auto; flex:1;">
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; background:#F9FAFB; padding:14px; border-radius:8px; font-size:12.5px;">
+                                    <div><strong>Cliente:</strong> ${p.cliente}</div>
+                                    <div><strong>RUC/DNI:</strong> ${p.documento || '-'}</div>
+                                    <div><strong>Ref. Cotización:</strong> ${p.nro_cotizacion ? 'COT-' + p.nro_cotizacion : 'Directo'}</div>
+                                    <div><strong>Fecha Emisión:</strong> ${p.fecha}</div>
+                                    <div><strong>Asesor:</strong> ${p.vendedor || 'Endrina'}</div>
+                                    <div><strong>Estado:</strong> <span style="font-weight:700; color:#5B21B6;">${p.estado}</span></div>
+                                    <div><strong>Forma de Pago:</strong> ${p.forma_pago || 'CONTADO'}</div>
+                                    <div><strong>Total:</strong> <strong style="color:#10B981; font-size:14px;">S/ ${parseFloat(p.total_venta || 0).toFixed(2)}</strong></div>
+                                </div>
+                                <h4 style="font-size:13px; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i> Items del Pedido</h4>
+                                <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                                    <thead>
+                                        <tr style="background:#F3F4F6; text-align:left;">
+                                            <th style="padding:8px; text-align:center;">#</th>
+                                            <th style="padding:8px;">Código</th>
+                                            <th style="padding:8px;">Descripción</th>
+                                            <th style="padding:8px; text-align:center;">UM</th>
+                                            <th style="padding:8px; text-align:right;">Cantidad</th>
+                                            <th style="padding:8px; text-align:right;">P. Unit</th>
+                                            <th style="padding:8px; text-align:right;">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${itemsHtml}</tbody>
+                                </table>
+                            </div>
+                            <div style="padding:12px 20px; background:#F9FAFB; border-top:1px solid #E5E7EB; display:flex; justify-content:flex-end; gap:10px;">
+                                ${p.estado !== 'Facturado' ? `
+                                    <button type="button" class="btn" style="background:#10B981; color:#FFF; font-size:12px; font-weight:700; padding:7px 16px; border-radius:6px; border:none; cursor:pointer;" onclick="document.getElementById('modalDetallePedidoBox').remove(); irAFacturarConPedido('${p.nro_pedido}');">
+                                        <i class="fa-solid fa-file-invoice"></i> Proceder a Facturar
+                                    </button>
+                                ` : ''}
+                                <button type="button" class="btn-pill-white" style="font-size:12px; padding:7px 16px;" onclick="document.getElementById('modalDetallePedidoBox').remove()">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            })
+            .catch(err => {
+                mostrarToast('error', 'Error', 'No se pudo comunicar con el servidor para obtener los datos.');
             });
     }
 

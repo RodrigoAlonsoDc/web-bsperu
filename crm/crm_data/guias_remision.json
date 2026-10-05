@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "numero": "T001-0018220",
+        "tipo": "GR",
+        "fecha": "17/08/2026",
+        "fecha_emision": "2026-08-17",
+        "remitente_nombre": "BUILDING SYSTEMS PERU S.A.C.",
+        "remitente_ruc": "20609793806",
+        "domicilio_fiscal": "Av. Los Faisanes N° 675 Urb. La Campiña, Chorrillos - Lima - Lima",
+        "sucursal": "Av. Los Faisanes N° 675 Urb. La Campiña, Chorrillos - Lima - Lima",
+        "destinatario_nombre": "BUILDING SYSTEMS PERU S.A.C.",
+        "destinatario_ruc": "20609793806",
+        "destinatario_direccion": "AV. LOS FAISANES N° 675 URB. LA CAMPIÑA CHORRILLOS - LIMA - LIMA",
+        "punto_partida": "AV. LOS FAISANES 675 URB. LA CAMPIÑA",
+        "punto_llegada": "CALLE LOS TUMBOS N°505 TIENDA N°104",
+        "nro_pedido": "PD-0000220",
+        "nro_factura": "F001-0008420",
+        "vendedor": "99 VENTAS OFICINA",
+        "glosa": "VENTA PUNTUAL SUC CHICLAYO//MERAIDA CAMPOS PEÑA//SERVICIOS TERAN",
+        "motivo_traslado": "Venta",
+        "conductor": "MIGUEL HUMBERTO CONDEÑA AVALOS",
+        "conductor_dni": "46830741",
+        "conductor_lic": "Q46830741",
+        "vehiculo": "CANTER",
+        "placa": "BYF906",
+        "peso_bruto_total": 40,
+        "items": [
+            {
+                "item": 1,
+                "codigo": "110014677",
+                "descripcion": "Z DESMOLAC PU X 5 GAL",
+                "lote": "L200426",
+                "cantidad": 2,
+                "um": "LAT",
+                "peso": 20
+            }
+        ],
+        "hash_digest": "ieFmMWZUIBEXVaRSUQJMUVNPhg0=",
+        "qr_code": "20609793806|09|T001|0018220|0.00|40.00|17/08/2026|6|20609793806|",
+        "estado": "EMITIDO",
+        "created_at": "2026-08-17 10:00:00"
+    }
+]
