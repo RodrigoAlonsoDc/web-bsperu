@@ -92,6 +92,282 @@ $clientesFile = $dataDir . '/clientes.json';
 $cierresFile = $dataDir . '/cierres_ventas.json';
 $facturasAprobadasFile = $dataDir . '/facturas_aprobadas.json';
 
+$pedidosFile = $dataDir . '/pedidos.json';
+$guiasFile = $dataDir . '/guias_remision.json';
+
+if (!file_exists($pedidosFile)) {
+    $initialPedidos = [
+        [
+            'id' => 1,
+            'nro_pedido' => 'PD-000142',
+            'nro_cotizacion' => '0052456',
+            'fecha' => '2026-10-05',
+            'fecha_entrega' => '2026-10-05',
+            'punto_venta' => 'SUCURSAL CHORRILLOS',
+            'forma_pago' => 'CONTADO CONTRAENTREGA',
+            'vendedor' => 'ENDRINA IZEA',
+            'cliente' => 'PRESTADORA DE SERVICIOS PECUARIOS PSP S.A.C.',
+            'documento' => '20601257280',
+            'direccion' => 'JR. MARIANO MELGAR NRO. 188 (COSTADO DE INCUBADORA) LIMA - LIMA - SANTA ANITA',
+            'lugar_entrega' => 'JR. MARIANO MELGAR NRO. 188 (COSTADO DE INCUBADORA) LIMA - LIMA - SANTA ANITA',
+            'glosa' => 'PEDIDO CONFIRMADO SEGUN COTIZACION // DESPACHO PRIORITARIO',
+            'validez_oferta' => '15 DIAS',
+            'datos_pago' => 'PAGO CONTADO DEPOSITADO EN BCP',
+            'descuento_global' => 0,
+            'banco' => 'BCP',
+            'fecha_pago' => '2026-10-05',
+            'monto_pago' => 54380.09,
+            'nro_operacion' => 'BCP #849201',
+            'total_bruto' => 52536.47,
+            'descuentos' => 6451.65,
+            'total_v_venta' => 46084.82,
+            'igv' => 8295.27,
+            'total_venta' => 54380.09,
+            'estado' => 'Autorizado',
+            'factura_vinculada' => null,
+            'guia_vinculada' => null,
+            'items' => [
+                [
+                    'item' => 1,
+                    'codigo' => '110014465',
+                    'descripcion' => 'SEP. CONCRETOP DE FIERRO 7.5 CM X 50 UNI',
+                    'almacen' => 'ALMACEN PRINCIPAL',
+                    'cantidad' => 400.0,
+                    'precio' => 33.099,
+                    'v_venta' => 13239.60,
+                    'p_original' => 33.00,
+                    'p_bruto' => 33.00,
+                    'porc_dsc' => 15.0,
+                    'imp_dsc' => 1980.00,
+                    'estado_item' => 'AUTORIZADO',
+                    'lote' => '261001',
+                    'um' => 'B50',
+                    'peso' => 20.0
+                ],
+                [
+                    'item' => 2,
+                    'codigo' => '110014464',
+                    'descripcion' => 'SEP. CONCRETOP DE FIERRO 4 CM X 100 UNI',
+                    'almacen' => 'ALMACEN PRINCIPAL',
+                    'cantidad' => 250.0,
+                    'precio' => 43.1691,
+                    'v_venta' => 10792.28,
+                    'p_original' => 43.04,
+                    'p_bruto' => 43.04,
+                    'porc_dsc' => 15.0,
+                    'imp_dsc' => 1614.00,
+                    'estado_item' => 'AUTORIZADO',
+                    'lote' => '261002',
+                    'um' => 'B100',
+                    'peso' => 25.0
+                ],
+                [
+                    'item' => 3,
+                    'codigo' => '110014487',
+                    'descripcion' => 'Z MEMBRANA BLANCO X 55 GAL',
+                    'almacen' => 'ALMACEN PRINCIPAL',
+                    'cantidad' => 13.0,
+                    'precio' => 532.5611,
+                    'v_venta' => 6923.29,
+                    'p_original' => 501.47,
+                    'p_bruto' => 501.47,
+                    'porc_dsc' => 10.0,
+                    'imp_dsc' => 651.91,
+                    'estado_item' => 'AUTORIZADO',
+                    'lote' => '261003',
+                    'um' => 'CIL',
+                    'peso' => 220.0
+                ],
+                [
+                    'item' => 4,
+                    'codigo' => '110014481',
+                    'descripcion' => 'Z CRON X 55 GAL',
+                    'almacen' => 'ALMACEN PRINCIPAL',
+                    'cantidad' => 13.0,
+                    'precio' => 1801.9166,
+                    'v_venta' => 23424.92,
+                    'p_original' => 1696.72,
+                    'p_bruto' => 1696.72,
+                    'porc_dsc' => 10.0,
+                    'imp_dsc' => 2205.74,
+                    'estado_item' => 'AUTORIZADO',
+                    'lote' => '261004',
+                    'um' => 'CIL',
+                    'peso' => 240.0
+                ]
+            ],
+            'created_at' => date('Y-m-d H:i:s')
+        ]
+    ];
+    @file_put_contents($pedidosFile, json_encode($initialPedidos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+function obtenerPedidos() {
+    global $pedidosFile;
+    if (file_exists($pedidosFile)) {
+        return json_decode(file_get_contents($pedidosFile), true) ?: [];
+    }
+    return [];
+}
+
+function guardarPedidos($pedidos) {
+    global $pedidosFile;
+    @file_put_contents($pedidosFile, json_encode($pedidos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+function obtenerPedidoPorCodigo($codigo) {
+    $pedidos = obtenerPedidos();
+    $codigoLimpio = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)$codigo)));
+    foreach ($pedidos as $p) {
+        $pNum = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)($p['nro_pedido'] ?? ''))));
+        if ($pNum === $codigoLimpio || (string)($p['id'] ?? '') === $codigoLimpio || (string)($p['nro_pedido'] ?? '') === trim($codigo)) {
+            return $p;
+        }
+    }
+    return null;
+}
+
+if (!file_exists($guiasFile)) {
+    $initialGuias = [
+        [
+            'id' => 1,
+            'numero' => 'T001-0018220',
+            'tipo' => 'GR',
+            'fecha' => '17/08/2026',
+            'fecha_emision' => '2026-08-17',
+            'remitente_nombre' => 'BUILDING SYSTEMS PERU S.A.C.',
+            'remitente_ruc' => '20609793806',
+            'domicilio_fiscal' => 'Av. Los Faisanes N° 675 Urb. La Campiña, Chorrillos - Lima - Lima',
+            'sucursal' => 'Av. Los Faisanes N° 675 Urb. La Campiña, Chorrillos - Lima - Lima',
+            'destinatario_nombre' => 'BUILDING SYSTEMS PERU S.A.C.',
+            'destinatario_ruc' => '20609793806',
+            'destinatario_direccion' => 'AV. LOS FAISANES N° 675 URB. LA CAMPIÑA CHORRILLOS - LIMA - LIMA',
+            'punto_partida' => 'AV. LOS FAISANES 675 URB. LA CAMPIÑA',
+            'punto_llegada' => 'CALLE LOS TUMBOS N°505 TIENDA N°104',
+            'nro_pedido' => 'PD-0000220',
+            'nro_factura' => 'F001-0008420',
+            'vendedor' => '99 VENTAS OFICINA',
+            'glosa' => 'VENTA PUNTUAL SUC CHICLAYO//MERAIDA CAMPOS PEÑA//SERVICIOS TERAN',
+            'motivo_traslado' => 'Venta',
+            'conductor' => 'MIGUEL HUMBERTO CONDEÑA AVALOS',
+            'conductor_dni' => '46830741',
+            'conductor_lic' => 'Q46830741',
+            'vehiculo' => 'CANTER',
+            'placa' => 'BYF906',
+            'peso_bruto_total' => 40.00,
+            'items' => [
+                [
+                    'item' => 1,
+                    'codigo' => '110014677',
+                    'descripcion' => 'Z DESMOLAC PU X 5 GAL',
+                    'lote' => 'L200426',
+                    'cantidad' => 2.00,
+                    'um' => 'LAT',
+                    'peso' => 20.00
+                ]
+            ],
+            'hash_digest' => 'ieFmMWZUIBEXVaRSUQJMUVNPhg0=',
+            'qr_code' => '20609793806|09|T001|0018220|0.00|40.00|17/08/2026|6|20609793806|',
+            'estado' => 'EMITIDO',
+            'created_at' => date('Y-m-d H:i:s')
+        ]
+    ];
+    @file_put_contents($guiasFile, json_encode($initialGuias, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+function obtenerGuiasRemision() {
+    global $guiasFile;
+    if (file_exists($guiasFile)) {
+        return json_decode(file_get_contents($guiasFile), true) ?: [];
+    }
+    return [];
+}
+
+function guardarGuiasRemision($guias) {
+    global $guiasFile;
+    @file_put_contents($guiasFile, json_encode($guias, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+function descontarStockAlmacen($items, $sucursal = 'PRINCIPAL', $docReferencia = '', $cliente = '', $ruc = '', $asesor = 'Endrina', $nroGuia = '') {
+    $stockFile = __DIR__ . '/crm_data/almacen_stock.json';
+    $movsFile = __DIR__ . '/crm_data/almacen_movimientos.json';
+    
+    $stockAll = file_exists($stockFile) ? (json_decode(file_get_contents($stockFile), true) ?: []) : [];
+    $movsAll = file_exists($movsFile) ? (json_decode(file_get_contents($movsFile), true) ?: []) : [];
+
+    $suc = strtoupper(trim($sucursal ?: 'PRINCIPAL'));
+    if (!isset($stockAll[$suc])) {
+        $suc = 'PRINCIPAL';
+    }
+
+    $itemsMov = [];
+    $pesoTotal = 0;
+
+    foreach ($items as $it) {
+        $sku = trim((string)($it['codigo'] ?? ($it['sku'] ?? '')));
+        $cant = floatval($it['cantidad'] ?? ($it['cant'] ?? 1));
+        $desc = $it['descripcion'] ?? ($it['nombre'] ?? 'Producto Despachado');
+        $um = $it['umed'] ?? ($it['um'] ?? 'UND');
+        $peso = floatval($it['peso'] ?? 20.0);
+        $lote = $it['lote'] ?? date('ymd');
+
+        if (!empty($sku) && isset($stockAll[$suc][$sku])) {
+            $stockAll[$suc][$sku]['stock'] = max(0, $stockAll[$suc][$sku]['stock'] - $cant);
+            $lote = $stockAll[$suc][$sku]['lote'] ?? $lote;
+            $peso = floatval($stockAll[$suc][$sku]['peso'] ?? $peso);
+            $um = $stockAll[$suc][$sku]['um'] ?? $um;
+        }
+
+        $itemsMov[] = [
+            'sku' => $sku ?: '110014000',
+            'nombre' => $desc,
+            'lote' => $lote,
+            'cant' => $cant,
+            'um' => $um,
+            'peso' => $peso
+        ];
+        $pesoTotal += ($peso * $cant);
+    }
+
+    @file_put_contents($stockFile, json_encode($stockAll, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+
+    // Registrar en Kardex de Almacén
+    $nuevoMov = [
+        'numero' => $nroGuia ?: ('T001-00' . rand(18300, 19999)),
+        'tipo' => 'GR',
+        'fecha' => date('d/m/Y'),
+        'hora' => date('H:i'),
+        'origen' => $suc,
+        'origen_nombre' => 'Sede Principal (Chorrillos)',
+        'destino' => 'CLIENTE',
+        'destino_nombre' => $cliente ?: 'CLIENTE DE DESPACHO',
+        'motivo' => 'Venta',
+        'cliente' => $cliente ?: 'CLIENTE DE DESPACHO',
+        'ruc' => $ruc ?: '20000000000',
+        'vendedor' => $asesor ?: 'ENDRINA IZEA',
+        'glosa' => "DESPACHO POR VENTA SEGÚN {$docReferencia} // GUÍA {$nroGuia}",
+        'conductor' => 'MIGUEL HUMBERTO CONDEÑA AVALOS',
+        'conductor_dni' => '46830741',
+        'conductor_lic' => 'Q46830741',
+        'vehiculo' => 'CANTER',
+        'placa' => 'BYF906',
+        'items' => $itemsMov,
+        'peso_total' => $pesoTotal ?: 40.0,
+        'responsable' => $asesor ?: 'Almacén Despacho',
+        'estado' => 'EMITIDO'
+    ];
+
+    array_unshift($movsAll, $nuevoMov);
+    @file_put_contents($movsFile, json_encode($movsAll, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+
+    return [
+        'success' => true,
+        'movimiento' => $nuevoMov,
+        'peso_total' => $pesoTotal
+    ];
+}
+
+
 if (!file_exists($facturasAprobadasFile)) {
     @file_put_contents($facturasAprobadasFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
@@ -2648,6 +2924,307 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
             'mensaje' => 'Cuadre de ventas del día auditado y aprobado exitosamente.',
             'cierre' => $cierreActualizado
         ]);
+        exit;
+    }
+
+    // ========================================================
+    // ACCIONES DE PEDIDOS (STARSOFT PD) Y GUÍAS DE REMISIÓN
+    // ========================================================
+
+    // 15. LISTAR PEDIDOS REGISTRADOS
+    if ($action === 'listar_pedidos') {
+        header('Content-Type: application/json; charset=utf-8');
+        $pedidos = obtenerPedidos();
+        echo json_encode([
+            'success' => true,
+            'pedidos' => $pedidos,
+            'total' => count($pedidos)
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 16. OBTENER DETALLE DE PEDIDO POR CÓDIGO
+    if ($action === 'obtener_detalle_pedido') {
+        header('Content-Type: application/json; charset=utf-8');
+        $codigo = trim($_GET['codigo'] ?? ($_POST['codigo'] ?? ''));
+        $pedido = obtenerPedidoPorCodigo($codigo);
+        if ($pedido) {
+            echo json_encode(['success' => true, 'pedido' => $pedido], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode(['success' => false, 'error' => "El Pedido N° $codigo no fue encontrado."], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
+    }
+
+    // 17. GUARDAR NUEVO PEDIDO ("GRABAR SALIDA")
+    if ($action === 'guardar_pedido') {
+        header('Content-Type: application/json; charset=utf-8');
+        $pedidos = obtenerPedidos();
+
+        // Correlativo siguiente para PD-XXXXXX
+        $lastNum = 142;
+        foreach ($pedidos as $p) {
+            $numOnly = intval(preg_replace('/[^0-9]/', '', (string)($p['nro_pedido'] ?? '')));
+            if ($numOnly > $lastNum) $lastNum = $numOnly;
+        }
+        $nuevoNroPedido = 'PD-' . str_pad($lastNum + 1, 6, '0', STR_PAD_LEFT);
+
+        $nroCotiz = trim($_POST['nro_cotizacion'] ?? '');
+        $cliente = trim($_POST['cliente'] ?? 'PRESTADORA DE SERVICIOS PECUARIOS PSP S.A.C.');
+        $ruc = trim($_POST['documento'] ?? '20601257280');
+        $direccion = trim($_POST['direccion'] ?? '');
+        $lugarEntrega = trim($_POST['lugar_entrega'] ?? $direccion);
+        $vendedor = trim($_POST['vendedor'] ?? 'ENDRINA IZEA');
+        $puntoVenta = trim($_POST['punto_venta'] ?? 'SUCURSAL CHORRILLOS');
+        $formaPago = trim($_POST['forma_pago'] ?? 'CONTADO CONTRAENTREGA');
+        $glosa = trim($_POST['glosa'] ?? '');
+        $validezOferta = trim($_POST['validez_oferta'] ?? '15 DIAS');
+        $datosPago = trim($_POST['datos_pago'] ?? '');
+        $descuentoGlobal = floatval($_POST['descuento_global'] ?? 0);
+
+        // Datos de Pago Realizado
+        $banco = trim($_POST['banco'] ?? 'BCP');
+        $fechaPago = trim($_POST['fecha_pago'] ?? date('Y-m-d'));
+        $montoPago = floatval($_POST['monto_pago'] ?? 0);
+        $nroOperacion = trim($_POST['nro_operacion'] ?? '');
+
+        // Items y Totales
+        $itemsRaw = $_POST['items'] ?? '[]';
+        $items = is_array($itemsRaw) ? $itemsRaw : (json_decode($itemsRaw, true) ?: []);
+        $totalBruto = floatval($_POST['total_bruto'] ?? 0);
+        $descuentos = floatval($_POST['descuentos'] ?? 0);
+        $totalVVenta = floatval($_POST['total_v_venta'] ?? 0);
+        $igv = floatval($_POST['igv'] ?? 0);
+        $totalVenta = floatval($_POST['total_venta'] ?? 0);
+
+        $nuevoPedido = [
+            'id' => count($pedidos) + 1,
+            'nro_pedido' => $nuevoNroPedido,
+            'nro_cotizacion' => $nroCotiz,
+            'fecha' => date('Y-m-d'),
+            'fecha_entrega' => trim($_POST['fecha_entrega'] ?? date('Y-m-d')),
+            'punto_venta' => $puntoVenta,
+            'forma_pago' => $formaPago,
+            'vendedor' => $vendedor,
+            'cliente' => $cliente,
+            'documento' => $ruc,
+            'direccion' => $direccion,
+            'lugar_entrega' => $lugarEntrega,
+            'glosa' => $glosa,
+            'validez_oferta' => $validezOferta,
+            'datos_pago' => $datosPago,
+            'descuento_global' => $descuentoGlobal,
+            'banco' => $banco,
+            'fecha_pago' => $fechaPago,
+            'monto_pago' => $montoPago ?: $totalVenta,
+            'nro_operacion' => $nroOperacion,
+            'total_bruto' => $totalBruto,
+            'descuentos' => $descuentos,
+            'total_v_venta' => $totalVVenta,
+            'igv' => $igv,
+            'total_venta' => $totalVenta,
+            'estado' => 'Autorizado',
+            'factura_vinculada' => null,
+            'guia_vinculada' => null,
+            'items' => $items,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        array_unshift($pedidos, $nuevoPedido);
+        guardarPedidos($pedidos);
+
+        // Si venía de una cotización, actualizar estado de la cotización
+        if (!empty($nroCotiz)) {
+            $cotizaciones = obtenerCotizaciones();
+            foreach ($cotizaciones as &$cot) {
+                if ($cot['codigo'] === $nroCotiz) {
+                    $cot['estado'] = 'Pedido Generado (' . $nuevoNroPedido . ')';
+                    break;
+                }
+            }
+            guardarCotizaciones($cotizaciones);
+        }
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => "¡Pedido N° $nuevoNroPedido grabado y autorizado con éxito!",
+            'nro_pedido' => $nuevoNroPedido,
+            'pedido' => $nuevoPedido
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 18. BUSCAR PEDIDO PARA VALIDACIÓN EN FACTURACIÓN (CANDADO ESTRICTO)
+    if ($action === 'buscar_pedido_para_facturar') {
+        header('Content-Type: application/json; charset=utf-8');
+        $codigo = trim($_GET['codigo'] ?? ($_POST['codigo'] ?? ''));
+        if (empty($codigo)) {
+            echo json_encode(['success' => false, 'error' => 'Debe ingresar el N° de Pedido (PD).'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $pedido = obtenerPedidoPorCodigo($codigo);
+        if (!$pedido) {
+            echo json_encode([
+                'success' => false,
+                'error' => "El Pedido "$codigo" no existe en el sistema. En StarSoft no se puede facturar sin un Pedido (PD) registrado previamente a través de la Cotización."
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        if ($pedido['estado'] === 'Facturado') {
+            echo json_encode([
+                'success' => false,
+                'error' => "El Pedido "{$pedido['nro_pedido']}" ya fue facturado previamente con comprobante N° {$pedido['factura_vinculada']} y Guía {$pedido['guia_vinculada']}."
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => "Pedido {$pedido['nro_pedido']} validado y autorizado para facturación.",
+            'pedido' => $pedido
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 19. FACTURAR PEDIDO CON EMISIÓN DE GUÍA DE REMISIÓN Y DESCUENTO DE STOCK
+    if ($action === 'facturar_pedido_con_guia') {
+        header('Content-Type: application/json; charset=utf-8');
+        $nroPedido = trim($_POST['nro_pedido'] ?? '');
+        $pedido = obtenerPedidoPorCodigo($nroPedido);
+
+        if (!$pedido) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'No se puede emitir la factura. Debe proporcionar un N° de Pedido (PD) válido registrado previamente.'
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $nroFactura = trim($_POST['nro_factura'] ?? ('F001-00' . rand(8900, 9999)));
+        $metodo = trim($_POST['metodo_pago'] ?? ($pedido['forma_pago'] ?? 'Transferencia BCP'));
+        $nroOperacion = trim($_POST['nro_operacion'] ?? ($pedido['nro_operacion'] ?? 'Op. Bancaria Verificada'));
+        $banco = trim($_POST['banco'] ?? ($pedido['banco'] ?? 'BCP'));
+        $voucherUrl = trim($_POST['voucher_url'] ?? '');
+        $asesor = trim($_POST['asesor'] ?? ($pedido['vendedor'] ?? 'Endrina'));
+
+        // Generar correlativo de GUÍA DE REMISIÓN REMITENTE ELECTRÓNICA T001-XXXXXX
+        $guias = obtenerGuiasRemision();
+        $lastGuiaNum = 18220;
+        foreach ($guias as $g) {
+            $numG = intval(preg_replace('/[^0-9]/', '', (string)($g['numero'] ?? '')));
+            if ($numG > $lastGuiaNum) $lastGuiaNum = $numG;
+        }
+        $nuevoNroGuia = 'T001-' . str_pad($lastGuiaNum + 1, 7, '0', STR_PAD_LEFT);
+
+        // 1. DESCONTAR EL STOCK FÍSICO EN ALMACÉN Y REGISTRAR EN KARDEX
+        $sucursal = 'PRINCIPAL';
+        $resultadoStock = descontarStockAlmacen(
+            $pedido['items'] ?? [],
+            $sucursal,
+            "Factura $nroFactura / Pedido {$pedido['nro_pedido']}",
+            $pedido['cliente'],
+            $pedido['documento'],
+            $asesor,
+            $nuevoNroGuia
+        );
+
+        // 2. CREAR REGISTRO OFICIAL DE LA GUÍA DE REMISIÓN
+        $nuevaGuia = [
+            'id' => count($guias) + 1,
+            'numero' => $nuevoNroGuia,
+            'tipo' => 'GR',
+            'fecha' => date('d/m/Y'),
+            'fecha_emision' => date('Y-m-d'),
+            'remitente_nombre' => 'BUILDING SYSTEMS PERU S.A.C.',
+            'remitente_ruc' => '20609793806',
+            'domicilio_fiscal' => 'Av. Los Faisanes N° 675 Urb. La Campiña, Chorrillos - Lima - Lima',
+            'sucursal' => 'Av. Los Faisanes N° 675 Urb. La Campiña, Chorrillos - Lima - Lima',
+            'destinatario_nombre' => $pedido['cliente'],
+            'destinatario_ruc' => $pedido['documento'],
+            'destinatario_direccion' => $pedido['direccion'] ?: 'Lima - Perú',
+            'punto_partida' => 'AV. LOS FAISANES 675 URB. LA CAMPIÑA',
+            'punto_llegada' => $pedido['lugar_entrega'] ?: ($pedido['direccion'] ?: 'LIMA - PERU'),
+            'nro_pedido' => $pedido['nro_pedido'],
+            'nro_factura' => $nroFactura,
+            'vendedor' => $asesor,
+            'glosa' => $pedido['glosa'] ?: "DESPACHO VENTA SEGUN FACTURA $nroFactura // {$pedido['cliente']}",
+            'motivo_traslado' => 'Venta',
+            'conductor' => 'MIGUEL HUMBERTO CONDEÑA AVALOS',
+            'conductor_dni' => '46830741',
+            'conductor_lic' => 'Q46830741',
+            'vehiculo' => 'CANTER',
+            'placa' => 'BYF906',
+            'peso_bruto_total' => $resultadoStock['peso_total'] ?: 40.00,
+            'items' => $resultadoStock['movimiento']['items'] ?? ($pedido['items'] ?? []),
+            'hash_digest' => base64_encode(md5($nuevoNroGuia . time())),
+            'qr_code' => "20609793806|09|T001|" . substr($nuevoNroGuia, 5) . "|0.00|" . ($resultadoStock['peso_total'] ?: 40.00) . "|" . date('d/m/Y') . "|6|" . $pedido['documento'] . "|",
+            'estado' => 'EMITIDO',
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        array_unshift($guias, $nuevaGuia);
+        guardarGuiasRemision($guias);
+
+        // 3. ACTUALIZAR ESTADO DEL PEDIDO A FACTURADO
+        $pedidos = obtenerPedidos();
+        foreach ($pedidos as &$p) {
+            if ($p['nro_pedido'] === $pedido['nro_pedido']) {
+                $p['estado'] = 'Facturado';
+                $p['factura_vinculada'] = $nroFactura;
+                $p['guia_vinculada'] = $nuevoNroGuia;
+                break;
+            }
+        }
+        guardarPedidos($pedidos);
+
+        // 4. REGISTRAR PAGO Y FACTURA EN BANDEJA DE FACTURACIÓN
+        $pagos = obtenerPagos();
+        $nuevoPago = [
+            'id' => count($pagos) + 1,
+            'nro_factura' => $nroFactura,
+            'nro_pedido' => $pedido['nro_pedido'],
+            'nro_guia' => $nuevoNroGuia,
+            'cliente' => $pedido['cliente'],
+            'ruc' => $pedido['documento'],
+            'monto' => floatval($pedido['total_venta']),
+            'metodo' => $metodo,
+            'nro_operacion' => $nroOperacion,
+            'banco' => $banco,
+            'asesor' => $asesor,
+            'fecha' => date('Y-m-d H:i:s'),
+            'voucher_url' => $voucherUrl ?: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
+            'estado' => 'Pendiente',
+            'validador' => null,
+            'fecha_validacion' => null,
+            'motivo_observacion' => null
+        ];
+        array_unshift($pagos, $nuevoPago);
+        guardarPagos($pagos);
+
+        echo json_encode([
+            'success' => true,
+            'mensaje' => "¡Factura $nroFactura emitida exitosamente! Se generó la Guía de Remisión $nuevoNroGuia y se descontó el stock en Almacén.",
+            'factura' => $nroFactura,
+            'nro_guia' => $nuevoNroGuia,
+            'guia' => $nuevaGuia,
+            'pago' => $nuevoPago
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 20. OBTENER DETALLE DE GUÍA DE REMISIÓN
+    if ($action === 'obtener_guia_detalle') {
+        header('Content-Type: application/json; charset=utf-8');
+        $nroGuia = trim($_GET['numero'] ?? ($_POST['numero'] ?? ''));
+        $guias = obtenerGuiasRemision();
+        foreach ($guias as $g) {
+            if ($g['numero'] === $nroGuia || strpos($g['numero'], $nroGuia) !== false) {
+                echo json_encode(['success' => true, 'guia' => $g], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+        }
+        echo json_encode(['success' => false, 'error' => 'Guía de remisión no encontrada.'], JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
