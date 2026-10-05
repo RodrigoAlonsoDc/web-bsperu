@@ -2347,7 +2347,11 @@ if ($productoActual) {
             }
 
             // WhatsApp link personalizado
-            var waMsg = 'Hola Building Systems Perú, deseo cotizar el producto: ' + p.nombre + (p.sku ? ' (SKU: ' + p.sku + ')' : '');
+            var waMsg = 'Hola Building Systems Perú, deseo cotizar el producto: ' + p.nombre + '.';
+            var chipAct = document.querySelector('.chip-envase.active');
+            if (chipAct && chipAct.querySelector('span')) {
+                waMsg = 'Hola Building Systems Perú, deseo cotizar el producto: ' + p.nombre + ' (' + chipAct.querySelector('span').textContent.trim() + ').';
+            }
             var waUrl = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
             if (btnCotizarWa) btnCotizarWa.href = waUrl;
 
@@ -2357,7 +2361,7 @@ if ($productoActual) {
             if (pageTitle) pageTitle.textContent = tituloCompleto;
 
             var descLimpia = p.descripcion_larga || p.descripcion || 'Soluciones químicas especializadas para concreto y construcción en Perú.';
-            var metaDesc = 'Venta de ' + p.nombre + (p.sku ? ' (' + p.sku + ')' : '') + ' original de Z Aditivos en Perú. ' + descLimpia.replace(/\s+/g, ' ').substring(0, 140) + '... Cotiza con Building Systems Perú.';
+            var metaDesc = 'Venta de ' + p.nombre + ' original de Z Aditivos en Perú. ' + descLimpia.replace(/\s+/g, ' ').substring(0, 140) + '... Cotiza con Building Systems Perú.';
             var mDesc = document.getElementById('metaDescription') || document.querySelector('meta[name="description"]');
             if (mDesc) mDesc.setAttribute('content', metaDesc);
 

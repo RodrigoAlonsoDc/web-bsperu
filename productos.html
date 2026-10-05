@@ -870,6 +870,68 @@
             }
         }
 
+        /* ============ SELECTOR DE MEDIDAS / PRESENTACIONES EN LA TARJETA ============ */
+        .p-medidas-box {
+            margin-top: auto;
+            padding-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .p-medidas-title {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--text-muted, #64748b);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .p-medidas-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .p-pill-medida {
+            background: var(--bg-dark, #f8fafc);
+            border: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text, #334155);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            line-height: 1.25;
+            user-select: none;
+        }
+        .p-pill-medida:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+            transform: translateY(-1px);
+        }
+        .p-pill-medida.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.28);
+        }
+        .p-medidas-single {
+            font-size: 11.5px;
+            color: var(--text-muted, #64748b);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .p-medidas-single strong {
+            color: var(--text, #1e293b);
+            font-weight: 700;
+        }
+
         /* ============ TARJETA DE PRODUCTO SIMPLIFICADA ============ */
         .p-btn.p-btn-pdf {
             width: 100%;
@@ -1828,39 +1890,153 @@
             return siguiente();
         }
 
+        function getMeasureWeight(m) {
+            if (!m) return 999;
+            var str = String(m).toLowerCase();
+            if (str.indexOf('1/4') !== -1) return 0.25;
+            if (str.indexOf('600') !== -1 && str.indexOf('ml') !== -1) return 0.6;
+            if (str.indexOf('1 gal') !== -1 || str.indexOf('1 gln') !== -1) return 1;
+            if (str.indexOf('1 kg') !== -1) return 1;
+            if (str.indexOf('4 kg') !== -1) return 4;
+            if (str.indexOf('5 kg') !== -1) return 5;
+            if (str.indexOf('5 gal') !== -1 || str.indexOf('5 gln') !== -1) return 5;
+            if (str.indexOf('10 kg') !== -1) return 10;
+            if (str.indexOf('20 kg') !== -1) return 20;
+            if (str.indexOf('25 kg') !== -1) return 25;
+            if (str.indexOf('30 kg') !== -1) return 30;
+            if (str.indexOf('55 gal') !== -1) return 55;
+            if (str.indexOf('1000 l') !== -1) return 1000;
+            var match = str.match(/(\d+(?:\.\d+)?)/);
+            return match ? parseFloat(match[1]) : 50;
+        }
+
+        function normalizeProduct(p) {
+            var name = (p.nombre || '').trim();
+
+            name = name.replace(/\bX\s+GL\b/i, 'X 1 GAL');
+            name = name.replace(/\bX\s+GAL\b/i, 'X 1 GAL');
+            name = name.replace(/\bX\s+KG\b/i, 'X 1 KG');
+
+            var patterns = [
+                /\s+X\s+(\d+(?:[\.,\/]\d+)?\s*(?:GAL(?:ONES)?|GLN|KG|KILOS?|LT|LITROS?|L|ML|GR|GRS|BOLSAS?|CIL(?:INDRO)?|BALDE|LATA|TINAJA|LBS?|ONZAS?|TAMBOR))\s*$/i,
+                /\s+X\s+(\d+(?:[\.,\/]\d+)?\s*(?:KG|KILOS?|GAL))\s*(?:\(?[AB\+]+\)?)?$/i,
+                /\s+EN\s+(\d+(?:[\.,\/]\d+)?\s*(?:GAL|KG|LT|L|ML|BOLSAS?))\s*$/i,
+                /\s+(\d+(?:[\.,\/]\d+)?\s*(?:KG|KILOS?|LBS?|GR))\s*$/i,
+                /\s+(CILINDRO|BALDE|GALON|LATA|BOLSA)\s*$/i
+            ];
+
+            var pres = '';
+            var base = name;
+
+            if (/Z\s+POX\s+31/i.test(name)) {
+                base = 'Z POX 31';
+                pres = /5\s*KG/i.test(name) ? '5 Kg' : '1 Kg';
+            } else if (/Z\s+POX\s+32/i.test(name)) {
+                base = 'Z POX 32';
+                pres = /5\s*KG/i.test(name) ? '5 Kg' : '1 Kg';
+            } else if (/Z\s+POX\s+35/i.test(name)) {
+                base = 'Z POX 35 BV';
+                pres = '1 Kg';
+            } else if (/Z\s+FLEX\s+POLIURETANO/i.test(name)) {
+                base = 'Z FLEX POLIURETANO GRIS';
+                pres = /600\s*ML/i.test(name) ? '600 ml' : '1 Gal';
+            } else {
+                for (var i = 0; i < patterns.length; i++) {
+                    var m = name.match(patterns[i]);
+                    if (m) {
+                        pres = m[1].toUpperCase().trim();
+                        base = name.replace(patterns[i], '').trim();
+                        break;
+                    }
+                }
+                base = base.replace(/[\s\-\.,]+X$/i, '').trim();
+
+                if (pres === 'GAL' || pres === '1 GAL' || pres === 'GLN') pres = '1 Gal';
+                else if (/^5\s*GAL/i.test(pres)) pres = '5 Gal';
+                else if (/^55\s*GAL/i.test(pres)) pres = '55 Gal';
+                else if (/^1000\s*L/i.test(pres)) pres = '1000 L';
+                else if (/^25\s*KG/i.test(pres)) pres = '25 Kg';
+                else if (/^30\s*KG/i.test(pres)) pres = '30 Kg';
+                else if (/^20\s*KG/i.test(pres)) pres = '20 Kg';
+                else if (/^10\s*KG/i.test(pres)) pres = '10 Kg';
+                else if (/^4\s*KG/i.test(pres)) pres = '4 Kg';
+                else if (/^1\s*KG/i.test(pres)) pres = '1 Kg';
+                else if (/^1\/4\s*GAL/i.test(pres)) pres = '1/4 Gal';
+                else if (!pres) pres = 'Estándar';
+            }
+
+            return { base: base, pres: pres };
+        }
+
         function prepararProductos(raw) {
-            return raw.map(function (p, i) {
+            var map = {};
+            var list = [];
+
+            raw.forEach(function (p) {
+                var normData = normalizeProduct(p);
+                var base = normData.base;
+                var pres = normData.pres;
                 var cat = (p.categoria || '').trim();
                 var fam = familiaDe(cat);
-                var minis = [];
-                if (p.imagen) minis.push(p.imagen);
-                if (p.miniaturas) {
-                    ['miniatura1', 'miniatura2', 'miniatura3'].forEach(function (k) {
-                        var v = p.miniaturas[k];
-                        if (v && minis.indexOf(v) === -1) minis.push(v);
-                    });
+
+                if (!map[base]) {
+                    var item = {
+                        idx: list.length,
+                        nombre: base,
+                        categoria: cat,
+                        categoriaLabel: titulo(cat),
+                        marca: p.marca || 'Z ADITIVOS',
+                        familiaId: fam ? fam.id : '',
+                        familiaNombre: fam ? fam.nombre : 'Otros',
+                        descripcion: p.descripcion || '',
+                        descripcionLarga: p.descripcion_larga || '',
+                        imagen: p.imagen || '',
+                        ficha: p.ficha_pdf || '',
+                        hoja: p.hoja_seguridad_pdf || '',
+                        disponible: p.producto_disponible !== false,
+                        variantes: [],
+                        varianteActivaIdx: 0,
+                        buscable: ''
+                    };
+                    map[base] = item;
+                    list.push(item);
                 }
-                return {
-                    idx: i,
+
+                var group = map[base];
+                if (!group.imagen && p.imagen) group.imagen = p.imagen;
+                if (!group.descripcion && p.descripcion) group.descripcion = p.descripcion;
+                if (!group.ficha && p.ficha_pdf) group.ficha = p.ficha_pdf;
+
+                group.variantes.push({
                     sku: p.sku || '',
                     slug: p.slug || '',
-                    nombre: p.nombre || 'Producto sin nombre',
-                    categoria: cat,
-                    categoriaLabel: titulo(cat),
-                    familiaId: fam ? fam.id : '',
-                    familiaNombre: fam ? fam.nombre : 'Otros',
-                    descripcion: p.descripcion || '',
-                    descripcionLarga: p.descripcion_larga || '',
-                    peso: p.peso2,
+                    nombreOriginal: p.nombre || '',
+                    medida: pres,
                     imagen: p.imagen || '',
-                    imagenes: minis,
                     ficha: p.ficha_pdf || '',
                     hoja: p.hoja_seguridad_pdf || '',
-                    disponible: p.producto_disponible !== false,
-                    presentacion: presentacion(p.nombre || ''),
-                    buscable: norm((p.nombre || '') + ' ' + (p.sku || '') + ' ' + cat + ' ' + (p.descripcion || ''))
-                };
+                    disponible: p.producto_disponible !== false
+                });
             });
+
+            list.forEach(function (p) {
+                p.variantes.sort(function (a, b) {
+                    return getMeasureWeight(a.medida) - getMeasureWeight(b.medida);
+                });
+
+                var firstAvail = -1;
+                for (var v = 0; v < p.variantes.length; v++) {
+                    if (p.variantes[v].disponible) { firstAvail = v; break; }
+                }
+                p.varianteActivaIdx = (firstAvail !== -1) ? firstAvail : 0;
+
+                var varText = p.variantes.map(function (v) {
+                    return v.nombreOriginal + ' ' + v.medida + ' ' + v.sku;
+                }).join(' ');
+                p.buscable = norm((p.nombre || '') + ' ' + (p.categoria || '') + ' ' + (p.descripcion || '') + ' ' + varText);
+            });
+
+            return list;
         }
 
         /* =========================================================
@@ -1872,7 +2048,17 @@
                 if (q && p.buscable.indexOf(q) === -1) return false;
                 if (estado.familia && p.familiaId !== estado.familia) return false;
                 if (estado.subcat && norm(p.categoria) !== norm(estado.subcat)) return false;
-                if (estado.presentacion && p.presentacion !== estado.presentacion) return false;
+                if (estado.presentacion) {
+                    var matchPres = false;
+                    for (var i = 0; i < p.variantes.length; i++) {
+                        if (norm(p.variantes[i].medida) === norm(estado.presentacion)) {
+                            matchPres = true;
+                            p.varianteActivaIdx = i; // auto-seleccionar la medida filtrada
+                            break;
+                        }
+                    }
+                    if (!matchPres) return false;
+                }
                 if (estado.soloDisp && !p.disponible) return false;
                 return true;
             }).sort(function (a, b) {
@@ -1894,7 +2080,7 @@
             
             var total = PRODUCTOS.length;
             var totalBadge = $('#catTotalCount');
-            if (totalBadge) totalBadge.textContent = total + ' total';
+            if (totalBadge) totalBadge.textContent = total + ' productos';
 
             var allAct = !estado.familia ? ' active' : '';
             var html = '<button type="button" class="cat-item-btn' + allAct + '" data-familia="">' +
@@ -1941,15 +2127,24 @@
                 });
             }
 
-            var presentaciones = [];
-            PRODUCTOS.forEach(function (p) { if (presentaciones.indexOf(p.presentacion) === -1) presentaciones.push(p.presentacion); });
-            presentaciones.sort();
+            var presentacionesMap = {};
+            PRODUCTOS.forEach(function (p) {
+                p.variantes.forEach(function (v) {
+                    if (v.medida && v.medida !== 'Estándar') {
+                        presentacionesMap[v.medida] = (presentacionesMap[v.medida] || 0) + 1;
+                    }
+                });
+            });
+
+            var presList = Object.keys(presentacionesMap);
+            presList.sort(function (a, b) { return getMeasureWeight(a) - getMeasureWeight(b); });
+
             var selP = $('#fPresentacion');
             if (selP) {
-                presentaciones.forEach(function (pr) {
-                    var n = PRODUCTOS.filter(function (p) { return p.presentacion === pr; }).length;
+                selP.innerHTML = '<option value="">Todas las presentaciones</option>';
+                presList.forEach(function (pr) {
                     var o = document.createElement('option');
-                    o.value = pr; o.textContent = pr + ' (' + n + ')';
+                    o.value = pr; o.textContent = pr + ' (' + presentacionesMap[pr] + ')';
                     selP.appendChild(o);
                 });
             }
@@ -1957,11 +2152,13 @@
 
         function renderChips() {
             var cont = $('#subcatChips');
+            if (!cont) return;
             if (!estado.familia) { cont.innerHTML = ''; return; }
             var fam = FAMILIAS.filter(function (f) { return f.id === estado.familia; })[0];
-            if (!fam || fam.cats.length < 2) { cont.innerHTML = ''; return; }
+            if (!fam || fam.cats.length <= 1) { cont.innerHTML = ''; return; }
 
-            var html = '<button type="button" class="chip' + (estado.subcat ? '' : ' active') + '" data-subcat="">Todas</button>';
+            var html = '<button type="button" class="chip' + (!estado.subcat ? ' active' : '') + '" data-subcat="">' +
+                       'Todas las subcategorías</button>';
             fam.cats.forEach(function (c) {
                 var n = PRODUCTOS.filter(function (p) { return norm(p.categoria) === norm(c); }).length;
                 if (!n) return;
@@ -1979,42 +2176,57 @@
         }
 
         /* =========================================================
-           RENDER — tarjetas de producto
+           RENDER — tarjetas de producto simplificadas (Sin SKU)
            ========================================================= */
         function cardHTML(p, i) {
-            var img = p.imagen
-                ? '<img src="' + esc(p.imagen) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" onerror="this.closest(\'.p-img\').classList.add(\'no-image\')">'
+            var vActiva = (p.variantes && p.variantes[p.varianteActivaIdx]) ? p.variantes[p.varianteActivaIdx] : (p.variantes ? p.variantes[0] : {});
+            var imgUrl = vActiva.imagen || p.imagen;
+            var img = imgUrl
+                ? '<img src="' + esc(imgUrl) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" onerror="this.closest(\'.p-img\').classList.add(\'no-image\')">'
                 : '';
             
             var desc = p.descripcion || 'Consulte la ficha técnica o comuníquese con nosotros para asesoría técnica de este producto.';
+            var prodHref = vActiva.slug ? ('/producto/' + encodeURIComponent(vActiva.slug)) : ('producto.html?sku=' + encodeURIComponent(vActiva.sku));
 
-            var prodHref = p.slug ? ('/producto/' + encodeURIComponent(p.slug)) : ('producto.html?sku=' + encodeURIComponent(p.sku));
-
+            var fichaPdf = vActiva.ficha || p.ficha;
             var accionBoton = '';
-            if (p.ficha) {
-                accionBoton = '<a class="p-btn p-btn-pdf" href="' + esc(p.ficha) + '" target="_blank" rel="noopener" title="Descargar Ficha Técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)">' +
+            if (fichaPdf) {
+                accionBoton = '<a class="p-btn p-btn-pdf" href="' + esc(fichaPdf) + '" target="_blank" rel="noopener" title="Descargar Ficha Técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)">' +
                     '<i class="ph ph-file-pdf" aria-hidden="true"></i> Ficha Técnica PDF</a>';
             } else {
                 accionBoton = '<a class="p-btn p-btn-ficha-request" href="' + prodHref + '" title="Ver detalles y especificaciones">' +
                     '<i class="ph ph-arrow-right" aria-hidden="true"></i> Ver especificaciones</a>';
             }
 
+            var medidasHTML = '';
+            if (p.variantes && p.variantes.length > 1) {
+                var pills = p.variantes.map(function (v, vIdx) {
+                    var act = (vIdx === p.varianteActivaIdx) ? ' active' : '';
+                    return '<button type="button" class="p-pill-medida' + act + '" data-v="' + vIdx + '">' + esc(v.medida) + '</button>';
+                }).join('');
+                medidasHTML = '<div class="p-medidas-box">' +
+                    '<span class="p-medidas-title"><i class="ph ph-package" aria-hidden="true"></i> Medidas disponibles:</span>' +
+                    '<div class="p-medidas-pills" role="group" aria-label="Seleccionar medida">' + pills + '</div>' +
+                '</div>';
+            } else if (p.variantes && p.variantes.length === 1 && p.variantes[0].medida !== 'Estándar') {
+                medidasHTML = '<div class="p-medidas-box single">' +
+                    '<span class="p-medidas-single"><i class="ph ph-package" aria-hidden="true"></i> Presentación: <strong>' + esc(p.variantes[0].medida) + '</strong></span>' +
+                '</div>';
+            }
+
             var idxDelay = (typeof i === 'number') ? (i % 24) : 0;
 
-            return '<article class="product-card card-entrance' + (p.disponible ? '' : ' unavailable') + '" style="--i:' + idxDelay + ';">' +
-                '<a href="' + prodHref + '" style="display:block; text-decoration:none;">' +
-                    '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
+            return '<article class="product-card card-entrance' + (p.disponible ? '' : ' unavailable') + '" id="card-' + p.idx + '" data-idx="' + p.idx + '" style="--i:' + idxDelay + ';">' +
+                '<a href="' + prodHref + '" class="p-card-link-img" style="display:block; text-decoration:none;">' +
+                    '<div class="p-img' + (imgUrl ? '' : ' no-image') + '">' + img +
                         '<span class="fallback" data-nosnippet aria-hidden="true"><i class="ph ph-image-square"></i></span>' +
                     '</div>' +
                 '</a>' +
                 '<div class="p-body">' +
                     '<p class="p-cat">' + esc(p.categoriaLabel) + '</p>' +
-                    '<h3><a href="' + prodHref + '" style="color:inherit;text-decoration:none;" title="Ver ficha completa de ' + esc(p.nombre) + '">' + esc(p.nombre) + '</a></h3>' +
+                    '<h3><a href="' + prodHref + '" class="p-card-link-title" style="color:inherit;text-decoration:none;" title="Ver ficha completa de ' + esc(p.nombre) + '">' + esc(p.nombre) + '</a></h3>' +
                     '<p class="p-desc">' + esc(desc) + '</p>' +
-                    '<p class="p-meta">' +
-                        '<span><i class="ph ph-barcode" aria-hidden="true"></i> ' + esc(p.sku) + '</span>' +
-                        '<span><i class="ph ph-package" aria-hidden="true"></i> ' + esc(p.presentacion) + '</span>' +
-                    '</p>' +
+                    medidasHTML +
                 '</div>' +
                 '<div class="p-actions" data-nosnippet>' + accionBoton + '</div>' +
             '</article>';
@@ -2026,7 +2238,7 @@
             var wrap = $('#loadMoreWrap');
 
             $('#resultCount').innerHTML = lista.length
-                ? '<strong>' + lista.length + '</strong> producto' + (lista.length === 1 ? '' : 's') + ' encontrado' + (lista.length === 1 ? '' : 's')
+                ? '<strong>' + lista.length + '</strong> productos encontrados'
                 : 'Sin resultados';
 
             if (!lista.length) {
@@ -2046,14 +2258,55 @@
             grid.innerHTML = visibles.map(cardHTML).join('');
             wrap.hidden = lista.length <= estado.visibles;
 
-            $$('[data-detalle]', grid).forEach(function (b) {
-                b.addEventListener('click', function () { abrirModal(PRODUCTOS[Number(b.dataset.detalle)]); });
-            });
             observarFade(grid);
         }
 
+        /* Delegación de eventos para las pastillas de medida en las tarjetas */
+        document.addEventListener('click', function (e) {
+            var pill = e.target.closest('.p-pill-medida');
+            if (!pill) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            var card = pill.closest('.product-card');
+            if (!card) return;
+
+            var pIdx = Number(card.dataset.idx);
+            var vIdx = Number(pill.dataset.v);
+            var p = PRODUCTOS[pIdx];
+            if (!p || !p.variantes || !p.variantes[vIdx]) return;
+
+            card.querySelectorAll('.p-pill-medida').forEach(function (b) {
+                b.classList.toggle('active', b === pill);
+            });
+
+            p.varianteActivaIdx = vIdx;
+            var v = p.variantes[vIdx];
+            var vHref = v.slug ? ('/producto/' + encodeURIComponent(v.slug)) : ('producto.html?sku=' + encodeURIComponent(v.sku));
+
+            var linkImg = card.querySelector('.p-card-link-img');
+            if (linkImg) linkImg.href = vHref;
+            var linkTitle = card.querySelector('.p-card-link-title');
+            if (linkTitle) linkTitle.href = vHref;
+
+            if (v.imagen) {
+                var imgEl = card.querySelector('.p-img img');
+                if (imgEl) imgEl.src = v.imagen;
+            }
+
+            var ficha = v.ficha || p.ficha;
+            var actionsWrap = card.querySelector('.p-actions');
+            if (actionsWrap) {
+                if (ficha) {
+                    actionsWrap.innerHTML = '<a class="p-btn p-btn-pdf" href="' + esc(ficha) + '" target="_blank" rel="noopener" title="Descargar Ficha Técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)"><i class="ph ph-file-pdf" aria-hidden="true"></i> Ficha Técnica PDF</a>';
+                } else {
+                    actionsWrap.innerHTML = '<a class="p-btn p-btn-ficha-request" href="' + vHref + '" title="Ver detalles y especificaciones"><i class="ph ph-arrow-right" aria-hidden="true"></i> Ver especificaciones</a>';
+                }
+            }
+        });
+
         /* =========================================================
-           MODAL DE DETALLE
+           MODAL DE DETALLE (Sin SKU visible)
            ========================================================= */
         var ultimoFoco = null;
 
@@ -2075,50 +2328,31 @@
             $('#modalTitle').textContent = p.nombre;
             $('#modalShort').textContent = p.descripcion || '';
             $('#modalShort').style.display = p.descripcion ? '' : 'none';
-            $('#modalLong').textContent = p.descripcionLarga || 'Este producto todavía no tiene descripción ampliada. Escríbanos por WhatsApp y un asesor técnico le envía la información completa.';
+            $('#modalLong').textContent = p.descripcionLarga || 'Consulte la ficha técnica oficial o escríbanos para asesoría técnica de este producto.';
 
-            pintarImagenModal(p.imagenes[0], p.nombre);
+            var vActiva = (p.variantes && p.variantes[p.varianteActivaIdx]) ? p.variantes[p.varianteActivaIdx] : {};
+            pintarImagenModal(vActiva.imagen || p.imagen, p.nombre);
 
             var thumbs = $('#modalThumbs');
-            if (p.imagenes.length > 1) {
-                thumbs.innerHTML = p.imagenes.map(function (src, i) {
-                    return '<button type="button" class="' + (i === 0 ? 'active' : '') + '" data-src="' + esc(src) + '" ' +
-                        'aria-label="Ver imagen ' + (i + 1) + '"><img src="' + esc(src) + '" alt="" ' +
-                        'onerror="this.closest(\'button\').remove()"></button>';
-                }).join('');
-                $$('button', thumbs).forEach(function (b) {
-                    b.addEventListener('click', function () {
-                        $$('button', thumbs).forEach(function (x) { x.classList.remove('active'); });
-                        b.classList.add('active');
-                        pintarImagenModal(b.dataset.src, p.nombre);
-                    });
-                });
-            } else {
-                thumbs.innerHTML = '';
-            }
+            if (thumbs) thumbs.innerHTML = '';
 
+            var presText = p.variantes.map(function (v) { return v.medida; }).join(', ');
             var specs = [
-                { k: 'SKU', v: p.sku },
-                { k: 'Presentación', v: p.presentacion },
-                { k: 'Familia', v: p.familiaNombre }
+                { k: 'Familia', v: p.familiaNombre },
+                { k: 'Presentaciones', v: presText || 'Estándar' }
             ];
-            if (p.peso) specs.push({ k: 'Peso neto', v: p.peso + ' kg' });
             $('#modalSpecs').innerHTML = specs.map(function (s) {
                 return '<div class="spec"><div class="k">' + esc(s.k) + '</div><div class="v">' + esc(s.v) + '</div></div>';
             }).join('');
 
+            var modalProdHref = vActiva.slug ? ('/producto/' + encodeURIComponent(vActiva.slug)) : ('producto.html?sku=' + encodeURIComponent(vActiva.sku));
             var acciones = '<a class="p-btn primary" href="' +
-                esc(waLink('Hola BS Perú, quisiera cotizar: ' + p.nombre + ' (SKU ' + p.sku + ').')) +
+                esc(waLink('Hola BS Perú, quisiera cotizar: ' + p.nombre + '.')) +
                 '" target="_blank" rel="noopener"><i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i> Cotizar</a>';
-            var modalProdHref = p.slug ? ('/producto/' + encodeURIComponent(p.slug)) : ('producto.html?sku=' + encodeURIComponent(p.sku));
             acciones += '<a class="p-btn secondary" href="' + modalProdHref + '"><i class="ph ph-arrow-square-out" aria-hidden="true"></i> Ver producto completo</a>';
-            if (p.ficha) {
-                acciones += '<a class="p-btn" href="' + esc(p.ficha) + '" target="_blank" rel="noopener">' +
+            if (p.ficha || vActiva.ficha) {
+                acciones += '<a class="p-btn" href="' + esc(vActiva.ficha || p.ficha) + '" target="_blank" rel="noopener">' +
                     '<i class="ph ph-file-pdf" aria-hidden="true"></i> Ficha técnica</a>';
-            }
-            if (p.hoja) {
-                acciones += '<a class="p-btn" href="' + esc(p.hoja) + '" target="_blank" rel="noopener">' +
-                    '<i class="ph ph-shield-warning" aria-hidden="true"></i> Hoja de seguridad</a>';
             }
             $('#modalActions').innerHTML = acciones;
 
