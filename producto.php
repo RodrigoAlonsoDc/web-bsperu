@@ -192,6 +192,7 @@ if ($productoActual) {
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" id="canonicalLink" href="<?php echo $url; ?>">
     <link rel="icon" href="/favicon.ico">
+    <link rel="preload" as="image" href="<?php echo $image; ?>" fetchpriority="high">
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="product">
@@ -216,7 +217,7 @@ if ($productoActual) {
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://bsperu.pe/" },
         { "@type": "ListItem", "position": 2, "name": "Catálogo", "item": "https://bsperu.pe/productos.html" },
-        { "@type": "ListItem", "position": 3, "name": "Producto", "item": "<?php echo $url; ?>" }
+        { "@type": "ListItem", "position": 3, "name": "<?php echo !empty($nombre) ? $nombre : 'Producto'; ?>", "item": "<?php echo $url; ?>" }
       ]
     }
     </script>
@@ -1757,7 +1758,7 @@ if ($productoActual) {
                 <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
                 <li><a href="/productos.html#familias" id="breadCategoria">Inhibidores de corrosión y removedores</a></li>
                 <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
-                <li class="current" id="breadProducto">Removedor de Óxido Z</li>
+                <li class="current" id="breadProducto"><?php echo !empty($nombre) ? $nombre : 'Removedor de Óxido Z'; ?></li>
             </ul>
         </nav>
     </div>
@@ -1766,7 +1767,7 @@ if ($productoActual) {
     <main class="shell product-section">
         
         <!-- TÍTULO PRINCIPAL (Exacto al diseño de la imagen) -->
-        <h1 class="product-main-title" id="prodTitle">REMOVEDOR DE ÓXIDO Z</h1>
+        <h1 class="product-main-title" id="prodTitle"><?php echo !empty($nombre) ? $nombre : 'REMOVEDOR DE ÓXIDO Z'; ?></h1>
 
         <!-- SECCIÓN SUPERIOR: IMAGEN + DESCRIPCIÓN CORTA -->
         <div class="product-top-grid">
@@ -1774,7 +1775,7 @@ if ($productoActual) {
             <!-- Columna Izquierda: Imagen del producto y miniaturas -->
             <div class="product-media-card">
                 <div class="product-img-stage" id="imgStage">
-                    <img id="mainImg" src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL1.jpg" alt="Removedor de Óxido Z - Balde 5 Galones">
+                    <img id="mainImg" src="<?php echo $image; ?>" alt="<?php echo !empty($nombre) ? $nombre : 'Removedor de Óxido Z - Balde 5 Galones'; ?>" fetchpriority="high">
                 </div>
                 <div class="product-thumbnails" id="thumbsContainer">
                     <button class="thumb-btn active" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL1.jpg" aria-label="Vista frontal">
