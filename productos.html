@@ -595,6 +595,332 @@
         }
         .chip .n { opacity: 0.65; margin-left: 5px; font-weight: 600; }
 
+        /* ============ CABECERA Y SIDEBAR DE CATÁLOGO ============ */
+        .catalog-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            padding: 110px 0 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .catalog-header::before {
+            content: '';
+            position: absolute;
+            top: -40%; right: -15%;
+            width: 520px; height: 520px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .catalog-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%; left: -10%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .catalog-breadcrumb {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 12.5px; font-weight: 600; color: #94a3b8;
+            margin-bottom: 14px;
+        }
+        .catalog-breadcrumb a { color: #cbd5e1; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s; }
+        .catalog-breadcrumb a:hover { color: #60a5fa; }
+        .catalog-breadcrumb .sep { font-size: 11px; color: #64748b; }
+        .catalog-breadcrumb span { color: #38bdf8; font-weight: 700; }
+        .catalog-title {
+            font-size: clamp(26px, 3.6vw, 40px);
+            font-weight: 900; line-height: 1.18;
+            color: #ffffff; margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .catalog-title span {
+            background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .catalog-subtitle {
+            font-size: 15px; color: #94a3b8; max-width: 720px; line-height: 1.55; margin: 0;
+        }
+
+        /* Layout 2 Columnas */
+        .catalog-layout {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            gap: 28px;
+            align-items: start;
+            margin-top: 15px;
+        }
+        .catalog-layout.sidebar-collapsed {
+            grid-template-columns: 1fr;
+        }
+        .catalog-layout.sidebar-collapsed .catalog-sidebar {
+            display: none;
+        }
+
+        /* Sidebar Lateral */
+        .catalog-sidebar {
+            background: var(--bg-card, #ffffff);
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 86px;
+            max-height: calc(100vh - 105px);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        .catalog-sidebar::-webkit-scrollbar { width: 5px; }
+        .catalog-sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .sidebar-sticky-wrap {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .sidebar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 12px; border-bottom: 1px solid var(--border-color, #e2e8f0);
+        }
+        .sidebar-header h3 {
+            font-size: 15px; font-weight: 800; color: var(--title-color, #0f172a);
+            display: flex; align-items: center; gap: 8px; margin: 0;
+        }
+        .sidebar-header h3 i { color: #2563eb; font-size: 18px; }
+        .btn-close-sidebar {
+            display: none;
+            background: #f1f5f9; border: none; width: 32px; height: 32px;
+            border-radius: 50%; font-size: 16px; cursor: pointer; color: #475569;
+            align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .btn-close-sidebar:hover { background: #fee2e2; color: #dc2626; }
+        .sidebar-group {
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .sidebar-group-title {
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.9px; color: var(--text-muted, #64748b);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .sidebar-search-box {
+            position: relative;
+        }
+        .sidebar-search-box input {
+            width: 100%; padding: 11px 14px 11px 38px;
+            border: 1px solid var(--border-color, #cbd5e1); border-radius: 10px;
+            font-size: 13px; font-family: inherit; font-weight: 600;
+            background: var(--bg-dark, #f8fafc); color: var(--text, #0f172a);
+            transition: all 0.2s ease;
+        }
+        .sidebar-search-box input::placeholder { color: var(--text-muted, #94a3b8); font-weight: 400; }
+        .sidebar-search-box input:focus {
+            outline: none; border-color: #2563eb; background: var(--bg-card, #ffffff);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+        }
+        .sidebar-search-box i {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted, #94a3b8); font-size: 16px; pointer-events: none;
+        }
+
+        /* Lista de Categorías en Sidebar */
+        .sidebar-cat-nav {
+            display: flex; flex-direction: column; gap: 4px;
+            max-height: 290px; overflow-y: auto; padding-right: 4px;
+        }
+        .sidebar-cat-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-cat-nav::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+        .cat-item-btn {
+            width: 100%; text-align: left; background: transparent;
+            border: 1px solid transparent; border-radius: 8px;
+            padding: 9px 10px; font-size: 12.5px; font-weight: 600;
+            color: var(--text, #334155); cursor: pointer; display: flex;
+            align-items: center; justify-content: space-between; gap: 8px;
+            transition: all 0.2s ease; font-family: inherit;
+        }
+        .cat-item-btn:hover {
+            background: var(--bg-medium, #f1f5f9); color: #2563eb;
+        }
+        .cat-item-btn.active {
+            background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; font-weight: 800;
+        }
+        .cat-item-btn .cat-label {
+            display: flex; align-items: center; gap: 8px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .cat-item-btn .cat-label i { font-size: 16px; }
+        .cat-item-btn .cat-badge {
+            background: var(--bg-medium, #e2e8f0); color: var(--text-muted, #475569);
+            font-size: 10.5px; font-weight: 700; padding: 2px 7px;
+            border-radius: 20px; min-width: 24px; text-align: center;
+        }
+        .cat-item-btn.active .cat-badge {
+            background: #2563eb; color: #ffffff;
+        }
+
+        .sidebar-select {
+            width: 100%; padding: 10px 12px;
+            border: 1px solid var(--border-color, #cbd5e1); border-radius: 10px;
+            font-size: 12.5px; font-family: inherit; font-weight: 600;
+            background: var(--bg-card, #ffffff); color: var(--text, #334155);
+            cursor: pointer; outline: none; transition: border-color 0.2s;
+        }
+        .sidebar-select:focus {
+            border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+        }
+
+        .btn-sidebar-reset {
+            width: 100%; background: var(--bg-dark, #f8fafc); border: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text-muted, #64748b); font-size: 12px; font-weight: 700;
+            padding: 10px 12px; border-radius: 8px; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            transition: all 0.2s ease; font-family: inherit;
+        }
+        .btn-sidebar-reset:hover {
+            background: #fee2e2; border-color: #fca5a5; color: #dc2626;
+        }
+
+        /* Topbar de Catálogo */
+        .catalog-topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-card, #ffffff); border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 14px; padding: 12px 18px; margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02); flex-wrap: wrap; gap: 12px;
+        }
+        .topbar-left {
+            display: flex; align-items: center; gap: 14px;
+        }
+        .btn-toggle-sidebar-desktop {
+            background: var(--bg-medium, #f1f5f9); border: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text, #334155); font-size: 12px; font-weight: 700;
+            padding: 8px 13px; border-radius: 8px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.2s ease; font-family: inherit;
+        }
+        .btn-toggle-sidebar-desktop:hover {
+            background: #e2e8f0; color: #0f172a;
+        }
+
+        /* Botón Lateral Flotante para Móvil */
+        .btn-lateral-flotante {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            left: 20px;
+            z-index: 999;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+            cursor: pointer;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-lateral-flotante:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.55);
+        }
+        .sidebar-backdrop {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-backdrop.active {
+            display: block; opacity: 1; pointer-events: auto;
+        }
+
+        /* RESPONSIVE MÓVIL PARA SIDEBAR */
+        @media (max-width: 1024px) {
+            .catalog-layout {
+                grid-template-columns: 1fr;
+            }
+            .btn-toggle-sidebar-desktop {
+                display: none;
+            }
+            .catalog-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 320px;
+                max-width: 85vw;
+                height: 100vh;
+                max-height: 100vh;
+                z-index: 10001;
+                border-radius: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: 10px 0 40px rgba(0,0,0,0.25);
+            }
+            .catalog-sidebar.open {
+                transform: translateX(0);
+            }
+            .btn-close-sidebar {
+                display: flex;
+            }
+            .btn-lateral-flotante {
+                display: flex;
+            }
+        }
+
+        /* ============ TARJETA DE PRODUCTO SIMPLIFICADA ============ */
+        .p-btn.p-btn-pdf {
+            width: 100%;
+            background: var(--bg-dark, #f8fafc);
+            border: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text, #1e293b);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .p-btn.p-btn-pdf i {
+            font-size: 17px;
+            color: #dc2626;
+        }
+        .p-btn.p-btn-pdf:hover {
+            background: #ffffff;
+            border-color: #dc2626;
+            color: #dc2626;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12);
+            transform: translateY(-2px);
+        }
+        .p-btn.p-btn-ficha-request {
+            width: 100%;
+            background: transparent;
+            border: 1px dashed var(--border-color, #cbd5e1);
+            color: var(--text-muted, #64748b);
+            font-weight: 600;
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .p-btn.p-btn-ficha-request:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #f0f7ff;
+            border-style: solid;
+        }
+
         /* ============ GRID DE PRODUCTOS ============ */
         .products-grid {
             display: grid;
@@ -1113,8 +1439,8 @@
             <img class="brand-logo" src="img/logo_bs.png" alt="BS Perú" width="200" height="46">
         </a>
         <ul class="nav-links">
-            <li><a href="#inicio">Inicio</a></li>
-            <li><a href="#familias">Familias</a></li>
+            <li><a href="/">Inicio</a></li>
+            
             <li><a href="#catalogo">Catálogo</a></li>
             <li><a href="/sucursales.html">Sucursales</a></li>
             <li><a href="#consulta">Asesoría</a></li>
@@ -1136,8 +1462,8 @@
             <button class="drawer-close" id="drawerCloseBtn" aria-label="Cerrar menú"><i class="ph ph-x" aria-hidden="true"></i></button>
         </div>
         <ul class="drawer-nav">
-            <li><a href="#inicio"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a></li>
-            <li><a href="#familias"><i class="ph ph-squares-four" aria-hidden="true"></i> Familias de producto</a></li>
+            <li><a href="/"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a></li>
+            
             <li><a href="#catalogo"><i class="ph ph-list-magnifying-glass" aria-hidden="true"></i> Catálogo completo</a></li>
             <li><a href="/sucursales.html"><i class="ph ph-storefront" aria-hidden="true"></i> Sucursales</a></li>
             <li><a href="#consulta"><i class="ph ph-chats-circle" aria-hidden="true"></i> Asesoría técnica</a></li>
@@ -1149,112 +1475,125 @@
     </aside>
 
     <!-- ============ HERO ============ -->
-    <header class="hero" id="inicio">
-        <div class="hero-bg" aria-hidden="true"></div>
+    <!-- ============ CABECERA DEDICADA DE CATÁLOGO ============ -->
+    <header class="catalog-header" id="inicio">
         <div class="shell">
-            <div class="hero-content">
-                <p class="hero-tag">Building Systems Perú S.A.C.</p>
-                <h1>Protección Confiable<br>Contra el <span>Fenómeno del Niño</span></h1>
-                <p class="hero-desc">Z 2000 es una membrana líquida impermeable que forma una barrera continua y elástica, diseñada para resistir lluvias intensas y condiciones extremas.</p>
-                <div class="hero-btns">
-                    <a href="#catalogo" class="btn-hero-primary">
-                        Ver catálogo completo <i class="ph ph-arrow-right" aria-hidden="true"></i>
-                    </a>
-                    <a href="#consulta" class="btn-hero-ghost">
-                        <i class="ph ph-chats-circle" aria-hidden="true"></i> Consultar a un técnico
-                    </a>
-                </div>
-                <div class="hero-stats">
-                    <div class="hero-stat">
-                        <div class="num" id="statProductos">—</div>
-                        <div class="lbl">Productos</div>
-                    </div>
-                    <div class="hero-stat">
-                        <div class="num" id="statFamilias">8</div>
-                        <div class="lbl">Familias</div>
-                    </div>
-                    <div class="hero-stat">
-                        <div class="num" id="statFichas">—</div>
-                        <div class="lbl">Fichas técnicas</div>
-                    </div>
-                    <div class="hero-stat">
-                        <div class="num">Z</div>
-                        <div class="lbl">Z Aditivos</div>
-                    </div>
-                </div>
-            </div>
+            <nav class="catalog-breadcrumb" aria-label="Migas de pan">
+                <a href="/"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a>
+                <span class="sep"><i class="ph ph-caret-right" aria-hidden="true"></i></span>
+                <span>Catálogo Oficial</span>
+            </nav>
+            <h1 class="catalog-title">Catálogo Oficial de <span>Productos Z</span></h1>
+            <p class="catalog-subtitle">Línea integral de aditivos, impermeabilizantes, selladores, morteros y soluciones químicas de alto rendimiento para obras civiles e infraestructura en todo el Perú.</p>
         </div>
     </header>
 
-    <!-- ============ FAMILIAS ============ -->
-    <section class="familias-section" id="familias">
-        <div class="shell">
-            <div class="section-head fade-up">
-                <p class="eyebrow">Explora por necesidad</p>
-                <h2>Familias de <span>Producto</span></h2>
-                <p>Toda la línea Z ADITIVOS agrupada por tipo de obra. Elige una familia y el catálogo se filtra al instante.</p>
-            </div>
-            <div class="familias-grid" id="familiasGrid">
-                <!-- Generado desde productos.json -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ============ CATÁLOGO ============ -->
+    <!-- ============ CATÁLOGO Y SIDEBAR ============ -->
     <section class="catalog-section" id="catalogo">
         <div class="shell">
-            <div class="section-head fade-up">
-                <p class="eyebrow">Catálogo Z Aditivos</p>
-                <h2>Todos los <span>Productos</span></h2>
-                <p>Busca por nombre o SKU y filtra por familia, presentación y disponibilidad.</p>
-            </div>
+            <div class="catalog-layout" id="catalogLayout">
+                
+                <!-- SIDEBAR LATERAL (Desktop & Drawer Mobile) -->
+                <aside class="catalog-sidebar" id="catalogSidebar" aria-label="Filtros y categorización">
+                    <div class="sidebar-sticky-wrap">
+                        <div class="sidebar-header">
+                            <h3><i class="ph ph-faders" aria-hidden="true"></i> Categorías y Búsqueda</h3>
+                            <button type="button" class="btn-close-sidebar" id="btnCloseSidebar" aria-label="Cerrar filtros">
+                                <i class="ph ph-x" aria-hidden="true"></i>
+                            </button>
+                        </div>
 
-            <div class="filter-bar">
-                <div class="filter-row">
-                    <div class="field">
-                        <label for="fSearch"><i class="ph ph-magnifying-glass" aria-hidden="true"></i> Buscar</label>
-                        <input type="search" id="fSearch" placeholder="Nombre del producto, SKU o descripción…" autocomplete="off">
+                        <!-- Buscador Lateral Rápido -->
+                        <div class="sidebar-group">
+                            <div class="sidebar-group-title">
+                                <span>Buscar Producto</span>
+                            </div>
+                            <div class="sidebar-search-box">
+                                <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+                                <input type="search" id="fSearch" placeholder="Nombre, SKU o uso..." autocomplete="off">
+                            </div>
+                        </div>
+
+                        <!-- Categorías / Familias -->
+                        <div class="sidebar-group">
+                            <div class="sidebar-group-title">
+                                <span>Líneas de Producto</span>
+                                <span id="catTotalCount" style="font-size:11px; color:#2563eb; font-weight:700;"></span>
+                            </div>
+                            <div class="sidebar-cat-nav" id="sidebarCatNav">
+                                <!-- Se llena dinámicamente con renderSidebarFamilias() -->
+                            </div>
+                        </div>
+
+                        <!-- Filtro por Presentación -->
+                        <div class="sidebar-group">
+                            <div class="sidebar-group-title">
+                                <span>Presentación</span>
+                            </div>
+                            <select class="sidebar-select" id="fPresentacion">
+                                <option value="">Todas las presentaciones</option>
+                            </select>
+                        </div>
+
+                        <!-- Botón Limpiar Filtros -->
+                        <button type="button" class="btn-sidebar-reset" id="btnClear">
+                            <i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Limpiar Filtros
+                        </button>
                     </div>
-                    <div class="field">
-                        <label for="fFamilia"><i class="ph ph-squares-four" aria-hidden="true"></i> Familia</label>
-                        <select id="fFamilia"><option value="">Todas</option></select>
+                </aside>
+
+                <!-- CONTENIDO PRINCIPAL: TOPBAR + CHIPS + GRID -->
+                <div class="catalog-main">
+                    <!-- Topbar con controles rápidos -->
+                    <div class="catalog-topbar">
+                        <div class="topbar-left">
+                            <button type="button" class="btn-toggle-sidebar-desktop" id="btnToggleSidebar" title="Mostrar u ocultar barra lateral">
+                                <i class="ph ph-sidebar-simple" aria-hidden="true"></i>
+                                <span id="btnToggleSidebarText">Ocultar filtros</span>
+                            </button>
+                            <div class="result-count" id="resultCount" aria-live="polite" role="status">
+                                Cargando catálogo…
+                            </div>
+                        </div>
+                        <div class="topbar-right" style="display:flex; align-items:center; gap:8px;">
+                            <label for="fOrden" style="font-size:12px; font-weight:700; color:var(--text-muted); display:inline-flex; align-items:center; gap:4px;">
+                                <i class="ph ph-sort-ascending"></i> Orden:
+                            </label>
+                            <select class="sidebar-select" id="fOrden" style="width:auto; padding:6px 10px; font-size:12px;">
+                                <option value="az">Nombre (A-Z)</option>
+                                <option value="za">Nombre (Z-A)</option>
+                                <option value="cat">Por categoría</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="field">
-                        <label for="fPresentacion"><i class="ph ph-package" aria-hidden="true"></i> Presentación</label>
-                        <select id="fPresentacion"><option value="">Todas</option></select>
+
+                    <!-- Chips de Subcategorías (se muestran si hay una familia seleccionada) -->
+                    <div class="subcat-chips" id="subcatChips"></div>
+
+                    <!-- Grilla de Productos -->
+                    <div class="products-grid" id="productsGrid">
+                        <div class="sk-card"></div><div class="sk-card"></div>
+                        <div class="sk-card"></div><div class="sk-card"></div>
                     </div>
-                    <div class="field">
-                        <label for="fOrden"><i class="ph ph-sort-ascending" aria-hidden="true"></i> Ordenar</label>
-                        <select id="fOrden">
-                            <option value="az">Nombre (A-Z)</option>
-                            <option value="za">Nombre (Z-A)</option>
-                            <option value="cat">Por categoría</option>
-                        </select>
+
+                    <!-- Botón Cargar Más -->
+                    <div class="load-more-wrap" id="loadMoreWrap" hidden>
+                        <button type="button" class="btn-outline" id="btnLoadMore">
+                            <i class="ph ph-plus-circle" aria-hidden="true"></i> Ver más productos
+                        </button>
                     </div>
-                    <button type="button" class="filter-clear" id="btnClear">
-                        <i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Limpiar
-                    </button>
                 </div>
-                <div class="filter-extras">
-                    
-                    <p class="result-count" id="resultCount" aria-live="polite" role="status">Cargando catálogo…</p>
-                </div>
-            </div>
 
-            <div class="subcat-chips" id="subcatChips"></div>
-
-            <div class="products-grid" id="productsGrid">
-                <div class="sk-card"></div><div class="sk-card"></div>
-                <div class="sk-card"></div><div class="sk-card"></div>
-            </div>
-
-            <div class="load-more-wrap" id="loadMoreWrap" hidden>
-                <button type="button" class="btn-outline" id="btnLoadMore">
-                    <i class="ph ph-plus-circle" aria-hidden="true"></i> Ver más productos
-                </button>
             </div>
         </div>
     </section>
+
+    <!-- Botón Lateral Flotante para Móviles -->
+    <button type="button" class="btn-lateral-flotante" id="btnLateralFiltros" aria-label="Abrir filtros y categorías">
+        <i class="ph ph-faders" aria-hidden="true"></i> Filtrar y Buscar
+    </button>
+    <!-- Backdrop para el Drawer móvil -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- ============ MODAL DETALLE ============ -->
     <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
@@ -1549,54 +1888,71 @@
         /* =========================================================
            RENDER — familias
            ========================================================= */
-        function renderFamilias() {
-            var cont = $('#familiasGrid');
-            cont.innerHTML = FAMILIAS.map(function (f) {
-                var n = PRODUCTOS.filter(function (p) { return p.familiaId === f.id; }).length;
-                return '<button type="button" class="familia-card fade-up" data-familia="' + esc(f.id) + '">' +
-                    '<span class="icon-box"><i class="ph ' + esc(f.icon) + '" aria-hidden="true"></i></span>' +
-                    '<h3>' + esc(f.nombre) + '</h3>' +
-                    '<p>' + esc(f.desc) + '</p>' +
-                    '<span class="count">' + n + ' producto' + (n === 1 ? '' : 's') +
-                        ' <i class="ph ph-arrow-right" aria-hidden="true"></i></span>' +
-                '</button>';
-            }).join('');
+        function renderSidebarFamilias() {
+            var nav = $('#sidebarCatNav');
+            if (!nav) return;
+            
+            var total = PRODUCTOS.length;
+            var totalBadge = $('#catTotalCount');
+            if (totalBadge) totalBadge.textContent = total + ' total';
 
-            $$('.familia-card', cont).forEach(function (btn) {
+            var allAct = !estado.familia ? ' active' : '';
+            var html = '<button type="button" class="cat-item-btn' + allAct + '" data-familia="">' +
+                '<span class="cat-label"><i class="ph ph-squares-four" aria-hidden="true"></i> Todas las categorías</span>' +
+                '<span class="cat-badge">' + total + '</span>' +
+            '</button>';
+
+            FAMILIAS.forEach(function (f) {
+                var n = PRODUCTOS.filter(function (p) { return p.familiaId === f.id; }).length;
+                if (!n) return;
+                var act = (estado.familia === f.id) ? ' active' : '';
+                html += '<button type="button" class="cat-item-btn' + act + '" data-familia="' + esc(f.id) + '">' +
+                    '<span class="cat-label"><i class="ph ' + esc(f.icon) + '" aria-hidden="true"></i> ' + esc(f.nombre) + '</span>' +
+                    '<span class="cat-badge">' + n + '</span>' +
+                '</button>';
+            });
+
+            nav.innerHTML = html;
+
+            $$('.cat-item-btn', nav).forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     var id = btn.dataset.familia;
-                    estado.familia = (estado.familia === id) ? '' : id;
+                    estado.familia = id;
                     estado.subcat = '';
-                    $('#fFamilia').value = estado.familia;
                     aplicar();
-                    $('#catalogo').scrollIntoView({ behavior: 'smooth' });
+                    if (window.cerrarSidebarMobile) window.cerrarSidebarMobile();
                 });
             });
         }
 
-        /* =========================================================
-           RENDER — selects y chips
-           ========================================================= */
+        function renderFamilias() {
+            renderSidebarFamilias();
+        }
+
         function renderSelects() {
             var selF = $('#fFamilia');
-            FAMILIAS.forEach(function (f) {
-                var n = PRODUCTOS.filter(function (p) { return p.familiaId === f.id; }).length;
-                if (!n) return;
-                var o = document.createElement('option');
-                o.value = f.id; o.textContent = f.nombre + ' (' + n + ')';
-                selF.appendChild(o);
-            });
+            if (selF) {
+                FAMILIAS.forEach(function (f) {
+                    var n = PRODUCTOS.filter(function (p) { return p.familiaId === f.id; }).length;
+                    if (!n) return;
+                    var o = document.createElement('option');
+                    o.value = f.id; o.textContent = f.nombre + ' (' + n + ')';
+                    selF.appendChild(o);
+                });
+            }
 
             var presentaciones = [];
             PRODUCTOS.forEach(function (p) { if (presentaciones.indexOf(p.presentacion) === -1) presentaciones.push(p.presentacion); });
             presentaciones.sort();
             var selP = $('#fPresentacion');
-            presentaciones.forEach(function (pr) {
-                var n = PRODUCTOS.filter(function (p) { return p.presentacion === pr; }).length;
-                var o = document.createElement('option');
-                o.value = pr; o.textContent = pr + ' (' + n + ')';
-                selP.appendChild(o);
-            });
+            if (selP) {
+                presentaciones.forEach(function (pr) {
+                    var n = PRODUCTOS.filter(function (p) { return p.presentacion === pr; }).length;
+                    var o = document.createElement('option');
+                    o.value = pr; o.textContent = pr + ' (' + n + ')';
+                    selP.appendChild(o);
+                });
+            }
         }
 
         function renderChips() {
@@ -1630,27 +1986,27 @@
                 ? '<img src="' + esc(p.imagen) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" onerror="this.closest(\'.p-img\').classList.add(\'no-image\')">'
                 : '';
             
-            var desc = p.descripcion || 'Consulte la ficha técnica o escríbanos para conocer el detalle de este producto.';
+            var desc = p.descripcion || 'Consulte la ficha técnica o comuníquese con nosotros para asesoría técnica de este producto.';
 
-            var acciones = '<button type="button" class="p-btn primary" data-detalle="' + p.idx + '">' +
-                    '<i class="ph ph-eye" aria-hidden="true"></i> Ver detalle</button>';
+            var prodHref = p.slug ? ('/producto/' + encodeURIComponent(p.slug)) : ('producto.html?sku=' + encodeURIComponent(p.sku));
+
+            var accionBoton = '';
             if (p.ficha) {
-                acciones += '<a class="p-btn icon-only" href="' + esc(p.ficha) + '" target="_blank" rel="noopener" ' +
-                    'title="Ficha técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)">' +
-                    '<i class="ph ph-file-pdf" aria-hidden="true"></i></a>';
+                accionBoton = '<a class="p-btn p-btn-pdf" href="' + esc(p.ficha) + '" target="_blank" rel="noopener" title="Descargar Ficha Técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)">' +
+                    '<i class="ph ph-file-pdf" aria-hidden="true"></i> Ficha Técnica PDF</a>';
+            } else {
+                accionBoton = '<a class="p-btn p-btn-ficha-request" href="' + prodHref + '" title="Ver detalles y especificaciones">' +
+                    '<i class="ph ph-arrow-right" aria-hidden="true"></i> Ver especificaciones</a>';
             }
-            acciones += '<a class="p-btn icon-only" href="' + esc(waLink('Hola BS Perú, quisiera cotizar: ' + p.nombre + ' (SKU ' + p.sku + ').')) + '" ' +
-                'target="_blank" rel="noopener" title="Cotizar por WhatsApp" aria-label="Cotizar ' + esc(p.nombre) + ' por WhatsApp">' +
-                '<i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i></a>';
 
             var idxDelay = (typeof i === 'number') ? (i % 24) : 0;
-            var prodHref = p.slug ? ('/producto/' + encodeURIComponent(p.slug)) : ('producto.html?sku=' + encodeURIComponent(p.sku));
 
             return '<article class="product-card card-entrance' + (p.disponible ? '' : ' unavailable') + '" style="--i:' + idxDelay + ';">' +
                 '<a href="' + prodHref + '" style="display:block; text-decoration:none;">' +
-                '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
-                    '<span class="fallback" data-nosnippet aria-hidden="true"><i class="ph ph-image-square"></i></span>' +
-                '</div></a>' +
+                    '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
+                        '<span class="fallback" data-nosnippet aria-hidden="true"><i class="ph ph-image-square"></i></span>' +
+                    '</div>' +
+                '</a>' +
                 '<div class="p-body">' +
                     '<p class="p-cat">' + esc(p.categoriaLabel) + '</p>' +
                     '<h3><a href="' + prodHref + '" style="color:inherit;text-decoration:none;" title="Ver ficha completa de ' + esc(p.nombre) + '">' + esc(p.nombre) + '</a></h3>' +
@@ -1660,7 +2016,7 @@
                         '<span><i class="ph ph-package" aria-hidden="true"></i> ' + esc(p.presentacion) + '</span>' +
                     '</p>' +
                 '</div>' +
-                '<div class="p-actions" data-nosnippet>' + acciones + '</div>' +
+                '<div class="p-actions" data-nosnippet>' + accionBoton + '</div>' +
             '</article>';
         }
 
@@ -1786,9 +2142,16 @@
            ========================================================= */
         function aplicar(resetPagina) {
             if (resetPagina !== false) estado.visibles = PAGE_SIZE;
-            $$('.familia-card').forEach(function (c) {
-                c.classList.toggle('active', c.dataset.familia === estado.familia);
+
+            $$('.cat-item-btn').forEach(function (btn) {
+                var f = btn.dataset.familia;
+                if (!f) {
+                    btn.classList.toggle('active', !estado.familia);
+                } else {
+                    btn.classList.toggle('active', estado.familia === f);
+                }
             });
+
             renderChips();
             renderProductos();
             sincronizarURL();
@@ -1797,8 +2160,10 @@
         function limpiar() {
             estado.q = ''; estado.familia = ''; estado.subcat = '';
             estado.presentacion = ''; estado.soloDisp = false; estado.orden = 'az';
-            $('#fSearch').value = ''; $('#fFamilia').value = '';
-            $('#fPresentacion').value = ''; $('#fOrden').value = 'az';
+            var inp = $('#fSearch'); if (inp) inp.value = '';
+            var selP = $('#fPresentacion'); if (selP) selP.value = '';
+            var selO = $('#fOrden'); if (selO) selO.value = 'az';
+            var selF = $('#fFamilia'); if (selF) selF.value = '';
             aplicar();
         }
 
@@ -1988,33 +2353,98 @@
         /* =========================================================
            FILTROS — eventos
            ========================================================= */
-        function initFiltros() {
-            var t;
-            $('#fSearch').addEventListener('input', function (e) {
-                clearTimeout(t);
-                var v = e.target.value;
-                t = setTimeout(function () { estado.q = v; aplicar(); }, 220);
-            });
-            $('#fFamilia').addEventListener('change', function (e) {
-                estado.familia = e.target.value; estado.subcat = ''; aplicar();
-            });
-            $('#fPresentacion').addEventListener('change', function (e) { estado.presentacion = e.target.value; aplicar(); });
-            $('#fOrden').addEventListener('change', function (e) { estado.orden = e.target.value; aplicar(); });
-            $('#btnClear').addEventListener('click', limpiar);
-            $('#btnLoadMore').addEventListener('click', function () {
-                estado.visibles += PAGE_SIZE;
-                aplicar(false);
-            });
+        function initSidebarInteractions() {
+            var layout = $('#catalogLayout');
+            var sidebar = $('#catalogSidebar');
+            var backdrop = $('#sidebarBackdrop');
+            var btnDesktop = $('#btnToggleSidebar');
+            var btnToggleText = $('#btnToggleSidebarText');
+            var btnMobile = $('#btnLateralFiltros');
+            var btnClose = $('#btnCloseSidebar');
 
-            $('#modalCloseBtn').addEventListener('click', cerrarModal);
-            $('#modalOverlay').addEventListener('click', function (e) {
-                if (e.target === this) cerrarModal();
+            if (btnDesktop && layout) {
+                btnDesktop.addEventListener('click', function () {
+                    var collapsed = layout.classList.toggle('sidebar-collapsed');
+                    if (btnToggleText) {
+                        btnToggleText.textContent = collapsed ? 'Mostrar filtros' : 'Ocultar filtros';
+                    }
+                });
+            }
+
+            function abrirSidebarMobile() {
+                if (sidebar) sidebar.classList.add('open');
+                if (backdrop) backdrop.classList.add('active');
+                document.body.classList.add('no-scroll');
+            }
+
+            function cerrarSidebarMobile() {
+                if (sidebar) sidebar.classList.remove('open');
+                if (backdrop) backdrop.classList.remove('active');
+                document.body.classList.remove('no-scroll');
+            }
+
+            window.cerrarSidebarMobile = cerrarSidebarMobile;
+
+            if (btnMobile) btnMobile.addEventListener('click', abrirSidebarMobile);
+            if (btnClose) btnClose.addEventListener('click', cerrarSidebarMobile);
+            if (backdrop) backdrop.addEventListener('click', cerrarSidebarMobile);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') cerrarSidebarMobile();
             });
         }
 
-        /* =========================================================
-           ARRANQUE
-           ========================================================= */
+        function initFiltros() {
+            var t;
+            var searchInp = $('#fSearch');
+            if (searchInp) {
+                searchInp.addEventListener('input', function (e) {
+                    clearTimeout(t);
+                    var v = e.target.value;
+                    t = setTimeout(function () { estado.q = v; aplicar(); }, 220);
+                });
+            }
+
+            var fFam = $('#fFamilia');
+            if (fFam) {
+                fFam.addEventListener('change', function (e) {
+                    estado.familia = e.target.value; estado.subcat = ''; aplicar();
+                });
+            }
+
+            var fPres = $('#fPresentacion');
+            if (fPres) {
+                fPres.addEventListener('change', function (e) { estado.presentacion = e.target.value; aplicar(); });
+            }
+
+            var fOrd = $('#fOrden');
+            if (fOrd) {
+                fOrd.addEventListener('change', function (e) { estado.orden = e.target.value; aplicar(); });
+            }
+
+            var btnClr = $('#btnClear');
+            if (btnClr) btnClr.addEventListener('click', limpiar);
+
+            var btnMore = $('#btnLoadMore');
+            if (btnMore) {
+                btnMore.addEventListener('click', function () {
+                    estado.visibles += PAGE_SIZE;
+                    aplicar(false);
+                });
+            }
+
+            var btnModalClose = $('#modalCloseBtn');
+            if (btnModalClose) btnModalClose.addEventListener('click', cerrarModal);
+            var modalOv = $('#modalOverlay');
+            if (modalOv) {
+                modalOv.addEventListener('click', function (e) {
+                    if (e.target === this) cerrarModal();
+                });
+            }
+
+            initSidebarInteractions();
+        }
+
         function errorCatalogo() {
             $('#productsGrid').innerHTML = '<div class="empty-state">' +
                 '<i class="ph ph-cloud-warning" aria-hidden="true"></i>' +

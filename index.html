@@ -578,6 +578,57 @@
         }
         .chip .n { opacity: 0.65; margin-left: 5px; font-weight: 600; }
 
+        /* ============ TARJETA DE PRODUCTO SIMPLIFICADA ============ */
+        .p-btn.p-btn-pdf {
+            width: 100%;
+            background: var(--bg-dark, #f8fafc);
+            border: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text, #1e293b);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .p-btn.p-btn-pdf i {
+            font-size: 17px;
+            color: #dc2626;
+        }
+        .p-btn.p-btn-pdf:hover {
+            background: #ffffff;
+            border-color: #dc2626;
+            color: #dc2626;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12);
+            transform: translateY(-2px);
+        }
+        .p-btn.p-btn-ficha-request {
+            width: 100%;
+            background: transparent;
+            border: 1px dashed var(--border-color, #cbd5e1);
+            color: var(--text-muted, #64748b);
+            font-weight: 600;
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .p-btn.p-btn-ficha-request:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #f0f7ff;
+            border-style: solid;
+        }
+
         /* ============ GRID DE PRODUCTOS ============ */
         .products-grid {
             display: grid;
@@ -1096,7 +1147,7 @@
         <ul class="nav-links">
             <li><a href="#inicio">Inicio</a></li>
             <li><a href="#familias">Familias</a></li>
-            <li><a href="#catalogo">Catálogo</a></li>
+            <li><a href="productos.html">Catálogo</a></li>
             <li><a href="/sucursales.html">Sucursales</a></li>
             <li><a href="#consulta">Asesoría</a></li>
             <li><a href="#contacto">Contacto</a></li>
@@ -1119,7 +1170,7 @@
         <ul class="drawer-nav">
             <li><a href="#inicio"><i class="ph ph-house" aria-hidden="true"></i> Inicio</a></li>
             <li><a href="#familias"><i class="ph ph-squares-four" aria-hidden="true"></i> Familias de producto</a></li>
-            <li><a href="#catalogo"><i class="ph ph-list-magnifying-glass" aria-hidden="true"></i> Catálogo completo</a></li>
+            <li><a href="productos.html"><i class="ph ph-list-magnifying-glass" aria-hidden="true"></i> Catálogo completo</a></li>
             <li><a href="/sucursales.html"><i class="ph ph-storefront" aria-hidden="true"></i> Sucursales</a></li>
             <li><a href="#consulta"><i class="ph ph-chats-circle" aria-hidden="true"></i> Asesoría técnica</a></li>
             <li><a href="#contacto"><i class="ph ph-map-pin" aria-hidden="true"></i> Contacto</a></li>
@@ -1235,6 +1286,11 @@
                 </button>
             </div>
         </div>
+            <div style="text-align: center; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <a href="productos.html" class="btn-hero-primary" style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; padding: 14px 30px; text-decoration: none;">
+                    <i class="ph ph-squares-four" aria-hidden="true"></i> Abrir Catálogo Completo con Búsqueda y Categorías
+                </a>
+            </div>
     </section>
 
     <!-- ============ MODAL DETALLE ============ -->
@@ -1611,27 +1667,27 @@
                 ? '<img src="' + esc(p.imagen) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" onerror="this.closest(\'.p-img\').classList.add(\'no-image\')">'
                 : '';
             
-            var desc = p.descripcion || 'Consulte la ficha técnica o escríbanos para conocer el detalle de este producto.';
+            var desc = p.descripcion || 'Consulte la ficha técnica o comuníquese con nosotros para asesoría técnica de este producto.';
 
-            var acciones = '<button type="button" class="p-btn primary" data-detalle="' + p.idx + '">' +
-                    '<i class="ph ph-eye" aria-hidden="true"></i> Ver detalle</button>';
+            var prodHref = p.slug ? ('/producto/' + encodeURIComponent(p.slug)) : ('producto.html?sku=' + encodeURIComponent(p.sku));
+
+            var accionBoton = '';
             if (p.ficha) {
-                acciones += '<a class="p-btn icon-only" href="' + esc(p.ficha) + '" target="_blank" rel="noopener" ' +
-                    'title="Ficha técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)">' +
-                    '<i class="ph ph-file-pdf" aria-hidden="true"></i></a>';
+                accionBoton = '<a class="p-btn p-btn-pdf" href="' + esc(p.ficha) + '" target="_blank" rel="noopener" title="Descargar Ficha Técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)">' +
+                    '<i class="ph ph-file-pdf" aria-hidden="true"></i> Ficha Técnica PDF</a>';
+            } else {
+                accionBoton = '<a class="p-btn p-btn-ficha-request" href="' + prodHref + '" title="Ver detalles y especificaciones">' +
+                    '<i class="ph ph-arrow-right" aria-hidden="true"></i> Ver especificaciones</a>';
             }
-            acciones += '<a class="p-btn icon-only" href="' + esc(waLink('Hola BS Perú, quisiera cotizar: ' + p.nombre + ' (SKU ' + p.sku + ').')) + '" ' +
-                'target="_blank" rel="noopener" title="Cotizar por WhatsApp" aria-label="Cotizar ' + esc(p.nombre) + ' por WhatsApp">' +
-                '<i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i></a>';
 
             var idxDelay = (typeof i === 'number') ? (i % 24) : 0;
-            var prodHref = p.slug ? ('/producto/' + encodeURIComponent(p.slug)) : ('producto.html?sku=' + encodeURIComponent(p.sku));
 
             return '<article class="product-card card-entrance' + (p.disponible ? '' : ' unavailable') + '" style="--i:' + idxDelay + ';">' +
                 '<a href="' + prodHref + '" style="display:block; text-decoration:none;">' +
-                '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
-                    '<span class="fallback" data-nosnippet aria-hidden="true"><i class="ph ph-image-square"></i></span>' +
-                '</div></a>' +
+                    '<div class="p-img' + (p.imagen ? '' : ' no-image') + '">' + img +
+                        '<span class="fallback" data-nosnippet aria-hidden="true"><i class="ph ph-image-square"></i></span>' +
+                    '</div>' +
+                '</a>' +
                 '<div class="p-body">' +
                     '<p class="p-cat">' + esc(p.categoriaLabel) + '</p>' +
                     '<h3><a href="' + prodHref + '" style="color:inherit;text-decoration:none;" title="Ver ficha completa de ' + esc(p.nombre) + '">' + esc(p.nombre) + '</a></h3>' +
@@ -1641,7 +1697,7 @@
                         '<span><i class="ph ph-package" aria-hidden="true"></i> ' + esc(p.presentacion) + '</span>' +
                     '</p>' +
                 '</div>' +
-                '<div class="p-actions" data-nosnippet>' + acciones + '</div>' +
+                '<div class="p-actions" data-nosnippet>' + accionBoton + '</div>' +
             '</article>';
         }
 
