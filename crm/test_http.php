@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 header('Content-Type: text/plain; charset=utf-8');
 echo "=== PRUEBA DE FIREWALL SALIENTE DESDE BSPERU.PE ===\n\n";
 
@@ -17,6 +17,7 @@ function testUrl($label, $url, $timeout = 3) {
 // 1. Probar puertos estándar
 testUrl("Puerto 80 Estándar", "http://example.com/");
 testUrl("Puerto 443 SSL", "https://google.com/");
+echo "IP Publica Saliente del Hosting: " . @file_get_contents("https://api.ipify.org") . "\n";
 
 // 2. Probar si el hosting permite salir por el puerto 1433 usando portquiz
 testUrl("Hosting Salida Puerto 1433 (portquiz.net)", "http://portquiz.net:1433/");
