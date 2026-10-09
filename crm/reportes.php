@@ -16,6 +16,9 @@ if (isset($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'ventas') {
 
 $currentUser = $_SESSION['crm_user'] ?? 'Nayeli';
 
+// Liberar el candado de sesion para permitir concurrencia sin bloqueos
+session_write_close();
+
 // Conexión opcional a base de datos con fallback automático
 $db = null;
 if (file_exists(__DIR__ . '/config/database.php')) {

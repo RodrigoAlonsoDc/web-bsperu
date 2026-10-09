@@ -21,6 +21,9 @@ $isEndrina = !empty($_SESSION['is_endrina']) || strtolower($currentUser) === 'en
 $isAdmin = !empty($_SESSION['is_admin']) || (isset($_SESSION['crm_rol']) && $_SESSION['crm_rol'] === 'admin');
 $maxDescuentoPermitido = ($isEndrina || $isAdmin) ? 100 : 6;
 
+// Liberar el candado de sesion para permitir concurrencia sin bloqueos
+session_write_close();
+
 // Conexión opcional a base de datos con fallback automático
 $db = null;
 if (file_exists(__DIR__ . '/config/database.php')) {
