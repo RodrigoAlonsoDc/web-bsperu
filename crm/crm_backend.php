@@ -1355,15 +1355,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         $limit = intval($_REQUEST['limit'] ?? 100);
         if ($limit <= 0 || $limit > 500) $limit = 100;
 
-        $dbConn = $db ?: (function_exists('getStarsoftDB') ? getStarsoftDB() : null);
+                $dbConn = $db ?: (function_exists('getStarsoftDB') ? getStarsoftDB() : null);
 
+        // Si no hay conexion directa, servir datos sincronizados de StarSoft (Push Sync)
         if (!$dbConn) {
+            $cpeFile = __DIR__ . '/crm_data/comprobantes_cpe.json';
+            if (file_exists($cpeFile)) {
+                $syncJson = json_decode(file_get_contents($cpeFile), true);
+                $rawDocs = $syncJson['documentos'] ?? [];
+                $fechaSync = $syncJson['ultima_actualizacion_fmt'] ?? ($syncJson['ultima_actualizacion'] ?? '');
+
+                $filtrados = [];
+                foreach ($rawDocs as $c) {
+                    $tc = $c['tipo_cod'] ?? '';
+                    if ($tipo_doc === 'FACTURA' || $tipo_doc === '01') {
+                        if ($tc !== '01') continue;
+                    } elseif ($tipo_doc === 'BOLETA' || $tipo_doc === '03') {
+                        if ($tc !== '03') continue;
+                    } elseif ($tipo_doc === 'NOTA_CREDITO' || $tipo_doc === '07' || $tipo_doc === 'NC') {
+                        if ($tc !== '07') continue;
+                    } elseif ($tipo_doc === 'NOTA_DEBITO' || $tipo_doc === '08' || $tipo_doc === 'ND') {
+                        if ($tc !== '08') continue;
+                    }
+
+                    if ($estado_sunat !== 'TODOS' && $estado_sunat !== '') {
+                        $cEst = strtoupper(trim($c['estado_sunat'] ?? ''));
+                        if ($cEst !== $estado_sunat) continue;
+                    }
+
+                    if ($pv !== 'TODOS' && $pv !== '') {
+                        $cPv = trim($c['pv'] ?? '');
+                        $cSer = trim($c['serie'] ?? '');
+                        if ($cPv !== $pv && strpos($cSer, $pv) === false) continue;
+                    }
+
+                    $cFecha = substr(trim($c['fecha'] ?? ''), 0, 10);
+                    if ($fecha_desde !== '' && $cFecha < $fecha_desde) continue;
+                    if ($fecha_hasta !== '' && $cFecha > $fecha_hasta) continue;
+
+                    if ($termino !== '') {
+                        $tLower = mb_strtolower($termino, 'UTF-8');
+                        $docStr = mb_strtolower(
+                            ($c['documento_completo'] ?? '') . ' ' .
+                            ($c['serie'] ?? '') . '-' . ($c['numero'] ?? '') . ' ' .
+                            ($c['ruc'] ?? '') . ' ' .
+                            ($c['razon_social'] ?? ''),
+                            'UTF-8'
+                        );
+                        if (strpos($docStr, $tLower) === false) continue;
+                    }
+
+                    $filtrados[] = $c;
+                }
+
+                $docs = array_slice($filtrados, 0, $limit);
+
+                $totales = 0;
+                $aprobados = 0;
+                $pendientes = 0;
+                $montoTotal = 0;
+                $facturasAprobadasCRM = obtenerFacturasAprobadas();
+
+                foreach ($docs as &$d) {
+                    $totales++;
+                    $montoTotal += floatval($d['importe'] ?? 0);
+                    $est = strtoupper($d['estado_sunat'] ?? '');
+                    if ($est === 'APROBADO') $aprobados++;
+                    else $pendientes++;
+
+                    if (empty($d['pv'])) {
+                        $d['pv'] = preg_replace('/[^0-9]/', '', $d['serie'] ?? '') ?: '01';
+                    }
+
+                    $docKey = trim($d['serie'] ?? '') . '-' . trim($d['numero'] ?? '');
+                    if (isset($facturasAprobadasCRM[$docKey])) {
+                        $d['aprobado_crm'] = true;
+                        $d['datos_aprobacion'] = $facturasAprobadasCRM[$docKey];
+                    } else {
+                        $d['aprobado_crm'] = false;
+                        $d['datos_aprobacion'] = null;
+                    }
+                }
+
+                echo json_encode([
+                    'success' => true,
+                    'total_registros' => count($docs),
+                    'documentos' => $docs,
+                    'stats' => [
+                        'total' => $totales,
+                        'aprobados' => $aprobados,
+                        'pendientes' => $pendientes,
+                        'monto_total' => round($montoTotal, 2)
+                    ],
+                    'modo' => 'sincronizado',
+                    'ultima_actualizacion' => $fechaSync
+                ], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
             echo json_encode([
                 'success' => false,
-                'mensaje' => 'No hay conexión activa con la base de datos de StarSoft.',
+                'mensaje' => 'Aun no se ha sincronizado la informacion de StarSoft. Ejecute el sincronizador seguro en el servidor.',
                 'documentos' => [],
                 'stats' => ['total' => 0, 'aprobados' => 0, 'pendientes' => 0, 'monto_total' => 0]
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
             exit;
         }
 
