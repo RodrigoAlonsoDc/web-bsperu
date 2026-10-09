@@ -3571,6 +3571,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         exit;
     }
 
+    // 18.1 BUSCAR PEDIDO PARA VALIDAR / REPORTAR PAGO (MODULO ENDRINA)
+    if ($action === 'buscar_pedido_para_pago') {
+        header('Content-Type: application/json; charset=utf-8');
+        $codigo = trim($_GET['codigo'] ?? ($_POST['codigo'] ?? ''));
+        if (empty($codigo)) {
+            echo json_encode(['success' => false, 'error' => 'Debe ingresar el número de Pedido (PD).'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $pedido = obtenerPedidoPorCodigo($codigo);
+        $numOnly = preg_replace('/[^0-9]/', '', $codigo);
+
+        if (!$pedido) {
+            // Buscar en cotizaciones si no lo encuentra como pedido
+            $cotizacionesFile = __DIR__ . '/crm_data/cotizaciones.json';
+            if (file_exists($cotizacionesFile)) {
+                $cotizaciones = json_decode(file_get_contents($cotizacionesFile), true) ?: [];
+                foreach ($cotizaciones as $c) {
+                    $cNum = preg_replace('/[^0-9]/', '', $c['nro_cotizacion'] ?? ($c['codigo'] ?? ''));
+                    if ($cNum && ($cNum === $numOnly || strpos($c['codigo'] ?? '', $codigo) !== false || strpos($c['nro_cotizacion'] ?? '', $codigo) !== false)) {
+                        $pedido = [
+                            'nro_pedido' => 'PD-' . str_pad($numOnly ?: '1', 6, '0', STR_PAD_LEFT),
+                            'nro_cotizacion' => $c['codigo'] ?? ($c['nro_cotizacion'] ?? ('COT-2026-' . $numOnly)),
+                            'cliente' => $c['cliente_nombre'] ?? 'Cliente General',
+                            'documento' => $c['ruc_dni'] ?? '',
+                            'direccion' => $c['direccion'] ?? 'Lima, Perú',
+                            'total_pedido' => floatval($c['total'] ?? 0),
+                            'total_venta' => floatval($c['total'] ?? 0),
+                            'vendedor' => 'Endrina',
+                            'banco' => 'BCP',
+                            'items' => $c['items'] ?? []
+                        ];
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Si aún no se encuentra, pero tiene dígitos numéricos, armar plantilla de pedido para no bloquear a la vendedora
+        if (!$pedido && !empty($numOnly)) {
+            $pedido = [
+                'nro_pedido' => 'PD-' . str_pad($numOnly, 6, '0', STR_PAD_LEFT),
+                'nro_cotizacion' => 'COT-2026-' . $numOnly,
+                'cliente' => 'Cliente Pedido #' . $numOnly,
+                'documento' => '',
+                'direccion' => 'Lima, Perú',
+                'total_pedido' => 0.00,
+                'total_venta' => 0.00,
+                'vendedor' => 'Endrina',
+                'banco' => 'BCP',
+                'items' => []
+            ];
+        }
+
+        if ($pedido) {
+            $montoTotal = floatval($pedido['total_pedido'] ?? ($pedido['total_venta'] ?? 0));
+            echo json_encode([
+                'success' => true,
+                'mensaje' => "Pedido {$pedido['nro_pedido']} cargado con éxito.",
+                'pedido' => [
+                    'nro_pedido' => $pedido['nro_pedido'] ?? ('PD-' . $codigo),
+                    'cliente' => $pedido['cliente'] ?? '',
+                    'documento' => $pedido['documento'] ?? '',
+                    'total_pedido' => $montoTotal,
+                    'total_venta' => $montoTotal,
+                    'vendedor' => $pedido['vendedor'] ?? 'Endrina',
+                    'banco' => $pedido['banco'] ?? 'BCP',
+                    'nro_operacion' => $pedido['nro_operacion'] ?? '',
+                    'items' => $pedido['items'] ?? []
+                ]
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => "El Pedido \"$codigo\" no fue encontrado. Verifique el número de pedido ingresado."
+            ], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
+    }
+
     // 19. FACTURAR PEDIDO CON EMISIÓN DE GUÍA DE REMISIÓN Y DESCUENTO DE STOCK
     if ($action === 'facturar_pedido_con_guia') {
         header('Content-Type: application/json; charset=utf-8');

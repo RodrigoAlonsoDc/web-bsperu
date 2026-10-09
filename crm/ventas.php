@@ -1698,6 +1698,11 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
+                <div class="nav-item" id="nav-validar_pagos" onclick="cambiarVistaVentas('validar_pagos', this)" style="cursor: pointer;">
+                    <i class="fa-solid fa-file-circle-check" style="color:#10B981;"></i>
+                    <span>Validar Pagos</span>
+                    <span class="nav-badge" style="background:#10B981; color:#FFF; font-weight:700; font-size:0.68rem; padding:2px 7px; border-radius:10px;">PEDIDO</span>
+                </div>
                 <div class="nav-item" id="nav-comprobantes" onclick="cambiarVistaVentas('comprobantes', this)">
                     <i class="fa-solid fa-receipt"></i>
                     <span>Comprobantes</span>
@@ -1723,6 +1728,9 @@ if (file_exists($fileCotizPath)) {
                         <h1 id="viewMainTitle">Dashboard de Ventas</h1>
                     </div>
                     <div class="header-actions">
+                        <button type="button" class="btn-pill-white" onclick="cambiarVistaVentas('validar_pagos')" style="background:#ECFDF5; border:1px solid #10B981; color:#059669; font-weight:700; box-shadow:0 2px 8px rgba(16,185,129,0.15);">
+                            <i class="fa-solid fa-file-circle-check"></i> Validar / Reportar Pago
+                        </button>
                         <button class="btn-pill-white" onclick="abrirGeneradorCotizacion()">
                             <i class="fa-solid fa-file-signature"></i> Nueva Cotización
                         </button>
@@ -3032,6 +3040,221 @@ if (file_exists($fileCotizPath)) {
                         </div>
                     </div>
                 </div>
+
+            <!-- ================= VISTA: VALIDACIÓN Y REPORTE DE PAGOS (ENDRINA) ================= -->
+            <div id="vista-validar_pagos" class="vista-seccion" style="display: none; flex-direction: column; gap: 24px;">
+                <div class="main-header">
+                    <div>
+                        <span style="font-size:0.75rem; font-weight:700; color:#059669; text-transform:uppercase; letter-spacing:1px; display:inline-flex; align-items:center; gap:5px;">
+                            <i class="fa-solid fa-shield-check"></i> Módulo de Endrina &bull; Sucursal Chorrillos
+                        </span>
+                        <h1 style="font-family:'Outfit', sans-serif; font-size:1.8rem; font-weight:700; color:var(--text-dark); margin-top:2px;">
+                            Validación & Reporte de Pagos a Reportería
+                        </h1>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">
+                            Coloca el N° de Pedido para cargar automáticamente los datos del cliente, adjunta el voucher bancario y envíalo para validación de Nayeli.
+                        </p>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn-pill-white" onclick="limpiarFormularioPagoPedido()">
+                            <i class="fa-solid fa-eraser"></i> Limpiar Campos
+                        </button>
+                        <button type="button" class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
+                            <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PASO 1: BUSCADOR DE PEDIDO -->
+                <div class="card-seccion-centro" style="border-left: 5px solid #10B981;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px;">
+                                <span style="background:#10B981; color:#FFF; width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800;">1</span>
+                                Ingrese N° de Pedido para Cargar Datos
+                            </h3>
+                            <p style="color:var(--text-muted); font-size:0.82rem; margin-top:2px;">
+                                Escribe el número del Pedido (ej. <strong>142</strong>, <strong>PD-000142</strong>, o código de cotización) y presiona "Cargar Datos".
+                            </p>
+                        </div>
+                        <div id="badgeEstadoPedidoCargado"></div>
+                    </div>
+
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px;">
+                        <div style="flex:1; min-width:260px; position:relative;">
+                            <i class="fa-solid fa-hashtag" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94A3B8; font-size:1rem;"></i>
+                            <input type="text" id="inputBuscarNroPedido" placeholder="Ej. 142, PD-000142, 84..." 
+                                style="width:100%; padding:14px 16px 14px 44px; border-radius:14px; border:2px solid #E2E8F0; font-size:1rem; font-weight:700; color:var(--text-dark); background:#F8FAFC; outline:none; transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#10B981'; this.style.background='#FFF';"
+                                onblur="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';"
+                                onkeydown="if(event.key==='Enter'){event.preventDefault(); buscarPedidoParaValidarPago();}">
+                        </div>
+                        <button type="button" class="btn-pill-white primary" id="btnBuscarPedidoPago" onclick="buscarPedidoParaValidarPago()" 
+                            style="background:#10B981; color:#FFF; font-weight:700; padding:14px 26px; border-radius:14px; font-size:0.92rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.25);">
+                            <i class="fa-solid fa-magnifying-glass"></i> Cargar Datos del Pedido
+                        </button>
+                    </div>
+
+                    <div id="msgAlertaPedido" style="display:none; margin-top:10px; padding:10px 14px; border-radius:10px; font-size:0.85rem; font-weight:600;"></div>
+                </div>
+
+                <!-- PASO 2: FORMULARIO DE REPORTE Y VALIDACIÓN DE PAGO -->
+                <form id="formReportarPagoPedido" onsubmit="enviarPagoPedidoReporteria(event)" class="card-seccion-centro" style="display:flex; flex-direction:column; gap:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px;">
+                            <span style="background:var(--accent-blue); color:#FFF; width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800;">2</span>
+                            Datos del Pedido y Comprobante Bancario
+                        </h3>
+                        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">
+                            <i class="fa-solid fa-circle-info" style="color:var(--accent-blue);"></i> Se enviará a Nayeli para validación y conciliación
+                        </span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:22px;">
+                        <!-- COLUMNA 1: DATOS DEL PEDIDO -->
+                        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:22px; display:flex; flex-direction:column; gap:14px;">
+                            <h4 style="font-size:0.92rem; color:var(--text-dark); font-weight:700; border-bottom:1px solid #E2E8F0; padding-bottom:10px; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-box-archive" style="color:var(--accent-tan);"></i> Información del Pedido
+                            </h4>
+
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">N° de Pedido (PD)</label>
+                                <input type="text" id="pagoNroPedido" name="nro_pedido" readonly placeholder="Se autocompleta con el buscador"
+                                    style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-weight:800; font-family:monospace; color:#0F172A; margin-top:4px;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Cliente / Razón Social</label>
+                                <input type="text" id="pagoCliente" name="cliente" required placeholder="Nombre del cliente"
+                                    style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-weight:700; color:var(--text-dark); margin-top:4px;">
+                            </div>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">RUC / DNI</label>
+                                    <input type="text" id="pagoRuc" name="ruc" placeholder="RUC/DNI"
+                                        style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-family:monospace; margin-top:4px;">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Monto del Pago (S/)</label>
+                                    <input type="number" step="0.01" min="0" id="pagoMonto" name="monto" required placeholder="0.00"
+                                        style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #10B981; background:#ECFDF5; font-weight:800; color:#047857; font-size:1.1rem; margin-top:4px;">
+                                </div>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Asesora de Ventas</label>
+                                    <input type="text" value="Endrina (01)" readonly style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-weight:600; color:#475569; margin-top:4px;">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Sucursal Origen</label>
+                                    <input type="text" value="Sucursal Chorrillos" readonly style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-weight:600; color:#475569; margin-top:4px;">
+                                </div>
+                            </div>
+
+                            <!-- Tabla productos si hay items -->
+                            <div id="pagoItemsContainer" style="display:none; margin-top:4px;">
+                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Detalle de Productos del Pedido</label>
+                                <div style="max-height:140px; overflow-y:auto; border:1px solid #E2E8F0; border-radius:10px; background:#FFF;">
+                                    <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
+                                        <thead><tr style="background:#F1F5F9; border-bottom:1px solid #E2E8F0;"><th style="padding:6px 8px; text-align:left;">Producto</th><th style="padding:6px 8px; text-align:center;">Cant</th><th style="padding:6px 8px; text-align:right;">Subtotal</th></tr></thead>
+                                        <tbody id="pagoItemsTbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA 2: DATOS BANCARIOS Y VOUCHER -->
+                        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:22px; display:flex; flex-direction:column; gap:14px;">
+                            <h4 style="font-size:0.92rem; color:var(--text-dark); font-weight:700; border-bottom:1px solid #E2E8F0; padding-bottom:10px; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-building-columns" style="color:#0284C7;"></i> Depósito & Comprobante Bancario
+                            </h4>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Banco de Destino</label>
+                                    <select id="pagoMetodo" name="metodo" style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-weight:700; color:var(--text-dark); margin-top:4px;">
+                                        <option value="Transferencia BCP Soles" selected>BCP Soles (Cta Cte)</option>
+                                        <option value="Transferencia BBVA Soles">BBVA Soles (Cta Cte)</option>
+                                        <option value="Transferencia Interbank Soles">Interbank Soles (Cta Cte)</option>
+                                        <option value="Transferencia Scotiabank Soles">Scotiabank</option>
+                                        <option value="Yape BS Perú">Yape</option>
+                                        <option value="Plin BS Perú">Plin</option>
+                                        <option value="Efectivo / Caja Chorrillos">Efectivo / Caja Chorrillos</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">N° de Operación</label>
+                                    <input type="text" id="pagoOperacion" name="nro_operacion" required placeholder="Ej. 849201"
+                                        style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-weight:800; font-family:monospace; color:var(--text-dark); margin-top:4px;">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Adjuntar Voucher / Comprobante (JPG, PNG, PDF)</label>
+                                <input type="file" id="pagoVoucherFile" accept="image/*,application/pdf" onchange="previewVoucherPagoPedido(this)"
+                                    style="width:100%; padding:10px 12px; border-radius:10px; border:2px dashed #CBD5E1; background:#FFF; margin-top:4px; font-size:0.82rem; cursor:pointer;">
+                                <div id="pagoVoucherPreviewBox" style="display:none; margin-top:8px; text-align:center; background:#FFF; padding:8px; border-radius:10px; border:1px solid #E2E8F0;">
+                                    <img id="pagoVoucherImg" src="" alt="Voucher Preview" style="max-height:130px; max-width:100%; border-radius:8px; object-fit:contain;">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Nota u Observación para Reportería</label>
+                                <textarea id="pagoNota" rows="2" placeholder="Ej. Pago confirmado por cliente, anticipo del 100% para despacho."
+                                    style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-size:0.82rem; margin-top:4px; resize:vertical;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px; padding-top:16px; border-top:1px solid #E2E8F0;">
+                        <button type="submit" id="btnEnviarPagoPedido" class="btn-pill-white primary"
+                            style="background:#10B981; color:#FFF; font-weight:800; font-size:1rem; padding:14px 36px; border-radius:14px; display:inline-flex; align-items:center; gap:10px; cursor:pointer; box-shadow:0 6px 18px rgba(16,185,129,0.3);">
+                            <i class="fa-solid fa-paper-plane"></i> Enviar Pago a Reportería (Nayeli)
+                        </button>
+                    </div>
+                </form>
+
+                <!-- PASO 3: HISTORIAL EN TIEMPO REAL -->
+                <div class="card-seccion-centro">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-clock-rotate-left" style="color:var(--accent-tan);"></i>
+                                Historial de Pagos Reportados por Endrina
+                            </h3>
+                            <p style="color:var(--text-muted); font-size:0.82rem; margin-top:2px;">
+                                Consulta en tiempo real el estado de validación y aprobación por parte de Nayeli (Reportería / Finanzas).
+                            </p>
+                        </div>
+                        <button type="button" class="btn-pill-white" onclick="cargarHistorialPagosEndrina()" style="padding:8px 16px; font-size:0.82rem; font-weight:700;">
+                            <i class="fa-solid fa-rotate"></i> Actualizar Lista
+                        </button>
+                    </div>
+
+                    <div style="overflow-x:auto; margin-top:12px;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                            <thead>
+                                <tr style="background:#F8FAFC; border-bottom:2px solid #E2E8F0; color:var(--text-muted); text-transform:uppercase; font-size:0.75rem;">
+                                    <th style="padding:10px 12px; text-align:left;">N° Pedido / Factura</th>
+                                    <th style="padding:10px 12px; text-align:left;">Cliente</th>
+                                    <th style="padding:10px 12px; text-align:right;">Monto (S/)</th>
+                                    <th style="padding:10px 12px; text-align:left;">Banco & Operación</th>
+                                    <th style="padding:10px 12px; text-align:center;">Fecha Reportado</th>
+                                    <th style="padding:10px 12px; text-align:center;">Voucher</th>
+                                    <th style="padding:10px 12px; text-align:center;">Estado Reportería</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyHistorialPagosEndrina">
+                                <tr><td colspan="7" style="text-align:center; padding:28px; color:var(--text-muted);">Cargando historial de pagos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
             </div>
 
         </div>
@@ -3330,6 +3553,267 @@ if (file_exists($fileCotizPath)) {
         }
 
         // CAMBIAR VISTA EN EL MEDIO (SPA)
+        
+        // =========================================================================
+        // FUNCIONALIDAD: VALIDACIÓN Y REPORTE DE PAGOS POR PEDIDO (ENDRINA)
+        // =========================================================================
+        function buscarPedidoParaValidarPago() {
+            const input = document.getElementById('inputBuscarNroPedido');
+            const codigo = input ? input.value.trim() : '';
+            const msgAlerta = document.getElementById('msgAlertaPedido');
+            const badgeCargado = document.getElementById('badgeEstadoPedidoCargado');
+            const btn = document.getElementById('btnBuscarPedidoPago');
+
+            if (!codigo) {
+                alert('Por favor ingrese el número de Pedido (ej. 142 o PD-000142).');
+                input.focus();
+                return;
+            }
+
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
+            if (msgAlerta) {
+                msgAlerta.style.display = 'block';
+                msgAlerta.style.background = '#EFF6FF';
+                msgAlerta.style.color = '#1D4ED8';
+                msgAlerta.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Consultando Pedido en StarSoft y base local...';
+            }
+
+            fetch(`crm_backend.php?action=buscar_pedido_para_pago&codigo=${encodeURIComponent(codigo)}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (btn) btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Cargar Datos del Pedido';
+                    if (!res.success) {
+                        if (msgAlerta) {
+                            msgAlerta.style.background = '#FEF2F2';
+                            msgAlerta.style.color = '#B91C1C';
+                            msgAlerta.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${res.error || 'Pedido no encontrado'}. Puedes completar los campos manualmente a continuación.`;
+                        }
+                        if (badgeCargado) badgeCargado.innerHTML = '';
+                        // Permitir continuar con el número ingresado
+                        const cleanCode = codigo.toUpperCase().startsWith('PD-') ? codigo.toUpperCase() : ('PD-' + codigo.padStart(6, '0'));
+                        document.getElementById('pagoNroPedido').value = cleanCode;
+                        return;
+                    }
+
+                    const p = res.pedido;
+                    if (msgAlerta) {
+                        msgAlerta.style.background = '#ECFDF5';
+                        msgAlerta.style.color = '#047857';
+                        msgAlerta.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>${p.nro_pedido}</strong> cargado con éxito. Cliente: <strong>${p.cliente}</strong>. Total: <strong>S/ ${Number(p.total_pedido || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</strong>.`;
+                    }
+                    if (badgeCargado) {
+                        badgeCargado.innerHTML = `<span style="background:#DCFCE7; color:#15803D; font-weight:800; font-size:0.78rem; padding:4px 10px; border-radius:12px; border:1px solid #86EFAC;">
+                            <i class="fa-solid fa-check"></i> ${p.nro_pedido} CARGADO
+                        </span>`;
+                    }
+
+                    document.getElementById('pagoNroPedido').value = p.nro_pedido || ('PD-' + codigo);
+                    document.getElementById('pagoCliente').value = p.cliente || '';
+                    document.getElementById('pagoRuc').value = p.documento || '';
+                    document.getElementById('pagoMonto').value = parseFloat(p.total_pedido || 0).toFixed(2);
+                    if (p.banco && document.getElementById('pagoMetodo')) {
+                        const opt = Array.from(document.getElementById('pagoMetodo').options).find(o => o.value.toLowerCase().includes(p.banco.toLowerCase()));
+                        if (opt) opt.selected = true;
+                    }
+                    if (p.nro_operacion) {
+                        document.getElementById('pagoOperacion').value = p.nro_operacion;
+                    }
+
+                    // Llenar tabla de items si existen
+                    const itemsContainer = document.getElementById('pagoItemsContainer');
+                    const itemsTbody = document.getElementById('pagoItemsTbody');
+                    if (itemsContainer && itemsTbody) {
+                        if (p.items && p.items.length > 0) {
+                            itemsTbody.innerHTML = p.items.map(it => `
+                                <tr style="border-bottom:1px solid #F1F5F9;">
+                                    <td style="padding:5px 8px;"><strong>${it.codigo || ''}</strong> ${it.descripcion || it.nombre || ''}</td>
+                                    <td style="padding:5px 8px; text-align:center;">${it.cantidad || 1}</td>
+                                    <td style="padding:5px 8px; text-align:right; font-weight:700;">S/ ${Number(it.total || (it.cantidad * (it.precio_unitario || 0)) || 0).toFixed(2)}</td>
+                                </tr>
+                            `).join('');
+                            itemsContainer.style.display = 'block';
+                        } else {
+                            itemsContainer.style.display = 'none';
+                        }
+                    }
+
+                    // Enfocar nro de operacion
+                    document.getElementById('pagoOperacion').focus();
+                })
+                .catch(err => {
+                    if (btn) btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Cargar Datos del Pedido';
+                    if (msgAlerta) {
+                        msgAlerta.style.background = '#FEF2F2';
+                        msgAlerta.style.color = '#B91C1C';
+                        msgAlerta.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error al consultar pedido: ${err.message}`;
+                    }
+                });
+        }
+
+        function previewVoucherPagoPedido(input) {
+            const previewBox = document.getElementById('pagoVoucherPreviewBox');
+            const img = document.getElementById('pagoVoucherImg');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        img.src = e.target.result;
+                        previewBox.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewBox.style.display = 'block';
+                    img.src = 'https://ui-avatars.com/api/?name=PDF+DOC&background=FEE2E2&color=DC2626&size=128';
+                }
+            } else {
+                if (previewBox) previewBox.style.display = 'none';
+            }
+        }
+
+        function limpiarFormularioPagoPedido() {
+            document.getElementById('inputBuscarNroPedido').value = '';
+            document.getElementById('pagoNroPedido').value = '';
+            document.getElementById('pagoCliente').value = '';
+            document.getElementById('pagoRuc').value = '';
+            document.getElementById('pagoMonto').value = '';
+            document.getElementById('pagoOperacion').value = '';
+            document.getElementById('pagoNota').value = '';
+            document.getElementById('pagoVoucherFile').value = '';
+            const previewBox = document.getElementById('pagoVoucherPreviewBox');
+            if (previewBox) previewBox.style.display = 'none';
+            const msgAlerta = document.getElementById('msgAlertaPedido');
+            if (msgAlerta) msgAlerta.style.display = 'none';
+            const badgeCargado = document.getElementById('badgeEstadoPedidoCargado');
+            if (badgeCargado) badgeCargado.innerHTML = '';
+            const itemsContainer = document.getElementById('pagoItemsContainer');
+            if (itemsContainer) itemsContainer.style.display = 'none';
+        }
+
+        function enviarPagoPedidoReporteria(e) {
+            e.preventDefault();
+            const nroPed = document.getElementById('pagoNroPedido').value.trim();
+            const cliente = document.getElementById('pagoCliente').value.trim();
+            const ruc = document.getElementById('pagoRuc').value.trim();
+            const monto = parseFloat(document.getElementById('pagoMonto').value) || 0;
+            const metodo = document.getElementById('pagoMetodo').value;
+            const op = document.getElementById('pagoOperacion').value.trim();
+            const nota = document.getElementById('pagoNota').value.trim();
+            const btn = document.getElementById('btnEnviarPagoPedido');
+
+            if (!cliente || monto <= 0) {
+                alert('Por favor ingrese el nombre del cliente y un monto válido.');
+                return;
+            }
+            if (!op) {
+                alert('Por favor ingrese el número de operación bancaria.');
+                document.getElementById('pagoOperacion').focus();
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'solicitar_confirmacion_pago');
+            formData.append('nro_pedido', nroPed || ('PD-' + rand(1000, 9999)));
+            formData.append('nro_factura', nroPed || ('PD-' + rand(1000, 9999)));
+            formData.append('cliente', cliente);
+            formData.append('ruc', ruc);
+            formData.append('monto', monto);
+            formData.append('metodo', metodo);
+            formData.append('nro_operacion', op);
+            formData.append('nota', nota);
+            formData.append('asesor', 'Endrina');
+            formData.append('sucursal', 'Sucursal Chorrillos');
+
+            const fileInput = document.getElementById('pagoVoucherFile');
+            if (fileInput && fileInput.files[0]) {
+                formData.append('voucher_file', fileInput.files[0]);
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando a Reportería...';
+            }
+
+            fetch('crm_backend.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pago a Reportería (Nayeli)';
+                }
+
+                if (data.success) {
+                    alert(`✅ ¡Pago del Pedido ${nroPed || ''} registrado con éxito!\n\nSe envió la notificación a Reportería para que Nayeli audite y apruebe el comprobante en tiempo real.`);
+                    limpiarFormularioPagoPedido();
+                    cargarHistorialPagosEndrina();
+                } else {
+                    alert('Error al enviar el pago: ' + (data.mensaje || data.error || 'Error desconocido'));
+                }
+            })
+            .catch(err => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pago a Reportería (Nayeli)';
+                }
+                alert('Error de conexión al enviar el pago: ' + err.message);
+            });
+        }
+
+        function cargarHistorialPagosEndrina() {
+            const tbody = document.getElementById('tbodyHistorialPagosEndrina');
+            if (!tbody) return;
+
+            fetch('crm_backend.php?action=listar_pagos')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success || !data.pagos || data.pagos.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--text-muted);">No hay pagos registrados aún.</td></tr>';
+                        return;
+                    }
+
+                    // Filtrar o mostrar los más recientes
+                    const pagos = data.pagos;
+                    tbody.innerHTML = pagos.slice(0, 20).map(p => {
+                        let badgeEst = '<span style="background:#FEF3C7; color:#D97706; padding:4px 10px; border-radius:12px; font-weight:700; font-size:0.75rem;"><i class="fa-solid fa-clock"></i> Pendiente</span>';
+                        if (p.estado === 'Aceptado') {
+                            badgeEst = `<span style="background:#DCFCE7; color:#15803D; padding:4px 10px; border-radius:12px; font-weight:800; font-size:0.75rem;" title="Aprobado por ${p.validador || 'Nayeli'}"><i class="fa-solid fa-circle-check"></i> Aprobado</span>`;
+                        } else if (p.estado === 'Observado') {
+                            badgeEst = `<span style="background:#FEE2E2; color:#DC2626; padding:4px 10px; border-radius:12px; font-weight:800; font-size:0.75rem;" title="${p.motivo_observacion || ''}"><i class="fa-solid fa-circle-xmark"></i> Observado</span>`;
+                        }
+
+                        const voucherUrl = p.voucher_url || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80';
+                        const nroDoc = p.nro_pedido || p.nro_factura || 'PD-000';
+                        const montoFmt = Number(p.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+
+                        return `
+                            <tr style="border-bottom:1px solid #E2E8F0; transition:background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                                <td style="padding:12px; font-weight:800; font-family:monospace; color:var(--text-dark);">${nroDoc}</td>
+                                <td style="padding:12px; font-weight:600; color:var(--text-dark);">${p.cliente || 'Cliente General'}</td>
+                                <td style="padding:12px; text-align:right; font-weight:800; color:#047857;">S/ ${montoFmt}</td>
+                                <td style="padding:12px; font-size:0.8rem;">
+                                    <strong>${p.banco || p.metodo || 'BCP'}</strong><br>
+                                    <span style="color:var(--text-muted); font-family:monospace;">Op: ${p.nro_operacion || '-'}</span>
+                                </td>
+                                <td style="padding:12px; text-align:center; font-size:0.8rem; color:var(--text-muted);">${(p.fecha || '').slice(0, 16)}</td>
+                                <td style="padding:12px; text-align:center;">
+                                    <button type="button" class="btn-pill-white" style="padding:4px 10px; font-size:0.75rem; border:1px solid #CBD5E1;" onclick="verComprobanteDetalle('${nroDoc}', '${(p.cliente||'').replace(/'/g, "\'")}', '${montoFmt}', '${p.banco} #${p.nro_operacion}', '${voucherUrl}', '${p.estado}')">
+                                        <i class="fa-solid fa-eye"></i> Ver
+                                    </button>
+                                </td>
+                                <td style="padding:12px; text-align:center;">${badgeEst}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                })
+                .catch(err => {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:#DC2626;">Error al cargar pagos: ${err.message}</td></tr>`;
+                });
+        }
+
+
         function cambiarVistaVentas(nombreVista, elNav) {
             closeModals();
 
@@ -3352,6 +3836,10 @@ if (file_exists($fileCotizPath)) {
             }
 
             // Si es vista de cotizaciones, inicializar
+            if (nombreVista === 'validar_pagos') {
+                cargarHistorialPagosEndrina();
+            }
+
             if (nombreVista === 'cotizaciones') {
                 cargarCotizaciones();
                 const tbody = document.getElementById('tbodyItemsCotizacion');
