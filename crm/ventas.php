@@ -3040,6 +3040,7 @@ if (file_exists($fileCotizPath)) {
                         </div>
                     </div>
                 </div>
+            </div>
 
             <!-- ================= VISTA: VALIDACIÓN Y REPORTE DE PAGOS (ENDRINA) ================= -->
             <div id="vista-validar_pagos" class="vista-seccion" style="display: none; flex-direction: column; gap: 24px;">
@@ -3252,9 +3253,6 @@ if (file_exists($fileCotizPath)) {
                         </table>
                     </div>
                 </div>
-            </div>
-
-
             </div>
 
         </div>
