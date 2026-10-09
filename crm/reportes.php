@@ -1628,14 +1628,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         <!-- ================= SIDEBAR IZQUIERDA ================= -->
         <div class="sidebar">
-            <a href="reportes.php" class="brand-logo">
-                <div class="brand-logo-icon">
-                    <i class="fa-solid fa-shield-check"></i>
-                </div>
-                <div class="brand-logo-text">
-                    REPORTERÍA
-                    <span>FINANZAS BS PERÚ</span>
-                </div>
+            <a href="reportes.php" class="brand-logo" style="padding: 10px 12px 24px 12px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                <img src="../img/logo_bs.png" alt="BS Perú" style="height: 48px; max-width: 100%; object-fit: contain;" onerror="this.src='img/logo_bs.png'" />
             </a>
 
             <div class="nav-menu">
@@ -1672,33 +1666,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
             </div>
 
-            <!-- PERFIL USUARIO -->
-            <div class="user-pill" onclick="alert('Sesión Activa: Nayeli\nRol: Especialista de Reportería & Conciliación Financiera BS Perú')">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Nayeli" class="user-pill-avatar">
-                <div class="user-pill-info">
-                    <div class="user-pill-name">Nayeli</div>
-                    <div class="user-pill-status">
-                        <div class="status-dot"></div>
-                        <span>Reportería / En línea</span>
-                    </div>
-                </div>
-                <i class="fa-solid fa-chevron-right user-pill-chevron"></i>
-            </div>
-
-            <!-- SELECTOR DE TEMA -->
-            <div class="theme-toggle">
-                <button class="theme-btn active" id="btnThemeLight" onclick="setAppTheme('light')">
-                    <i class="fa-regular fa-sun"></i> Claro
-                </button>
-                <button class="theme-btn" id="btnThemeDark" onclick="setAppTheme('dark')">
-                    <i class="fa-solid fa-moon"></i> Oscuro
-                </button>
-            </div>
-
-            <!-- BOTÓN ACCESO RÁPIDO A EDITAR PALETA -->
-            <div style="margin-top: 6px;">
-                <button type="button" class="theme-btn" style="width:100%; border:1px dashed rgba(255,255,255,0.25); padding:7px 10px; border-radius:var(--pill-radius); color:var(--color-5); background:rgba(255,255,255,0.06); font-size:0.75rem; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;" onclick="abrirModalEditorPaleta()" title="Probar y editar colores">
-                    <i class="fa-solid fa-palette"></i> Editar Paleta
+            <!-- BOTÓN CERRAR SESIÓN (ESQUINA INFERIOR) -->
+            <div style="margin-top: auto; padding: 14px 4px 6px 4px;">
+                <button type="button" onclick="abrirLogoutModal()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.12); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.28); padding: 12px 14px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.88rem; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.12)'">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar sesión</span>
                 </button>
             </div>
         </div>
@@ -1713,19 +1685,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <h1 id="pageMainTitle">Dashboard de Reportes & Validación</h1>
                 </div>
                 <div class="header-actions">
-                    <button type="button" class="btn-palette-header" onclick="abrirModalEditorPaleta()" title="Personalizar y probar paleta de colores de Reportería">
-                        <div class="palette-mini-swatches">
-                            <span style="background:var(--color-1);"></span>
-                            <span style="background:var(--color-2);"></span>
-                            <span style="background:var(--color-3);"></span>
-                            <span style="background:var(--color-4);"></span>
-                            <span style="background:var(--color-5);"></span>
-                        </div>
-                        <i class="fa-solid fa-palette"></i>
-                        <span>Editar Paleta</span>
-                    </button>
-                    <button class="btn-pill-white" style="background:#FEE2E2; color:#B91C1C; font-size:0.8rem; padding:8px 16px;" onclick="abrirLogoutModal()">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir
+                    <button class="btn-pill-white" style="background:#FEE2E2; color:#B91C1C; font-size:0.82rem; padding:8px 18px; border:1px solid #FECACA; font-weight:600; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;" onclick="abrirLogoutModal()">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Cerrar sesión</span>
                     </button>
                 </div>
             </div>
@@ -1734,27 +1696,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                  VISTA 1: DASHBOARD DE REPORTERÍA
             =========================================== -->
             <div class="vista-seccion" id="vista-dashboard" style="display:flex;">
-                <!-- HERO CARD BANNER -->
-                <div class="welcome-card">
-                    <div class="welcome-content">
-                        <h2>Validación Financiera & Reportería en Tiempo Real</h2>
-                        <p>Supervisa las conciliaciones bancarias (BCP, BBVA, Interbank), aprueba pagos reportados por los asesores de ventas y audita los cierres diarios de caja para despacho inmediato.</p>
-                        <div class="welcome-actions">
-                            <button class="btn-pill-white primary" onclick="cambiarVistaReporteria('validacion')">
-                                <i class="fa-solid fa-shield-check"></i> Validar 3 Pagos Pendientes
-                            </button>
-                            <button class="btn-pill-white" onclick="cambiarVistaReporteria('cierres')">
-                                <i class="fa-solid fa-file-lines"></i> Ver Cierres de Ventas
-                            </button>
-                        </div>
-                    </div>
-                    <div class="welcome-avatar-wrapper">
-                        <div class="welcome-avatar-frame">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80" alt="Finanzas">
-                        </div>
-                    </div>
-                </div>
-
                 <!-- 4 MINI STATS CARDS -->
                 <div class="stats-grid">
                     <div class="stat-card-mini" onclick="cambiarVistaReporteria('historial')">
@@ -2372,138 +2313,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         </div>
 
-        <!-- ================= SIDEBAR DERECHA: MONITOREO EN VIVO (SOLO DASHBOARD GENERAL) ================= -->
-        <div class="right-sidebar" id="rightSidebarMonitoreo">
-            <div class="right-header">
-                <h3>Monitoreo en Vivo</h3>
-                <button class="btn-dots"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-            </div>
-
-            <!-- SALDOS BANCARIOS EXTRACTO RÁPIDO -->
-            <div>
-                <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Cuentas Bancarias BS Perú</span>
-                <div class="bank-summary-card" style="margin-top:8px;">
-                    <div class="bank-item">
-                        <div class="bank-meta">
-                            <div class="bank-icon-badge bcp">BCP</div>
-                            <div class="bank-name">
-                                <h5>Cta Cte Soles</h5>
-                                <p>191-2849102-0-45</p>
-                            </div>
-                        </div>
-                        <div class="bank-amount">S/ 142,500</div>
-                    </div>
-
-                    <div class="bank-item">
-                        <div class="bank-meta">
-                            <div class="bank-icon-badge bbva">BBVA</div>
-                            <div class="bank-name">
-                                <h5>Cta Cte Soles</h5>
-                                <p>0011-0382-010029</p>
-                            </div>
-                        </div>
-                        <div class="bank-amount">S/ 68,200</div>
-                    </div>
-
-                    <div class="bank-item">
-                        <div class="bank-meta">
-                            <div class="bank-icon-badge ibk">IBK</div>
-                            <div class="bank-name">
-                                <h5>Cta Cte Soles</h5>
-                                <p>200-300182910</p>
-                            </div>
-                        </div>
-                        <div class="bank-amount">S/ 35,800</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ALERTAS URGENTES DE PAGOS -->
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Pagos Urgentes</span>
-                    <span class="badge-status-pending" id="badgeRightPending">3 pendientes</span>
-                </div>
-
-                <div style="display:flex; flex-direction:column; gap:8px;" id="boxRightAlerts">
-                    <div class="pending-urgent-card" onclick="cambiarVistaReporteria('validacion')">
-                        <div class="pending-urgent-meta">
-                            <h5>Cosapi S.A.</h5>
-                            <p>S/ 14,400.00 • BCP Op. #4829104</p>
-                        </div>
-                        <span style="color:var(--accent-green-dark); font-size:0.75rem; font-weight:700;">Revisar →</span>
-                    </div>
-
-                    <div class="pending-urgent-card" onclick="cambiarVistaReporteria('validacion')">
-                        <div class="pending-urgent-meta">
-                            <h5>Consorcio Vial Piura</h5>
-                            <p>S/ 6,800.00 • BBVA Op. #910245</p>
-                        </div>
-                        <span style="color:var(--accent-green-dark); font-size:0.75rem; font-weight:700;">Revisar →</span>
-                    </div>
-
-                    <div class="pending-urgent-card" onclick="cambiarVistaReporteria('validacion')">
-                        <div class="pending-urgent-meta">
-                            <h5>Edificaciones Pacífico</h5>
-                            <p>S/ 3,308.00 • Interbank Op. #3019</p>
-                        </div>
-                        <span style="color:var(--accent-green-dark); font-size:0.75rem; font-weight:700;">Revisar →</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ASESORES ACTIVOS -->
-            <div>
-                <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Asesores en Línea</span>
-                <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                    <div class="advisor-online-item">
-                        <div class="advisor-avatar-box">
-                            <img src="https://ui-avatars.com/api/?name=Maria+Gomez&background=D1FAE5&color=059669" alt="User">
-                            <div class="advisor-online-dot"></div>
-                        </div>
-                        <div class="advisor-content">
-                            <h5>Maria Gomez</h5>
-                            <p>Lima Corporativo • Activa</p>
-                        </div>
-                    </div>
-
-                    <div class="advisor-online-item">
-                        <div class="advisor-avatar-box">
-                            <img src="https://ui-avatars.com/api/?name=Carlos+Ruiz&background=FEF3C7&color=D97706" alt="User">
-                            <div class="advisor-online-dot"></div>
-                        </div>
-                        <div class="advisor-content">
-                            <h5>Carlos Ruiz</h5>
-                            <p>Piura Despachos • Activo</p>
-                        </div>
-                    </div>
-
-                    <div class="advisor-online-item">
-                        <div class="advisor-avatar-box">
-                            <img src="https://ui-avatars.com/api/?name=Ana+Torres&background=E0E7FF&color=4338CA" alt="User">
-                            <div class="advisor-online-dot"></div>
-                        </div>
-                        <div class="advisor-content">
-                            <h5>Ana Torres</h5>
-                            <p>San Borja • Activa</p>
-                        </div>
-                    </div>
-
-                    <div class="advisor-online-item">
-                        <div class="advisor-avatar-box">
-                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="User">
-                            <div class="advisor-online-dot"></div>
-                        </div>
-                        <div class="advisor-content">
-                            <h5>Endrina</h5>
-                            <p>Sucursal Chorrillos • Activa</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
+        
     </div>
 
     <!-- ================= MODAL VISOR DE VOUCHER ================= -->
@@ -2558,7 +2368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </div>
             <h3 style="font-size:1.25rem;">¿Cerrar Sesión de Reportería?</h3>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 20px;">Sesión activa de Nayeli (Finanzas & Reportería BS Perú).</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 20px;">Sesión activa de Finanzas & Reportería BS Perú.</p>
             <div style="display:flex; flex-direction:column; gap:10px;">
                 <a href="logout.php" class="btn-pill-white primary" style="justify-content:center; text-decoration:none; background:#DC2626; color:#FFF;">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir del Sistema
@@ -3281,12 +3091,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         function setAppTheme(theme) {
             if (theme === 'dark') {
                 document.body.classList.add('dark-mode');
-                document.getElementById('btnThemeDark').classList.add('active');
-                document.getElementById('btnThemeLight').classList.remove('active');
+                document.getElementById('btnThemeDark')?.classList.add('active');
+                document.getElementById('btnThemeLight')?.classList.remove('active');
             } else {
                 document.body.classList.remove('dark-mode');
-                document.getElementById('btnThemeLight').classList.add('active');
-                document.getElementById('btnThemeDark').classList.remove('active');
+                document.getElementById('btnThemeLight')?.classList.add('active');
+                document.getElementById('btnThemeDark')?.classList.remove('active');
             }
         }
 
@@ -3310,16 +3120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const vista = document.getElementById(`vista-${nombreVista}`);
             if (vista) {
                 vista.style.display = 'flex';
-            }
-
-            // 3. Columna "Monitoreo en Vivo": Solo se mantiene visible en Dashboard General, en las demás vistas se oculta
-            const rightSidebar = document.getElementById('rightSidebarMonitoreo');
-            if (rightSidebar) {
-                if (nombreVista === 'dashboard') {
-                    rightSidebar.style.display = 'flex';
-                } else {
-                    rightSidebar.style.display = 'none';
-                }
             }
 
             // 4. Actualizar menú lateral
