@@ -3053,10 +3053,13 @@ if (file_exists($fileCotizPath)) {
                             Validación & Reporte de Pagos a Reportería
                         </h1>
                         <p style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">
-                            Coloca el N° de Pedido para cargar automáticamente los datos del cliente, adjunta el voucher bancario y envíalo para validación de Nayeli.
+                            Selecciona un pedido pendiente de la lista o escribe el N° de Pedido para cargar automáticamente los datos del cliente, adjunta el voucher bancario y envíalo para validación de Nayeli.
                         </p>
                     </div>
                     <div class="header-actions">
+                        <button type="button" class="btn-pill-white" onclick="cargarPedidosPendientesEndrina(); cargarHistorialPagosEndrina();">
+                            <i class="fa-solid fa-rotate"></i> Actualizar Listas
+                        </button>
                         <button type="button" class="btn-pill-white" onclick="limpiarFormularioPagoPedido()">
                             <i class="fa-solid fa-eraser"></i> Limpiar Campos
                         </button>
@@ -3066,16 +3069,71 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                <!-- PASO 1: BUSCADOR DE PEDIDO -->
+                <!-- ================= 1. LISTADO DE PEDIDOS PENDIENTES POR FACTURAR (ENDRINA) ================= -->
+                <div class="card-seccion-centro" style="border-top: 4px solid #10B981; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <h3 style="font-size:1.2rem; color:var(--text-dark); margin:0; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-clipboard-list" style="color:#10B981;"></i>
+                                    Pedidos Pendientes por Facturar
+                                </h3>
+                                <span id="badgeCountPendientesEndrina" style="background:#ECFDF5; color:#059669; font-weight:800; font-size:0.75rem; padding:4px 12px; border-radius:12px; border:1px solid #A7F3D0;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
+                                </span>
+                            </div>
+                            <p style="color:var(--text-muted); font-size:0.83rem; margin-top:4px; margin-bottom:0;">
+                                Listado de pedidos autorizados asignados a <strong>Endrina (Sucursal Chorrillos)</strong> listos para adjuntar pago y emitir facturación.
+                            </p>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <div style="position:relative; min-width:260px;">
+                                <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; font-size:0.82rem;"></i>
+                                <input type="text" id="filtroTablaPendientesEndrina" placeholder="Filtrar por pedido, cotiz o cliente..."
+                                    style="width:100%; padding:9px 12px 9px 34px; border-radius:10px; border:1px solid #CBD5E1; font-size:0.82rem; background:#FFF;"
+                                    onkeyup="filtrarTablaPendientesEndrina()">
+                            </div>
+                            <button type="button" class="btn-pill-white" onclick="cargarPedidosPendientesEndrina()" style="padding:9px 16px; font-size:0.82rem; font-weight:700;">
+                                <i class="fa-solid fa-rotate"></i> Actualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x:auto; margin-top:16px;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
+                            <thead>
+                                <tr style="background:#F8FAFC; border-bottom:2px solid #E2E8F0; color:var(--text-muted); text-transform:uppercase; font-size:0.74rem;">
+                                    <th style="padding:10px 12px; text-align:left;">N° Pedido</th>
+                                    <th style="padding:10px 12px; text-align:left;">Cotización</th>
+                                    <th style="padding:10px 12px; text-align:left;">Cliente / Razón Social</th>
+                                    <th style="padding:10px 12px; text-align:left;">RUC / DNI</th>
+                                    <th style="padding:10px 12px; text-align:center;">Fecha</th>
+                                    <th style="padding:10px 12px; text-align:right;">Monto (S/)</th>
+                                    <th style="padding:10px 12px; text-align:center;">Estado</th>
+                                    <th style="padding:10px 12px; text-align:center;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyPedidosPendientesEndrina">
+                                <tr>
+                                    <td colspan="8" style="text-align:center; padding:28px; color:var(--text-muted);">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Cargando pedidos pendientes de Endrina...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================= 2. BÚSQUEDA DIRECTA POR PEDIDO O COTIZACIÓN ================= -->
                 <div class="card-seccion-centro" style="border-left: 5px solid #10B981;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div>
                             <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px;">
                                 <span style="background:#10B981; color:#FFF; width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800;">1</span>
-                                Ingrese N° de Pedido para Cargar Datos
+                                Búsqueda Directa de Pedido o Cotización
                             </h3>
                             <p style="color:var(--text-muted); font-size:0.82rem; margin-top:2px;">
-                                Escribe el número del Pedido (ej. <strong>142</strong>, <strong>PD-000142</strong>, o código de cotización) y presiona "Cargar Datos".
+                                O escribe directamente el número (ej. <strong>142</strong>, <strong>143</strong>, <strong>PD-000142</strong> o cotización <strong>0052456</strong>) y presiona "Cargar Datos".
                             </p>
                         </div>
                         <div id="badgeEstadoPedidoCargado"></div>
@@ -3084,13 +3142,13 @@ if (file_exists($fileCotizPath)) {
                     <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px;">
                         <div style="flex:1; min-width:260px; position:relative;">
                             <i class="fa-solid fa-hashtag" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94A3B8; font-size:1rem;"></i>
-                            <input type="text" id="inputBuscarNroPedido" placeholder="Ej. 142, PD-000142, 84..." 
+                            <input type="text" id="inputBuscarNroPedido" placeholder="Ej. 142, PD-000142, 143, 0052456..."
                                 style="width:100%; padding:14px 16px 14px 44px; border-radius:14px; border:2px solid #E2E8F0; font-size:1rem; font-weight:700; color:var(--text-dark); background:#F8FAFC; outline:none; transition:all 0.2s;"
                                 onfocus="this.style.borderColor='#10B981'; this.style.background='#FFF';"
                                 onblur="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';"
                                 onkeydown="if(event.key==='Enter'){event.preventDefault(); buscarPedidoParaValidarPago();}">
                         </div>
-                        <button type="button" class="btn-pill-white primary" id="btnBuscarPedidoPago" onclick="buscarPedidoParaValidarPago()" 
+                        <button type="button" class="btn-pill-white primary" id="btnBuscarPedidoPago" onclick="buscarPedidoParaValidarPago()"
                             style="background:#10B981; color:#FFF; font-weight:700; padding:14px 26px; border-radius:14px; font-size:0.92rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.25);">
                             <i class="fa-solid fa-magnifying-glass"></i> Cargar Datos del Pedido
                         </button>
@@ -3553,21 +3611,127 @@ if (file_exists($fileCotizPath)) {
         // CAMBIAR VISTA EN EL MEDIO (SPA)
         
         // =========================================================================
+        // =========================================================================
         // FUNCIONALIDAD: VALIDACIÓN Y REPORTE DE PAGOS POR PEDIDO (ENDRINA)
         // =========================================================================
-        function buscarPedidoParaValidarPago() {
+        let listaGlobalPedidosPendientes = [];
+
+        function cargarPedidosPendientesEndrina() {
+            const tbody = document.getElementById('tbodyPedidosPendientesEndrina');
+            const badge = document.getElementById('badgeCountPendientesEndrina');
+            if (!tbody) return;
+
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Cargando pedidos pendientes...</td></tr>';
+
+            fetch('crm_backend.php?action=listar_pedidos_pendientes_endrina')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success || !data.pedidos || data.pedidos.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:28px; color:var(--text-muted);"><i class="fa-solid fa-circle-check" style="color:#10B981; font-size:1.4rem; display:block; margin-bottom:6px;"></i>No hay pedidos pendientes por facturar para Endrina. ¡Todos los pedidos están al día!</td></tr>';
+                        if (badge) badge.textContent = '0 Pendientes';
+                        listaGlobalPedidosPendientes = [];
+                        return;
+                    }
+
+                    listaGlobalPedidosPendientes = data.pedidos;
+                    if (badge) badge.textContent = `${data.pedidos.length} Pendientes (S/ ${Number(data.monto_total || 0).toLocaleString('en-US', {minimumFractionDigits:2})})`;
+                    renderTablaPedidosPendientes(data.pedidos);
+                })
+                .catch(err => {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:#DC2626;">Error al cargar pedidos pendientes: ${err.message}</td></tr>`;
+                });
+        }
+
+        function renderTablaPedidosPendientes(pedidos) {
+            const tbody = document.getElementById('tbodyPedidosPendientesEndrina');
+            if (!tbody) return;
+
+            if (!pedidos || pedidos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--text-muted);">No se encontraron pedidos con ese filtro.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = pedidos.map(p => {
+                const nroPed = p.nro_pedido || ('PD-' + (p.id || '000'));
+                const cotiz = p.nro_cotizacion || '-';
+                const cliente = p.cliente || 'Cliente General';
+                const ruc = p.documento || '-';
+                const fecha = (p.fecha || '').slice(0, 10);
+                const monto = parseFloat(p.total_venta || (p.total_pedido || 0));
+                const montoFmt = Number(monto).toLocaleString('en-US', {minimumFractionDigits: 2});
+                const estado = p.estado || 'Autorizado';
+
+                return `
+                    <tr style="border-bottom:1px solid #E2E8F0; transition:background 0.2s;" onmouseover="this.style.background='#F0FDF4'" onmouseout="this.style.background='transparent'">
+                        <td style="padding:10px 12px; font-weight:800; font-family:monospace; color:#0F172A;">
+                            <span style="background:#E2E8F0; padding:3px 8px; border-radius:6px;">${nroPed}</span>
+                        </td>
+                        <td style="padding:10px 12px; font-weight:700; color:#4F46E5; font-family:monospace;">${cotiz}</td>
+                        <td style="padding:10px 12px; font-weight:600; color:var(--text-dark);">${cliente}</td>
+                        <td style="padding:10px 12px; font-family:monospace; color:var(--text-muted);">${ruc}</td>
+                        <td style="padding:10px 12px; text-align:center; font-size:0.8rem; color:var(--text-muted);">${fecha}</td>
+                        <td style="padding:10px 12px; text-align:right; font-weight:800; color:#047857; font-size:0.92rem;">S/ ${montoFmt}</td>
+                        <td style="padding:10px 12px; text-align:center;">
+                            <span style="background:#FEF3C7; color:#D97706; padding:3px 9px; border-radius:10px; font-weight:700; font-size:0.72rem;">
+                                ${estado}
+                            </span>
+                        </td>
+                        <td style="padding:10px 12px; text-align:center;">
+                            <button type="button" class="btn-pill-white primary"
+                                style="background:#10B981; color:#FFF; font-weight:700; padding:6px 14px; border-radius:10px; font-size:0.8rem; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.25);"
+                                onclick="seleccionarPedidoDesdeLista('${nroPed}')">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> Validar Pago
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filtrarTablaPendientesEndrina() {
+            const query = (document.getElementById('filtroTablaPendientesEndrina')?.value || '').toLowerCase().trim();
+            if (!listaGlobalPedidosPendientes || listaGlobalPedidosPendientes.length === 0) return;
+            
+            if (!query) {
+                renderTablaPedidosPendientes(listaGlobalPedidosPendientes);
+                return;
+            }
+            
+            const filtrados = listaGlobalPedidosPendientes.filter(p => {
+                const ped = (p.nro_pedido || '').toLowerCase();
+                const cot = (p.nro_cotizacion || '').toLowerCase();
+                const cli = (p.cliente || '').toLowerCase();
+                const ruc = (p.documento || '').toLowerCase();
+                return ped.includes(query) || cot.includes(query) || cli.includes(query) || ruc.includes(query);
+            });
+            
+            renderTablaPedidosPendientes(filtrados);
+        }
+
+        function seleccionarPedidoDesdeLista(nroPed) {
             const input = document.getElementById('inputBuscarNroPedido');
-            const codigo = input ? input.value.trim() : '';
+            if (input) input.value = nroPed;
+            buscarPedidoParaValidarPago(nroPed);
+            const form = document.getElementById('formReportarPagoPedido');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function buscarPedidoParaValidarPago(codigoParam) {
+            const input = document.getElementById('inputBuscarNroPedido');
+            const codigo = (codigoParam !== undefined && codigoParam !== null ? String(codigoParam) : (input ? input.value : '')).trim();
             const msgAlerta = document.getElementById('msgAlertaPedido');
             const badgeCargado = document.getElementById('badgeEstadoPedidoCargado');
             const btn = document.getElementById('btnBuscarPedidoPago');
 
             if (!codigo) {
-                alert('Por favor ingrese el número de Pedido (ej. 142 o PD-000142).');
-                input.focus();
+                alert('Por favor ingrese o seleccione el número de Pedido (ej. 142 o PD-000142).');
+                if (input) input.focus();
                 return;
             }
 
+            if (input) input.value = codigo;
             if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
             if (msgAlerta) {
                 msgAlerta.style.display = 'block';
@@ -3584,20 +3748,20 @@ if (file_exists($fileCotizPath)) {
                         if (msgAlerta) {
                             msgAlerta.style.background = '#FEF2F2';
                             msgAlerta.style.color = '#B91C1C';
-                            msgAlerta.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${res.error || 'Pedido no encontrado'}. Puedes completar los campos manualmente a continuación.`;
+                            msgAlerta.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${res.error || 'Pedido no encontrado'}. Puedes seleccionarlo de la lista superior o completar los campos manualmente.`;
                         }
                         if (badgeCargado) badgeCargado.innerHTML = '';
-                        // Permitir continuar con el número ingresado
                         const cleanCode = codigo.toUpperCase().startsWith('PD-') ? codigo.toUpperCase() : ('PD-' + codigo.padStart(6, '0'));
                         document.getElementById('pagoNroPedido').value = cleanCode;
                         return;
                     }
 
                     const p = res.pedido;
+                    const montoTotalVal = parseFloat(p.total_pedido || (p.total_venta || 0));
                     if (msgAlerta) {
                         msgAlerta.style.background = '#ECFDF5';
                         msgAlerta.style.color = '#047857';
-                        msgAlerta.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>${p.nro_pedido}</strong> cargado con éxito. Cliente: <strong>${p.cliente}</strong>. Total: <strong>S/ ${Number(p.total_pedido || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</strong>.`;
+                        msgAlerta.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>${p.nro_pedido}</strong> cargado con éxito. Cliente: <strong>${p.cliente}</strong>. Total: <strong>S/ ${montoTotalVal.toLocaleString('en-US', {minimumFractionDigits:2})}</strong>.`;
                     }
                     if (badgeCargado) {
                         badgeCargado.innerHTML = `<span style="background:#DCFCE7; color:#15803D; font-weight:800; font-size:0.78rem; padding:4px 10px; border-radius:12px; border:1px solid #86EFAC;">
@@ -3608,7 +3772,7 @@ if (file_exists($fileCotizPath)) {
                     document.getElementById('pagoNroPedido').value = p.nro_pedido || ('PD-' + codigo);
                     document.getElementById('pagoCliente').value = p.cliente || '';
                     document.getElementById('pagoRuc').value = p.documento || '';
-                    document.getElementById('pagoMonto').value = parseFloat(p.total_pedido || 0).toFixed(2);
+                    document.getElementById('pagoMonto').value = montoTotalVal.toFixed(2);
                     if (p.banco && document.getElementById('pagoMetodo')) {
                         const opt = Array.from(document.getElementById('pagoMetodo').options).find(o => o.value.toLowerCase().includes(p.banco.toLowerCase()));
                         if (opt) opt.selected = true;
@@ -3624,9 +3788,9 @@ if (file_exists($fileCotizPath)) {
                         if (p.items && p.items.length > 0) {
                             itemsTbody.innerHTML = p.items.map(it => `
                                 <tr style="border-bottom:1px solid #F1F5F9;">
-                                    <td style="padding:5px 8px;"><strong>${it.codigo || ''}</strong> ${it.descripcion || it.nombre || ''}</td>
-                                    <td style="padding:5px 8px; text-align:center;">${it.cantidad || 1}</td>
-                                    <td style="padding:5px 8px; text-align:right; font-weight:700;">S/ ${Number(it.total || (it.cantidad * (it.precio_unitario || 0)) || 0).toFixed(2)}</td>
+                                    <td style="padding:6px 10px;"><strong>${it.codigo || ''}</strong> ${it.descripcion || it.nombre || ''}</td>
+                                    <td style="padding:6px 10px; text-align:center;">${it.cantidad || 1}</td>
+                                    <td style="padding:6px 10px; text-align:right; font-weight:700;">S/ ${Number(it.total || it.v_venta || (it.cantidad * (it.precio || it.precio_unitario || 0)) || 0).toFixed(2)}</td>
                                 </tr>
                             `).join('');
                             itemsContainer.style.display = 'block';
@@ -3711,8 +3875,8 @@ if (file_exists($fileCotizPath)) {
 
             const formData = new FormData();
             formData.append('action', 'solicitar_confirmacion_pago');
-            formData.append('nro_pedido', nroPed || ('PD-' + rand(1000, 9999)));
-            formData.append('nro_factura', nroPed || ('PD-' + rand(1000, 9999)));
+            formData.append('nro_pedido', nroPed || ('PD-' + Math.floor(1000 + Math.random() * 9000)));
+            formData.append('nro_factura', nroPed || ('PD-' + Math.floor(1000 + Math.random() * 9000)));
             formData.append('cliente', cliente);
             formData.append('ruc', ruc);
             formData.append('monto', monto);
@@ -3746,6 +3910,7 @@ if (file_exists($fileCotizPath)) {
                 if (data.success) {
                     alert(`✅ ¡Pago del Pedido ${nroPed || ''} registrado con éxito!\n\nSe envió la notificación a Reportería para que Nayeli audite y apruebe el comprobante en tiempo real.`);
                     limpiarFormularioPagoPedido();
+                    cargarPedidosPendientesEndrina();
                     cargarHistorialPagosEndrina();
                 } else {
                     alert('Error al enviar el pago: ' + (data.mensaje || data.error || 'Error desconocido'));
@@ -3772,7 +3937,6 @@ if (file_exists($fileCotizPath)) {
                         return;
                     }
 
-                    // Filtrar o mostrar los más recientes
                     const pagos = data.pagos;
                     tbody.innerHTML = pagos.slice(0, 20).map(p => {
                         let badgeEst = '<span style="background:#FEF3C7; color:#D97706; padding:4px 10px; border-radius:12px; font-weight:700; font-size:0.75rem;"><i class="fa-solid fa-clock"></i> Pendiente</span>';
@@ -3785,6 +3949,8 @@ if (file_exists($fileCotizPath)) {
                         const voucherUrl = p.voucher_url || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80';
                         const nroDoc = p.nro_pedido || p.nro_factura || 'PD-000';
                         const montoFmt = Number(p.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+                        const bancoNombre = p.banco || p.metodo || 'BCP';
+                        const clienteEscaped = (p.cliente || 'Cliente General').replace(/'/g, "\\'");
 
                         return `
                             <tr style="border-bottom:1px solid #E2E8F0; transition:background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
@@ -3792,12 +3958,12 @@ if (file_exists($fileCotizPath)) {
                                 <td style="padding:12px; font-weight:600; color:var(--text-dark);">${p.cliente || 'Cliente General'}</td>
                                 <td style="padding:12px; text-align:right; font-weight:800; color:#047857;">S/ ${montoFmt}</td>
                                 <td style="padding:12px; font-size:0.8rem;">
-                                    <strong>${p.banco || p.metodo || 'BCP'}</strong><br>
+                                    <strong>${bancoNombre}</strong><br>
                                     <span style="color:var(--text-muted); font-family:monospace;">Op: ${p.nro_operacion || '-'}</span>
                                 </td>
                                 <td style="padding:12px; text-align:center; font-size:0.8rem; color:var(--text-muted);">${(p.fecha || '').slice(0, 16)}</td>
                                 <td style="padding:12px; text-align:center;">
-                                    <button type="button" class="btn-pill-white" style="padding:4px 10px; font-size:0.75rem; border:1px solid #CBD5E1;" onclick="verComprobanteDetalle('${nroDoc}', '${(p.cliente||'').replace(/'/g, "\'")}', '${montoFmt}', '${p.banco} #${p.nro_operacion}', '${voucherUrl}', '${p.estado}')">
+                                    <button type="button" class="btn-pill-white" style="padding:4px 10px; font-size:0.75rem; border:1px solid #CBD5E1;" onclick="verComprobanteDetalle('${nroDoc}', '${clienteEscaped}', '${montoFmt}', '${bancoNombre} #${p.nro_operacion || '-'}', '${voucherUrl}', '${p.estado}')">
                                         <i class="fa-solid fa-eye"></i> Ver
                                     </button>
                                 </td>
@@ -3810,7 +3976,6 @@ if (file_exists($fileCotizPath)) {
                     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:#DC2626;">Error al cargar pagos: ${err.message}</td></tr>`;
                 });
         }
-
 
         function cambiarVistaVentas(nombreVista, elNav) {
             closeModals();
@@ -3835,6 +4000,7 @@ if (file_exists($fileCotizPath)) {
 
             // Si es vista de cotizaciones, inicializar
             if (nombreVista === 'validar_pagos') {
+                cargarPedidosPendientesEndrina();
                 cargarHistorialPagosEndrina();
             }
 

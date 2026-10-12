@@ -507,9 +507,16 @@ function obtenerPedidoPorCodigo($codigo) {
 
     // 2. Fallback a pedidos en JSON
     $pedidos = obtenerPedidos();
+    $cDigits = preg_replace('/[^0-9]/', '', (string)$codigo);
     foreach ($pedidos as $p) {
         $pNum = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)($p['nro_pedido'] ?? ''))));
-        if ($pNum === $codigoLimpio || (string)($p['id'] ?? '') === $codigoLimpio || (string)($p['nro_pedido'] ?? '') === trim($codigo)) {
+        $pDigits = preg_replace('/[^0-9]/', '', (string)($p['nro_pedido'] ?? ''));
+        if ($pNum === $codigoLimpio || 
+            $pNum === $codigoPad6 || 
+            $pNum === $codigoPad7 || 
+            (!empty($cDigits) && !empty($pDigits) && intval($cDigits) === intval($pDigits)) || 
+            (string)($p['id'] ?? '') === $codigoLimpio || 
+            (string)($p['nro_pedido'] ?? '') === trim($codigo)) {
             return $p;
         }
     }
@@ -3576,53 +3583,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         header('Content-Type: application/json; charset=utf-8');
         $codigo = trim($_GET['codigo'] ?? ($_POST['codigo'] ?? ''));
         if (empty($codigo)) {
-            echo json_encode(['success' => false, 'error' => 'Debe ingresar el número de Pedido (PD).'], JSON_UNESCAPED_UNICODE);
+            echo json_encode(['success' => false, 'error' => 'Debe ingresar el número de Pedido (PD) o Cotización.'], JSON_UNESCAPED_UNICODE);
             exit;
         }
 
         $pedido = obtenerPedidoPorCodigo($codigo);
         $numOnly = preg_replace('/[^0-9]/', '', $codigo);
 
+        // Si no lo encuentra directo por código, buscar exhaustivamente en la lista de pedidos
         if (!$pedido) {
-            // Buscar en cotizaciones si no lo encuentra como pedido
-            $cotizacionesFile = __DIR__ . '/crm_data/cotizaciones.json';
-            if (file_exists($cotizacionesFile)) {
-                $cotizaciones = json_decode(file_get_contents($cotizacionesFile), true) ?: [];
-                foreach ($cotizaciones as $c) {
-                    $cNum = preg_replace('/[^0-9]/', '', $c['nro_cotizacion'] ?? ($c['codigo'] ?? ''));
-                    if ($cNum && ($cNum === $numOnly || strpos($c['codigo'] ?? '', $codigo) !== false || strpos($c['nro_cotizacion'] ?? '', $codigo) !== false)) {
-                        $pedido = [
-                            'nro_pedido' => 'PD-' . str_pad($numOnly ?: '1', 6, '0', STR_PAD_LEFT),
-                            'nro_cotizacion' => $c['codigo'] ?? ($c['nro_cotizacion'] ?? ('COT-2026-' . $numOnly)),
-                            'cliente' => $c['cliente_nombre'] ?? 'Cliente General',
-                            'documento' => $c['ruc_dni'] ?? '',
-                            'direccion' => $c['direccion'] ?? 'Lima, Perú',
-                            'total_pedido' => floatval($c['total'] ?? 0),
-                            'total_venta' => floatval($c['total'] ?? 0),
-                            'vendedor' => 'Endrina',
-                            'banco' => 'BCP',
-                            'items' => $c['items'] ?? []
-                        ];
-                        break;
-                    }
+            $todos = obtenerPedidos();
+            foreach ($todos as $p) {
+                $pNum = strtoupper(trim(str_replace(['PD-', 'PD'], '', (string)($p['nro_pedido'] ?? ''))));
+                $pDigits = preg_replace('/[^0-9]/', '', (string)($p['nro_pedido'] ?? ''));
+                $pCotDigits = preg_replace('/[^0-9]/', '', (string)($p['nro_cotizacion'] ?? ''));
+                
+                // Match numérico
+                if (!empty($numOnly) && !empty($pDigits) && intval($numOnly) === intval($pDigits)) {
+                    $pedido = $p;
+                    break;
+                }
+                // Match cotización vinculada
+                if (!empty($numOnly) && !empty($pCotDigits) && intval($numOnly) === intval($pCotDigits)) {
+                    $pedido = $p;
+                    break;
+                }
+                // Match por cliente
+                if (stripos($p['cliente'] ?? '', $codigo) !== false) {
+                    $pedido = $p;
+                    break;
                 }
             }
         }
 
-        // Si aún no se encuentra, pero tiene dígitos numéricos, armar plantilla de pedido para no bloquear a la vendedora
-        if (!$pedido && !empty($numOnly)) {
-            $pedido = [
-                'nro_pedido' => 'PD-' . str_pad($numOnly, 6, '0', STR_PAD_LEFT),
-                'nro_cotizacion' => 'COT-2026-' . $numOnly,
-                'cliente' => 'Cliente Pedido #' . $numOnly,
-                'documento' => '',
-                'direccion' => 'Lima, Perú',
-                'total_pedido' => 0.00,
-                'total_venta' => 0.00,
-                'vendedor' => 'Endrina',
-                'banco' => 'BCP',
-                'items' => []
-            ];
+        // Si aún no se encuentra como pedido, buscar en cotizaciones (COTCAB o cotizaciones.json)
+        if (!$pedido) {
+            $cotizaciones = obtenerCotizaciones();
+            foreach ($cotizaciones as $c) {
+                $cCode = $c['codigo'] ?? ($c['nro_cotizacion'] ?? '');
+                $cDigits = preg_replace('/[^0-9]/', '', (string)$cCode);
+                if ((!empty($numOnly) && !empty($cDigits) && intval($numOnly) === intval($cDigits)) || 
+                    stripos($c['cliente_nombre'] ?? '', $codigo) !== false ||
+                    $cCode === $codigo) {
+                    
+                    // Obtener items si existen
+                    $cItems = $c['items'] ?? [];
+                    if (empty($cItems) && $db) {
+                        try {
+                            $stmtDet = $db->prepare("SELECT LTRIM(RTRIM(CDCODIGO)) as codigo, LTRIM(RTRIM(CDDESCRI)) as descripcion, CAST(CDCANTID as float) as cantidad, CAST(CDPREC_VEN as float) as precio, CAST(CDIMPMN as float) as subtotal FROM COTDET WHERE CDNUMDOC = ?");
+                            $stmtDet->execute([$cCode]);
+                            $cItems = $stmtDet->fetchAll(PDO::FETCH_ASSOC) ?: [];
+                        } catch(Exception $ex) {}
+                    }
+
+                    $pedido = [
+                        'nro_pedido' => 'PD-' . str_pad($cDigits ?: '1', 6, '0', STR_PAD_LEFT),
+                        'nro_cotizacion' => $cCode,
+                        'cliente' => $c['cliente_nombre'] ?? 'Cliente General',
+                        'documento' => $c['ruc_dni'] ?? '',
+                        'direccion' => $c['direccion'] ?? 'Lima, Perú',
+                        'total_pedido' => floatval($c['total'] ?? 0),
+                        'total_venta' => floatval($c['total'] ?? 0),
+                        'vendedor' => $c['asesor'] ?? 'Endrina',
+                        'banco' => 'BCP',
+                        'items' => $cItems
+                    ];
+                    break;
+                }
+            }
         }
 
         if ($pedido) {
@@ -3632,8 +3660,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
                 'mensaje' => "Pedido {$pedido['nro_pedido']} cargado con éxito.",
                 'pedido' => [
                     'nro_pedido' => $pedido['nro_pedido'] ?? ('PD-' . $codigo),
+                    'nro_cotizacion' => $pedido['nro_cotizacion'] ?? '',
                     'cliente' => $pedido['cliente'] ?? '',
                     'documento' => $pedido['documento'] ?? '',
+                    'direccion' => $pedido['direccion'] ?? '',
                     'total_pedido' => $montoTotal,
                     'total_venta' => $montoTotal,
                     'vendedor' => $pedido['vendedor'] ?? 'Endrina',
@@ -3645,13 +3675,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         } else {
             echo json_encode([
                 'success' => false,
-                'error' => "El Pedido \"$codigo\" no fue encontrado. Verifique el número de pedido ingresado."
+                'error' => "El Pedido \"$codigo\" no fue encontrado. Selecciona uno de la lista de pedidos pendientes de Endrina a continuación."
             ], JSON_UNESCAPED_UNICODE);
         }
         exit;
     }
 
-    // 19. FACTURAR PEDIDO CON EMISIÓN DE GUÍA DE REMISIÓN Y DESCUENTO DE STOCK
+    // 18.2 LISTAR PEDIDOS PENDIENTES DE FACTURAR / VALIDAR PARA ENDRINA
+    if ($action === 'listar_pedidos_pendientes_endrina') {
+        header('Content-Type: application/json; charset=utf-8');
+        
+        $todos = obtenerPedidos();
+        $pendientes = [];
+        
+        foreach ($todos as $p) {
+            $estado = strtoupper(trim($p['estado'] ?? ''));
+            // Filtrar solo los que NO estan facturados ni anulados
+            if ($estado === 'FACTURADO' || $estado === 'ANULADO') {
+                continue;
+            }
+            
+            // Verificar si es de Endrina o sucursal Chorrillos
+            $vendedor = strtoupper(trim($p['vendedor'] ?? ''));
+            $puntoVenta = strtoupper(trim($p['punto_venta'] ?? ''));
+            
+            $esEndrina = (strpos($vendedor, 'ENDRINA') !== false) || 
+                         ($vendedor === '01') || 
+                         (strpos($puntoVenta, 'CHORRILLOS') !== false) || 
+                         empty($vendedor);
+                         
+            if ($esEndrina) {
+                $pendientes[] = $p;
+            }
+        }
+        
+        // Si la lista quedara vacía, traer todos los pedidos pendientes autorizados
+        if (empty($pendientes)) {
+            foreach ($todos as $p) {
+                $estado = strtoupper(trim($p['estado'] ?? ''));
+                if ($estado !== 'FACTURADO' && $estado !== 'ANULADO') {
+                    $pendientes[] = $p;
+                }
+            }
+        }
+        
+        $totalMonto = 0;
+        foreach ($pendientes as $p) {
+            $totalMonto += floatval($p['total_venta'] ?? ($p['total_pedido'] ?? 0));
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'pedidos' => $pendientes,
+            'total' => count($pendientes),
+            'monto_total' => $totalMonto
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+// 19. FACTURAR PEDIDO CON EMISIÓN DE GUÍA DE REMISIÓN Y DESCUENTO DE STOCK
     if ($action === 'facturar_pedido_con_guia') {
         header('Content-Type: application/json; charset=utf-8');
         $nroPedido = trim($_POST['nro_pedido'] ?? '');
