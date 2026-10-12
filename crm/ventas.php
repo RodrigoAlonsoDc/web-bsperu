@@ -3647,8 +3647,6 @@ if (file_exists($fileCotizPath)) {
         // =========================================================================
         let listaGlobalPedidosPendientes = [];
 
-                let listaGlobalPedidosPendientes = [];
-
         function volverAListaPendientes() {
             const secPendientes = document.getElementById('seccion-pedidos-pendientes');
             const secProceso = document.getElementById('seccion-proceso-pago');
