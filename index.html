@@ -1694,7 +1694,8 @@
                         disponible: p.producto_disponible !== false,
                         variantes: [],
                         varianteActivaIdx: 0,
-                        buscable: ''
+                        buscable: '',
+                        slug: p.slug || ''
                     };
                     map[base] = item;
                     list.push(item);
@@ -1704,6 +1705,11 @@
                 if (!group.imagen && p.imagen) group.imagen = p.imagen;
                 if (!group.descripcion && p.descripcion) group.descripcion = p.descripcion;
                 if (!group.ficha && p.ficha_pdf) group.ficha = p.ficha_pdf;
+                if (p.slug) {
+                    if (!group.slug || (!p.slug.includes('-x-') && group.slug.includes('-x-'))) {
+                        group.slug = p.slug;
+                    }
+                }
 
                 group.variantes.push({
                     sku: p.sku || '',
@@ -1870,33 +1876,11 @@
                 : '';
             
             var desc = p.descripcion || 'Consulte la ficha técnica o comuníquese con nosotros para asesoría técnica de este producto.';
-            var prodHref = vActiva.slug ? ('/producto/' + encodeURIComponent(vActiva.slug)) : ('producto.html?sku=' + encodeURIComponent(vActiva.sku));
+            var canonicalSlug = p.slug || (vActiva && vActiva.slug ? vActiva.slug : '');
+            var prodHref = canonicalSlug ? ('/producto/' + encodeURIComponent(canonicalSlug)) : ('producto.html?sku=' + encodeURIComponent(vActiva.sku));
 
-            var fichaPdf = vActiva.ficha || p.ficha;
-            var accionBoton = '';
-            if (fichaPdf) {
-                accionBoton = '<a class="p-btn p-btn-pdf" href="' + esc(fichaPdf) + '" target="_blank" rel="noopener" title="Descargar Ficha Técnica (PDF)" aria-label="Ficha técnica de ' + esc(p.nombre) + ' (PDF)">' +
-                    '<i class="ph ph-file-pdf" aria-hidden="true"></i> Ficha Técnica PDF</a>';
-            } else {
-                accionBoton = '<a class="p-btn p-btn-ficha-request" href="' + prodHref + '" title="Ver detalles y especificaciones">' +
-                    '<i class="ph ph-arrow-right" aria-hidden="true"></i> Ver especificaciones</a>';
-            }
-
-            var medidasHTML = '';
-            if (p.variantes && p.variantes.length > 1) {
-                var pills = p.variantes.map(function (v, vIdx) {
-                    var act = (vIdx === p.varianteActivaIdx) ? ' active' : '';
-                    return '<button type="button" class="p-pill-medida' + act + '" data-v="' + vIdx + '">' + esc(v.medida) + '</button>';
-                }).join('');
-                medidasHTML = '<div class="p-medidas-box">' +
-                    '<span class="p-medidas-title"><i class="ph ph-package" aria-hidden="true"></i> Medidas disponibles:</span>' +
-                    '<div class="p-medidas-pills" role="group" aria-label="Seleccionar medida">' + pills + '</div>' +
-                '</div>';
-            } else if (p.variantes && p.variantes.length === 1 && p.variantes[0].medida !== 'Estándar') {
-                medidasHTML = '<div class="p-medidas-box single">' +
-                    '<span class="p-medidas-single"><i class="ph ph-package" aria-hidden="true"></i> Presentación: <strong>' + esc(p.variantes[0].medida) + '</strong></span>' +
-                '</div>';
-            }
+            var accionBoton = '<a class="p-btn p-btn-ficha-request" href="' + prodHref + '" title="Ver detalles y especificaciones">' +
+                '<i class="ph ph-arrow-right" aria-hidden="true"></i> Ver especificaciones</a>';
 
             var idxDelay = (typeof i === 'number') ? (i % 24) : 0;
 
@@ -1910,7 +1894,6 @@
                     '<p class="p-cat">' + esc(p.categoriaLabel) + '</p>' +
                     '<h3><a href="' + prodHref + '" class="p-card-link-title" style="color:inherit;text-decoration:none;" title="Ver ficha completa de ' + esc(p.nombre) + '">' + esc(p.nombre) + '</a></h3>' +
                     '<p class="p-desc">' + esc(desc) + '</p>' +
-                    medidasHTML +
                 '</div>' +
                 '<div class="p-actions" data-nosnippet>' + accionBoton + '</div>' +
             '</article>';

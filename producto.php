@@ -24,6 +24,25 @@ function clean_nombre_producto($text) {
     return trim($clean);
 }
 
+// Helper para dar formato legible a la presentación
+function format_pres_label($name) {
+    if (preg_match('/55\s*GAL|CILINDRO/i', $name)) return '55 Galones (Cilindro)';
+    if (preg_match('/5\s*GAL|BALDE/i', $name)) return '5 Galones (Balde)';
+    if (preg_match('/\b(?:1\s*GAL|GAL|GLN)\b/i', $name)) return '1 Galón';
+    if (preg_match('/25\s*KG/i', $name)) return '25 Kg (Bolsa)';
+    if (preg_match('/20\s*KG/i', $name)) return '20 Kg';
+    if (preg_match('/10\s*KG/i', $name)) return '10 Kg';
+    if (preg_match('/4\s*KG/i', $name)) return '4 Kg';
+    if (preg_match('/1\s*KG/i', $name)) return '1 Kg';
+    if (preg_match('/1\/4\s*GAL/i', $name)) return '1/4 Gal';
+    if (preg_match('/600\s*ML/i', $name)) return '600 ml';
+    if (stripos($name, ' X ') !== false) {
+        $parts = explode(' X ', $name);
+        return ucwords(strtolower(trim($parts[1])));
+    }
+    return 'Presentación Estándar';
+}
+
 // Redirecciones 301 permanentes para consolidar SEO de variantes hacia su URL limpia indexable
 $redirectsMap = [
     'aircon-z-x-5-gal' => 'aircon-z',
@@ -90,6 +109,48 @@ if ($productos) {
             }
         }
     }
+
+    // 3. Si no se especificó producto, usar por defecto AIRCON Z o el primero disponible
+    if (!$productoActual) {
+        foreach ($productos as $p) {
+            if (isset($p['slug']) && $p['slug'] === 'aircon-z') {
+                $productoActual = $p;
+                break;
+            }
+        }
+        if (!$productoActual && !empty($productos[0])) {
+            $productoActual = $productos[0];
+        }
+    }
+}
+
+// Obtener todas las presentaciones hermanas del producto
+$presentacionesHermanas = [];
+$miniaturasList = [];
+if ($productoActual && $productos) {
+    $nombreBaseActual = clean_nombre_producto($productoActual['nombre'] ?? '');
+    foreach ($productos as $p) {
+        $nb = clean_nombre_producto($p['nombre'] ?? '');
+        if (strcasecmp($nb, $nombreBaseActual) === 0) {
+            $presentacionesHermanas[] = $p;
+        }
+    }
+    usort($presentacionesHermanas, function($a, $b) {
+        $pa = isset($a['peso2']) && is_numeric($a['peso2']) ? floatval($a['peso2']) : 0;
+        $pb = isset($b['peso2']) && is_numeric($b['peso2']) ? floatval($b['peso2']) : 0;
+        return $pa <=> $pb;
+    });
+
+    if (!empty($productoActual['imagen'])) {
+        $miniaturasList[] = $productoActual['imagen'];
+    }
+    if (!empty($productoActual['miniaturas']) && is_array($productoActual['miniaturas'])) {
+        foreach ($productoActual['miniaturas'] as $m) {
+            if (!empty($m) && !in_array($m, $miniaturasList)) {
+                $miniaturasList[] = $m;
+            }
+        }
+    }
 }
 
 // Variables por defecto
@@ -108,6 +169,13 @@ if ($productoActual) {
     $descRaw = $productoActual['descripcion_larga'] ?? ($productoActual['descripcion'] ?? $description);
     $descRaw = strip_tags($descRaw);
     $description = htmlspecialchars(mb_substr($descRaw, 0, 160) . (mb_strlen($descRaw) > 160 ? '...' : ''));
+
+    $categoriaTexto = !empty($productoActual['categoria']) ? $productoActual['categoria'] : (!empty($productoActual['descripcion']) ? $productoActual['descripcion'] : 'Soluciones Químicas para la Construcción');
+    $descCorta = !empty($productoActual['descripcion_larga']) ? $productoActual['descripcion_larga'] : (!empty($productoActual['descripcion']) ? $productoActual['descripcion'] : 'Consulte las especificaciones técnicas completas o contáctenos para asesoría personalizada.');
+
+    $waPresName = !empty($presentacionesHermanas) ? format_pres_label($productoActual['nombre'] ?? '') : '';
+    $waCotizarText = "Hola Building Systems Perú, deseo cotizar el producto: " . ($nombre ?: 'AIRCON Z') . (!empty($waPresName) ? " (" . $waPresName . ")" : "");
+    $waCotizarUrl = "https://wa.me/51923062809?text=" . urlencode($waCotizarText);
 
     // Imagen
     if (isset($productoActual['imagen'])) {
@@ -1788,9 +1856,9 @@ if ($productoActual) {
                 <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
                 <li><a href="/productos.html#catalogo">Catálogo</a></li>
                 <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
-                <li><a href="/productos.html#familias" id="breadCategoria">Inhibidores de corrosión y removedores</a></li>
+                <li><a href="/productos.html#familias" id="breadCategoria"><?php echo htmlspecialchars($categoriaTexto ?? 'Soluciones Químicas para la Construcción'); ?></a></li>
                 <li><i class="ph ph-caret-right" aria-hidden="true"></i></li>
-                <li class="current" id="breadProducto"><?php echo !empty($nombre) ? $nombre : 'Removedor de Óxido Z'; ?></li>
+                <li class="current" id="breadProducto"><?php echo !empty($nombre) ? $nombre : 'Catálogo'; ?></li>
             </ul>
         </nav>
     </div>
@@ -1799,7 +1867,7 @@ if ($productoActual) {
     <main class="shell product-section">
         
         <!-- TÍTULO PRINCIPAL (Exacto al diseño de la imagen) -->
-        <h1 class="product-main-title" id="prodTitle"><?php echo !empty($nombre) ? $nombre : 'REMOVEDOR DE ÓXIDO Z'; ?></h1>
+        <h1 class="product-main-title" id="prodTitle"><?php echo !empty($nombre) ? $nombre : 'AIRCON Z'; ?></h1>
 
         <!-- SECCIÓN SUPERIOR: IMAGEN + DESCRIPCIÓN CORTA -->
         <div class="product-top-grid">
@@ -1807,57 +1875,62 @@ if ($productoActual) {
             <!-- Columna Izquierda: Imagen del producto y miniaturas -->
             <div class="product-media-card">
                 <div class="product-img-stage" id="imgStage">
-                    <img id="mainImg" src="<?php echo $image; ?>" alt="<?php echo !empty($nombre) ? $nombre : 'Removedor de Óxido Z - Balde 5 Galones'; ?>" fetchpriority="high">
+                    <img id="mainImg" src="<?php echo htmlspecialchars($image); ?>" alt="<?php echo !empty($nombre) ? $nombre : 'Producto - BS Perú'; ?>" fetchpriority="high">
                 </div>
-                <div class="product-thumbnails" id="thumbsContainer">
-                    <button class="thumb-btn active" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL1.jpg" aria-label="Vista frontal">
-                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL1.jpg" alt="">
-                    </button>
-                    <button class="thumb-btn" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL2.jpg" aria-label="Vista lateral 1">
-                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL2.jpg" alt="">
-                    </button>
-                    <button class="thumb-btn" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL3.jpg" aria-label="Vista posterior">
-                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL3.jpg" alt="">
-                    </button>
-                    <button class="thumb-btn" data-src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL4.jpg" aria-label="Vista lateral 2">
-                        <img src="/assets/img%20catalogo/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL/REMOVEDOR%20DE%20OXIDO%20X%205%20GAL4.jpg" alt="">
-                    </button>
+                <div class="product-thumbnails" id="thumbsContainer" style="<?php echo count($miniaturasList) > 1 ? 'display:flex;' : 'display:none;'; ?>">
+                    <?php foreach ($miniaturasList as $idx => $mSrc): ?>
+                        <button class="thumb-btn<?php echo $idx === 0 ? ' active' : ''; ?>" data-src="<?php echo htmlspecialchars($mSrc); ?>" aria-label="Vista <?php echo $idx + 1; ?>">
+                            <img src="<?php echo htmlspecialchars($mSrc); ?>" alt="<?php echo htmlspecialchars($nombre); ?> - Vista <?php echo $idx + 1; ?>">
+                        </button>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
             <!-- Columna Derecha: Categoría, Descripción y Acciones -->
             <div class="product-info-col">
                 <!-- Subtítulo en negrita (igual a la imagen) -->
-                <h2 class="product-category-sub" id="prodSubtitle">Inhibidores de corrosión y removedores</h2>
+                <h2 class="product-category-sub" id="prodSubtitle"><?php echo htmlspecialchars($categoriaTexto ?? 'Soluciones Químicas para la Construcción'); ?></h2>
 
                 <!-- Párrafo descriptivo principal (igual a la imagen) -->
                 <p class="product-desc-p" id="prodShortDesc">
-                    Producto elaborado a base de tensoactivos y ácidos orgánicos muy eficaces contra la grasa y el óxido de las superficies metálicas. Es un excelente desengrasante, detergente y desoxidante.
+                    <?php echo htmlspecialchars($descCorta ?? ''); ?>
                 </p>
 
                 <!-- Características clave -->
                 <div class="product-highlights">
-                    <span class="highlight-pill"><i class="ph-fill ph-lightning" aria-hidden="true"></i> Acción 3 en 1: Desengrasa, Limpia y Desoxida</span>
-                    <span class="highlight-pill"><i class="ph-fill ph-shield-check" aria-hidden="true"></i> Efecto Fosfatizante Protector</span>
-                    <span class="highlight-pill"><i class="ph-fill ph-timer" aria-hidden="true"></i> Actúa entre 10 a 20 min</span>
-                    <span class="highlight-pill"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Garantía Z Aditivos Oficial</span>
+                    <span class="highlight-pill"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Calidad Z Aditivos Oficial</span>
+                    <span class="highlight-pill"><i class="ph-fill ph-shield-check" aria-hidden="true"></i> Rendimiento Garantizado</span>
+                    <span class="highlight-pill"><i class="ph-fill ph-timer" aria-hidden="true"></i> Asesoría Técnica Especializada</span>
                 </div>
 
                 <!-- Selector de Presentaciones Disponibles -->
                 <div class="envases-selector-title">Presentaciones Disponibles:</div>
                 <div class="envases-chips" id="chipsEnvases">
-                    <button type="button" class="chip-envase" data-sku="110014470">
-                        <span>1 Galón</span>
-                        <span class="peso">Aprox. 4.63 kg</span>
-                    </button>
-                    <button type="button" class="chip-envase active" data-sku="110014455">
-                        <span>5 Galones (Balde)</span>
-                        <span class="peso">Aprox. 23.0 kg</span>
-                    </button>
-                    <button type="button" class="chip-envase" data-sku="110014511">
-                        <span>55 Galones (Cilindro)</span>
-                        <span class="peso">Aprox. 252 kg</span>
-                    </button>
+                    <?php if (!empty($presentacionesHermanas)): ?>
+                        <?php foreach ($presentacionesHermanas as $presItem): 
+                            $isActive = (isset($productoActual['sku']) && $presItem['sku'] == $productoActual['sku']);
+                            $presLabel = format_pres_label($presItem['nombre']);
+                            $presPeso = !empty($presItem['peso2']) ? 'Aprox. ' . $presItem['peso2'] . ' kg' : '';
+                        ?>
+                            <button type="button" class="chip-envase<?php echo $isActive ? ' active' : ''; ?>" 
+                                    data-sku="<?php echo htmlspecialchars($presItem['sku']); ?>"
+                                    data-peso="<?php echo htmlspecialchars($presItem['peso2'] ?? ''); ?>"
+                                    data-img="<?php echo htmlspecialchars($presItem['imagen'] ?? ''); ?>"
+                                    data-label="<?php echo htmlspecialchars($presLabel); ?>">
+                                <span><?php echo htmlspecialchars($presLabel); ?></span>
+                                <?php if ($presPeso): ?>
+                                    <span class="peso"><?php echo htmlspecialchars($presPeso); ?></span>
+                                <?php endif; ?>
+                            </button>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <button type="button" class="chip-envase active" data-sku="<?php echo htmlspecialchars($productoActual['sku'] ?? ''); ?>">
+                            <span>Presentación Estándar</span>
+                            <?php if (!empty($productoActual['peso2'])): ?>
+                                <span class="peso">Aprox. <?php echo htmlspecialchars($productoActual['peso2']); ?> kg</span>
+                            <?php endif; ?>
+                        </button>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Redes Sociales / Síguenos (Encima del botón WhatsApp) -->
@@ -1884,12 +1957,18 @@ if ($productoActual) {
 
                 <!-- Botones de Acción -->
                 <div class="product-actions-bar">
-                    <a href="https://wa.me/51923062809?text=Hola%20Building%20Systems%20Per%C3%BA,%20deseo%20cotizar%20el%20producto:%20REMOVEDOR%20DE%20%C3%93XIDO%20Z" target="_blank" rel="noopener" class="btn-wa-cotizar" id="btnCotizarWa">
+                    <a href="<?php echo $waCotizarUrl ?? 'https://wa.me/51923062809'; ?>" target="_blank" rel="noopener" class="btn-wa-cotizar" id="btnCotizarWa">
                         <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i> Cotizar por WhatsApp
                     </a>
-                    <a href="https://drive.google.com/file/d/1_phLUi7wuY8ht2VyYpxBjjWL7E2grOfl/view?usp=drive_link" target="_blank" rel="noopener" class="btn-ficha-pdf" id="btnFichaPdf">
+                    <?php if (!empty($productoActual['ficha_pdf'])): ?>
+                    <a href="<?php echo htmlspecialchars($productoActual['ficha_pdf']); ?>" target="_blank" rel="noopener" class="btn-ficha-pdf" id="btnFichaPdf">
                         <i class="ph-fill ph-file-pdf" aria-hidden="true"></i> Descargar Ficha Técnica
                     </a>
+                    <?php else: ?>
+                    <a href="https://wa.me/51923062809?text=<?php echo urlencode('Hola Building Systems Perú, deseo solicitar la ficha técnica de: ' . ($nombre ?: 'AIRCON Z')); ?>" target="_blank" rel="noopener" class="btn-ficha-pdf" id="btnFichaPdf">
+                        <i class="ph-fill ph-file-text" aria-hidden="true"></i> Solicitar Ficha Técnica
+                    </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -1906,13 +1985,21 @@ if ($productoActual) {
                 </button>
                 <div class="accordion-body" id="contentUsos" role="region">
                     <div class="accordion-inner" id="textUsos">
-                        <ul>
-                            <li>Limpieza y desoxidación de fierros de construcción y varillas corrugadas de acero estructural expuestas a la intemperie antes del vaciado de concreto.</li>
-                            <li>Tratamiento de perfiles, vigas, columnas, planchas y carpintería metálica antes de la aplicación de pinturas, primers o recubrimientos anticorrosivos.</li>
-                            <li>Limpieza profunda de encofrados metálicos, andamios, puntales y maquinaria de construcción afectada por óxido y grasa.</li>
-                            <li>Remoción de herrumbre y suciedad en tanques de almacenamiento, tuberías industriales y piezas mecánicas automotrices.</li>
-                            <li>Restauración y mantenimiento de elementos metálicos ornamentales, rejas, barandas y portones.</li>
-                        </ul>
+                        <?php if (!empty($productoActual['descripcion_larga'])): ?>
+                            <ul>
+                                <li><?php echo htmlspecialchars($productoActual['descripcion_larga']); ?></li>
+                                <li>Apto para obras de construcción civil, acabados e infraestructura según especificación de proyecto.</li>
+                                <li>Consulte a nuestro departamento técnico para requerimientos específicos de dosificación en obra.</li>
+                            </ul>
+                        <?php else: ?>
+                            <ul>
+                                <li>Limpieza y desoxidación de fierros de construcción y varillas corrugadas de acero estructural expuestas a la intemperie antes del vaciado de concreto.</li>
+                                <li>Tratamiento de perfiles, vigas, columnas, planchas y carpintería metálica antes de la aplicación de pinturas, primers o recubrimientos anticorrosivos.</li>
+                                <li>Limpieza profunda de encofrados metálicos, andamios, puntales y maquinaria de construcción afectada por óxido y grasa.</li>
+                                <li>Remoción de herrumbre y suciedad en tanques de almacenamiento, tuberías industriales y piezas mecánicas automotrices.</li>
+                                <li>Restauración y mantenimiento de elementos metálicos ornamentales, rejas, barandas y portones.</li>
+                            </ul>
+                        <?php endif; ?>
                     </div>
                 </div>
             </article>
@@ -2242,6 +2329,26 @@ if ($productoActual) {
 
         if (skuParam || slugParam || nameParam) {
             cargarDatosProducto(skuParam, slugParam, nameParam);
+        } else {
+            cargarDatosProducto('110014292', 'aircon-z', null);
+        }
+
+        function parsePresLabel(name) {
+            if (/55\s*GAL|CILINDRO/i.test(name)) return '55 Galones (Cilindro)';
+            if (/5\s*GAL|BALDE/i.test(name)) return '5 Galones (Balde)';
+            if (/\b(?:1\s*GAL|GAL|GLN)\b/i.test(name)) return '1 Galón';
+            if (/25\s*KG/i.test(name)) return '25 Kg (Bolsa)';
+            if (/20\s*KG/i.test(name)) return '20 Kg';
+            if (/10\s*KG/i.test(name)) return '10 Kg';
+            if (/4\s*KG/i.test(name)) return '4 Kg';
+            if (/1\s*KG/i.test(name)) return '1 Kg';
+            if (/1\/4\s*GAL/i.test(name)) return '1/4 Gal';
+            if (/600\s*ML/i.test(name)) return '600 ml';
+            if (name && name.indexOf(' X ') !== -1) {
+                var part = name.split(' X ')[1].trim();
+                return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            }
+            return 'Presentación Estándar';
         }
 
         function cargarDatosProducto(sku, slug, nameQuery) {
@@ -2256,10 +2363,22 @@ if ($productoActual) {
                         var prod = null;
                         if (slug) {
                             var cleanSlug = String(slug).toLowerCase().trim();
+                            var redirectsMap = {
+                                'aircon-z-x-5-gal': 'aircon-z',
+                                'aircon-z-x-55-gal': 'aircon-z',
+                                'aircon-z-x-gal': 'aircon-z'
+                            };
+                            if (redirectsMap[cleanSlug]) cleanSlug = redirectsMap[cleanSlug];
+
                             prod = catalog.find(function (p) {
                                 return (p.slug && p.slug.toLowerCase() === cleanSlug) ||
                                        (p.sku && String(p.sku).trim() === cleanSlug);
                             });
+                            if (!prod) {
+                                prod = catalog.find(function (p) {
+                                    return cleanProdTitle(p.nombre).toLowerCase().replace(/[^a-z0-9]+/g, '-') === cleanSlug;
+                                });
+                            }
                         }
                         if (!prod && sku) {
                             prod = catalog.find(function (p) { return String(p.sku).trim() === String(sku).trim(); });
@@ -2271,7 +2390,14 @@ if ($productoActual) {
                             });
                         }
                         if (prod) {
-                            aplicarProductoDinamico(prod);
+                            var baseName = cleanProdTitle(prod.nombre);
+                            var siblings = catalog.filter(function (item) {
+                                return cleanProdTitle(item.nombre).toLowerCase() === baseName.toLowerCase();
+                            });
+                            siblings.sort(function (a, b) {
+                                return (parseFloat(a.peso2) || 0) - (parseFloat(b.peso2) || 0);
+                            });
+                            aplicarProductoDinamico(prod, siblings);
                         }
                     })
                     .catch(function () {
@@ -2289,7 +2415,7 @@ if ($productoActual) {
                 .trim();
         }
 
-        function aplicarProductoDinamico(p) {
+        function aplicarProductoDinamico(p, siblings) {
             var prodTitle = document.getElementById('prodTitle');
             var prodSubtitle = document.getElementById('prodSubtitle');
             var prodShortDesc = document.getElementById('prodShortDesc');
@@ -2306,7 +2432,7 @@ if ($productoActual) {
             if (breadProducto) breadProducto.textContent = nombreLimpio;
             if (pageTitle) pageTitle.textContent = nombreLimpio + ' | Building Systems Perú';
 
-            var catTexto = p.descripcion || p.categoria || 'Soluciones Químicas para la Construcción';
+            var catTexto = p.categoria || p.descripcion || 'Soluciones Químicas para la Construcción';
             if (prodSubtitle) prodSubtitle.textContent = catTexto;
             if (breadCategoria) breadCategoria.textContent = catTexto;
 
@@ -2322,7 +2448,7 @@ if ($productoActual) {
             }
 
             // Galería de miniaturas dinámicas
-            if (thumbsContainer && p.sku !== '110014455') {
+            if (thumbsContainer) {
                 var imgs = [];
                 if (p.imagen) imgs.push(p.imagen);
                 if (p.miniaturas) {
@@ -2363,38 +2489,88 @@ if ($productoActual) {
             if (p.ficha_pdf && btnFichaPdf) {
                 btnFichaPdf.href = p.ficha_pdf;
                 btnFichaPdf.style.display = 'inline-flex';
-                var docFicha = document.getElementById('docLinkFicha');
-                if (docFicha) docFicha.href = p.ficha_pdf;
+                btnFichaPdf.innerHTML = '<i class="ph-fill ph-file-pdf" aria-hidden="true"></i> Descargar Ficha Técnica';
             } else if (btnFichaPdf && !p.ficha_pdf) {
-                btnFichaPdf.style.display = 'none';
+                btnFichaPdf.href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent('Hola Building Systems Perú, deseo solicitar la ficha técnica de: ' + nombreLimpio);
+                btnFichaPdf.innerHTML = '<i class="ph-fill ph-file-text" aria-hidden="true"></i> Solicitar Ficha Técnica';
             }
 
-            // Presentación dinámica en envases
-            if (p.peso2 && p.sku !== '110014455') {
-                var chipsWrap = document.getElementById('chipsEnvases');
-                if (chipsWrap) {
-                    chipsWrap.innerHTML = '<button type="button" class="chip-envase active"><span>' + 
-                        (p.nombre.indexOf(' X ') !== -1 ? p.nombre.split(' X ')[1] : 'Presentación estándar') + 
-                        '</span><span class="peso">Aprox. ' + p.peso2 + ' kg</span></button>';
+            function actualizarWaCotizar(prodNom, presNom) {
+                if (!btnCotizarWa) return;
+                var msg = 'Hola Building Systems Perú, deseo cotizar el producto: ' + prodNom;
+                if (presNom) {
+                    msg += ' (' + presNom + ')';
                 }
+                msg += '.';
+                btnCotizarWa.href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
             }
 
-            // Acordeón Usos / Aplicación dinámico si el producto no es removedor
-            if (p.sku !== '110014455') {
-                var textUsos = document.getElementById('textUsos');
-                if (textUsos && p.descripcion_larga) {
-                    textUsos.innerHTML = '<ul><li>' + p.descripcion_larga + '</li><li>Apto para obras de construcción civil, acabados e infraestructura según especificación de catálogo.</li><li>Consulte a nuestro departamento técnico para requerimientos específicos de dosificación en obra.</li></ul>';
-                }
+            // Presentaciones disponibles (Chips de envases)
+            var chipsWrap = document.getElementById('chipsEnvases');
+            if (chipsWrap && siblings && siblings.length > 0) {
+                chipsWrap.innerHTML = '';
+                siblings.forEach(function (sib) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'chip-envase' + (String(sib.sku) === String(p.sku) ? ' active' : '');
+                    btn.setAttribute('data-sku', sib.sku || '');
+                    if (sib.peso2) btn.setAttribute('data-peso', sib.peso2);
+                    if (sib.imagen) btn.setAttribute('data-img', sib.imagen);
+
+                    var labelText = parsePresLabel(sib.nombre);
+                    var html = '<span>' + labelText + '</span>';
+                    if (sib.peso2) {
+                        html += '<span class="peso">Aprox. ' + sib.peso2 + ' kg</span>';
+                    }
+                    btn.innerHTML = html;
+
+                    btn.addEventListener('click', function () {
+                        chipsWrap.querySelectorAll('.chip-envase').forEach(function (c) { c.classList.remove('active'); });
+                        btn.classList.add('active');
+
+                        if (sib.imagen && mainImg && mainImg.src !== sib.imagen) {
+                            mainImg.style.opacity = '0.3';
+                            setTimeout(function () {
+                                mainImg.src = sib.imagen;
+                                mainImg.style.opacity = '1';
+                            }, 120);
+                        }
+
+                        if (sib.ficha_pdf && btnFichaPdf) {
+                            btnFichaPdf.href = sib.ficha_pdf;
+                        }
+
+                        actualizarWaCotizar(nombreLimpio, labelText);
+                    });
+
+                    chipsWrap.appendChild(btn);
+                });
+            } else if (chipsWrap) {
+                chipsWrap.querySelectorAll('.chip-envase').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        chipsWrap.querySelectorAll('.chip-envase').forEach(function (c) { c.classList.remove('active'); });
+                        btn.classList.add('active');
+                        var span = btn.querySelector('span:not(.peso)');
+                        var labelText = span ? span.textContent.trim() : '';
+                        var imgAttr = btn.getAttribute('data-img');
+                        if (imgAttr && mainImg) {
+                            mainImg.src = imgAttr;
+                        }
+                        actualizarWaCotizar(nombreLimpio, labelText);
+                    });
+                });
             }
 
-            // WhatsApp link personalizado
-            var waMsg = 'Hola Building Systems Perú, deseo cotizar el producto: ' + p.nombre + '.';
-            var chipAct = document.querySelector('.chip-envase.active');
-            if (chipAct && chipAct.querySelector('span')) {
-                waMsg = 'Hola Building Systems Perú, deseo cotizar el producto: ' + p.nombre + ' (' + chipAct.querySelector('span').textContent.trim() + ').';
+            // Acordeón Usos / Aplicación dinámico
+            var textUsos = document.getElementById('textUsos');
+            if (textUsos && p.descripcion_larga) {
+                textUsos.innerHTML = '<ul><li>' + p.descripcion_larga + '</li><li>Apto para obras de construcción civil, acabados e infraestructura según especificación técnica.</li><li>Consulte a nuestro departamento técnico para requerimientos específicos de dosificación en obra.</li></ul>';
             }
-            var waUrl = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
-            if (btnCotizarWa) btnCotizarWa.href = waUrl;
+
+            // WhatsApp cotización inicial
+            var activeChipSpan = document.querySelector('.chip-envase.active span:not(.peso)');
+            var presActivaInicial = activeChipSpan ? activeChipSpan.textContent.trim() : parsePresLabel(p.nombre);
+            actualizarWaCotizar(nombreLimpio, presActivaInicial);
 
             // Actualización completa de Metadatos SEO, Canonical, OpenGraph y Schema.org
             var tituloCompleto = nombreLimpio + ' | Z Aditivos Oficial - Building Systems Perú';
@@ -2406,18 +2582,18 @@ if ($productoActual) {
             var mDesc = document.getElementById('metaDescription') || document.querySelector('meta[name="description"]');
             if (mDesc) mDesc.setAttribute('content', metaDesc);
 
-            var cleanSlug = p.slug || p.sku;
+            var cleanSlug = (p.slug && !p.slug.includes('-x-')) ? p.slug : (cleanProdTitle(p.nombre).toLowerCase().replace(/[^a-z0-9]+/g, '-') || p.sku);
             var prodCanonicalUrl = 'https://bsperu.pe/producto/' + encodeURIComponent(cleanSlug);
 
             // Actualizar URL en el navegador a URL amigable limpia (sin recargar la pagina)
-            if (p.slug && window.history && window.history.replaceState) {
-                var cleanPath = '/producto/' + encodeURIComponent(p.slug);
+            if (cleanSlug && window.history && window.history.replaceState) {
+                var cleanPath = '/producto/' + encodeURIComponent(cleanSlug);
                 if (window.location.pathname !== cleanPath) {
                     window.history.replaceState(null, '', cleanPath);
                 }
             }
             var canLink = document.getElementById('canonicalLink');
-            if (canLink && p.sku) canLink.setAttribute('href', prodCanonicalUrl);
+            if (canLink) canLink.setAttribute('href', prodCanonicalUrl);
 
             var imgAbsoluta = 'https://bsperu.pe/img/impermeabilizantes.jpg';
             if (p.imagen) {
