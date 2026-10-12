@@ -768,7 +768,7 @@ if (boletinForm) {
         
         const mensaje = `Hola, deseo suscribirme al boletín de BS PERÚ. Mi correo es: ${email}`;
         const mensajeCodificado = encodeURIComponent(mensaje);
-        window.open(`https://wa.me/51914776669?text=${mensajeCodificado}`, '_blank');
+        window.open(`https://wa.me/51923062809?text=${mensajeCodificado}`, '_blank');
         emailInput.value = '';
     });
 }

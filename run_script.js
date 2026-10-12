@@ -25,7 +25,7 @@ const htmlStack = `
                 <span class="tooltip-label">LinkedIn</span>
             </a>
         </div>
-        <a class="wa-float" id="waFloat" href="https://wa.me/51914776669" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú" title="WhatsApp Oficial">
+        <a class="wa-float" id="waFloat" href="https://wa.me/51923062809" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú" title="WhatsApp Oficial">
             <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
             <span class="tooltip-label" style="right: calc(100% + 16px);">WhatsApp</span>
         </a>

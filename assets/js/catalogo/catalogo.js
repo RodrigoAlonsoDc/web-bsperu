@@ -2,7 +2,7 @@
    CONFIG
    ========================= */
 if (!window.WHATSAPP_NUMBER) {
-  window.WHATSAPP_NUMBER = '51914776669';
+  window.WHATSAPP_NUMBER = '51923062809';
 }
 if (!window.productos) {
   window.productos = [];

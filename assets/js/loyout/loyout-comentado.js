@@ -15,7 +15,7 @@
 
 /** Número de WhatsApp para contacto - Se usa en todos los formularios de compra */
 if (!window.WHATSAPP_NUMBER) {
-  window.WHATSAPP_NUMBER = "51914776669";
+  window.WHATSAPP_NUMBER = "51923062809";
 }
 
 /** Detecta si la página actual es la homepage para comportamientos específicos */

@@ -9,7 +9,7 @@ const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 if (!window.WHATSAPP_NUMBER) {
-  window.WHATSAPP_NUMBER = "51914776669";
+  window.WHATSAPP_NUMBER = "51923062809";
 }
 if (!window.productos) {
   window.productos = [];

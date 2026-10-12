@@ -25,7 +25,7 @@ if (contactForm) {
             `Mensaje: ${mensaje}`;
         
         const mensajeCodificado = encodeURIComponent(whatsappMensaje);
-        window.open(`https://wa.me/51914776669?text=${mensajeCodificado}`, '_blank');
+        window.open(`https://wa.me/51923062809?text=${mensajeCodificado}`, '_blank');
         
         formStatus.textContent = '¡Se abrió WhatsApp! Envía el mensaje para contactarnos.';
         formStatus.className = 'alert alert-success mt-2';

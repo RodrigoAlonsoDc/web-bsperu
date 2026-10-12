@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let offsetY = 0;
   
   const STORAGE_KEY = 'whatsapp_position';
-  const whatsappURL = 'https://wa.me/51914776669';
+  const whatsappURL = 'https://wa.me/51923062809';
   
   /**
    * Cargar posición guardada del localStorage

@@ -1852,7 +1852,7 @@ if ($productoActual) {
 
                 <!-- Botones de Acción -->
                 <div class="product-actions-bar">
-                    <a href="https://wa.me/51914776669?text=Hola%20Building%20Systems%20Per%C3%BA,%20deseo%20cotizar%20el%20producto:%20REMOVEDOR%20DE%20%C3%93XIDO%20Z" target="_blank" rel="noopener" class="btn-wa-cotizar" id="btnCotizarWa">
+                    <a href="https://wa.me/51923062809?text=Hola%20Building%20Systems%20Per%C3%BA,%20deseo%20cotizar%20el%20producto:%20REMOVEDOR%20DE%20%C3%93XIDO%20Z" target="_blank" rel="noopener" class="btn-wa-cotizar" id="btnCotizarWa">
                         <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i> Cotizar por WhatsApp
                     </a>
                     <a href="https://drive.google.com/file/d/1_phLUi7wuY8ht2VyYpxBjjWL7E2grOfl/view?usp=drive_link" target="_blank" rel="noopener" class="btn-ficha-pdf" id="btnFichaPdf">
@@ -2003,14 +2003,14 @@ if ($productoActual) {
                                     <span>Descarga directa en PDF · Certificada</span>
                                 </div>
                             </a>
-                            <a href="https://wa.me/51914776669?text=Hola,%20solicito%20la%20Hoja%20de%20Seguridad%20(MSDS)%20de:%20REMOVEDOR%20DE%20ÓXIDO%20Z" target="_blank" rel="noopener" class="doc-card">
+                            <a href="https://wa.me/51923062809?text=Hola,%20solicito%20la%20Hoja%20de%20Seguridad%20(MSDS)%20de:%20REMOVEDOR%20DE%20ÓXIDO%20Z" target="_blank" rel="noopener" class="doc-card">
                                 <div class="doc-icon"><i class="ph-fill ph-shield-warning" aria-hidden="true"></i></div>
                                 <div class="doc-meta">
                                     <h4>Hoja de Seguridad (HDS / MSDS)</h4>
                                     <span>Solicitar copia oficial de seguridad</span>
                                 </div>
                             </a>
-                            <a href="https://wa.me/51914776669?text=Hola,%20solicito%20el%20Certificado%20de%20Calidad%20de%20lote%20de:%20REMOVEDOR%20DE%20ÓXIDO%20Z" target="_blank" rel="noopener" class="doc-card">
+                            <a href="https://wa.me/51923062809?text=Hola,%20solicito%20el%20Certificado%20de%20Calidad%20de%20lote%20de:%20REMOVEDOR%20DE%20ÓXIDO%20Z" target="_blank" rel="noopener" class="doc-card">
                                 <div class="doc-icon"><i class="ph-fill ph-certificate" aria-hidden="true"></i></div>
                                 <div class="doc-meta">
                                     <h4>Certificado de Calidad de Lote</h4>
@@ -2030,7 +2030,7 @@ if ($productoActual) {
                 <h3>¿Necesitas asesoría técnica para tu obra?</h3>
                 <p>Nuestros ingenieros especialistas te asesoran en la dosificación, rendimiento y aplicación directa de este y todos los productos de la línea Z Aditivos.</p>
             </div>
-            <a href="https://wa.me/51914776669?text=Hola%20BS%20Per%C3%BA,%20necesito%20asesor%C3%ADa%20t%C3%A9cnica%20sobre:%20REMOVEDOR%20DE%20%C3%93XIDO%20Z" target="_blank" rel="noopener" class="btn-banner-wa">
+            <a href="https://wa.me/51923062809?text=Hola%20BS%20Per%C3%BA,%20necesito%20asesor%C3%ADa%20t%C3%A9cnica%20sobre:%20REMOVEDOR%20DE%20%C3%93XIDO%20Z" target="_blank" rel="noopener" class="btn-banner-wa">
                 <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i> Consultar a un Especialista
             </a>
         </div>
@@ -2061,8 +2061,8 @@ if ($productoActual) {
                 <div class="footer-col">
                     <h4>Contáctanos</h4>
                     <ul>
-                        <li><a href="https://wa.me/51914776669" target="_blank" rel="noopener">+51 914 776 669</a></li>
-                        <li><a href="mailto:bs.peru.marketing@bsperu.pe">bs.peru.marketing@bsperu.pe</a></li>
+                        <li><a href="https://wa.me/51923062809" target="_blank" rel="noopener">+51 923 062 809</a></li>
+                        <li><a href="mailto:consultas@bsperu.pe">consultas@bsperu.pe</a></li>
                         <li>Lun a Vie · 8:00 – 17:30</li>
                     </ul>
                 </div>
@@ -2108,7 +2108,7 @@ if ($productoActual) {
                 <span class="tooltip-label">LinkedIn</span>
             </a>
         </div>
-        <a class="wa-float" id="waFloat" href="https://wa.me/51914776669" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú" title="WhatsApp Oficial">
+        <a class="wa-float" id="waFloat" href="https://wa.me/51923062809" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a BS Perú" title="WhatsApp Oficial">
             <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
             <span class="tooltip-label" style="right: calc(100% + 16px);">WhatsApp</span>
         </a>
@@ -2119,7 +2119,7 @@ if ($productoActual) {
     (function () {
         'use strict';
 
-        var WA_NUMBER = '51914776669';
+        var WA_NUMBER = '51923062809';
 
         /* 1. Lógica del Acordeón interactivo */
         var accHeaders = document.querySelectorAll('.accordion-header');
