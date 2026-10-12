@@ -17,9 +17,22 @@
     RewriteRule ^producto/([a-zA-Z0-9_-]+)/?$ producto.php?slug=$1 [L,QSA]
     RewriteRule ^producto/([a-zA-Z0-9_-]+)\.html$ producto.php?slug=$1 [L,QSA]
 
+    # --- Redirecciones seguras para Sitemap ---
+    RewriteRule ^sitemap/?$ /sitemap.xml [R=301,L]
+    RewriteRule ^sitemap\.xml/+$ /sitemap.xml [R=301,L]
+
     # --- Renderizar producto.html via PHP (SEO y compatibilidad) ---
     RewriteRule ^producto\.html$ producto.php [L,QSA]
 </IfModule>
+
+# --- Configuración MIME y Headers de Sitemap ---
+<Files "sitemap.xml">
+    ForceType application/xml
+    <IfModule mod_headers.c>
+        Header set Content-Type "application/xml; charset=utf-8"
+    </IfModule>
+</Files>
+
 
 # --- Headers de Seguridad ---
 <IfModule mod_headers.c>
