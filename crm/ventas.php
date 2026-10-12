@@ -3042,26 +3042,26 @@ if (file_exists($fileCotizPath)) {
                 </div>
             </div>
 
-            <!-- ================= VISTA: VALIDACIÓN Y REPORTE DE PAGOS (ENDRINA) ================= -->
-            <div id="vista-validar_pagos" class="vista-seccion" style="display: none; flex-direction: column; gap: 24px;">
+                    <!-- ================= VISTA: VALIDACIÓN Y REPORTE DE PAGOS (ENDRINA) ================= -->
+        <div id="vista-validar_pagos" class="vista-seccion" style="display: none; flex-direction: column; gap: 24px;">
+
+            <!-- ================= SUB-SECCIÓN 1: SOLO LISTADO DE PEDIDOS PENDIENTES ================= -->
+            <div id="seccion-pedidos-pendientes" style="display: flex; flex-direction: column; gap: 24px;">
                 <div class="main-header">
                     <div>
                         <span style="font-size:0.75rem; font-weight:700; color:#059669; text-transform:uppercase; letter-spacing:1px; display:inline-flex; align-items:center; gap:5px;">
-                            <i class="fa-solid fa-shield-check"></i> Módulo de Endrina &bull; Sucursal Chorrillos
+                            <i class="fa-solid fa-shield-check"></i> Módulo de Endrina • Sucursal Chorrillos
                         </span>
                         <h1 style="font-family:'Outfit', sans-serif; font-size:1.8rem; font-weight:700; color:var(--text-dark); margin-top:2px;">
                             Validación & Reporte de Pagos a Reportería
                         </h1>
                         <p style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">
-                            Selecciona un pedido pendiente de la lista o escribe el N° de Pedido para cargar automáticamente los datos del cliente, adjunta el voucher bancario y envíalo para validación de Nayeli.
+                            Revisa los pedidos pendientes por facturar, selecciona el pedido deseado para cargar los datos de la cotización y adjunta el voucher bancario para la aprobación de Nayeli.
                         </p>
                     </div>
                     <div class="header-actions">
-                        <button type="button" class="btn-pill-white" onclick="cargarPedidosPendientesEndrina(); cargarHistorialPagosEndrina();">
-                            <i class="fa-solid fa-rotate"></i> Actualizar Listas
-                        </button>
-                        <button type="button" class="btn-pill-white" onclick="limpiarFormularioPagoPedido()">
-                            <i class="fa-solid fa-eraser"></i> Limpiar Campos
+                        <button type="button" class="btn-pill-white" onclick="cargarPedidosPendientesEndrina()">
+                            <i class="fa-solid fa-rotate"></i> Actualizar Lista
                         </button>
                         <button type="button" class="btn-pill-white" onclick="cambiarVistaVentas('dashboard')">
                             <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
@@ -3069,7 +3069,7 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </div>
 
-                <!-- ================= 1. LISTADO DE PEDIDOS PENDIENTES POR FACTURAR (ENDRINA) ================= -->
+                <!-- CUADRO: LISTADO DE PEDIDOS PENDIENTES POR FACTURAR -->
                 <div class="card-seccion-centro" style="border-top: 4px solid #10B981; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                         <div>
@@ -3083,121 +3083,146 @@ if (file_exists($fileCotizPath)) {
                                 </span>
                             </div>
                             <p style="color:var(--text-muted); font-size:0.83rem; margin-top:4px; margin-bottom:0;">
-                                Listado de pedidos autorizados asignados a <strong>Endrina (Sucursal Chorrillos)</strong> listos para adjuntar pago y emitir facturación.
+                                Pedidos autorizados en StarSoft para <strong>Endrina (Sucursal Chorrillos)</strong>. Selecciona un pedido para validar y reportar su pago.
                             </p>
                         </div>
                         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                            <div style="position:relative; min-width:260px;">
-                                <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; font-size:0.82rem;"></i>
-                                <input type="text" id="filtroTablaPendientesEndrina" placeholder="Filtrar por pedido, cotiz o cliente..."
-                                    style="width:100%; padding:9px 12px 9px 34px; border-radius:10px; border:1px solid #CBD5E1; font-size:0.82rem; background:#FFF;"
-                                    onkeyup="filtrarTablaPendientesEndrina()">
+                            <div style="position:relative; min-width:280px;">
+                                <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; font-size:0.85rem;"></i>
+                                <input type="text" id="filtroTablaPendientesEndrina" placeholder="Buscar por pedido, cotización, cliente o RUC..."
+                                    style="width:100%; padding:10px 14px 10px 36px; border-radius:12px; border:1px solid #CBD5E1; font-size:0.85rem; background:#FFF; outline:none; transition:border 0.2s;"
+                                    onfocus="this.style.borderColor='#10B981';"
+                                    onblur="this.style.borderColor='#CBD5E1';"
+                                    onkeyup="filtrarTablaPendientesEndrina(this.value)">
                             </div>
-                            <button type="button" class="btn-pill-white" onclick="cargarPedidosPendientesEndrina()" style="padding:9px 16px; font-size:0.82rem; font-weight:700;">
-                                <i class="fa-solid fa-rotate"></i> Actualizar
+                            <button type="button" class="btn-pill-white" onclick="cargarPedidosPendientesEndrina()" style="padding:10px 16px; font-size:0.82rem; font-weight:700;">
+                                <i class="fa-solid fa-rotate"></i> Recargar
                             </button>
                         </div>
                     </div>
 
                     <div style="overflow-x:auto; margin-top:16px;">
-                        <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
                             <thead>
-                                <tr style="background:#F8FAFC; border-bottom:2px solid #E2E8F0; color:var(--text-muted); text-transform:uppercase; font-size:0.74rem;">
+                                <tr style="background:#F8FAFC; border-bottom:2px solid #E2E8F0; color:var(--text-muted); text-transform:uppercase; font-size:0.75rem;">
                                     <th style="padding:10px 12px; text-align:left;">N° Pedido</th>
                                     <th style="padding:10px 12px; text-align:left;">Cotización</th>
-                                    <th style="padding:10px 12px; text-align:left;">Cliente / Razón Social</th>
+                                    <th style="padding:10px 12px; text-align:left;">Cliente</th>
                                     <th style="padding:10px 12px; text-align:left;">RUC / DNI</th>
                                     <th style="padding:10px 12px; text-align:center;">Fecha</th>
-                                    <th style="padding:10px 12px; text-align:right;">Monto (S/)</th>
-                                    <th style="padding:10px 12px; text-align:center;">Estado</th>
+                                    <th style="padding:10px 12px; text-align:right;">Total (S/)</th>
+                                    <th style="padding:10px 12px; text-align:center;">Estado StarSoft</th>
                                     <th style="padding:10px 12px; text-align:center;">Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyPedidosPendientesEndrina">
-                                <tr>
-                                    <td colspan="8" style="text-align:center; padding:28px; color:var(--text-muted);">
-                                        <i class="fa-solid fa-spinner fa-spin"></i> Cargando pedidos pendientes de Endrina...
-                                    </td>
-                                </tr>
+                                <tr><td colspan="8" style="text-align:center; padding:28px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Cargando pedidos pendientes...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
 
-                <!-- ================= 2. BÚSQUEDA DIRECTA POR PEDIDO O COTIZACIÓN ================= -->
-                <div class="card-seccion-centro" style="border-left: 5px solid #10B981;">
+            <!-- ================= SUB-SECCIÓN 2: FORMULARIO DE REPORTE DE PAGO + HISTORIAL INFERIOR ================= -->
+            <div id="seccion-proceso-pago" style="display: none; flex-direction: column; gap: 24px;">
+
+                <!-- BARRA SUPERIOR DE NAVEGACIÓN Y TÍTULO DINÁMICO -->
+                <div class="main-header" style="background:#FFF; padding:16px 20px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+                    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                        <button type="button" class="btn-pill-white" onclick="volverAListaPendientes()"
+                            style="background:#F1F5F9; color:#0F172A; font-weight:700; padding:10px 18px; border-radius:12px; font-size:0.85rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:1px solid #CBD5E1;">
+                            <i class="fa-solid fa-arrow-left"></i> Volver a Lista de Pendientes
+                        </button>
+                        <div>
+                            <span id="subtituloProcesoPago" style="font-size:0.75rem; font-weight:700; color:#059669; text-transform:uppercase; letter-spacing:1px; display:inline-flex; align-items:center; gap:5px;">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> Validación de Pago • Pedido Seleccionado
+                            </span>
+                            <h2 id="tituloPedidoEnProceso" style="font-family:'Outfit', sans-serif; font-size:1.35rem; font-weight:800; color:var(--text-dark); margin:2px 0 0;">
+                                Datos del Pedido y Comprobante Bancario
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn-pill-white" onclick="limpiarFormularioPagoPedido()">
+                            <i class="fa-solid fa-eraser"></i> Limpiar Campos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CUADRO / BANNER DE CONFIRMACIÓN: PAGO REPORTADO CON ÉXITO -->
+                <div id="cuadroExitoReportePago" style="display: none; background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 2px solid #10B981; border-radius: 16px; padding: 20px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: 0 4px 16px rgba(16,185,129,0.15);">
+                    <div style="display:flex; align-items:center; gap:16px;">
+                        <div style="width:48px; height:48px; border-radius:50%; background:#10B981; color:#FFF; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin:0; font-size:1.18rem; font-weight:800; color:#065F46; font-family:'Outfit', sans-serif;">
+                                ¡Pago Reportado Exitosamente a Reportería!
+                            </h4>
+                            <p id="textoExitoReportePago" style="margin:4px 0 0; font-size:0.88rem; color:#047857; font-weight:600;">
+                                El comprobante y datos del pedido fueron enviados a Nayeli. El registro ya figura en el historial inferior como Pendiente de Aprobación.
+                            </p>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button type="button" onclick="volverAListaPendientes()" class="btn-pill-white primary"
+                            style="background:#10B981; color:#FFF; font-weight:800; padding:11px 22px; border-radius:12px; font-size:0.88rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.3);">
+                            <i class="fa-solid fa-list-check"></i> Validar Siguiente Pedido Pendiente
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CUADRO 1: FORMULARIO DE REPORTE Y VALIDACIÓN DE PAGO -->
+                <form id="formReportarPagoPedido" onsubmit="enviarPagoPedidoReporteria(event)" class="card-seccion-centro" style="display:flex; flex-direction:column; gap:20px; border-left: 5px solid #10B981;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div>
-                            <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px;">
-                                <span style="background:#10B981; color:#FFF; width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800;">1</span>
-                                Búsqueda Directa de Pedido o Cotización
+                            <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px; margin:0;">
+                                <i class="fa-solid fa-file-invoice" style="color:#10B981;"></i>
+                                Datos del Pedido y Comprobante Bancario
                             </h3>
-                            <p style="color:var(--text-muted); font-size:0.82rem; margin-top:2px;">
-                                O escribe directamente el número (ej. <strong>142</strong>, <strong>143</strong>, <strong>PD-000142</strong> o cotización <strong>0052456</strong>) y presiona "Cargar Datos".
+                            <p style="color:var(--text-muted); font-size:0.82rem; margin:2px 0 0;">
+                                Verifica los datos de la cotización cargada, ingresa el número de operación bancaria y adjunta el voucher para validación de Nayeli.
                             </p>
                         </div>
                         <div id="badgeEstadoPedidoCargado"></div>
                     </div>
 
-                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px;">
-                        <div style="flex:1; min-width:260px; position:relative;">
-                            <i class="fa-solid fa-hashtag" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94A3B8; font-size:1rem;"></i>
-                            <input type="text" id="inputBuscarNroPedido" placeholder="Ej. 142, PD-000142, 143, 0052456..."
-                                style="width:100%; padding:14px 16px 14px 44px; border-radius:14px; border:2px solid #E2E8F0; font-size:1rem; font-weight:700; color:var(--text-dark); background:#F8FAFC; outline:none; transition:all 0.2s;"
-                                onfocus="this.style.borderColor='#10B981'; this.style.background='#FFF';"
-                                onblur="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';"
-                                onkeydown="if(event.key==='Enter'){event.preventDefault(); buscarPedidoParaValidarPago();}">
-                        </div>
-                        <button type="button" class="btn-pill-white primary" id="btnBuscarPedidoPago" onclick="buscarPedidoParaValidarPago()"
-                            style="background:#10B981; color:#FFF; font-weight:700; padding:14px 26px; border-radius:14px; font-size:0.92rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.25);">
-                            <i class="fa-solid fa-magnifying-glass"></i> Cargar Datos del Pedido
-                        </button>
-                    </div>
-
-                    <div id="msgAlertaPedido" style="display:none; margin-top:10px; padding:10px 14px; border-radius:10px; font-size:0.85rem; font-weight:600;"></div>
-                </div>
-
-                <!-- PASO 2: FORMULARIO DE REPORTE Y VALIDACIÓN DE PAGO -->
-                <form id="formReportarPagoPedido" onsubmit="enviarPagoPedidoReporteria(event)" class="card-seccion-centro" style="display:flex; flex-direction:column; gap:20px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                        <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px;">
-                            <span style="background:var(--accent-blue); color:#FFF; width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800;">2</span>
-                            Datos del Pedido y Comprobante Bancario
-                        </h3>
-                        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">
-                            <i class="fa-solid fa-circle-info" style="color:var(--accent-blue);"></i> Se enviará a Nayeli para validación y conciliación
-                        </span>
-                    </div>
-
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:22px;">
-                        <!-- COLUMNA 1: DATOS DEL PEDIDO -->
+                        <!-- COLUMNA 1: DATOS DEL PEDIDO Y COTIZACIÓN -->
                         <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:22px; display:flex; flex-direction:column; gap:14px;">
-                            <h4 style="font-size:0.92rem; color:var(--text-dark); font-weight:700; border-bottom:1px solid #E2E8F0; padding-bottom:10px; display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-box-archive" style="color:var(--accent-tan);"></i> Información del Pedido
+                            <h4 style="font-size:0.92rem; color:var(--text-dark); font-weight:700; border-bottom:1px solid #E2E8F0; padding-bottom:10px; margin:0; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-circle-info" style="color:#059669;"></i> Información de la Cotización & Pedido
                             </h4>
 
-                            <div>
-                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">N° de Pedido (PD)</label>
-                                <input type="text" id="pagoNroPedido" name="nro_pedido" readonly placeholder="Se autocompleta con el buscador"
-                                    style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-weight:800; font-family:monospace; color:#0F172A; margin-top:4px;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">N° de Pedido (StarSoft)</label>
+                                    <input type="text" id="pagoNroPedido" name="nro_pedido" readonly placeholder="PD-000000"
+                                        style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-weight:800; font-family:monospace; color:#0F172A; margin-top:4px;">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">N° Cotización Vinculada</label>
+                                    <input type="text" id="pagoNroCotizacion" readonly placeholder="0000000"
+                                        style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-weight:800; font-family:monospace; color:#4F46E5; margin-top:4px;">
+                                </div>
                             </div>
 
                             <div>
                                 <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Cliente / Razón Social</label>
-                                <input type="text" id="pagoCliente" name="cliente" required placeholder="Nombre del cliente"
-                                    style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-weight:700; color:var(--text-dark); margin-top:4px;">
+                                <input type="text" id="pagoCliente" name="cliente" readonly placeholder="Nombre del cliente"
+                                    style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-weight:700; color:var(--text-dark); margin-top:4px;">
                             </div>
 
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                 <div>
                                     <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">RUC / DNI</label>
-                                    <input type="text" id="pagoRuc" name="ruc" placeholder="RUC/DNI"
-                                        style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-family:monospace; margin-top:4px;">
+                                    <input type="text" id="pagoRuc" name="ruc" readonly placeholder="Documento"
+                                        style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#E2E8F0; font-family:monospace; font-weight:600; color:#334155; margin-top:4px;">
                                 </div>
                                 <div>
-                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Monto del Pago (S/)</label>
-                                    <input type="number" step="0.01" min="0" id="pagoMonto" name="monto" required placeholder="0.00"
-                                        style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #10B981; background:#ECFDF5; font-weight:800; color:#047857; font-size:1.1rem; margin-top:4px;">
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Total a Facturar (S/)</label>
+                                    <input type="number" id="pagoMonto" name="monto" readonly step="0.01" placeholder="0.00"
+                                        style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #A7F3D0; background:#ECFDF5; font-size:1.1rem; font-weight:800; color:#047857; margin-top:4px;">
                                 </div>
                             </div>
 
@@ -3212,9 +3237,9 @@ if (file_exists($fileCotizPath)) {
                                 </div>
                             </div>
 
-                            <!-- Tabla productos si hay items -->
+                            <!-- Tabla productos si hay items cotizados -->
                             <div id="pagoItemsContainer" style="display:none; margin-top:4px;">
-                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Detalle de Productos del Pedido</label>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Detalle de Productos Cotizados</label>
                                 <div style="max-height:140px; overflow-y:auto; border:1px solid #E2E8F0; border-radius:10px; background:#FFF;">
                                     <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
                                         <thead><tr style="background:#F1F5F9; border-bottom:1px solid #E2E8F0;"><th style="padding:6px 8px; text-align:left;">Producto</th><th style="padding:6px 8px; text-align:center;">Cant</th><th style="padding:6px 8px; text-align:right;">Subtotal</th></tr></thead>
@@ -3226,7 +3251,7 @@ if (file_exists($fileCotizPath)) {
 
                         <!-- COLUMNA 2: DATOS BANCARIOS Y VOUCHER -->
                         <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:22px; display:flex; flex-direction:column; gap:14px;">
-                            <h4 style="font-size:0.92rem; color:var(--text-dark); font-weight:700; border-bottom:1px solid #E2E8F0; padding-bottom:10px; display:flex; align-items:center; gap:8px;">
+                            <h4 style="font-size:0.92rem; color:var(--text-dark); font-weight:700; border-bottom:1px solid #E2E8F0; padding-bottom:10px; margin:0; display:flex; align-items:center; gap:8px;">
                                 <i class="fa-solid fa-building-columns" style="color:#0284C7;"></i> Depósito & Comprobante Bancario
                             </h4>
 
@@ -3244,7 +3269,7 @@ if (file_exists($fileCotizPath)) {
                                     </select>
                                 </div>
                                 <div>
-                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">N° de Operación</label>
+                                    <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">N° de Operación Bancaria *</label>
                                     <input type="text" id="pagoOperacion" name="nro_operacion" required placeholder="Ej. 849201"
                                         style="width:100%; padding:11px 14px; border-radius:10px; border:1px solid #CBD5E1; background:#FFF; font-weight:800; font-family:monospace; color:var(--text-dark); margin-top:4px;">
                                 </div>
@@ -3267,7 +3292,11 @@ if (file_exists($fileCotizPath)) {
                         </div>
                     </div>
 
-                    <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px; padding-top:16px; border-top:1px solid #E2E8F0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:10px; padding-top:16px; border-top:1px solid #E2E8F0;">
+                        <button type="button" class="btn-pill-white" onclick="volverAListaPendientes()"
+                            style="padding:12px 24px; border-radius:12px; font-size:0.9rem; font-weight:700; border:1px solid #CBD5E1;">
+                            <i class="fa-solid fa-arrow-left"></i> Cancelar y Volver a Pendientes
+                        </button>
                         <button type="submit" id="btnEnviarPagoPedido" class="btn-pill-white primary"
                             style="background:#10B981; color:#FFF; font-weight:800; font-size:1rem; padding:14px 36px; border-radius:14px; display:inline-flex; align-items:center; gap:10px; cursor:pointer; box-shadow:0 6px 18px rgba(16,185,129,0.3);">
                             <i class="fa-solid fa-paper-plane"></i> Enviar Pago a Reportería (Nayeli)
@@ -3275,20 +3304,20 @@ if (file_exists($fileCotizPath)) {
                     </div>
                 </form>
 
-                <!-- PASO 3: HISTORIAL EN TIEMPO REAL -->
+                <!-- CUADRO 2: EN ESA MISMA VISTA, HISTORIAL DE PAGOS REPORTADOS POR ENDRINA -->
                 <div class="card-seccion-centro">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div>
-                            <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px;">
+                            <h3 style="font-size:1.15rem; color:var(--text-dark); display:flex; align-items:center; gap:8px; margin:0;">
                                 <i class="fa-solid fa-clock-rotate-left" style="color:var(--accent-tan);"></i>
                                 Historial de Pagos Reportados por Endrina
                             </h3>
-                            <p style="color:var(--text-muted); font-size:0.82rem; margin-top:2px;">
+                            <p style="color:var(--text-muted); font-size:0.82rem; margin:2px 0 0;">
                                 Consulta en tiempo real el estado de validación y aprobación por parte de Nayeli (Reportería / Finanzas).
                             </p>
                         </div>
                         <button type="button" class="btn-pill-white" onclick="cargarHistorialPagosEndrina()" style="padding:8px 16px; font-size:0.82rem; font-weight:700;">
-                            <i class="fa-solid fa-rotate"></i> Actualizar Lista
+                            <i class="fa-solid fa-rotate"></i> Actualizar Historial
                         </button>
                     </div>
 
@@ -3296,7 +3325,7 @@ if (file_exists($fileCotizPath)) {
                         <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
                             <thead>
                                 <tr style="background:#F8FAFC; border-bottom:2px solid #E2E8F0; color:var(--text-muted); text-transform:uppercase; font-size:0.75rem;">
-                                    <th style="padding:10px 12px; text-align:left;">N° Pedido / Factura</th>
+                                    <th style="padding:10px 12px; text-align:left;">N° Pedido</th>
                                     <th style="padding:10px 12px; text-align:left;">Cliente</th>
                                     <th style="padding:10px 12px; text-align:right;">Monto (S/)</th>
                                     <th style="padding:10px 12px; text-align:left;">Banco & Operación</th>
@@ -3311,7 +3340,9 @@ if (file_exists($fileCotizPath)) {
                         </table>
                     </div>
                 </div>
+
             </div>
+        </div>
 
         </div>
 
@@ -3616,6 +3647,21 @@ if (file_exists($fileCotizPath)) {
         // =========================================================================
         let listaGlobalPedidosPendientes = [];
 
+                let listaGlobalPedidosPendientes = [];
+
+        function volverAListaPendientes() {
+            const secPendientes = document.getElementById('seccion-pedidos-pendientes');
+            const secProceso = document.getElementById('seccion-proceso-pago');
+            const cuadroExito = document.getElementById('cuadroExitoReportePago');
+            if (cuadroExito) cuadroExito.style.display = 'none';
+            if (secProceso) secProceso.style.display = 'none';
+            if (secPendientes) {
+                secPendientes.style.display = 'flex';
+                secPendientes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            cargarPedidosPendientesEndrina();
+        }
+
         function cargarPedidosPendientesEndrina() {
             const tbody = document.getElementById('tbodyPedidosPendientesEndrina');
             const badge = document.getElementById('badgeCountPendientesEndrina');
@@ -3642,6 +3688,22 @@ if (file_exists($fileCotizPath)) {
                 });
         }
 
+        function filtrarTablaPendientesEndrina(texto) {
+            const q = (texto || '').toLowerCase().trim();
+            if (!q) {
+                renderTablaPedidosPendientes(listaGlobalPedidosPendientes);
+                return;
+            }
+            const filtrados = listaGlobalPedidosPendientes.filter(p => {
+                const nroPed = (p.nro_pedido || '').toLowerCase();
+                const cotiz = (p.nro_cotizacion || '').toLowerCase();
+                const cli = (p.cliente || '').toLowerCase();
+                const doc = (p.documento || '').toLowerCase();
+                return nroPed.includes(q) || cotiz.includes(q) || cli.includes(q) || doc.includes(q);
+            });
+            renderTablaPedidosPendientes(filtrados);
+        }
+
         function renderTablaPedidosPendientes(pedidos) {
             const tbody = document.getElementById('tbodyPedidosPendientesEndrina');
             if (!tbody) return;
@@ -3660,6 +3722,7 @@ if (file_exists($fileCotizPath)) {
                 const monto = parseFloat(p.total_venta || (p.total_pedido || 0));
                 const montoFmt = Number(monto).toLocaleString('en-US', {minimumFractionDigits: 2});
                 const estado = p.estado || 'Autorizado';
+                const nroPedEscaped = nroPed.replace(/'/g, "\\'");
 
                 return `
                     <tr style="border-bottom:1px solid #E2E8F0; transition:background 0.2s;" onmouseover="this.style.background='#F0FDF4'" onmouseout="this.style.background='transparent'">
@@ -3679,7 +3742,7 @@ if (file_exists($fileCotizPath)) {
                         <td style="padding:10px 12px; text-align:center;">
                             <button type="button" class="btn-pill-white primary"
                                 style="background:#10B981; color:#FFF; font-weight:700; padding:6px 14px; border-radius:10px; font-size:0.8rem; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.25);"
-                                onclick="seleccionarPedidoDesdeLista('${nroPed}')">
+                                onclick="seleccionarPedidoDesdeLista('${nroPedEscaped}')">
                                 <i class="fa-solid fa-file-invoice-dollar"></i> Validar Pago
                             </button>
                         </td>
@@ -3688,127 +3751,94 @@ if (file_exists($fileCotizPath)) {
             }).join('');
         }
 
-        function filtrarTablaPendientesEndrina() {
-            const query = (document.getElementById('filtroTablaPendientesEndrina')?.value || '').toLowerCase().trim();
-            if (!listaGlobalPedidosPendientes || listaGlobalPedidosPendientes.length === 0) return;
-            
-            if (!query) {
-                renderTablaPedidosPendientes(listaGlobalPedidosPendientes);
-                return;
-            }
-            
-            const filtrados = listaGlobalPedidosPendientes.filter(p => {
-                const ped = (p.nro_pedido || '').toLowerCase();
-                const cot = (p.nro_cotizacion || '').toLowerCase();
-                const cli = (p.cliente || '').toLowerCase();
-                const ruc = (p.documento || '').toLowerCase();
-                return ped.includes(query) || cot.includes(query) || cli.includes(query) || ruc.includes(query);
-            });
-            
-            renderTablaPedidosPendientes(filtrados);
-        }
-
         function seleccionarPedidoDesdeLista(nroPed) {
-            const input = document.getElementById('inputBuscarNroPedido');
-            if (input) input.value = nroPed;
-            buscarPedidoParaValidarPago(nroPed);
-            const form = document.getElementById('formReportarPagoPedido');
-            if (form) {
-                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const secPendientes = document.getElementById('seccion-pedidos-pendientes');
+            const secProceso = document.getElementById('seccion-proceso-pago');
+            const cuadroExito = document.getElementById('cuadroExitoReportePago');
+            if (cuadroExito) cuadroExito.style.display = 'none';
+
+            // 1. Ocultar lista de pendientes y mostrar sección de proceso
+            if (secPendientes) secPendientes.style.display = 'none';
+            if (secProceso) {
+                secProceso.style.display = 'flex';
+                secProceso.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
+
+            // 2. Cargar datos del pedido y cotización
+            buscarPedidoParaValidarPago(nroPed);
+
+            // 3. Cargar historial inferior
+            cargarHistorialPagosEndrina();
         }
 
         function buscarPedidoParaValidarPago(codigoParam) {
-            const input = document.getElementById('inputBuscarNroPedido');
-            const codigo = (codigoParam !== undefined && codigoParam !== null ? String(codigoParam) : (input ? input.value : '')).trim();
-            const msgAlerta = document.getElementById('msgAlertaPedido');
+            const codigo = String(codigoParam || '').trim();
             const badgeCargado = document.getElementById('badgeEstadoPedidoCargado');
-            const btn = document.getElementById('btnBuscarPedidoPago');
+            const tituloProceso = document.getElementById('tituloPedidoEnProceso');
 
-            if (!codigo) {
-                alert('Por favor ingrese o seleccione el número de Pedido (ej. 142 o PD-000142).');
-                if (input) input.focus();
-                return;
-            }
+            if (!codigo) return;
 
-            if (input) input.value = codigo;
-            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
-            if (msgAlerta) {
-                msgAlerta.style.display = 'block';
-                msgAlerta.style.background = '#EFF6FF';
-                msgAlerta.style.color = '#1D4ED8';
-                msgAlerta.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Consultando Pedido en StarSoft y base local...';
+            if (tituloProceso) {
+                tituloProceso.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="color:#10B981;"></i> Cargando Pedido ${codigo}...`;
             }
 
             fetch(`crm_backend.php?action=buscar_pedido_para_pago&codigo=${encodeURIComponent(codigo)}`)
                 .then(r => r.json())
                 .then(res => {
-                    if (btn) btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Cargar Datos del Pedido';
                     if (!res.success) {
-                        if (msgAlerta) {
-                            msgAlerta.style.background = '#FEF2F2';
-                            msgAlerta.style.color = '#B91C1C';
-                            msgAlerta.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${res.error || 'Pedido no encontrado'}. Puedes seleccionarlo de la lista superior o completar los campos manualmente.`;
-                        }
-                        if (badgeCargado) badgeCargado.innerHTML = '';
-                        const cleanCode = codigo.toUpperCase().startsWith('PD-') ? codigo.toUpperCase() : ('PD-' + codigo.padStart(6, '0'));
-                        document.getElementById('pagoNroPedido').value = cleanCode;
+                        alert('No se pudo cargar el pedido: ' + (res.error || 'Error'));
                         return;
                     }
 
                     const p = res.pedido;
                     const montoTotalVal = parseFloat(p.total_pedido || (p.total_venta || 0));
-                    if (msgAlerta) {
-                        msgAlerta.style.background = '#ECFDF5';
-                        msgAlerta.style.color = '#047857';
-                        msgAlerta.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>${p.nro_pedido}</strong> cargado con éxito. Cliente: <strong>${p.cliente}</strong>. Total: <strong>S/ ${montoTotalVal.toLocaleString('en-US', {minimumFractionDigits:2})}</strong>.`;
-                    }
-                    if (badgeCargado) {
-                        badgeCargado.innerHTML = `<span style="background:#DCFCE7; color:#15803D; font-weight:800; font-size:0.78rem; padding:4px 10px; border-radius:12px; border:1px solid #86EFAC;">
-                            <i class="fa-solid fa-check"></i> ${p.nro_pedido} CARGADO
-                        </span>`;
+
+                    if (tituloProceso) {
+                        tituloProceso.innerHTML = `Validando Pedido: <span style="color:#047857; font-family:monospace;">${p.nro_pedido}</span> &bull; Cotización: <span style="color:#4F46E5; font-family:monospace;">${p.nro_cotizacion || '-'}</span><br><span style="font-size:0.95rem; font-weight:600; color:#334155;">Cliente: ${p.cliente}</span>`;
                     }
 
-                    document.getElementById('pagoNroPedido').value = p.nro_pedido || ('PD-' + codigo);
+                    if (badgeCargado) {
+                        badgeCargado.innerHTML = `<span style="background:#DCFCE7; color:#15803D; font-weight:800; font-size:0.78rem; padding:4px 10px; border-radius:12px; border:1px solid #86EFAC;"><i class="fa-solid fa-circle-check"></i> ${p.estado || 'Autorizado'}</span>`;
+                    }
+
+                    document.getElementById('pagoNroPedido').value = p.nro_pedido;
+                    const cotInput = document.getElementById('pagoNroCotizacion');
+                    if (cotInput) cotInput.value = p.nro_cotizacion || '-';
                     document.getElementById('pagoCliente').value = p.cliente || '';
                     document.getElementById('pagoRuc').value = p.documento || '';
                     document.getElementById('pagoMonto').value = montoTotalVal.toFixed(2);
-                    if (p.banco && document.getElementById('pagoMetodo')) {
-                        const opt = Array.from(document.getElementById('pagoMetodo').options).find(o => o.value.toLowerCase().includes(p.banco.toLowerCase()));
-                        if (opt) opt.selected = true;
-                    }
-                    if (p.nro_operacion) {
-                        document.getElementById('pagoOperacion').value = p.nro_operacion;
-                    }
+                    document.getElementById('pagoOperacion').value = '';
+                    document.getElementById('pagoNota').value = '';
+                    document.getElementById('pagoVoucherFile').value = '';
 
-                    // Llenar tabla de items si existen
+                    const previewBox = document.getElementById('pagoVoucherPreviewBox');
+                    if (previewBox) previewBox.style.display = 'none';
+
+                    // Cargar items si existen
                     const itemsContainer = document.getElementById('pagoItemsContainer');
                     const itemsTbody = document.getElementById('pagoItemsTbody');
                     if (itemsContainer && itemsTbody) {
                         if (p.items && p.items.length > 0) {
+                            itemsContainer.style.display = 'block';
                             itemsTbody.innerHTML = p.items.map(it => `
                                 <tr style="border-bottom:1px solid #F1F5F9;">
-                                    <td style="padding:6px 10px;"><strong>${it.codigo || ''}</strong> ${it.descripcion || it.nombre || ''}</td>
-                                    <td style="padding:6px 10px; text-align:center;">${it.cantidad || 1}</td>
-                                    <td style="padding:6px 10px; text-align:right; font-weight:700;">S/ ${Number(it.total || it.v_venta || (it.cantidad * (it.precio || it.precio_unitario || 0)) || 0).toFixed(2)}</td>
+                                    <td style="padding:4px 8px; font-weight:600;">${it.descripcion || it.nombre}</td>
+                                    <td style="padding:4px 8px; text-align:center;">${it.cantidad}</td>
+                                    <td style="padding:4px 8px; text-align:right; font-weight:700; color:#047857;">S/ ${(it.subtotal || it.total || 0).toFixed(2)}</td>
                                 </tr>
                             `).join('');
-                            itemsContainer.style.display = 'block';
                         } else {
                             itemsContainer.style.display = 'none';
                         }
                     }
 
-                    // Enfocar nro de operacion
-                    document.getElementById('pagoOperacion').focus();
+                    setTimeout(() => {
+                        const opInput = document.getElementById('pagoOperacion');
+                        if (opInput) opInput.focus();
+                    }, 200);
                 })
                 .catch(err => {
-                    if (btn) btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Cargar Datos del Pedido';
-                    if (msgAlerta) {
-                        msgAlerta.style.background = '#FEF2F2';
-                        msgAlerta.style.color = '#B91C1C';
-                        msgAlerta.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error al consultar pedido: ${err.message}`;
-                    }
+                    alert('Error de conexión al cargar el pedido: ' + err.message);
                 });
         }
 
@@ -3819,7 +3849,7 @@ if (file_exists($fileCotizPath)) {
                 const file = input.files[0];
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
-                    reader.onload = e => {
+                    reader.onload = function(e) {
                         img.src = e.target.result;
                         previewBox.style.display = 'block';
                     };
@@ -3834,8 +3864,9 @@ if (file_exists($fileCotizPath)) {
         }
 
         function limpiarFormularioPagoPedido() {
-            document.getElementById('inputBuscarNroPedido').value = '';
             document.getElementById('pagoNroPedido').value = '';
+            const cotInput = document.getElementById('pagoNroCotizacion');
+            if (cotInput) cotInput.value = '';
             document.getElementById('pagoCliente').value = '';
             document.getElementById('pagoRuc').value = '';
             document.getElementById('pagoMonto').value = '';
@@ -3844,8 +3875,6 @@ if (file_exists($fileCotizPath)) {
             document.getElementById('pagoVoucherFile').value = '';
             const previewBox = document.getElementById('pagoVoucherPreviewBox');
             if (previewBox) previewBox.style.display = 'none';
-            const msgAlerta = document.getElementById('msgAlertaPedido');
-            if (msgAlerta) msgAlerta.style.display = 'none';
             const badgeCargado = document.getElementById('badgeEstadoPedidoCargado');
             if (badgeCargado) badgeCargado.innerHTML = '';
             const itemsContainer = document.getElementById('pagoItemsContainer');
@@ -3864,7 +3893,7 @@ if (file_exists($fileCotizPath)) {
             const btn = document.getElementById('btnEnviarPagoPedido');
 
             if (!cliente || monto <= 0) {
-                alert('Por favor ingrese el nombre del cliente y un monto válido.');
+                alert('Por favor verifique los datos del cliente y el monto.');
                 return;
             }
             if (!op) {
@@ -3908,10 +3937,25 @@ if (file_exists($fileCotizPath)) {
                 }
 
                 if (data.success) {
-                    alert(`✅ ¡Pago del Pedido ${nroPed || ''} registrado con éxito!\n\nSe envió la notificación a Reportería para que Nayeli audite y apruebe el comprobante en tiempo real.`);
+                    // 1. Limpiar campos del formulario
                     limpiarFormularioPagoPedido();
-                    cargarPedidosPendientesEndrina();
+
+                    // 2. Mostrar cuadro destacado de éxito
+                    const cuadroExito = document.getElementById('cuadroExitoReportePago');
+                    const textoExito = document.getElementById('textoExitoReportePago');
+                    if (cuadroExito) {
+                        if (textoExito) {
+                            textoExito.innerHTML = `El pago del pedido <strong>${nroPed}</strong> (${cliente} por <strong>S/ ${monto.toFixed(2)}</strong>) fue enviado con éxito a Reportería para la auditoría de Nayeli.`;
+                        }
+                        cuadroExito.style.display = 'flex';
+                        cuadroExito.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    // 3. Refrescar historial inferior automáticamente
                     cargarHistorialPagosEndrina();
+
+                    // 4. Refrescar lista de pedidos pendientes en segundo plano
+                    cargarPedidosPendientesEndrina();
                 } else {
                     alert('Error al enviar el pago: ' + (data.mensaje || data.error || 'Error desconocido'));
                 }
@@ -3938,7 +3982,7 @@ if (file_exists($fileCotizPath)) {
                     }
 
                     const pagos = data.pagos;
-                    tbody.innerHTML = pagos.slice(0, 20).map(p => {
+                    tbody.innerHTML = pagos.slice(0, 25).map(p => {
                         let badgeEst = '<span style="background:#FEF3C7; color:#D97706; padding:4px 10px; border-radius:12px; font-weight:700; font-size:0.75rem;"><i class="fa-solid fa-clock"></i> Pendiente</span>';
                         if (p.estado === 'Aceptado') {
                             badgeEst = `<span style="background:#DCFCE7; color:#15803D; padding:4px 10px; border-radius:12px; font-weight:800; font-size:0.75rem;" title="Aprobado por ${p.validador || 'Nayeli'}"><i class="fa-solid fa-circle-check"></i> Aprobado</span>`;
@@ -4000,8 +4044,7 @@ if (file_exists($fileCotizPath)) {
 
             // Si es vista de cotizaciones, inicializar
             if (nombreVista === 'validar_pagos') {
-                cargarPedidosPendientesEndrina();
-                cargarHistorialPagosEndrina();
+                volverAListaPendientes();
             }
 
             if (nombreVista === 'cotizaciones') {
