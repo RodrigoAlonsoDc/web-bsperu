@@ -16,9 +16,31 @@ function slugify_val($text) {
     return preg_replace('~-+~', '-', $text);
 }
 
+// Helper para limpiar el nombre comercial base (remover presentaciones como "X 5 GAL", "X 25 KG")
+function clean_nombre_producto($text) {
+    if (!$text) return '';
+    $clean = preg_replace('/\s+X\s+\d+(?:[\.,\/]\d+)?\s*(?:GAL|GLN|KG|KILOS?|LT|LITROS?|L|ML|GR|CIL|BALDE|LATA|TAMBOR).*/i', '', $text);
+    $clean = preg_replace('/\s+X\s+(?:GAL|GLN|KG|KILOS?|LT|LITROS?|L|ML|GR|CIL|BALDE|LATA|TAMBOR).*/i', '', $clean);
+    return trim($clean);
+}
+
+// Redirecciones 301 permanentes para consolidar SEO de variantes hacia su URL limpia indexable
+$redirectsMap = [
+    'aircon-z-x-5-gal' => 'aircon-z',
+    'aircon-z-x-55-gal' => 'aircon-z',
+    'aircon-z-x-gal' => 'aircon-z'
+];
+
 // Obtener SLUG o SKU de la URL
 $slug = isset($_GET['slug']) ? trim($_GET['slug']) : '';
 $sku = isset($_GET['sku']) ? trim($_GET['sku']) : '';
+
+if (!empty($slug) && isset($redirectsMap[strtolower($slug)])) {
+    header("HTTP/1.1 301 Moved Permanently");
+    header("Location: https://bsperu.pe/producto/" . $redirectsMap[strtolower($slug)]);
+    exit;
+}
+
 $productoActual = null;
 
 if ($productos) {
@@ -28,6 +50,15 @@ if ($productos) {
             if (isset($p['slug']) && strtolower($p['slug']) === strtolower($slug)) {
                 $productoActual = $p;
                 break;
+            }
+        }
+        // Fallback: buscar si el slug coincide con slugify(clean_nombre_producto(nombre))
+        if (!$productoActual) {
+            foreach ($productos as $p) {
+                if (isset($p['nombre']) && slugify_val(clean_nombre_producto($p['nombre'])) === strtolower($slug)) {
+                    $productoActual = $p;
+                    break;
+                }
             }
         }
         // Fallback: buscar si el slug coincide con slugify(nombre)
@@ -69,7 +100,8 @@ $url = "https://bsperu.pe/producto.html";
 $jsonLd = "";
 
 if ($productoActual) {
-    $nombre = htmlspecialchars($productoActual['nombre'] ?? '');
+    $nombreBase = clean_nombre_producto($productoActual['nombre'] ?? '');
+    $nombre = htmlspecialchars(!empty($nombreBase) ? $nombreBase : ($productoActual['nombre'] ?? ''));
     $title = $nombre . " | Z Aditivos Oficial - BS Perú";
     
     // Descripción truncada a ~160 caracteres
@@ -90,7 +122,7 @@ if ($productoActual) {
         }
     }
 
-    $canonicalSlug = !empty($productoActual['slug']) ? $productoActual['slug'] : slugify_val($productoActual['nombre'] ?? ($sku ?: 'catalogo'));
+    $canonicalSlug = !empty($productoActual['slug']) ? $productoActual['slug'] : slugify_val(!empty($nombreBase) ? $nombreBase : ($productoActual['nombre'] ?? ($sku ?: 'catalogo')));
     $url = "https://bsperu.pe/producto/" . urlencode($canonicalSlug);
     
     // Generar JSON-LD estático
@@ -2249,6 +2281,14 @@ if ($productoActual) {
             intentarFetch(0);
         }
 
+        function cleanProdTitle(str) {
+            if (!str) return '';
+            return str
+                .replace(/\s+X\s+\d+(?:[\.,\/]\d+)?\s*(?:GAL|GLN|KG|KILOS?|LT|LITROS?|L|ML|GR|CIL|BALDE|LATA|TAMBOR).*/i, '')
+                .replace(/\s+X\s+(?:GAL|GLN|KG|KILOS?|LT|LITROS?|L|ML|GR|CIL|BALDE|LATA|TAMBOR).*/i, '')
+                .trim();
+        }
+
         function aplicarProductoDinamico(p) {
             var prodTitle = document.getElementById('prodTitle');
             var prodSubtitle = document.getElementById('prodSubtitle');
@@ -2261,9 +2301,10 @@ if ($productoActual) {
             var pageTitle = document.getElementById('pageTitle');
             var thumbsContainer = document.getElementById('thumbsContainer');
 
-            if (prodTitle) prodTitle.textContent = p.nombre;
-            if (breadProducto) breadProducto.textContent = p.nombre;
-            if (pageTitle) pageTitle.textContent = p.nombre + ' | Building Systems Perú';
+            var nombreLimpio = cleanProdTitle(p.nombre);
+            if (prodTitle) prodTitle.textContent = nombreLimpio;
+            if (breadProducto) breadProducto.textContent = nombreLimpio;
+            if (pageTitle) pageTitle.textContent = nombreLimpio + ' | Building Systems Perú';
 
             var catTexto = p.descripcion || p.categoria || 'Soluciones Químicas para la Construcción';
             if (prodSubtitle) prodSubtitle.textContent = catTexto;
@@ -2277,7 +2318,7 @@ if ($productoActual) {
 
             if (p.imagen && mainImg) {
                 mainImg.src = p.imagen;
-                mainImg.alt = p.nombre;
+                mainImg.alt = nombreLimpio;
             }
 
             // Galería de miniaturas dinámicas
@@ -2356,12 +2397,12 @@ if ($productoActual) {
             if (btnCotizarWa) btnCotizarWa.href = waUrl;
 
             // Actualización completa de Metadatos SEO, Canonical, OpenGraph y Schema.org
-            var tituloCompleto = p.nombre + ' | Z Aditivos Oficial - Building Systems Perú';
+            var tituloCompleto = nombreLimpio + ' | Z Aditivos Oficial - Building Systems Perú';
             document.title = tituloCompleto;
             if (pageTitle) pageTitle.textContent = tituloCompleto;
 
             var descLimpia = p.descripcion_larga || p.descripcion || 'Soluciones químicas especializadas para concreto y construcción en Perú.';
-            var metaDesc = 'Venta de ' + p.nombre + ' original de Z Aditivos en Perú. ' + descLimpia.replace(/\s+/g, ' ').substring(0, 140) + '... Cotiza con Building Systems Perú.';
+            var metaDesc = 'Venta de ' + nombreLimpio + ' original de Z Aditivos en Perú. ' + descLimpia.replace(/\s+/g, ' ').substring(0, 140) + '... Cotiza con Building Systems Perú.';
             var mDesc = document.getElementById('metaDescription') || document.querySelector('meta[name="description"]');
             if (mDesc) mDesc.setAttribute('content', metaDesc);
 
@@ -2387,11 +2428,11 @@ if ($productoActual) {
                 var el = document.getElementById(id);
                 if (el) el.setAttribute('content', val);
             };
-            setProp('ogTitle', p.nombre + ' | Z Aditivos Oficial - BS Perú');
+            setProp('ogTitle', nombreLimpio + ' | Z Aditivos Oficial - BS Perú');
             setProp('ogDesc', metaDesc);
             setProp('ogUrl', prodCanonicalUrl);
             setProp('ogImage', imgAbsoluta);
-            setProp('twTitle', p.nombre + ' | Z Aditivos Oficial - BS Perú');
+            setProp('twTitle', nombreLimpio + ' | Z Aditivos Oficial - BS Perú');
             setProp('twDesc', metaDesc);
             setProp('twImage', imgAbsoluta);
 
@@ -2400,7 +2441,7 @@ if ($productoActual) {
                 var schema = {
                     '@context': 'https://schema.org/',
                     '@type': 'Product',
-                    'name': p.nombre,
+                    'name': nombreLimpio,
                     'image': [imgAbsoluta],
                     'description': p.descripcion_larga || p.descripcion || metaDesc,
                     'sku': p.sku || '',
